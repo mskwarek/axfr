@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="CPP_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/axfrLookup.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/CMakeLists.txt" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/digQuery.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/main.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/digQuery.c" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/dighost.c" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/axfrLookup.cpp" isTestSource="false" />
+    </content>
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library">
+      <library name="Header Search Paths">
+        <CLASSES>
+          <root url="file:///usr/lib/gcc/x86_64-linux-gnu/4.8/include-fixed" />
+          <root url="file:///usr/lib/gcc/x86_64-linux-gnu/4.8/include" />
+          <root url="file:///usr/include" />
+          <root url="file:///usr/local/include" />
+          <root url="file://$USER_HOME$/mgr/bind-9.2.3/lib/isccfg/include" />
+          <root url="file://$USER_HOME$/mgr/bind-9.2.3/lib/isc" />
+          <root url="file://$USER_HOME$/mgr/bind-9.2.3/lib/dns/include" />
+          <root url="file://$USER_HOME$/mgr/bind-9.2.3/lib/isccc/include" />
+          <root url="file://$USER_HOME$/mgr/bind-9.2.3/bin/dig/include" />
+        </CLASSES>
+        <SOURCES>
+          <root url="file:///usr/lib/gcc/x86_64-linux-gnu/4.8/include-fixed" />
+          <root url="file:///usr/lib/gcc/x86_64-linux-gnu/4.8/include" />
+          <root url="file:///usr/include" />
+          <root url="file:///usr/local/include" />
+          <root url="file://$USER_HOME$/mgr/bind-9.2.3/lib/isccfg/include" />
+          <root url="file://$USER_HOME$/mgr/bind-9.2.3/lib/isc" />
+          <root url="file://$USER_HOME$/mgr/bind-9.2.3/lib/dns/include" />
+          <root url="file://$USER_HOME$/mgr/bind-9.2.3/lib/isccc/include" />
+          <root url="file://$USER_HOME$/mgr/bind-9.2.3/bin/dig/include" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+  </component>
+</module>
