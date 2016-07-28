@@ -24,6 +24,7 @@
 #include <dig/dig.h>
 
 #include "digQuery.h"
+#include <digUtils/dig_parser.h>
 
 extern ISC_LIST(dig_lookup_t) lookup_list;
 extern dig_serverlist_t server_list;
@@ -40,17 +41,8 @@ enum {
     BUF_SIZE = 1024
 };
 
-//struct dns_response
-//{
-//    int i;
-//    char message[BUF_SIZE];
-//};
-//
-//struct dns_response resp = {0};
-//
-//static char domainopt[DNS_NAME_MAXTEXT];
-
 static char resp[BUF_SIZE];
+//static int32_t length = 0;
 
 
 #define ADD_STRING(b, s) { 				\
@@ -59,6 +51,8 @@ static char resp[BUF_SIZE];
 	else 						\
 		isc_buffer_putstr(b, s); 		\
 }
+
+
 
 isc_result_t printmessage(dig_query_t *query, dns_message_t *msg, isc_boolean_t headers)
 {
@@ -105,7 +99,7 @@ buftoosmall:
      }
 
     if (query->lookup->section_answer) {
-        result = dns_message_sectiontotext(msg,
+        result = parse_message(msg,
                                            DNS_SECTION_ANSWER,
                                            style, flags, buf);
         if (result == ISC_R_NOSPACE)
@@ -120,8 +114,9 @@ buftoosmall:
         return (ISC_TRUE);
     }
 
-    printf("dupa\n");
-    snprintf(resp, BUF_SIZE, "%s", (char *)isc_buffer_base(buf));
+//    printf("dupa\n");
+//    length = snprintf(resp + length, BUF_SIZE - length, "%s\n", (char *)isc_buffer_base(buf));
+    printf("%s\n", (char *)isc_buffer_base(buf));
 
     isc_buffer_free(&buf);
     return (result);
@@ -132,7 +127,11 @@ void trying(char *frm, dig_lookup_t *lookup) {
     (void) lookup;
 }
 
-void received(int bytes, isc_sockaddr_t *from, dig_query_t *query) { printf("rec\n"); }
+void received(int bytes, isc_sockaddr_t *from, dig_query_t *query) {
+    (void) bytes;
+    (void) from;
+    (void) query;
+}
 
 void dighost_shutdown(void) {
     char batchline[MXNAME];
@@ -185,6 +184,7 @@ void tryLookup() {
     unsigned int len = OUTPUTBUF;
     dns_rdatatype_t rdtype = {0};
     isc_textregion_t tr = {0};
+    dig_server_t *srv = NULL;
 
     ISC_LIST_INIT(lookup_list);
     ISC_LIST_INIT(server_list);
@@ -208,13 +208,17 @@ void tryLookup() {
     lookup = clone_lookup(default_lookup,
                           ISC_TRUE);
 //    lookup = default_lookup;
-     tr.base = "any";
-     tr.length = 3;
+     tr.base = "axfr";
+     tr.length = 4;
      result = dns_rdatatype_fromtext(&rdtype,
      	     	(isc_textregion_t *)&tr);
+    srv = make_server("ns3.infusionsoft.com");
+    ISC_LIST_APPEND(lookup->my_server_list, srv, link);
+
+
      lookup->rdtype = rdtype;
      lookup->rdtypeset = ISC_TRUE;
-    strncpy(lookup->textname, "90minut.pl",
+    strncpy(lookup->textname, "infusionsoft.com",
             sizeof(lookup->textname));
     lookup->textname[sizeof(lookup->textname)-1]=0;
     lookup->trace_root = ISC_TF(lookup->trace  ||

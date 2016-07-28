@@ -8,6 +8,8 @@
       <sourceFolder url="file://$MODULE_DIR$/main.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/digQuery.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/dighost.c" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/digUtils/dig_parser.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/digUtils/dig_parser.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/axfrLookup.cpp" isTestSource="false" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
