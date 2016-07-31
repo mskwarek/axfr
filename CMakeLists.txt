@@ -14,7 +14,8 @@ include_directories(/home/marcin/mgr/bind-9.2.3/lib/dns/include
         /home/marcin/mgr/bind-9.2.3/lib/isc/unix/include
         /home/marcin/mgr/bind-9.2.3/lib/isc/nothreads/include
         /home/marcin/mgr/bind-9.2.3/bin/dig/include
-        ${CMAKE_CURRENT_SOURCE_DIR})
+        ${CMAKE_CURRENT_SOURCE_DIR},
+        ${CMAKE_CURRENT_SOURCE_DIR}/digUtils)
 
 set(SOURCE_FILES digQuery.c dighost.c axfrLookup.cpp axfrLookup.h main.cpp digQuery.h digUtils/dig_parser.h digUtils/dig_parser.c)
 add_executable(myDig ${SOURCE_FILES})

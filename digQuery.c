@@ -1,4 +1,4 @@
-#include <config.h>
+//#include <config.h>
 #include <stdlib.h>
 #include <time.h>
 #include <ctype.h>
@@ -24,7 +24,7 @@
 #include <dig/dig.h>
 
 #include "digQuery.h"
-#include <digUtils/dig_parser.h>
+#include <dig_parser.h>
 
 extern ISC_LIST(dig_lookup_t) lookup_list;
 extern dig_serverlist_t server_list;
@@ -37,11 +37,8 @@ dig_lookup_t *default_lookup = NULL;
 static char *batchname = NULL;
 static FILE *batchfp = NULL;
 
-enum {
-    BUF_SIZE = 1024
-};
 
-static char resp[BUF_SIZE];
+parse_message_cb parse_fun = NULL;
 //static int32_t length = 0;
 
 
@@ -101,7 +98,7 @@ buftoosmall:
     if (query->lookup->section_answer) {
         result = parse_message(msg,
                                            DNS_SECTION_ANSWER,
-                                           style, flags, buf);
+                                           style, flags, buf, parse_fun);
         if (result == ISC_R_NOSPACE)
             goto buftoosmall;
         check_result(result, "dns_message_sectiontotext");
@@ -116,7 +113,7 @@ buftoosmall:
 
 //    printf("dupa\n");
 //    length = snprintf(resp + length, BUF_SIZE - length, "%s\n", (char *)isc_buffer_base(buf));
-    printf("%s\n", (char *)isc_buffer_base(buf));
+//    printf("%s\n", (char *)isc_buffer_base(buf));
 
     isc_buffer_free(&buf);
     return (result);
@@ -176,7 +173,7 @@ void dighost_shutdown(void) {
     }
 }
 
-void tryLookup() {
+void tryLookup(parse_message_cb parse_message_fun) {
     isc_result_t result;
     dig_server_t *s, *s2;
     dig_lookup_t *lookup = NULL;
@@ -185,6 +182,8 @@ void tryLookup() {
     dns_rdatatype_t rdtype = {0};
     isc_textregion_t tr = {0};
     dig_server_t *srv = NULL;
+
+    parse_fun = parse_message_fun;
 
     ISC_LIST_INIT(lookup_list);
     ISC_LIST_INIT(server_list);
@@ -255,13 +254,8 @@ void tryLookup() {
     cancel_all();
 //    destroy_libs();
     isc_app_finish();
-    if('\0' != resp[0])
-        printf("%s\n", resp);
-    printf("Hello, World!\n");
+    //if('\0' != resp[0])
+    //    printf("%s\n", resp);
+    //printf("Hello, World!\n");
 //    return 0;
-}
-
-const char* getResponse()
-{
-    return resp;
 }

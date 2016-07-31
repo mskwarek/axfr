@@ -20,10 +20,10 @@
           <root url="file:///usr/lib/gcc/x86_64-linux-gnu/4.8/include" />
           <root url="file:///usr/include" />
           <root url="file:///usr/local/include" />
-          <root url="file://$USER_HOME$/mgr/bind-9.2.3/lib/isccfg/include" />
+          <root url="file://$USER_HOME$/mgr/bind-9.2.3/lib/isccc/include" />
           <root url="file://$USER_HOME$/mgr/bind-9.2.3/lib/isc" />
           <root url="file://$USER_HOME$/mgr/bind-9.2.3/lib/dns/include" />
-          <root url="file://$USER_HOME$/mgr/bind-9.2.3/lib/isccc/include" />
+          <root url="file://$USER_HOME$/mgr/bind-9.2.3/lib/isccfg/include" />
           <root url="file://$USER_HOME$/mgr/bind-9.2.3/bin/dig/include" />
         </CLASSES>
         <SOURCES>
@@ -31,10 +31,10 @@
           <root url="file:///usr/lib/gcc/x86_64-linux-gnu/4.8/include" />
           <root url="file:///usr/include" />
           <root url="file:///usr/local/include" />
-          <root url="file://$USER_HOME$/mgr/bind-9.2.3/lib/isccfg/include" />
+          <root url="file://$USER_HOME$/mgr/bind-9.2.3/lib/isccc/include" />
           <root url="file://$USER_HOME$/mgr/bind-9.2.3/lib/isc" />
           <root url="file://$USER_HOME$/mgr/bind-9.2.3/lib/dns/include" />
-          <root url="file://$USER_HOME$/mgr/bind-9.2.3/lib/isccc/include" />
+          <root url="file://$USER_HOME$/mgr/bind-9.2.3/lib/isccfg/include" />
           <root url="file://$USER_HOME$/mgr/bind-9.2.3/bin/dig/include" />
         </SOURCES>
       </library>

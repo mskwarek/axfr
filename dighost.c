@@ -26,7 +26,7 @@
  * functions in most applications.
  */
 
-#include <config.h>
+//#include <config.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
@@ -813,7 +813,7 @@ add_opt(dns_message_t *msg, isc_uint16_t udpsize, isc_boolean_t dnssec) {
 
 /*
  * Add a question section to a message, asking for the specified name,
- * type, and class.
+ * type, and cls.
  */
 static void
 add_question(dns_message_t *message, dns_name_t *name,

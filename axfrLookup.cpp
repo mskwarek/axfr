@@ -9,12 +9,16 @@
 extern "C"
 {
     #include "digQuery.h"
+    #include <dig_parser.h>
 //    void tryLookup();
 };
 
+void int_parse(response_t* res)
+{
+    std::cout<<res->type<<" "<<res->ttl<<" "<<res->name<<" "<<res->rdata<<std::endl;
+}
+
 void axfrLookup::performLookup()
 {
-
-    tryLookup();
-    std::cout<<getResponse();
+    tryLookup(int_parse);
 }

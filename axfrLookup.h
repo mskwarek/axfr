@@ -5,11 +5,14 @@
 #ifndef MYDIG_AXFRLOOKUP_H
 #define MYDIG_AXFRLOOKUP_H
 
+extern "C"
+{
+#include <dig_parser.h>
+};
 
 class axfrLookup {
 public:
     void performLookup();
-
 };
 
 

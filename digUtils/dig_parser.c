@@ -2,6 +2,7 @@
 // Created by marcin on 28.07.16.
 //
 
+#include <dig_parser.h>
 
 #include <isc/types.h>
 #include <dns/types.h>
@@ -34,13 +35,8 @@
 		return (_r); \
 	} while (0)
 
-#define INDENT_TO(col) \
-	do { \
-		 if ((result = indent(&column, ctx->style.col, \
-				      ctx->style.tab_width, target)) \
-		     != ISC_R_SUCCESS) \
-			    return (result); \
-	} while (0)
+
+//static struct response res;
 
 static isc_result_t
 str_totext(const char *source, isc_buffer_t *target) {
@@ -63,7 +59,8 @@ rdataset_totext(dns_rdataset_t *rdataset,
                 dns_name_t *owner_name,
                 dns_totext_ctx_t *ctx,
                 isc_boolean_t omit_final_dot,
-                isc_buffer_t *target)
+                isc_buffer_t *target,
+                parse_message_cb parse_message_fun)
 {
     isc_result_t result;
     unsigned int column;
@@ -71,6 +68,9 @@ rdataset_totext(dns_rdataset_t *rdataset,
     isc_uint32_t current_ttl;
     isc_boolean_t current_ttl_valid;
     dns_rdatatype_t type;
+    response_t *res = NULL;
+    response_t re;
+    res = &re;
 
     REQUIRE(DNS_RDATASET_VALID(rdataset));
 
@@ -95,6 +95,9 @@ rdataset_totext(dns_rdataset_t *rdataset,
                                    omit_final_dot,
                                    target));
             column += target->used - name_start;
+
+            snprintf(res->name, target->used - name_start + 1, "%s", (char*)target->base+name_start);
+//            res.name = (char*)(owner_name->ndata);
         }
 
         /*
@@ -126,6 +129,9 @@ rdataset_totext(dns_rdataset_t *rdataset,
                 current_ttl = rdataset->ttl;
                 current_ttl_valid = ISC_TRUE;
             }
+
+            res->ttl = rdataset->ttl;
+
         }
 
         /*
@@ -142,6 +148,8 @@ rdataset_totext(dns_rdataset_t *rdataset,
             if (result != ISC_R_SUCCESS)
                 return (result);
             column += (target->used - class_start);
+            snprintf(res->cls, target->used - class_start + 1, "%s", (char*)target->base+class_start);
+//            res.cls = (char*)target->used;
         }
 
         /*
@@ -150,8 +158,10 @@ rdataset_totext(dns_rdataset_t *rdataset,
 
         if (rdataset->type == 0) {
             type = rdataset->covers;
+//            res.type = (char*)rdataset->covers;
         } else {
             type = rdataset->type;
+//            res.type = (char*)rdataset->type;
         }
 
         {
@@ -164,6 +174,7 @@ rdataset_totext(dns_rdataset_t *rdataset,
             if (result != ISC_R_SUCCESS)
                 return (result);
             column += (target->used - type_start);
+            snprintf(res->type, target->used - type_start + 1, "%s", (char*)target->base+type_start);
         }
 
         /*
@@ -176,6 +187,7 @@ rdataset_totext(dns_rdataset_t *rdataset,
 //            else
 //                RETERR(str_totext(";-$NXRRSET\n", target));
 //        } else {
+            unsigned int rdata_start = target->used;
             dns_rdata_t rdata = DNS_RDATA_INIT;
             isc_region_t r;
 
@@ -188,7 +200,7 @@ rdataset_totext(dns_rdataset_t *rdataset,
                                        ctx->style.rdata_column,
                                        ctx->linebreak,
                                        target));
-
+            snprintf(res->rdata, target->used - rdata_start + 1, "%s", (char*)target->base+rdata_start);
             isc_buffer_availableregion(target, &r);
             if (r.length < 1)
                 return (ISC_R_NOSPACE);
@@ -214,6 +226,10 @@ rdataset_totext(dns_rdataset_t *rdataset,
     ctx->current_ttl= current_ttl;
     ctx->current_ttl_valid = current_ttl_valid;
 
+    if(NULL != parse_message_fun)
+    {
+        parse_message_fun(res);
+    }
     return (ISC_R_SUCCESS);
 }
 
@@ -221,7 +237,8 @@ rdataset_totext(dns_rdataset_t *rdataset,
 int32_t parse_rdata(dns_name_t *owner_name,
                     dns_rdataset_t *rdataset,
                     const dns_master_style_t *style,
-                    isc_buffer_t *target)
+                    isc_buffer_t *target,
+                    parse_message_cb parse_message_fun)
 {
 
     dns_totext_ctx_t ctx;
@@ -234,13 +251,14 @@ int32_t parse_rdata(dns_name_t *owner_name,
     }
 
     return (rdataset_totext(rdataset, owner_name, &ctx,
-                            ISC_FALSE, target));
+                            ISC_FALSE, target, parse_message_fun));
 }
 
 int32_t parse_message(dns_message_t *msg, dns_section_t section,
                       const dns_master_style_t *style,
                       dns_messagetextflag_t flags,
-                      isc_buffer_t *target)
+                      isc_buffer_t *target,
+                      parse_message_cb parse_message_fun)
 {
     dns_name_t *name, empty_name;
     dns_rdataset_t *rdataset;
@@ -279,7 +297,8 @@ int32_t parse_message(dns_message_t *msg, dns_section_t section,
             result = parse_rdata(name,
                                  rdataset,
                                  style,
-                                 target);
+                                 target,
+                                 parse_message_fun);
 
             if (result != ISC_R_SUCCESS)
                 return (result);
