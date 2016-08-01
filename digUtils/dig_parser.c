@@ -36,8 +36,6 @@
 	} while (0)
 
 
-//static struct response res;
-
 static isc_result_t
 str_totext(const char *source, isc_buffer_t *target) {
     unsigned int l;
@@ -97,7 +95,6 @@ rdataset_totext(dns_rdataset_t *rdataset,
             column += target->used - name_start;
 
             snprintf(res->name, target->used - name_start + 1, "%s", (char*)target->base+name_start);
-//            res.name = (char*)(owner_name->ndata);
         }
 
         /*
@@ -149,7 +146,6 @@ rdataset_totext(dns_rdataset_t *rdataset,
                 return (result);
             column += (target->used - class_start);
             snprintf(res->cls, target->used - class_start + 1, "%s", (char*)target->base+class_start);
-//            res.cls = (char*)target->used;
         }
 
         /*
@@ -158,10 +154,8 @@ rdataset_totext(dns_rdataset_t *rdataset,
 
         if (rdataset->type == 0) {
             type = rdataset->covers;
-//            res.type = (char*)rdataset->covers;
         } else {
             type = rdataset->type;
-//            res.type = (char*)rdataset->type;
         }
 
         {
