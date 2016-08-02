@@ -7,9 +7,8 @@
 
 int main()
 {
-//    AxfrDatabase::getInstance().initXmlFile();
     axfrLookup lookup;
-    lookup.performLookup();
+    lookup.performLookup("infusionsoft.com", "ns3.infusionsoft.com");
     AxfrDatabase::getInstance().addRdata();
     return 0;
 }

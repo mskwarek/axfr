@@ -173,7 +173,7 @@ void dighost_shutdown(void) {
     }
 }
 
-void tryLookup(parse_message_cb parse_message_fun) {
+void tryLookup(const char* domain, const char* asked_ns, parse_message_cb parse_message_fun) {
     isc_result_t result;
     dig_server_t *s, *s2;
     dig_lookup_t *lookup = NULL;
@@ -198,26 +198,22 @@ void tryLookup(parse_message_cb parse_message_fun) {
     isc_buffer_allocate(mctx, &buf, len);
     default_lookup = make_empty_lookup();;
 
-//    dig_server_t *srv = NULL;
-//    isc_textregion_t tr;
-//    dns_rdatatype_t rdtype;
-//    dns_rdataclass_t rdclass;
-
 
     lookup = clone_lookup(default_lookup,
                           ISC_TRUE);
-//    lookup = default_lookup;
      tr.base = "axfr";
      tr.length = 4;
      result = dns_rdatatype_fromtext(&rdtype,
      	     	(isc_textregion_t *)&tr);
-    srv = make_server("ns3.infusionsoft.com");
+
+
+    srv = make_server(asked_ns);
     ISC_LIST_APPEND(lookup->my_server_list, srv, link);
 
 
      lookup->rdtype = rdtype;
      lookup->rdtypeset = ISC_TRUE;
-    strncpy(lookup->textname, "infusionsoft.com",
+    strncpy(lookup->textname, domain,
             sizeof(lookup->textname));
     lookup->textname[sizeof(lookup->textname)-1]=0;
     lookup->trace_root = ISC_TF(lookup->trace  ||
@@ -225,13 +221,6 @@ void tryLookup(parse_message_cb parse_message_fun) {
     lookup->new_search = ISC_TRUE;
     ISC_LIST_APPEND(lookup_list, lookup, link);
 
-
-//
-//
-//    if (domainopt[0] != '\0') {
-//        set_search_domain(domainopt);
-//        usesearch = ISC_TRUE;
-//    }
     result = isc_app_onrun(mctx, global_task, onrun_callback, NULL);
     check_result(result, "isc_app_onrun");
     isc_app_run();
@@ -245,17 +234,7 @@ void tryLookup(parse_message_cb parse_message_fun) {
         isc_mem_free(mctx, s2);
     }
     isc_mem_free(mctx, default_lookup);
-//    if (batchname != NULL) {
-//        if (batchfp != stdin)
-//            fclose(batchfp);
-//        batchname = NULL;
-//    }
 
     cancel_all();
-//    destroy_libs();
     isc_app_finish();
-    //if('\0' != resp[0])
-    //    printf("%s\n", resp);
-    //printf("Hello, World!\n");
-//    return 0;
 }

@@ -18,7 +18,6 @@ struct response
     char cls[10];
     char type[10];
     char rdata[1024];
-
 };
 
 typedef struct response response_t;

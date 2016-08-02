@@ -55,7 +55,7 @@ static void print_data(response_t* res, std::vector<std::string> tokens)
     std::cout<<std::endl;
 }
 
-void axfrLookup::performLookup()
+void axfrLookup::performLookup(const char* domain, const char* asked_ns)
 {
-    tryLookup(int_parse);
+    tryLookup(domain, asked_ns, int_parse);
 }

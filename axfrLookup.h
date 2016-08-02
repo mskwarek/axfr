@@ -12,7 +12,7 @@ extern "C"
 
 class axfrLookup {
 public:
-    void performLookup();
+    void performLookup(const char* domain, const char* asked_ns);
 };
 
 

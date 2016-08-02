@@ -36,13 +36,15 @@ public:
         tree.add("axfrLookup.<xmlattr>.version", "1.0");
         for(auto i : this->data) {
             boost::property_tree::ptree& book = tree.add("axfrlookup.domain", "");
+            book.add("type", i.type);
             book.add("www_address", i.name);
             book.add("rdata", i.rdata);
         }
-        boost::property_tree::write_xml("/home/marcin/mgr/test.xml", tree,
-          std::locale(),
-          boost::property_tree::xml_writer_settings<char>(' ', 4));
-
+        if(!this->data.empty()) {
+            boost::property_tree::write_xml(std::string(this->data.back().name) + ".xml", tree,
+                    std::locale(),
+                    boost::property_tree::xml_writer_settings<char>(' ', 4));
+        }
     }
 
     AxfrDatabase(const AxfrDatabase&) = delete;
