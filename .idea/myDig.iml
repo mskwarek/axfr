@@ -11,6 +11,7 @@
       <sourceFolder url="file://$MODULE_DIR$/digUtils/dig_parser.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/digUtils/dig_parser.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/axfrLookup.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/AxfrDatabase.hpp" isTestSource="false" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module-library">
