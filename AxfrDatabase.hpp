@@ -23,8 +23,11 @@ public:
         for (auto const &n : tokens) {
             bool cl = std::string("SOA").compare(res.cls);
             bool ty = std::string("SOA").compare(res.type);
-            if(cl && ty)
-                data.push_back(res);
+            if(cl && ty) {
+                response_t temp = {0};
+                memcpy(&temp, &res, sizeof(response_t));
+                data.push_back(temp);
+            }
             else
                 break;
         }
@@ -33,7 +36,6 @@ public:
     AxfrDatabase addRdata()
     {
         boost::property_tree::ptree tree;
-        tree.add("axfrLookup.<xmlattr>.version", "1.0");
         for(auto i : this->data) {
             boost::property_tree::ptree& book = tree.add("axfrlookup.domain", "");
             book.add("type", i.type);
@@ -41,7 +43,7 @@ public:
             book.add("rdata", i.rdata);
         }
         if(!this->data.empty()) {
-            boost::property_tree::write_xml(std::string(this->data.back().name) + ".xml", tree,
+            write_xml(std::string(this->data.back().name) + ".xml", tree,
                     std::locale(),
                     boost::property_tree::xml_writer_settings<char>(' ', 4));
         }

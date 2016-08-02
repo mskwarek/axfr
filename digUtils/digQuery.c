@@ -21,7 +21,7 @@
 #include <dns/rdataclass.h>
 #include <dns/result.h>
 
-#include <dig/dig.h>
+#include <dig.h>
 
 #include "digQuery.h"
 #include <dig_parser.h>
