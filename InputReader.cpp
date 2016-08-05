@@ -13,20 +13,39 @@ InputReader::InputReader() { }
 void InputReader::ReadFromFile(std::string path)
 {
     std::ifstream dataFile(path);
-    std::string line = "";
+
     if (dataFile.is_open())
     {
-        while (std::getline(dataFile, line) )
-        {
-            std::vector<std::string> temp;
-            std::istringstream iss(line);
-            std::copy(std::istream_iterator<std::string>(iss),
-                      std::istream_iterator<std::string>(),
-                      back_inserter(temp));
-            data.push_back(ScannedDomain(temp.at(0).c_str(), temp.at(1).c_str()));
-        }
-        dataFile.close();
+        try_to_process(&dataFile);
     }
+}
+
+void InputReader::try_to_process(std::ifstream* dataFile)
+{
+    try
+    {
+        process_file(dataFile);
+    }
+    catch(...)
+    {
+    }
+
+}
+
+void InputReader::process_file(std::ifstream* dataFile)
+{
+    std::string line = "";
+
+    while (std::getline(*dataFile, line) )
+    {
+        std::vector<std::string> temp;
+        std::istringstream iss(line);
+        std::copy(std::istream_iterator<std::string>(iss),
+                std::istream_iterator<std::string>(),
+                back_inserter(temp));
+        data.push_back(ScannedDomain(temp.at(0).c_str(), temp.at(1).c_str()));
+    }
+    dataFile->close();
 }
 
 std::vector<ScannedDomain> InputReader::GetData()

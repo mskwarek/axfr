@@ -19,13 +19,11 @@ public:
 
     void addToLocalDb(response_t res, std::vector<std::string> tokens)
     {
-//        std::cout<<"pisze\n";
         for (auto const &n : tokens) {
             bool cl = std::string("SOA").compare(res.cls);
             bool ty = std::string("SOA").compare(res.type);
             if(cl && ty) {
                 response_t temp = res;
-                //memcpy(&temp, res, sizeof(response_t));
                 data.push_back(temp);
             }
             else

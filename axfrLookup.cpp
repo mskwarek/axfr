@@ -57,6 +57,5 @@ static void print_data(response_t* res, std::vector<std::string> tokens)
 
 void axfrLookup::performLookup(const char* domain, const char* asked_ns)
 {
-    std::cout<<domain<<" "<<asked_ns<<std::endl;
     tryLookup(domain, asked_ns, int_parse);
 }

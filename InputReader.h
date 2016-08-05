@@ -14,6 +14,8 @@ public:
     InputReader();
     void ReadFromFile(std::string path);
     std::vector<ScannedDomain> GetData();
+    void process_file(std::ifstream* dataFile);
+    void try_to_process(std::ifstream* dataFile);
 
 private:
     std::vector<ScannedDomain> data;
