@@ -173,7 +173,7 @@ void dighost_shutdown(void) {
     }
 }
 
-void tryLookup(const char* domain, const char* asked_ns, parse_message_cb parse_message_fun) {
+void tryLookup(const char* domain, const char* const asked_ns, parse_message_cb parse_message_fun) {
     isc_result_t result;
     dig_server_t *s, *s2;
     dig_lookup_t *lookup = NULL;
@@ -189,26 +189,43 @@ void tryLookup(const char* domain, const char* asked_ns, parse_message_cb parse_
     ISC_LIST_INIT(server_list);
     ISC_LIST_INIT(search_list);
     isc_app_start();
+
+
+
+
+
+
     setup_libs();
 
-    //parse!!!!!!!!!!!!!
 
-    setup_system();
+
+
 
     isc_buffer_allocate(mctx, &buf, len);
     default_lookup = make_empty_lookup();;
 
 
     lookup = clone_lookup(default_lookup,
-                          ISC_TRUE);
-     tr.base = "axfr";
-     tr.length = 4;
-     result = dns_rdatatype_fromtext(&rdtype,
-     	     	(isc_textregion_t *)&tr);
+            ISC_TRUE);
+    tr.base = "axfr";
+    tr.length = 4;
+    result = dns_rdatatype_fromtext(&rdtype,
+            (isc_textregion_t *)&tr);
 
 
     srv = make_server(asked_ns);
     ISC_LIST_APPEND(lookup->my_server_list, srv, link);
+
+
+
+
+
+
+    //parse!!!!!!!!!!!!!
+
+    setup_system();
+
+
 
 
      lookup->rdtype = rdtype;

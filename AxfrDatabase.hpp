@@ -2,8 +2,8 @@
 // Created by marcin on 01.08.16.
 //
 
-#ifndef MYDIG_AXFRDATABASE_H
-#define MYDIG_AXFRDATABASE_H
+#ifndef MYDIG_AXFRDATABASE_HPP
+#define MYDIG_AXFRDATABASE_HPP
 
 #include <dig_parser.h>
 #include <boost/property_tree/ptree.hpp>
@@ -57,4 +57,4 @@ private:
 };
 
 
-#endif //MYDIG_AXFRDATABASE_H
+#endif //MYDIG_AXFRDATABASE_HPP
