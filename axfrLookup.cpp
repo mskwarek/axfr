@@ -8,10 +8,8 @@
 #include <sstream>
 #include <algorithm>
 
-
 #include "axfrLookup.h"
 #include "AxfrDatabase.hpp"
-
 
 extern "C"
 {

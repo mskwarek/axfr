@@ -39,17 +39,6 @@ static FILE *batchfp = NULL;
 
 
 parse_message_cb parse_fun = NULL;
-//static int32_t length = 0;
-
-
-#define ADD_STRING(b, s) { 				\
-	if (strlen(s) >= isc_buffer_availablelength(b)) \
- 		return (ISC_R_NOSPACE); 		\
-	else 						\
-		isc_buffer_putstr(b, s); 		\
-}
-
-
 
 isc_result_t printmessage(dig_query_t *query, dns_message_t *msg, isc_boolean_t headers)
 {
@@ -253,5 +242,6 @@ void tryLookup(const char* domain, const char* const asked_ns, parse_message_cb 
     isc_mem_free(mctx, default_lookup);
 
     cancel_all();
+    destroy_libs();
     isc_app_finish();
 }

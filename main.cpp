@@ -11,7 +11,7 @@ int main()
     axfrLookup lookup;
     InputReader reader;
     reader.ReadFromFile("/home/marcin/mgr/test");
-    const char* dupa = "ns3.infusionsoft.com";
+
     for(auto i : reader.GetData())
     {
         lookup.performLookup(i.GetDomainAddress().c_str(), i.GetNsAddress().c_str());
