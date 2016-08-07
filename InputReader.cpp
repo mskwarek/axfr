@@ -14,8 +14,7 @@ void InputReader::ReadFromFile(std::string path)
 {
     std::ifstream dataFile(path);
 
-    if (dataFile.is_open())
-    {
+    if (dataFile.is_open()) {
         try_to_process(&dataFile);
     }
 }

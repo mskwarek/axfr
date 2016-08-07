@@ -166,8 +166,8 @@ void tryLookup(const char* domain, const char* const asked_ns, parse_message_cb 
     isc_result_t result;
     dig_server_t *s, *s2;
     dig_lookup_t *lookup = NULL;
-    isc_buffer_t *buf = NULL;
-    unsigned int len = OUTPUTBUF;
+//    isc_buffer_t *buf = NULL;
+//    unsigned int len = OUTPUTBUF;
     dns_rdatatype_t rdtype = {0};
     isc_textregion_t tr = {0};
     dig_server_t *srv = NULL;
@@ -179,18 +179,10 @@ void tryLookup(const char* domain, const char* const asked_ns, parse_message_cb 
     ISC_LIST_INIT(search_list);
     isc_app_start();
 
-
-
-
-
-
     setup_libs();
 
 
-
-
-
-    isc_buffer_allocate(mctx, &buf, len);
+    //isc_buffer_allocate(mctx, &buf, len);
     default_lookup = make_empty_lookup();;
 
 
@@ -205,27 +197,20 @@ void tryLookup(const char* domain, const char* const asked_ns, parse_message_cb 
     srv = make_server(asked_ns);
     ISC_LIST_APPEND(lookup->my_server_list, srv, link);
 
-
-
-
-
+    lookup->rdtype = rdtype;
+    lookup->rdtypeset = ISC_TRUE;
+    strncpy(lookup->textname, domain,
+            sizeof(lookup->textname));
+    lookup->textname[sizeof(lookup->textname)-1]=0;
+    lookup->trace_root = ISC_TF(lookup->trace  ||
+            lookup->ns_search_only);
+    lookup->new_search = ISC_TRUE;
+    ISC_LIST_APPEND(lookup_list, lookup, link);
 
     //parse!!!!!!!!!!!!!
 
     setup_system();
 
-
-
-
-     lookup->rdtype = rdtype;
-     lookup->rdtypeset = ISC_TRUE;
-    strncpy(lookup->textname, domain,
-            sizeof(lookup->textname));
-    lookup->textname[sizeof(lookup->textname)-1]=0;
-    lookup->trace_root = ISC_TF(lookup->trace  ||
-                                lookup->ns_search_only);
-    lookup->new_search = ISC_TRUE;
-    ISC_LIST_APPEND(lookup_list, lookup, link);
 
     result = isc_app_onrun(mctx, global_task, onrun_callback, NULL);
     check_result(result, "isc_app_onrun");

@@ -35,23 +35,6 @@
 		return (_r); \
 	} while (0)
 
-
-static isc_result_t
-str_totext(const char *source, isc_buffer_t *target) {
-    unsigned int l;
-    isc_region_t region;
-
-    isc_buffer_availableregion(target, &region);
-    l = strlen(source);
-
-    if (l > region.length)
-        return (ISC_R_NOSPACE);
-
-    memcpy(region.base, source, l);
-    isc_buffer_add(target, l);
-    return (ISC_R_SUCCESS);
-}
-
 static isc_result_t
 rdataset_totext(dns_rdataset_t *rdataset,
                 dns_name_t *owner_name,
@@ -94,7 +77,7 @@ rdataset_totext(dns_rdataset_t *rdataset,
                                    target));
             column += target->used - name_start;
 
-            snprintf(res->name, target->used - name_start + 1, "%s", (char*)target->base+name_start);
+//            snprintf(res->name, target->used - name_start + 1, "%s", (char*)target->base+name_start);
         }
 
         /*
@@ -162,8 +145,8 @@ rdataset_totext(dns_rdataset_t *rdataset,
             unsigned int type_start;
 //            INDENT_TO(type_column);
             type_start = target->used;
-            if (rdataset->type == 0)
-                RETERR(str_totext("\\-", target));
+//            if (rdataset->type == 0)
+//                RETERR(str_totext("\\-", target));
             result = dns_rdatatype_totext(type, target);
             if (result != ISC_R_SUCCESS)
                 return (result);
@@ -174,14 +157,14 @@ rdataset_totext(dns_rdataset_t *rdataset,
         /*
          * Rdata.
          */
-//        INDENT_TO(rdata_column);
+////        INDENT_TO(rdata_column);
 //        if (rdataset->type == 0) {
 //            if (NXDOMAIN(rdataset))
 //                RETERR(str_totext(";-$NXDOMAIN\n", target));
 //            else
 //                RETERR(str_totext(";-$NXRRSET\n", target));
 //        } else {
-            unsigned int rdata_start = target->used;
+//            unsigned int rdata_start = target->used;
             dns_rdata_t rdata = DNS_RDATA_INIT;
             isc_region_t r;
 
@@ -194,7 +177,7 @@ rdataset_totext(dns_rdataset_t *rdataset,
                                        ctx->style.rdata_column,
                                        ctx->linebreak,
                                        target));
-            snprintf(res->rdata, target->used - rdata_start + 1, "%s", (char*)target->base+rdata_start);
+//            snprintf(res->rdata, target->used - rdata_start + 1, "%s", (char*)target->base+rdata_start);
             isc_buffer_availableregion(target, &r);
             if (r.length < 1)
                 return (ISC_R_NOSPACE);

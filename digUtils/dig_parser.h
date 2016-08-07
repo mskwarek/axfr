@@ -15,8 +15,8 @@ struct response
     char name[128];
     char ip[256];
     int32_t ttl;
-    char cls[10];
-    char type[10];
+    char cls[32];
+    char type[32];
     char rdata[1024];
 };
 
