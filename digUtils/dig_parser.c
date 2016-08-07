@@ -164,7 +164,7 @@ rdataset_totext(dns_rdataset_t *rdataset,
 //            else
 //                RETERR(str_totext(";-$NXRRSET\n", target));
 //        } else {
-//            unsigned int rdata_start = target->used;
+            unsigned int rdata_start = target->used;
             dns_rdata_t rdata = DNS_RDATA_INIT;
             isc_region_t r;
 
@@ -177,7 +177,7 @@ rdataset_totext(dns_rdataset_t *rdataset,
                                        ctx->style.rdata_column,
                                        ctx->linebreak,
                                        target));
-//            snprintf(res->rdata, target->used - rdata_start + 1, "%s", (char*)target->base+rdata_start);
+            snprintf(res->rdata, target->used - rdata_start + 1, "%s", (char*)target->base+rdata_start);
             isc_buffer_availableregion(target, &r);
             if (r.length < 1)
                 return (ISC_R_NOSPACE);
