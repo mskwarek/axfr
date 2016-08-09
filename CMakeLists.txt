@@ -30,7 +30,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/lib/dns/include
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/digUtils)
 
-set(SOURCE_FILES digUtils/digQuery.c digUtils/dighost.c axfrLookup.cpp axfrLookup.h main.cpp digUtils/digQuery.h digUtils/dig_parser.h digUtils/dig_parser.c AxfrDatabase.hpp InputReader.cpp InputReader.h)
+set(SOURCE_FILES digUtils/digQuery.c digUtils/dighost.c Scanner/axfrLookup.cpp Scanner/axfrLookup.h main.cpp digUtils/digQuery.h digUtils/dig_parser.h digUtils/dig_parser.c Scanner/AxfrDatabase.hpp Scanner/InputReader.cpp Scanner/InputReader.h)
 add_executable(myDig ${SOURCE_FILES})
 
 target_link_libraries(myDig

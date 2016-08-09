@@ -2,18 +2,18 @@
 <module type="CPP_MODULE" version="4">
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
-      <sourceFolder url="file://$MODULE_DIR$/InputReader.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/axfrLookup.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Scanner/InputReader.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Scanner/axfrLookup.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/CMakeLists.txt" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/InputReader.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Scanner/InputReader.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/main.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/digUtils/dig_parser.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/digUtils/dighost.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/digUtils/digQuery.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/digUtils/digQuery.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/digUtils/dig_parser.c" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/axfrLookup.cpp" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/AxfrDatabase.hpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Scanner/axfrLookup.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Scanner/AxfrDatabase.hpp" isTestSource="false" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module-library">

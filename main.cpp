@@ -2,9 +2,9 @@
 // Created by marcin on 27.07.16.
 //
 
-#include "axfrLookup.h"
-#include "AxfrDatabase.hpp"
-#include "InputReader.h"
+#include "Scanner/axfrLookup.h"
+#include "Scanner/AxfrDatabase.hpp"
+#include "Scanner/InputReader.h"
 
 int main()
 {

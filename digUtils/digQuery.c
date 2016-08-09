@@ -1,30 +1,17 @@
-//#include <config.h>
 #include <stdlib.h>
 #include <time.h>
-#include <ctype.h>
 
 #include <isc/app.h>
-#include <isc/netaddr.h>
-#include <isc/print.h>
 #include <isc/string.h>
-#include <isc/util.h>
-#include <isc/task.h>
 
 #include <dns/byaddr.h>
 #include <dns/fixedname.h>
 #include <dns/masterdump.h>
 #include <dns/message.h>
-#include <dns/name.h>
-#include <dns/rdata.h>
-#include <dns/rdataset.h>
 #include <dns/rdatatype.h>
-#include <dns/rdataclass.h>
-#include <dns/result.h>
-
 #include <dig.h>
 
 #include "digQuery.h"
-#include <dig_parser.h>
 
 extern ISC_LIST(dig_lookup_t) lookup_list;
 extern dig_serverlist_t server_list;
