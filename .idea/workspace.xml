@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="BookmarkManager">
-    <bookmark url="file://$PROJECT_DIR$/main.cpp" line="14" />
+    <bookmark url="file://$PROJECT_DIR$/main.cpp" line="15" />
   </component>
   <component name="CMakeRunConfigurationManager" shouldGenerate="true" assignedExecutableTargets="true" buildAllGenerated="true">
     <generated>
@@ -16,18 +16,9 @@
     </ADDITIONAL_GENERATION_ENVIRONMENT>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="06ab550a-00c0-48d8-9780-ea1f287f0f55" name="Default" comment="jupijajej #working">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ScanningResult.hpp" />
+    <list default="true" id="06ab550a-00c0-48d8-9780-ea1f287f0f55" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AxfrDatabase.hpp" afterPath="$PROJECT_DIR$/AxfrDatabase.hpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/InputReader.cpp" afterPath="$PROJECT_DIR$/InputReader.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ScannedDomain.hpp" afterPath="$PROJECT_DIR$/ScannedDomain.hpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/axfrLookup.cpp" afterPath="$PROJECT_DIR$/axfrLookup.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/axfrLookup.h" afterPath="$PROJECT_DIR$/axfrLookup.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/digUtils/digQuery.c" afterPath="$PROJECT_DIR$/digUtils/digQuery.c" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/digUtils/digQuery.h" afterPath="$PROJECT_DIR$/digUtils/digQuery.h" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/digUtils/dig_parser.c" afterPath="$PROJECT_DIR$/digUtils/dig_parser.c" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/digUtils/dig_parser.h" afterPath="$PROJECT_DIR$/digUtils/dig_parser.h" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/main.cpp" afterPath="$PROJECT_DIR$/main.cpp" />
     </list>
     <ignored path="myDig.iws" />
@@ -49,11 +40,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="axfrLookup.cpp" pinned="false" current-in-tab="true">
+      <file leaf-file-name="axfrLookup.cpp" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/axfrLookup.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="450">
-              <caret line="41" column="1" selection-start-line="41" selection-start-column="1" selection-end-line="41" selection-end-column="1" />
+            <state relative-caret-position="288">
+              <caret line="32" column="1" selection-start-line="32" selection-start-column="1" selection-end-line="32" selection-end-column="1" />
               <folding>
                 <element signature="e#41#60#0" expanded="true" />
               </folding>
@@ -64,9 +55,11 @@
       <file leaf-file-name="digQuery.c" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/digUtils/digQuery.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="252">
-              <caret line="86" column="40" selection-start-line="86" selection-start-column="40" selection-end-line="86" selection-end-column="40" />
-              <folding />
+            <state relative-caret-position="-1800">
+              <caret line="103" column="6" selection-start-line="103" selection-start-column="6" selection-end-line="103" selection-end-column="6" />
+              <folding>
+                <element signature="e#22#41#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -91,11 +84,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="dig_parser.c" pinned="false" current-in-tab="false">
+      <file leaf-file-name="dig_parser.c" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/digUtils/dig_parser.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1494">
-              <caret line="4" column="0" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
+            <state relative-caret-position="306">
+              <caret line="176" column="32" selection-start-line="176" selection-start-column="32" selection-end-line="176" selection-end-column="32" />
               <folding>
                 <element signature="e#41#64#0" expanded="true" />
               </folding>
@@ -116,8 +109,8 @@
       <file leaf-file-name="main.cpp" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/main.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="432">
-              <caret line="24" column="0" selection-start-line="24" selection-start-column="0" selection-end-line="24" selection-end-column="0" />
+            <state relative-caret-position="234">
+              <caret line="13" column="0" selection-start-line="13" selection-start-column="0" selection-end-line="13" selection-end-column="0" />
               <folding>
                 <element signature="e#41#64#0" expanded="true" />
               </folding>
@@ -128,8 +121,8 @@
       <file leaf-file-name="AxfrDatabase.hpp" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/AxfrDatabase.hpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="414">
-              <caret line="23" column="37" selection-start-line="23" selection-start-column="37" selection-end-line="23" selection-end-column="37" />
+            <state relative-caret-position="-36">
+              <caret line="23" column="38" selection-start-line="23" selection-start-column="38" selection-end-line="23" selection-end-column="38" />
               <folding>
                 <element signature="e#104#127#0" expanded="true" />
               </folding>
@@ -179,8 +172,6 @@
         <option value="$PROJECT_DIR$/InputReader.h" />
         <option value="$PROJECT_DIR$/ScannedDomain.hpp" />
         <option value="$PROJECT_DIR$/InputReader.cpp" />
-        <option value="$PROJECT_DIR$/main.cpp" />
-        <option value="$PROJECT_DIR$/digUtils/dig_parser.c" />
         <option value="$PROJECT_DIR$/digUtils/dig_parser.h" />
         <option value="$PROJECT_DIR$/digUtils/digQuery.c" />
         <option value="$PROJECT_DIR$/digUtils/digQuery.h" />
@@ -188,6 +179,8 @@
         <option value="$PROJECT_DIR$/AxfrDatabase.hpp" />
         <option value="$PROJECT_DIR$/axfrLookup.h" />
         <option value="$PROJECT_DIR$/axfrLookup.cpp" />
+        <option value="$PROJECT_DIR$/main.cpp" />
+        <option value="$PROJECT_DIR$/digUtils/dig_parser.c" />
       </list>
     </option>
   </component>
@@ -607,7 +600,14 @@
       <option name="project" value="LOCAL" />
       <updated>1470761456130</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="jupijajej #working">
+      <created>1470769759694</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1470769759694</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -966,60 +966,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ScanningResult.hpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-324">
-          <caret line="15" column="31" selection-start-line="15" selection-start-column="31" selection-end-line="15" selection-end-column="31" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/main.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="432">
-          <caret line="24" column="0" selection-start-line="24" selection-start-column="0" selection-end-line="24" selection-end-column="0" />
-          <folding>
-            <element signature="e#41#64#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/digUtils/dig_parser.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="450">
-          <caret line="30" column="37" selection-start-line="30" selection-start-column="37" selection-end-line="30" selection-end-column="37" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/digUtils/digQuery.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="252">
-          <caret line="86" column="40" selection-start-line="86" selection-start-column="40" selection-end-line="86" selection-end-column="40" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/AxfrDatabase.hpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="414">
-          <caret line="23" column="37" selection-start-line="23" selection-start-column="37" selection-end-line="23" selection-end-column="37" />
-          <folding>
-            <element signature="e#104#127#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/digUtils/dig_parser.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1494">
-          <caret line="4" column="0" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
-          <folding>
-            <element signature="e#41#64#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/axfrLookup.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="324">
@@ -1038,10 +984,66 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/axfrLookup.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="450">
-          <caret line="41" column="1" selection-start-line="41" selection-start-column="1" selection-end-line="41" selection-end-column="1" />
+        <state relative-caret-position="288">
+          <caret line="32" column="1" selection-start-line="32" selection-start-column="1" selection-end-line="32" selection-end-column="1" />
           <folding>
             <element signature="e#41#60#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/digUtils/digQuery.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1800">
+          <caret line="103" column="6" selection-start-line="103" selection-start-column="6" selection-end-line="103" selection-end-column="6" />
+          <folding>
+            <element signature="e#22#41#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/main.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="234">
+          <caret line="13" column="0" selection-start-line="13" selection-start-column="0" selection-end-line="13" selection-end-column="0" />
+          <folding>
+            <element signature="e#41#64#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ScanningResult.hpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-324">
+          <caret line="15" column="31" selection-start-line="15" selection-start-column="31" selection-end-line="15" selection-end-column="31" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AxfrDatabase.hpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-36">
+          <caret line="23" column="38" selection-start-line="23" selection-start-column="38" selection-end-line="23" selection-end-column="38" />
+          <folding>
+            <element signature="e#104#127#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/digUtils/dig_parser.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="450">
+          <caret line="30" column="37" selection-start-line="30" selection-start-column="37" selection-end-line="30" selection-end-column="37" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/digUtils/dig_parser.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="306">
+          <caret line="176" column="32" selection-start-line="176" selection-start-column="32" selection-end-line="176" selection-end-column="32" />
+          <folding>
+            <element signature="e#41#64#0" expanded="true" />
           </folding>
         </state>
       </provider>

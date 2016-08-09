@@ -77,7 +77,7 @@ rdataset_totext(dns_rdataset_t *rdataset,
                                    target));
             column += target->used - name_start;
 
-//            snprintf(res->name, target->used - name_start + 1, "%s", (char*)target->base+name_start);
+            snprintf(res->name, target->used - name_start + 1, "%s", (char*)target->base+name_start);
         }
 
         /*
@@ -110,7 +110,7 @@ rdataset_totext(dns_rdataset_t *rdataset,
                 current_ttl_valid = ISC_TRUE;
             }
 
-//            res->ttl = rdataset->ttl;
+            res->ttl = rdataset->ttl;
 
         }
 
@@ -128,7 +128,7 @@ rdataset_totext(dns_rdataset_t *rdataset,
             if (result != ISC_R_SUCCESS)
                 return (result);
             column += (target->used - class_start);
-//            snprintf(res->cls, target->used - class_start + 1, "%s", (char*)target->base+class_start);
+            snprintf(res->cls, target->used - class_start + 1, "%s", (char*)target->base+class_start);
         }
 
         /*
@@ -151,7 +151,7 @@ rdataset_totext(dns_rdataset_t *rdataset,
             if (result != ISC_R_SUCCESS)
                 return (result);
             column += (target->used - type_start);
-//            snprintf(res->type, target->used - type_start + 1, "%s", (char*)target->base+type_start);
+            snprintf(res->type, target->used - type_start + 1, "%s", (char*)target->base+type_start);
         }
 
         /*
@@ -164,7 +164,7 @@ rdataset_totext(dns_rdataset_t *rdataset,
 //            else
 //                RETERR(str_totext(";-$NXRRSET\n", target));
 //        } else {
-//            unsigned int rdata_start = target->used;
+            unsigned int rdata_start = target->used;
             dns_rdata_t rdata = DNS_RDATA_INIT;
             isc_region_t r;
 
@@ -177,7 +177,7 @@ rdataset_totext(dns_rdataset_t *rdataset,
                                        ctx->style.rdata_column,
                                        ctx->linebreak,
                                        target));
-//            snprintf(res->rdata, target->used - rdata_start + 1, "%s", (char*)target->base+rdata_start);
+            snprintf(res->rdata, target->used - rdata_start + 1, "%s", (char*)target->base+rdata_start);
             isc_buffer_availableregion(target, &r);
             if (r.length < 1)
                 return (ISC_R_NOSPACE);

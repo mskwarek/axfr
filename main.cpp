@@ -12,6 +12,7 @@ int main()
     InputReader* reader = new InputReader();
     reader->ReadFromFile("/home/marcin/mgr/test");
 
+    std::cout<<"main"<<std::endl;
     for(auto i : reader->GetData())
     {
         lookup->performLookup(i.GetDomainAddress().c_str(), i.GetNsAddress().c_str());
