@@ -9,7 +9,6 @@
 #include <algorithm>
 
 #include "axfrLookup.h"
-#include "AxfrDatabase.hpp"
 
 extern "C"
 {
@@ -17,30 +16,31 @@ extern "C"
 };
 
 static void save_data(response_t* res, std::vector<std::string> tokens);
-static void save_data_xml(response_t* res, std::vector<std::string> tokens);
 static void print_data(response_t* res, std::vector<std::string> tokens);
 
-void int_parse(response_t* res)
+axfrLookup::axfrLookup()
 {
-    std::vector<std::string> tokens;
+    database = new AxfrDatabase();
+}
 
-    std::string sentence(res->rdata);
-    std::istringstream iss(sentence);
-    std::copy(std::istream_iterator<std::string>(iss),
-         std::istream_iterator<std::string>(),
-         back_inserter(tokens));
+axfrLookup::~axfrLookup()
+{
+    if(database != NULL)
+        delete database;
+}
 
-    save_data_xml(res, tokens);
-
+void axfrLookup::int_parse(response_t* res)
+{
+    save_data_xml(res);
 }
 
 static void save_data(response_t* res, std::vector<std::string> tokens)
 {
 
 }
-static void save_data_xml(response_t* res, std::vector<std::string> tokens)
+void axfrLookup::save_data_xml(response_t* res)
 {
-    AxfrDatabase::getInstance().addToLocalDb(*res, tokens);
+    this->database->addToLocalDb(res);
 }
 
 static void print_data(response_t* res, std::vector<std::string> tokens)
@@ -55,5 +55,6 @@ static void print_data(response_t* res, std::vector<std::string> tokens)
 
 void axfrLookup::performLookup(const char* domain, const char* asked_ns)
 {
-    tryLookup(domain, asked_ns, int_parse);
+    int_parse(tryLookup(domain, asked_ns));
+    this->database->addRdata();
 }

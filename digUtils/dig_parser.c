@@ -41,7 +41,7 @@ rdataset_totext(dns_rdataset_t *rdataset,
                 dns_totext_ctx_t *ctx,
                 isc_boolean_t omit_final_dot,
                 isc_buffer_t *target,
-                parse_message_cb parse_message_fun)
+                response_t* response_result)
 {
     isc_result_t result;
     unsigned int column;
@@ -203,10 +203,11 @@ rdataset_totext(dns_rdataset_t *rdataset,
     ctx->current_ttl= current_ttl;
     ctx->current_ttl_valid = current_ttl_valid;
 
-    if(NULL != parse_message_fun)
-    {
-        parse_message_fun(res);
-    }
+    //if(NULL != parse_message_fun)
+    //{
+    //    parse_message_fun(res);
+    //}
+    response_result = res;
     return (ISC_R_SUCCESS);
 }
 
@@ -215,7 +216,7 @@ int32_t parse_rdata(dns_name_t *owner_name,
                     dns_rdataset_t *rdataset,
                     const dns_master_style_t *style,
                     isc_buffer_t *target,
-                    parse_message_cb parse_message_fun)
+                    response_t* res)
 {
 
     dns_totext_ctx_t ctx;
@@ -228,14 +229,14 @@ int32_t parse_rdata(dns_name_t *owner_name,
     }
 
     return (rdataset_totext(rdataset, owner_name, &ctx,
-                            ISC_FALSE, target, parse_message_fun));
+                            ISC_FALSE, target, res));
 }
 
 int32_t parse_message(dns_message_t *msg, dns_section_t section,
                       const dns_master_style_t *style,
                       dns_messagetextflag_t flags,
                       isc_buffer_t *target,
-                      parse_message_cb parse_message_fun)
+                      response_t* res)
 {
     dns_name_t *name, empty_name;
     dns_rdataset_t *rdataset;
@@ -275,7 +276,7 @@ int32_t parse_message(dns_message_t *msg, dns_section_t section,
                                  rdataset,
                                  style,
                                  target,
-                                 parse_message_fun);
+                                 res);
 
             if (result != ISC_R_SUCCESS)
                 return (result);

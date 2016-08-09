@@ -28,6 +28,6 @@ int32_t parse_message(dns_message_t *msg, dns_section_t section,
                       const dns_master_style_t *style,
                       dns_messagetextflag_t flags,
                       isc_buffer_t *target,
-                      parse_message_cb parse_message_fun);
+                      response_t* res);
 
 #endif //MYDIG_DIG_PARSER_H

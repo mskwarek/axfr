@@ -12,11 +12,13 @@ InputReader::InputReader() { }
 
 void InputReader::ReadFromFile(std::string path)
 {
-    std::ifstream dataFile(path);
+    std::ifstream* dataFile = new std::ifstream(path);
 
-    if (dataFile.is_open()) {
-        try_to_process(&dataFile);
+    if (dataFile->is_open()) {
+        try_to_process(dataFile);
     }
+
+    delete dataFile;
 }
 
 void InputReader::try_to_process(std::ifstream* dataFile)

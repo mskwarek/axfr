@@ -38,7 +38,7 @@ static char *batchname = NULL;
 static FILE *batchfp = NULL;
 
 
-parse_message_cb parse_fun = NULL;
+static response_t* res= NULL;
 
 isc_result_t printmessage(dig_query_t *query, dns_message_t *msg, isc_boolean_t headers)
 {
@@ -87,7 +87,7 @@ buftoosmall:
     if (query->lookup->section_answer) {
         result = parse_message(msg,
                                            DNS_SECTION_ANSWER,
-                                           style, flags, buf, parse_fun);
+                                           style, flags, buf, res);
         if (result == ISC_R_NOSPACE)
             goto buftoosmall;
         check_result(result, "dns_message_sectiontotext");
@@ -100,7 +100,6 @@ buftoosmall:
         return (ISC_TRUE);
     }
 
-//    printf("dupa\n");
 //    length = snprintf(resp + length, BUF_SIZE - length, "%s\n", (char *)isc_buffer_base(buf));
 //    printf("%s\n", (char *)isc_buffer_base(buf));
 
@@ -162,7 +161,7 @@ void dighost_shutdown(void) {
     }
 }
 
-void tryLookup(const char* domain, const char* const asked_ns, parse_message_cb parse_message_fun) {
+response_t* tryLookup(const char* domain, const char* const asked_ns) {
     isc_result_t result;
     dig_server_t *s, *s2;
     dig_lookup_t *lookup = NULL;
@@ -171,8 +170,6 @@ void tryLookup(const char* domain, const char* const asked_ns, parse_message_cb 
     dns_rdatatype_t rdtype = {0};
     isc_textregion_t tr = {0};
     dig_server_t *srv = NULL;
-
-    parse_fun = parse_message_fun;
 
     ISC_LIST_INIT(lookup_list);
     ISC_LIST_INIT(server_list);
@@ -229,4 +226,6 @@ void tryLookup(const char* domain, const char* const asked_ns, parse_message_cb 
     cancel_all();
     destroy_libs();
     isc_app_finish();
+
+    return res;
 }

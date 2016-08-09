@@ -8,15 +8,17 @@
 
 int main()
 {
-    axfrLookup lookup;
-    InputReader reader;
-    reader.ReadFromFile("/home/marcin/mgr/test");
+    axfrLookup* lookup = new axfrLookup();
+    InputReader* reader = new InputReader();
+    reader->ReadFromFile("/home/marcin/mgr/test");
 
-    for(auto i : reader.GetData())
+    for(auto i : reader->GetData())
     {
-        lookup.performLookup(i.GetDomainAddress().c_str(), i.GetNsAddress().c_str());
-        AxfrDatabase::getInstance().addRdata();
+        lookup->performLookup(i.GetDomainAddress().c_str(), i.GetNsAddress().c_str());
     }
+
+    delete lookup;
+    delete reader;
 
     return 0;
 }

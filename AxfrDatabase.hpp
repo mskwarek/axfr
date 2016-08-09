@@ -8,40 +8,51 @@
 #include <dig_parser.h>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
+#include "ScanningResult.hpp"
 
 class AxfrDatabase {
 public:
-    static AxfrDatabase& getInstance()
+    AxfrDatabase()
+    {}
+
+    ~AxfrDatabase()
     {
-        static AxfrDatabase instance;
-        return instance;
+        for(std::vector<ScanningResult*>::iterator it = data.begin() ; it != data.end(); ++it)
+            delete *it;
     }
 
-    void addToLocalDb(response_t res, std::vector<std::string> tokens)
+    void addToLocalDb(response_t* res)
     {
-        for (auto const &n : tokens) {
-            bool cl = std::string("SOA").compare(res.cls);
-            bool ty = std::string("SOA").compare(res.type);
+        if( res->cls == NULL || res->type == NULL || res == NULL)
+        {
+            return;
+        }
+
+            bool cl = std::string("SOA").compare(res->cls);
+            bool ty = std::string("SOA").compare(res->type);
             if(cl && ty) {
-                response_t temp = res;
-                data.push_back(temp);
+                ScanningResult* temp = new ScanningResult(res);
+                if(temp != NULL)
+                    data.push_back(temp);
             }
             else
-                break;
-        }
+                return;
+
     }
 
-    AxfrDatabase addRdata()
+    void addRdata()
     {
+        if(this->data.empty())
+            return;
         boost::property_tree::ptree tree;
         for(auto i : this->data) {
             boost::property_tree::ptree& book = tree.add("axfrlookup.domain", "");
-            book.add("type", i.type);
-            book.add("www_address", i.name);
-            book.add("rdata", i.rdata);
+            book.add("type", i->get_type());
+            book.add("www_address", i->get_name());
+            book.add("rdata", i->get_rdata());
         }
         if(!this->data.empty()) {
-            write_xml(std::string(this->data.back().name) + ".xml", tree,
+            write_xml(std::string(this->data.back()->get_name()) + ".xml", tree,
                     std::locale(),
                     boost::property_tree::xml_writer_settings<char>(' ', 4));
         }
@@ -50,8 +61,7 @@ public:
     AxfrDatabase(const AxfrDatabase&) = delete;
     AxfrDatabase operator=(const AxfrDatabase &a) = delete;
 private:
-    AxfrDatabase(){};
-    std::vector<response_t> data;
+    std::vector<ScanningResult*> data;
 };
 
 

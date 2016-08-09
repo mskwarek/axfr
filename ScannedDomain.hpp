@@ -4,10 +4,17 @@
 class ScannedDomain{
 public:
     ScannedDomain():
-            domain_address(0), ns_address(0){}
+            domain_address(),
+            ns_address()
+    {}
+
+    ~ScannedDomain() {}
 
     ScannedDomain(std::string domain, std::string ns):
-            domain_address(domain), ns_address(ns){}
+            domain_address(domain),
+            ns_address(ns)
+    {}
+
     std::string GetDomainAddress()
     {
         return domain_address;
