@@ -14,46 +14,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="06ab550a-00c0-48d8-9780-ea1f287f0f55" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/lib/dns/timestamp" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/lib/isccfg/timestamp" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/lib/lwres/timestamp" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/lib/tests/timestamp" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/dns/gen" afterPath="$PROJECT_DIR$/lib/dns/gen" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/Makefile" afterPath="$PROJECT_DIR$/lib/Makefile" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/dns/Makefile" afterPath="$PROJECT_DIR$/lib/dns/Makefile" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/dns/include/Makefile" afterPath="$PROJECT_DIR$/lib/dns/include/Makefile" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/dns/include/dns/Makefile" afterPath="$PROJECT_DIR$/lib/dns/include/dns/Makefile" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/dns/sec/Makefile" afterPath="$PROJECT_DIR$/lib/dns/sec/Makefile" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/dns/sec/dst/Makefile" afterPath="$PROJECT_DIR$/lib/dns/sec/dst/Makefile" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/dns/sec/dst/include/Makefile" afterPath="$PROJECT_DIR$/lib/dns/sec/dst/include/Makefile" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/dns/sec/dst/include/dst/Makefile" afterPath="$PROJECT_DIR$/lib/dns/sec/dst/include/dst/Makefile" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/isc/Makefile" afterPath="$PROJECT_DIR$/lib/isc/Makefile" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/isc/include/Makefile" afterPath="$PROJECT_DIR$/lib/isc/include/Makefile" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/isc/include/isc/Makefile" afterPath="$PROJECT_DIR$/lib/isc/include/isc/Makefile" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/isc/nls/Makefile" afterPath="$PROJECT_DIR$/lib/isc/nls/Makefile" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/isc/nothreads/Makefile" afterPath="$PROJECT_DIR$/lib/isc/nothreads/Makefile" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/isc/nothreads/include/Makefile" afterPath="$PROJECT_DIR$/lib/isc/nothreads/include/Makefile" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/isc/nothreads/include/isc/Makefile" afterPath="$PROJECT_DIR$/lib/isc/nothreads/include/isc/Makefile" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/isc/unix/Makefile" afterPath="$PROJECT_DIR$/lib/isc/unix/Makefile" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/isc/unix/include/Makefile" afterPath="$PROJECT_DIR$/lib/isc/unix/include/Makefile" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/isc/unix/include/isc/Makefile" afterPath="$PROJECT_DIR$/lib/isc/unix/include/isc/Makefile" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/isccc/Makefile" afterPath="$PROJECT_DIR$/lib/isccc/Makefile" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/isccc/include/Makefile" afterPath="$PROJECT_DIR$/lib/isccc/include/Makefile" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/isccc/include/isccc/Makefile" afterPath="$PROJECT_DIR$/lib/isccc/include/isccc/Makefile" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/isccfg/Makefile" afterPath="$PROJECT_DIR$/lib/isccfg/Makefile" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/isccfg/include/Makefile" afterPath="$PROJECT_DIR$/lib/isccfg/include/Makefile" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/isccfg/include/isccfg/Makefile" afterPath="$PROJECT_DIR$/lib/isccfg/include/isccfg/Makefile" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/lwres/Makefile" afterPath="$PROJECT_DIR$/lib/lwres/Makefile" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/lwres/include/Makefile" afterPath="$PROJECT_DIR$/lib/lwres/include/Makefile" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/lwres/include/lwres/Makefile" afterPath="$PROJECT_DIR$/lib/lwres/include/lwres/Makefile" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/lwres/man/Makefile" afterPath="$PROJECT_DIR$/lib/lwres/man/Makefile" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/lwres/unix/Makefile" afterPath="$PROJECT_DIR$/lib/lwres/unix/Makefile" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/lwres/unix/include/Makefile" afterPath="$PROJECT_DIR$/lib/lwres/unix/include/Makefile" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/lwres/unix/include/lwres/Makefile" afterPath="$PROJECT_DIR$/lib/lwres/unix/include/lwres/Makefile" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/tests/Makefile" afterPath="$PROJECT_DIR$/lib/tests/Makefile" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/tests/include/Makefile" afterPath="$PROJECT_DIR$/lib/tests/include/Makefile" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/tests/include/tests/Makefile" afterPath="$PROJECT_DIR$/lib/tests/include/tests/Makefile" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/myDig" afterPath="$PROJECT_DIR$/build/myDig" />
     </list>
     <ignored path="myDig.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -96,17 +57,17 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="CMakeLists.txt" pinned="false" current-in-tab="false">
+      <file leaf-file-name="CMakeLists.txt" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="432">
-              <caret line="33" column="37" selection-start-line="33" selection-start-column="37" selection-end-line="33" selection-end-column="37" />
+            <state relative-caret-position="414">
+              <caret line="33" column="32" selection-start-line="33" selection-start-column="32" selection-end-line="33" selection-end-column="32" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Makefile" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Makefile" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/lib/Makefile">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="414">
@@ -1146,18 +1107,18 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="432">
-          <caret line="33" column="37" selection-start-line="33" selection-start-column="37" selection-end-line="33" selection-end-column="37" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/lib/Makefile">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="414">
           <caret line="23" column="13" selection-start-line="23" selection-start-column="13" selection-end-line="23" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="414">
+          <caret line="33" column="32" selection-start-line="33" selection-start-column="32" selection-end-line="33" selection-end-column="32" />
           <folding />
         </state>
       </provider>

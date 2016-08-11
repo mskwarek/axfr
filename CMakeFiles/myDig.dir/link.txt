@@ -1,1 +1,0 @@
-/usr/bin/c++    -std=c++11    CMakeFiles/myDig.dir/digUtils/digQuery.c.o CMakeFiles/myDig.dir/digUtils/dighost.c.o CMakeFiles/myDig.dir/Scanner/axfrLookup.cpp.o CMakeFiles/myDig.dir/main.cpp.o CMakeFiles/myDig.dir/digUtils/dig_parser.c.o CMakeFiles/myDig.dir/Scanner/InputReader.cpp.o  -o build/myDig -rdynamic lib/dns/libdns.a lib/isc/libisc.a 
