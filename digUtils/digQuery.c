@@ -147,6 +147,7 @@ void dighost_shutdown(void) {
         return;
     }
 }
+//extern isc_boolean_t debugging;
 
 response_t* tryLookup(const char* domain, const char* const asked_ns) {
     isc_result_t result;
@@ -177,7 +178,7 @@ response_t* tryLookup(const char* domain, const char* const asked_ns) {
     result = dns_rdatatype_fromtext(&rdtype,
             (isc_textregion_t *)&tr);
 
-
+//    debugging = ISC_TRUE;
     srv = make_server(asked_ns);
     ISC_LIST_APPEND(lookup->my_server_list, srv, link);
 

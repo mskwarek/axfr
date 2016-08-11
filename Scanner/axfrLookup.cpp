@@ -55,6 +55,13 @@ static void print_data(response_t* res, std::vector<std::string> tokens)
 
 void axfrLookup::performLookup(const char* domain, const char* asked_ns)
 {
+    try
+    {
     int_parse(tryLookup(domain, asked_ns));
     this->database->addRdata();
+    }
+    catch(...)
+    {
+
+    }
 }

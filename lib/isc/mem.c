@@ -957,7 +957,8 @@ isc_mem_destroy(isc_mem_t **ctxp) {
 	ctx->references--;
 	UNLOCK(&ctx->lock);
 
-	destroy(ctx);
+	if(ctx != NULL)
+		destroy(ctx);
 
 	*ctxp = NULL;
 }

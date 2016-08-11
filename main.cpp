@@ -9,18 +9,9 @@
 int main()
 {
     axfrLookup* lookup = new axfrLookup();
-    InputReader* reader = new InputReader();
-    reader->ReadFromFile("/home/marcin/mgr/test");
 
-    std::cout<<"main"<<std::endl;
-    for(auto i : reader->GetData())
-    {
-        lookup->performLookup(i.GetDomainAddress().c_str(), i.GetNsAddress().c_str());
-    }
-
+    lookup->performLookup("infusionsoft.com", "ns3.infusionsoft.com");
     delete lookup;
-    delete reader;
-
     return 0;
 }
 
