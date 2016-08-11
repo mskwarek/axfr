@@ -63,7 +63,7 @@ DESTDIR =
 
 
 
-top_builddir =	/home/marcin/mgr/bind-9.2.3
+top_builddir =	/home/marcin/ClionProjects/myDig
 
 ###
 ### All

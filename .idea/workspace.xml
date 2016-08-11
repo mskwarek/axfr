@@ -14,12 +14,46 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="06ab550a-00c0-48d8-9780-ea1f287f0f55" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/myDig.iml" afterPath="$PROJECT_DIR$/.idea/myDig.iml" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/lib/dns/timestamp" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/lib/isccfg/timestamp" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/lib/lwres/timestamp" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/lib/tests/timestamp" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/dns/gen" afterPath="$PROJECT_DIR$/lib/dns/gen" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Scanner/axfrLookup.cpp" afterPath="$PROJECT_DIR$/Scanner/axfrLookup.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/digUtils/digQuery.c" afterPath="$PROJECT_DIR$/digUtils/digQuery.c" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/isc/mem.c" afterPath="$PROJECT_DIR$/lib/isc/mem.c" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/main.cpp" afterPath="$PROJECT_DIR$/main.cpp" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/Makefile" afterPath="$PROJECT_DIR$/lib/Makefile" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/dns/Makefile" afterPath="$PROJECT_DIR$/lib/dns/Makefile" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/dns/include/Makefile" afterPath="$PROJECT_DIR$/lib/dns/include/Makefile" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/dns/include/dns/Makefile" afterPath="$PROJECT_DIR$/lib/dns/include/dns/Makefile" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/dns/sec/Makefile" afterPath="$PROJECT_DIR$/lib/dns/sec/Makefile" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/dns/sec/dst/Makefile" afterPath="$PROJECT_DIR$/lib/dns/sec/dst/Makefile" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/dns/sec/dst/include/Makefile" afterPath="$PROJECT_DIR$/lib/dns/sec/dst/include/Makefile" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/dns/sec/dst/include/dst/Makefile" afterPath="$PROJECT_DIR$/lib/dns/sec/dst/include/dst/Makefile" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/isc/Makefile" afterPath="$PROJECT_DIR$/lib/isc/Makefile" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/isc/include/Makefile" afterPath="$PROJECT_DIR$/lib/isc/include/Makefile" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/isc/include/isc/Makefile" afterPath="$PROJECT_DIR$/lib/isc/include/isc/Makefile" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/isc/nls/Makefile" afterPath="$PROJECT_DIR$/lib/isc/nls/Makefile" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/isc/nothreads/Makefile" afterPath="$PROJECT_DIR$/lib/isc/nothreads/Makefile" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/isc/nothreads/include/Makefile" afterPath="$PROJECT_DIR$/lib/isc/nothreads/include/Makefile" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/isc/nothreads/include/isc/Makefile" afterPath="$PROJECT_DIR$/lib/isc/nothreads/include/isc/Makefile" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/isc/unix/Makefile" afterPath="$PROJECT_DIR$/lib/isc/unix/Makefile" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/isc/unix/include/Makefile" afterPath="$PROJECT_DIR$/lib/isc/unix/include/Makefile" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/isc/unix/include/isc/Makefile" afterPath="$PROJECT_DIR$/lib/isc/unix/include/isc/Makefile" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/isccc/Makefile" afterPath="$PROJECT_DIR$/lib/isccc/Makefile" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/isccc/include/Makefile" afterPath="$PROJECT_DIR$/lib/isccc/include/Makefile" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/isccc/include/isccc/Makefile" afterPath="$PROJECT_DIR$/lib/isccc/include/isccc/Makefile" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/isccfg/Makefile" afterPath="$PROJECT_DIR$/lib/isccfg/Makefile" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/isccfg/include/Makefile" afterPath="$PROJECT_DIR$/lib/isccfg/include/Makefile" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/isccfg/include/isccfg/Makefile" afterPath="$PROJECT_DIR$/lib/isccfg/include/isccfg/Makefile" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/lwres/Makefile" afterPath="$PROJECT_DIR$/lib/lwres/Makefile" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/lwres/include/Makefile" afterPath="$PROJECT_DIR$/lib/lwres/include/Makefile" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/lwres/include/lwres/Makefile" afterPath="$PROJECT_DIR$/lib/lwres/include/lwres/Makefile" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/lwres/man/Makefile" afterPath="$PROJECT_DIR$/lib/lwres/man/Makefile" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/lwres/unix/Makefile" afterPath="$PROJECT_DIR$/lib/lwres/unix/Makefile" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/lwres/unix/include/Makefile" afterPath="$PROJECT_DIR$/lib/lwres/unix/include/Makefile" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/lwres/unix/include/lwres/Makefile" afterPath="$PROJECT_DIR$/lib/lwres/unix/include/lwres/Makefile" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/tests/Makefile" afterPath="$PROJECT_DIR$/lib/tests/Makefile" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/tests/include/Makefile" afterPath="$PROJECT_DIR$/lib/tests/include/Makefile" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/tests/include/tests/Makefile" afterPath="$PROJECT_DIR$/lib/tests/include/tests/Makefile" />
     </list>
     <ignored path="myDig.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -50,11 +84,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="digQuery.c" pinned="false" current-in-tab="true">
+      <file leaf-file-name="digQuery.c" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/digUtils/digQuery.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="366">
-              <caret line="160" column="0" selection-start-line="160" selection-start-column="0" selection-end-line="160" selection-end-column="0" />
+            <state relative-caret-position="258">
+              <caret line="154" column="23" selection-start-line="154" selection-start-column="23" selection-end-line="154" selection-end-column="23" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
               </folding>
@@ -62,25 +96,22 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="task.c" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/lib/isc/task.c">
+      <file leaf-file-name="CMakeLists.txt" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3168">
-              <caret line="176" column="0" selection-start-line="176" selection-start-column="0" selection-end-line="176" selection-end-column="0" />
+            <state relative-caret-position="432">
+              <caret line="33" column="37" selection-start-line="33" selection-start-column="37" selection-end-line="33" selection-end-column="37" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="mem.c" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/lib/isc/mem.c">
+      <file leaf-file-name="Makefile" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/lib/Makefile">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="17388">
-              <caret line="966" column="40" selection-start-line="966" selection-start-column="40" selection-end-line="966" selection-end-column="40" />
-              <folding>
-                <element signature="e#19323#19382#0" expanded="true" />
-                <element signature="e#21739#21793#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="414">
+              <caret line="23" column="13" selection-start-line="23" selection-start-column="13" selection-end-line="23" selection-end-column="13" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -167,7 +198,6 @@
         <option value="$PROJECT_DIR$/AxfrDatabase.cpp" />
         <option value="$PROJECT_DIR$/digQuery.c" />
         <option value="$PROJECT_DIR$/digQuery.h" />
-        <option value="$PROJECT_DIR$/CMakeLists.txt" />
         <option value="$PROJECT_DIR$/InputReader.h" />
         <option value="$PROJECT_DIR$/ScannedDomain.hpp" />
         <option value="$PROJECT_DIR$/InputReader.cpp" />
@@ -183,6 +213,8 @@
         <option value="$PROJECT_DIR$/lib/isc/mem.c" />
         <option value="$PROJECT_DIR$/main.cpp" />
         <option value="$PROJECT_DIR$/digUtils/digQuery.c" />
+        <option value="$PROJECT_DIR$/CMakeLists.txt" />
+        <option value="$PROJECT_DIR$/lib/Makefile" />
       </list>
     </option>
   </component>
@@ -194,8 +226,8 @@
   </component>
   <component name="OCFindUsagesOptions" text="true" ivars="false" properties="true" derivedClasses="false" />
   <component name="ProjectFrameBounds">
-    <option name="x" value="484" />
-    <option name="width" value="833" />
+    <option name="x" value="549" />
+    <option name="width" value="1101" />
     <option name="height" value="1044" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
@@ -283,20 +315,6 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="CMakeFiles" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="myDig" />
-              <option name="myItemType" value="com.jetbrains.cidr.projectView.CidrFilesViewHelper$MyProjectTreeStructure$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="myDig" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
               <option name="myItemId" value="build" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -309,6 +327,22 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="settings.editor.selected.configurable" value="preferences.sourceCode.C/C++" />
     <property name="settings.editor.splitter.proportion" value="0.2" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth0" value="35" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatOrder0" value="0" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth1" value="35" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatOrder1" value="1" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth2" value="36" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatOrder2" value="2" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth3" value="262" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatOrder3" value="3" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth0" value="35" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeOrder0" value="0" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth1" value="34" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeOrder1" value="1" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth2" value="36" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeOrder2" value="2" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth3" value="263" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeOrder3" value="3" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -662,23 +696,37 @@
       <option name="project" value="LOCAL" />
       <updated>1470775000474</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="directory cleanup">
+      <created>1470938098411</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1470938098411</updated>
+    </task>
+    <task id="LOCAL-00023" summary="cmake fixed">
+      <created>1470938335311</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1470938335311</updated>
+    </task>
+    <option name="localTasksCounter" value="24" />
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="484" y="0" width="833" height="1044" extended-state="0" />
+    <frame x="549" y="0" width="1101" height="1044" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.28038508" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.21201092" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="CMake" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32982087" sideWeight="0.47051746" order="11" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32982087" sideWeight="0.52948254" order="8" side_tool="true" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32982087" sideWeight="0.33303002" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="CMake" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32771337" sideWeight="0.46951774" order="11" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32982087" sideWeight="0.66696995" order="8" side_tool="true" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33192834" sideWeight="0.49578822" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32984293" sideWeight="0.33809525" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -717,7 +765,8 @@
     <MESSAGE value="no snprintf leaks" />
     <MESSAGE value="jupijajej #working" />
     <MESSAGE value="directory cleanup" />
-    <option name="LAST_COMMIT_MESSAGE" value="directory cleanup" />
+    <MESSAGE value="cmake fixed" />
+    <option name="LAST_COMMIT_MESSAGE" value="cmake fixed" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -738,13 +787,6 @@
     </watches-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$USER_HOME$/mgr/bind-9.2.3/bin/dig/include/dig/dig.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="97">
-          <caret line="147" column="7" selection-start-line="147" selection-start-column="7" selection-end-line="147" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/mgr/bind-9.2.3/lib/dns/include/dns/message.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="187">
@@ -943,13 +985,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="306">
-          <caret line="26" column="56" selection-start-line="26" selection-start-column="56" selection-end-line="26" selection-end-column="56" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Scanner/ScannedDomain.hpp">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="504">
@@ -1011,6 +1046,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="324">
           <caret line="18" column="9" selection-start-line="18" selection-start-column="9" selection-end-line="18" selection-end-column="9" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1102,11 +1138,27 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/digUtils/digQuery.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="366">
-          <caret line="160" column="0" selection-start-line="160" selection-start-column="0" selection-end-line="160" selection-end-column="0" />
+        <state relative-caret-position="258">
+          <caret line="154" column="23" selection-start-line="154" selection-start-column="23" selection-end-line="154" selection-end-column="23" />
           <folding>
             <element signature="e#0#19#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="432">
+          <caret line="33" column="37" selection-start-line="33" selection-start-column="37" selection-end-line="33" selection-end-column="37" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/Makefile">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="414">
+          <caret line="23" column="13" selection-start-line="23" selection-start-column="13" selection-end-line="23" selection-end-column="13" />
+          <folding />
         </state>
       </provider>
     </entry>
