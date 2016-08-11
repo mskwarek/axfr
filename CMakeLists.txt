@@ -17,7 +17,7 @@ set(CMAKE_CACHEFILE_DIR ${dir})
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror")
 
-find_library(DNS NAMES libdns.a PATHS "/home/marcin/mgr/bind-9.2.3/lib/dns/libdns.a")
+find_library(DNS NAMES libdns.a PATHS "${CMAKE_CURRENT_SOURCE_DIR}/lib/dns/libdns.a")
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/lib/dns/include
         ${CMAKE_CURRENT_SOURCE_DIR}/lib/isc/include
         ${CMAKE_CURRENT_SOURCE_DIR}/lib/isccc/include
