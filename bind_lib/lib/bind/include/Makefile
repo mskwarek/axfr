@@ -71,8 +71,8 @@ MAKEDEFS= 'DESTDIR=${DESTDIR}'
 
 
 
-top_builddir =	/home/marcin/ClionProjects/myDig/bind_lib/lib/bind
-abs_top_srcdir = /home/marcin/ClionProjects/myDig/bind_lib/lib/bind
+top_builddir =	/home/mkoi/mgr/myDig/bind_lib/lib/bind
+abs_top_srcdir = /home/mkoi/mgr/myDig/bind_lib/lib/bind
 
 ###
 ### All

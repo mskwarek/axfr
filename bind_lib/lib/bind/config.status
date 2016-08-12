@@ -644,10 +644,10 @@ s,@SERV_R_SET_RETURN@,#define SERV_R_SET_RETURN void,;t t
 s,@SETNETGRENT_ARGS@,,;t t
 s,@INNETGR_ARGS@,#undef INNETGR_ARGS,;t t
 s,@ISC_PLATFORM_BRACEPTHREADONCEINIT@,#undef ISC_PLATFORM_BRACEPTHREADONCEINIT,;t t
-s,@BIND9_TOP_BUILDDIR@,/home/marcin/ClionProjects/myDig/bind_lib/lib/bind,;t t
-/@BIND9_INCLUDES@/r /home/marcin/ClionProjects/myDig/bind_lib/lib/bind/make/includes
+s,@BIND9_TOP_BUILDDIR@,/home/mkoi/mgr/myDig/bind_lib/lib/bind,;t t
+/@BIND9_INCLUDES@/r /home/mkoi/mgr/myDig/bind_lib/lib/bind/make/includes
 s,@BIND9_INCLUDES@,,;t t
-/@BIND9_MAKE_RULES@/r /home/marcin/ClionProjects/myDig/bind_lib/lib/bind/make/rules
+/@BIND9_MAKE_RULES@/r /home/mkoi/mgr/myDig/bind_lib/lib/bind/make/rules
 s,@BIND9_MAKE_RULES@,,;t t
 s,@BIND9_VERSION@,VERSION=9.2.3,;t t
 /@LIBBIND_API@/r ./api

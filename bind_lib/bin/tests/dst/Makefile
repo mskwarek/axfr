@@ -43,23 +43,23 @@ top_srcdir =	../../..
 # latter case, because there are no machine-generated OS-specific
 # headers.
 
-ISC_INCLUDES = -I/home/marcin/ClionProjects/myDig/bind_lib/lib/isc/include \
+ISC_INCLUDES = -I/home/mkoi/mgr/myDig/bind_lib/lib/isc/include \
 	-I${top_srcdir}/lib/isc \
 	-I${top_srcdir}/lib/isc/include \
 	-I${top_srcdir}/lib/isc/unix/include \
 	-I${top_srcdir}/lib/isc/nothreads/include
 
-ISCCC_INCLUDES = -I/home/marcin/ClionProjects/myDig/bind_lib/lib/isccc/include \
+ISCCC_INCLUDES = -I/home/mkoi/mgr/myDig/bind_lib/lib/isccc/include \
        -I${top_srcdir}/lib/isccc/include
 
-ISCCFG_INCLUDES = -I/home/marcin/ClionProjects/myDig/bind_lib/lib/isccfg/include \
+ISCCFG_INCLUDES = -I/home/mkoi/mgr/myDig/bind_lib/lib/isccfg/include \
        -I${top_srcdir}/lib/isccfg/include
 
-DNS_INCLUDES = -I/home/marcin/ClionProjects/myDig/bind_lib/lib/dns/include \
+DNS_INCLUDES = -I/home/mkoi/mgr/myDig/bind_lib/lib/dns/include \
 	-I${top_srcdir}/lib/dns/include \
 	-I${top_srcdir}/lib/dns/sec/dst/include
 
-LWRES_INCLUDES = -I/home/marcin/ClionProjects/myDig/bind_lib/lib/lwres/include \
+LWRES_INCLUDES = -I/home/mkoi/mgr/myDig/bind_lib/lib/lwres/include \
 	-I${top_srcdir}/lib/lwres/unix/include \
 	-I${top_srcdir}/lib/lwres/include
 
@@ -129,7 +129,7 @@ DESTDIR =
 
 
 
-top_builddir =	/home/marcin/ClionProjects/myDig/bind_lib
+top_builddir =	/home/mkoi/mgr/myDig/bind_lib
 
 ###
 ### All

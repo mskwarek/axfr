@@ -65,7 +65,7 @@ DESTDIR =
 
 
 
-top_builddir =	/home/marcin/ClionProjects/myDig/bind_lib
+top_builddir =	/home/mkoi/mgr/myDig/bind_lib
 
 ###
 ### All
