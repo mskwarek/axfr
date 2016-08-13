@@ -23,7 +23,7 @@ extern isc_task_t *global_task;
 dig_lookup_t *default_lookup = NULL;
 static char *batchname = NULL;
 static FILE *batchfp = NULL;
-
+extern isc_boolean_t free_now;
 
 static response_t* res= NULL;
 
@@ -150,27 +150,15 @@ void dighost_shutdown(void) {
 //extern isc_boolean_t debugging;
 
 response_t* tryLookup(const char* domain, const char* const asked_ns) {
-    isc_result_t result;
-    dig_server_t *s, *s2;
-    dig_lookup_t *lookup = NULL;
-//    isc_buffer_t *buf = NULL;
-//    unsigned int len = OUTPUTBUF;
-    dns_rdatatype_t rdtype = {0};
-    isc_textregion_t tr = {0};
+  isc_result_t result = 0;
     dig_server_t *srv = NULL;
+    dig_lookup_t *lookup = NULL;
+    dns_rdatatype_t rdtype = {0};
 
-    ISC_LIST_INIT(lookup_list);
-    ISC_LIST_INIT(server_list);
-    ISC_LIST_INIT(search_list);
-    isc_app_start();
+    isc_textregion_t tr = {0};
 
-    setup_libs();
-
-
-    //isc_buffer_allocate(mctx, &buf, len);
-    default_lookup = make_empty_lookup();;
-
-
+    setup_env();
+    
     lookup = clone_lookup(default_lookup,
             ISC_TRUE);
     tr.base = "axfr";
@@ -178,7 +166,6 @@ response_t* tryLookup(const char* domain, const char* const asked_ns) {
     result = dns_rdatatype_fromtext(&rdtype,
             (isc_textregion_t *)&tr);
 
-//    debugging = ISC_TRUE;
     srv = make_server(asked_ns);
     ISC_LIST_APPEND(lookup->my_server_list, srv, link);
 
@@ -200,20 +187,51 @@ response_t* tryLookup(const char* domain, const char* const asked_ns) {
     result = isc_app_onrun(mctx, global_task, onrun_callback, NULL);
     check_result(result, "isc_app_onrun");
     isc_app_run();
+
+   dig_server_t *s, *s2;
+
     s = ISC_LIST_HEAD(default_lookup->my_server_list);
     while (s != NULL) {
-        debug("freeing server %p belonging to %p",
-              s, default_lookup);
-        s2 = s;
-        s = ISC_LIST_NEXT(s, link);
-        ISC_LIST_DEQUEUE(default_lookup->my_server_list, s2, link);
-        isc_mem_free(mctx, s2);
+      debug("freeing server %p belonging to %p",
+	    s, default_lookup);
+      s2 = s;
+      s = ISC_LIST_NEXT(s, link);
+      ISC_LIST_DEQUEUE(default_lookup->my_server_list, s2, link);
+      isc_mem_free(mctx, s2);
     }
     isc_mem_free(mctx, default_lookup);
 
+    destroy_env();
+    
+    return res;
+}
+
+
+void setup_env()
+{
+
+    
+//    isc_buffer_t *buf = NULL;
+//    unsigned int len = OUTPUTBUF;
+
+    ISC_LIST_INIT(lookup_list);
+    ISC_LIST_INIT(server_list);
+    ISC_LIST_INIT(search_list);
+    isc_app_start();
+
+    setup_libs();
+
+
+    //isc_buffer_allocate(mctx, &buf, len);
+    default_lookup = make_empty_lookup();;
+
+
+}
+
+void destroy_env()
+{
+    
     cancel_all();
     destroy_libs();
     isc_app_finish();
-
-    return res;
 }

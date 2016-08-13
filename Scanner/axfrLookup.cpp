@@ -60,10 +60,10 @@ void axfrLookup::performLookup(const char* domain, const char* asked_ns)
     }
 }
 
-std::vector<ScanningResult*> axfrLookup::get_domains()
+std::vector<ScanningResult*>* axfrLookup::get_domains()
 {
   if(database != nullptr)
     return this->database->get_result();
   else
-    return std::vector<ScanningResult*>();
+    return NULL;
 }

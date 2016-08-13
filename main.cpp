@@ -8,10 +8,13 @@
 
 int main()
 {
-    axfrLookup* lookup = new axfrLookup();
-
+  axfrLookup* lookup = new axfrLookup();
+   
+  for(int i=0; i<1; ++i){
     lookup->performLookup("infusionsoft.com", "ns3.infusionsoft.com");
-    delete lookup;
+    
+  }
+   delete lookup;
     return 0;
 }
 

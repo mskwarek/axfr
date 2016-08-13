@@ -19,18 +19,21 @@ extern "C"
     lookup->performLookup(domain, ns);
   }
 
-  std::vector<ScanningResult*> axfrLookup_getResult(axfrLookup* lookup)
+  std::vector<ScanningResult*>* axfrLookup_getResult(axfrLookup* lookup)
   {
-    std::vector<ScanningResult*> ret;
-    ret = lookup->get_domains();
-    return ret;
+    return lookup->get_domains();
   }
-  void print_data(std::vector<ScanningResult*> data)
+  void print_data(std::vector<ScanningResult*>* data)
   {
-    if(data.empty())
+    if(data == NULL)
       return;
-    std::cout<<data.size()<<std::endl;
-    for(int i = 0; i<data.size(); ++i)
-      std::cout<<"costam "<<data.size()<<" "<<i<<std::endl;
+    std::cout<<data->size()<<std::endl;
+    for(int i = 0; i<data->size(); ++i)
+      std::cout<<"costam "<<data->size()<<" "<<i<<std::endl;
+  }
+
+  void axfrLookup_destroy(axfrLookup* lookup)
+  {
+    delete lookup;
   }
 }

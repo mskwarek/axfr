@@ -18,7 +18,7 @@ public:
     axfrLookup();
     ~axfrLookup();
     void performLookup(const char* domain, const char* asked_ns);
-    std::vector<ScanningResult*> get_domains();
+    std::vector<ScanningResult*>* get_domains();
 private:
     AxfrDatabase* database;
     void save_data_xml(response_t* res);

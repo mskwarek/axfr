@@ -7,6 +7,8 @@
 
 #include <dig_parser.h>
 
+void setup_env();
+void destroy_env();
 response_t* tryLookup(const char* domain, const char* const asked_ns);
 response_t getResponse();
 
