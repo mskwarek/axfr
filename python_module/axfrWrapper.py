@@ -9,4 +9,4 @@ class axfrLookup(object):
         print "udaoo sie"
 
 x = axfrLookup()
-f.performLookup("infusionsoft.com", "ns3.infusionsoft.com")
+x.performLookup("infusionsoft.com", "ns3.infusionsoft.com")

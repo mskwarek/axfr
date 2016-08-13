@@ -40,3 +40,7 @@ add_library(AxfrLib SHARED ${common_src} axfrlib.cpp)
 target_link_libraries(myDig
         ${CMAKE_CURRENT_SOURCE_DIR}/bind_lib/lib/dns/libdns.a
         ${CMAKE_CURRENT_SOURCE_DIR}/bind_lib/lib/isc/libisc.a)
+
+target_link_libraries(AxfrLib
+        ${CMAKE_CURRENT_SOURCE_DIR}/bind_lib/lib/dns/libdns.a
+        ${CMAKE_CURRENT_SOURCE_DIR}/bind_lib/lib/isc/libisc.a)

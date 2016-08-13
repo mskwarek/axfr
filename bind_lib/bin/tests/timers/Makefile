@@ -182,7 +182,7 @@ install clean distclean maintainer-clean doc docclean man manclean::
 ###     EXT_CFLAGS
 
 CC = 		gcc
-CFLAGS =	-g -O2
+CFLAGS =	-fPIC
 STD_CINCLUDES =	
 STD_CDEFINES =	
 STD_CWARNINGS =	 -W -Wall -Wmissing-prototypes -Wcast-qual -Wwrite-strings -Wformat
