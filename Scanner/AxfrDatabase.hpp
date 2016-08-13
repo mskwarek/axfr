@@ -62,6 +62,10 @@ public:
 
     AxfrDatabase(const AxfrDatabase&) = delete;
     AxfrDatabase operator=(const AxfrDatabase &a) = delete;
+    std::vector<ScanningResult*> get_result()
+    {
+      return data;
+    }
 private:
     std::vector<ScanningResult*> data;
 };

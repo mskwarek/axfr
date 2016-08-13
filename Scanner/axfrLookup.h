@@ -10,6 +10,7 @@
 extern "C"
 {
 #include <dig_parser.h>
+#include "digQuery.h"
 };
 
 class axfrLookup {
@@ -17,6 +18,7 @@ public:
     axfrLookup();
     ~axfrLookup();
     void performLookup(const char* domain, const char* asked_ns);
+    std::vector<ScanningResult*> get_domains();
 private:
     AxfrDatabase* database;
     void save_data_xml(response_t* res);

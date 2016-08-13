@@ -7,6 +7,12 @@ class axfrLookup(object):
     def performLookup(self, domain, ns):
         lib.axfrLookup_performLookup(self.obj, domain, ns)
         print "udaoo sie"
+    def getResult(self, domain, ns):
+        lib.axfrLookup_performLookup(self.obj, domain, ns)
+        print "after perform"
+        dupa = lib.axfrLookup_getResult(self.obj)
+        lib.print_data(dupa)
+
 
 x = axfrLookup()
-x.performLookup("infusionsoft.com", "ns3.infusionsoft.com")
+x.getResult("infusionsoft.com", "ns3.infusionsoft.com")

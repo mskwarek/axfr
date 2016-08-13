@@ -10,11 +10,6 @@
 
 #include "axfrLookup.h"
 
-extern "C"
-{
-    #include "digQuery.h"
-};
-
 static void save_data(response_t* res, std::vector<std::string> tokens);
 static void print_data(response_t* res, std::vector<std::string> tokens);
 
@@ -57,11 +52,18 @@ void axfrLookup::performLookup(const char* domain, const char* asked_ns)
 {
     try
     {
-    int_parse(tryLookup(domain, asked_ns));
-    this->database->addRdata();
+      int_parse(tryLookup(domain, asked_ns));
     }
     catch(...)
     {
 
     }
+}
+
+std::vector<ScanningResult*> axfrLookup::get_domains()
+{
+  if(database != nullptr)
+    return this->database->get_result();
+  else
+    return std::vector<ScanningResult*>();
 }
