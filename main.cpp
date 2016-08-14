@@ -6,12 +6,12 @@
 #include "Scanner/AxfrDatabase.hpp"
 #include "Scanner/InputReader.h"
 
-int main()
+int main(int argc, char* argv[])
 {
   axfrLookup* lookup = new axfrLookup();
    
   for(int i=0; i<1; ++i){
-    lookup->performLookup("infusionsoft.com", "ns3.infusionsoft.com");
+    lookup->performLookup(argv[1], argv[2]);
     
   }
    delete lookup;

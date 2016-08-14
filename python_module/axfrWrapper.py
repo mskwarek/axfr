@@ -16,25 +16,33 @@ class axfrLookup(object):
     def destroy(self):
         lib.axfrLookup_destroy(self.obj)
 
-def perform_lookup(domain, ns):
+def perform_lookup(in_list):
     x = axfrLookup()
-    x.getResult(domain, ns)
+    print "dziala", in_list[0], in_list[1]
+    x.getResult(in_list[0], in_list[1])
     x.destroy()
-
+    return 0
+    
+processes = []    
 def start_new_process(domain, ns):
     p = Process(target=perform_lookup, args=(domain, ns))    
     p.start()
+    processes.append(p)
 
-def try_to_start_process(domain, ns):
-    yield "dupa"
-    
 from multiprocessing import Process, Queue, Lock
+import multiprocessing
 
 if __name__ == '__main__':
     input_list = [line.rstrip('\n').split(' ') for line in open('inputData')]
-    j = 0;
+    pool = multiprocessing.Pool(2)
+    results = []
+    r = pool.map_async(perform_lookup, input_list, callback=results.append)
+    r.wait()
+    print results
+
+'''
     for i in input_list:
-        print j, " of ", len(input_list)
+        print j, " of ", len(input_list), len(processes)
         j+=1
         while True:
             try:
@@ -43,6 +51,6 @@ if __name__ == '__main__':
             except:
                 print "wait"
                 time.sleep(1)
-        
+   '''     
             #p.join()
         #p.join() # this blocks until the process terminates
