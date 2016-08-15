@@ -35,15 +35,11 @@ isc_result_t printmessage(dig_query_t *query, dns_message_t *msg, isc_boolean_t 
     unsigned int len = OUTPUTBUF;
     const dns_master_style_t *style;
 
-
-        style = &dns_master_style_default;
+    style = &dns_master_style_default;
 
     if (query->lookup->cmdline[0] != 0) {
         query->lookup->cmdline[0]=0;
     }
-    debug("printmessage(%s %s %s)", headers ? "headers" : "noheaders",
-          query->lookup->comments ? "comments" : "nocomments",
-          "long_form");
 
     flags = 0;
     if (!headers) {
@@ -81,14 +77,14 @@ buftoosmall:
 
     }
 
-    result = dns_message_firstname(msg, DNS_SECTION_ANSWER);
-    if (result != ISC_R_SUCCESS) {
-//        puts("; Transfer failed.");
-        return (ISC_TRUE);
-    }
-
-//    length = snprintf(resp + length, BUF_SIZE - length, "%s\n", (char *)isc_buffer_base(buf));
-//    printf("%s\n", (char *)isc_buffer_base(buf));
+    //result = dns_message_firstname(msg, DNS_SECTION_ANSWER);
+    // if (result != ISC_R_SUCCESS) {
+    //        puts("; Transfer failed.");
+    // return (ISC_TRUE);
+    //}
+    
+    //    length = snprintf(resp + length, BUF_SIZE - length, "%s\n", (char *)isc_buffer_base(buf));
+    //    printf("%s\n", (char *)isc_buffer_base(buf));
 
     isc_buffer_free(&buf);
     return (result);
@@ -157,7 +153,23 @@ response_t* tryLookup(const char* domain, const char* const asked_ns) {
 
     isc_textregion_t tr = {0};
 
-    setup_env();
+    
+//    isc_buffer_t *buf = NULL;
+//    unsigned int len = OUTPUTBUF;
+
+    ISC_LIST_INIT(lookup_list);
+    ISC_LIST_INIT(server_list);
+    ISC_LIST_INIT(search_list);
+    isc_app_start();
+
+    setup_libs();
+
+
+    //isc_buffer_allocate(mctx, &buf, len);
+    default_lookup = make_empty_lookup();;
+
+
+
     
     lookup = clone_lookup(default_lookup,
             ISC_TRUE);
@@ -201,37 +213,9 @@ response_t* tryLookup(const char* domain, const char* const asked_ns) {
     }
     isc_mem_free(mctx, default_lookup);
 
-    destroy_env();
-    
-    return res;
-}
-
-
-void setup_env()
-{
-
-    
-//    isc_buffer_t *buf = NULL;
-//    unsigned int len = OUTPUTBUF;
-
-    ISC_LIST_INIT(lookup_list);
-    ISC_LIST_INIT(server_list);
-    ISC_LIST_INIT(search_list);
-    isc_app_start();
-
-    setup_libs();
-
-
-    //isc_buffer_allocate(mctx, &buf, len);
-    default_lookup = make_empty_lookup();;
-
-
-}
-
-void destroy_env()
-{
-    
     cancel_all();
     destroy_libs();
     isc_app_finish();
+    
+    return res;
 }
