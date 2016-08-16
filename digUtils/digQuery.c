@@ -237,60 +237,9 @@ help(void) {
  */
 void
 received(int bytes, isc_sockaddr_t *from, dig_query_t *query) {
-	isc_uint64_t diff;
-	time_t tnow;
-	struct tm tmnow;
-	char time_str[100];
-	char fromtext[ISC_SOCKADDR_FORMATSIZE];
-
-	isc_sockaddr_format(from, fromtext, sizeof(fromtext));
-
-	if (query->lookup->stats && !short_form) {
-		diff = isc_time_microdiff(&query->time_recv, &query->time_sent);
-		if (use_usec)
-			printf(";; Query time: %ld usec\n", (long) diff);
-		else
-			printf(";; Query time: %ld msec\n", (long) diff / 1000);
-		printf(";; SERVER: %s(%s)\n", fromtext, query->servname);
-		time(&tnow);
-		tmnow  = *localtime(&tnow);
-		if (strftime(time_str, sizeof(time_str),
-			     "%a %b %d %H:%M:%S %Z %Y", &tmnow) > 0U)
-			printf(";; WHEN: %s\n", time_str);
-		if (query->lookup->doing_xfr) {
-			printf(";; XFR size: %u records (messages %u, "
-			       "bytes %" ISC_PRINT_QUADFORMAT "u)\n",
-			       query->rr_count, query->msg_count,
-			       query->byte_count);
-		} else {
-			printf(";; MSG SIZE  rcvd: %u\n", bytes);
-		}
-		if (key != NULL) {
-			if (!validated)
-				puts(";; WARNING -- Some TSIG could not "
-				     "be validated");
-		}
-		if ((key == NULL) && (keysecret[0] != 0)) {
-			puts(";; WARNING -- TSIG key was not used.");
-		}
-		puts("");
-	} else if (query->lookup->identify && !short_form) {
-		diff = isc_time_microdiff(&query->time_recv, &query->time_sent);
-		if (use_usec)
-			printf(";; Received %" ISC_PRINT_QUADFORMAT "u bytes "
-			       "from %s(%s) in %ld us\n\n",
-			       query->lookup->doing_xfr
-				 ? query->byte_count
-				 : (isc_uint64_t)bytes,
-			       fromtext, query->userarg, (long) diff);
-		else
-			printf(";; Received %" ISC_PRINT_QUADFORMAT "u bytes "
-			       "from %s(%s) in %ld ms\n\n",
-			       query->lookup->doing_xfr
-				 ?  query->byte_count
-				 : (isc_uint64_t)bytes,
-			       fromtext, query->userarg, (long) diff / 1000);
-	}
+	(void) bytes;
+	(void) from;
+	(void) query;
 }
 
 /*
@@ -303,159 +252,6 @@ trying(char *frm, dig_lookup_t *lookup) {
 	UNUSED(frm);
 	UNUSED(lookup);
 }
-
-/*%
- * Internal print routine used to print short form replies.
- */
-static isc_result_t
-say_message(dns_rdata_t *rdata, dig_query_t *query, isc_buffer_t *buf) {
-	isc_result_t result;
-	isc_uint64_t diff;
-	char store[sizeof("12345678901234567890")];
-	unsigned int styleflags = 0;
-
-	if (query->lookup->trace || query->lookup->ns_search_only) {
-		result = dns_rdatatype_totext(rdata->type, buf);
-		if (result != ISC_R_SUCCESS)
-			return (result);
-		ADD_STRING(buf, " ");
-	}
-
-	/* Turn on rrcomments if explicitly enabled */
-	if (rrcomments > 0)
-		styleflags |= DNS_STYLEFLAG_RRCOMMENT;
-	if (nocrypto)
-		styleflags |= DNS_STYLEFLAG_NOCRYPTO;
-	if (query->lookup->print_unknown_format)
-		styleflags |= DNS_STYLEFLAG_UNKNOWNFORMAT;
-	result = dns_rdata_tofmttext(rdata, NULL, styleflags, 0,
-				     splitwidth, " ", buf);
-	if (result == ISC_R_NOSPACE)
-		return (result);
-	check_result(result, "dns_rdata_totext");
-	if (query->lookup->identify) {
-		diff = isc_time_microdiff(&query->time_recv, &query->time_sent);
-		ADD_STRING(buf, " from server ");
-		ADD_STRING(buf, query->servname);
-		if (use_usec)
-			snprintf(store, 19, " in %ld us.", (long) diff);
-		else
-			snprintf(store, 19, " in %ld ms.", (long) diff / 1000);
-		ADD_STRING(buf, store);
-	}
-	ADD_STRING(buf, "\n");
-	return (ISC_R_SUCCESS);
-}
-
-/*%
- * short_form message print handler.  Calls above say_message()
- */
-static isc_result_t
-short_answer(dns_message_t *msg, dns_messagetextflag_t flags,
-	     isc_buffer_t *buf, dig_query_t *query)
-{
-	dns_name_t *name;
-	dns_rdataset_t *rdataset;
-	isc_result_t result, loopresult;
-	dns_name_t empty_name;
-	dns_rdata_t rdata = DNS_RDATA_INIT;
-
-	UNUSED(flags);
-
-	dns_name_init(&empty_name, NULL);
-	result = dns_message_firstname(msg, DNS_SECTION_ANSWER);
-	if (result == ISC_R_NOMORE)
-		return (ISC_R_SUCCESS);
-	else if (result != ISC_R_SUCCESS)
-		return (result);
-
-	for (;;) {
-		name = NULL;
-		dns_message_currentname(msg, DNS_SECTION_ANSWER, &name);
-
-		for (rdataset = ISC_LIST_HEAD(name->list);
-		     rdataset != NULL;
-		     rdataset = ISC_LIST_NEXT(rdataset, link)) {
-			loopresult = dns_rdataset_first(rdataset);
-			while (loopresult == ISC_R_SUCCESS) {
-				dns_rdataset_current(rdataset, &rdata);
-				result = say_message(&rdata, query,
-						     buf);
-				if (result == ISC_R_NOSPACE)
-					return (result);
-				check_result(result, "say_message");
-				loopresult = dns_rdataset_next(rdataset);
-				dns_rdata_reset(&rdata);
-			}
-		}
-		result = dns_message_nextname(msg, DNS_SECTION_ANSWER);
-		if (result == ISC_R_NOMORE)
-			break;
-		else if (result != ISC_R_SUCCESS)
-			return (result);
-	}
-
-	return (ISC_R_SUCCESS);
-}
-#ifdef DIG_SIGCHASE
-isc_result_t
-printrdataset(dns_name_t *owner_name, dns_rdataset_t *rdataset,
-	      isc_buffer_t *target)
-{
-	isc_result_t result;
-	dns_master_style_t *style = NULL;
-	unsigned int styleflags = 0;
-
-	if (rdataset == NULL || owner_name == NULL || target == NULL)
-		return(ISC_FALSE);
-
-	styleflags |= DNS_STYLEFLAG_REL_OWNER;
-	if (ttlunits)
-		styleflags |= DNS_STYLEFLAG_TTL_UNITS;
-	if (nottl)
-		styleflags |= DNS_STYLEFLAG_NO_TTL;
-	if (noclass)
-		styleflags |= DNS_STYLEFLAG_NO_CLASS;
-	if (nocrypto)
-		styleflags |= DNS_STYLEFLAG_NOCRYPTO;
-	/* Turn on rrcomments if explicitly enabled */
-	if (rrcomments > 0)
-		styleflags |= DNS_STYLEFLAG_RRCOMMENT;
-	if (multiline) {
-		styleflags |= DNS_STYLEFLAG_OMIT_OWNER;
-		styleflags |= DNS_STYLEFLAG_OMIT_CLASS;
-		styleflags |= DNS_STYLEFLAG_REL_DATA;
-		styleflags |= DNS_STYLEFLAG_OMIT_TTL;
-		styleflags |= DNS_STYLEFLAG_TTL;
-		styleflags |= DNS_STYLEFLAG_MULTILINE;
-		styleflags |= DNS_STYLEFLAG_COMMENT;
-		/* Turn on rrcomments if not explicitly disabled */
-		if (rrcomments >= 0)
-			styleflags |= DNS_STYLEFLAG_RRCOMMENT;
-	}
-
-	if (multiline || (nottl && noclass))
-		result = dns_master_stylecreate2(&style, styleflags,
-						24, 24, 24, 32, 80, 8,
-						splitwidth, mctx);
-	else if (nottl || noclass)
-		result = dns_master_stylecreate2(&style, styleflags,
-						24, 24, 32, 40, 80, 8,
-						splitwidth, mctx);
-	else
-		result = dns_master_stylecreate2(&style, styleflags,
-						24, 32, 40, 48, 80, 8,
-						splitwidth, mctx);
-	check_result(result, "dns_master_stylecreate");
-
-	result = dns_master_rdatasettotext(owner_name, rdataset, style, target);
-
-	if (style != NULL)
-		dns_master_styledestroy(&style, mctx);
-
-	return(result);
-}
-#endif
 
 /*
  * Callback from dighost.c to print the reply from a server
@@ -629,11 +425,6 @@ buftoosmall:
 			if (result == ISC_R_NOSPACE)
 				goto buftoosmall;
 			check_result(result, "dns_message_sectiontotext");
-		} else {
-			result = short_answer(msg, flags, buf, query);
-			if (result == ISC_R_NOSPACE)
-				goto buftoosmall;
-			check_result(result, "short_answer");
 		}
 	}
 	if (query->lookup->section_authority) {
