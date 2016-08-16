@@ -58,41 +58,41 @@ LIBAGE = 0
 # latter case, because there are no machine-generated OS-specific
 # headers.
 
-ISC_INCLUDES = -I/home/mkoi/bind9/lib/isc/include \
+ISC_INCLUDES = -I/home/marcin/ClionProjects/myDig/bind_lib/lib/isc/include \
 	-I${top_srcdir}/lib/isc \
 	-I${top_srcdir}/lib/isc/include \
 	-I${top_srcdir}/lib/isc/unix/include \
 	-I${top_srcdir}/lib/isc/pthreads/include \
 	-I${top_srcdir}/lib/isc/x86_32/include
 
-ISCCC_INCLUDES = -I/home/mkoi/bind9/lib/isccc/include \
+ISCCC_INCLUDES = -I/home/marcin/ClionProjects/myDig/bind_lib/lib/isccc/include \
        -I${top_srcdir}/lib/isccc/include
 
-ISCCFG_INCLUDES = -I/home/mkoi/bind9/lib/isccfg/include \
+ISCCFG_INCLUDES = -I/home/marcin/ClionProjects/myDig/bind_lib/lib/isccfg/include \
        -I${top_srcdir}/lib/isccfg/include
 
-DNS_INCLUDES = -I/home/mkoi/bind9/lib/dns/include \
+DNS_INCLUDES = -I/home/marcin/ClionProjects/myDig/bind_lib/lib/dns/include \
 	-I${top_srcdir}/lib/dns/include
 
-IRS_INCLUDES = -I/home/mkoi/bind9/lib/irs/include \
+IRS_INCLUDES = -I/home/marcin/ClionProjects/myDig/bind_lib/lib/irs/include \
 	-I${top_srcdir}/lib/irs/include
 
-LWRES_INCLUDES = -I/home/mkoi/bind9/lib/lwres/include \
+LWRES_INCLUDES = -I/home/marcin/ClionProjects/myDig/bind_lib/lib/lwres/include \
 	-I${top_srcdir}/lib/lwres/unix/include \
 	-I${top_srcdir}/lib/lwres/include
 
-BIND9_INCLUDES = -I/home/mkoi/bind9/lib/bind9/include \
+BIND9_INCLUDES = -I/home/marcin/ClionProjects/myDig/bind_lib/lib/bind9/include \
 	-I${top_srcdir}/lib/bind9/include
 
 TEST_INCLUDES = \
 	-I${top_srcdir}/lib/tests/include
 
-USE_ISC_SPNEGO = 
+USE_ISC_SPNEGO = -DUSE_ISC_SPNEGO
 
 CINCLUDES =	-I. -I${top_srcdir}/lib/dns -Iinclude ${DNS_INCLUDES} \
-		${ISC_INCLUDES}  
+		${ISC_INCLUDES}  -I/usr/include
 
-CDEFINES =	-DUSE_MD5 -DOPENSSL  ${USE_ISC_SPNEGO}
+CDEFINES =	-DUSE_MD5 -DOPENSSL -DGSSAPI ${USE_ISC_SPNEGO}
 
 CWARNINGS =
 
@@ -100,7 +100,7 @@ ISCLIBS =	../../lib/isc/libisc.a
 
 ISCDEPLIBS =	../../lib/isc/libisc.a
 
-LIBS =		-ldl -lz -lpthread 
+LIBS =		-ldl -lz -lpthread  -lxml2
 
 # Alphabetically
 
@@ -112,7 +112,7 @@ OPENSSLLINKOBJS = openssl_link.o openssldh_link.o openssldsa_link.o \
 PKCS11LINKOBJS	= pkcs11dh_link.o pkcs11dsa_link.o pkcs11rsa_link.o \
 		pkcs11ecdsa_link.o pkcs11gost_link.o pkcs11.o
 
-DSTOBJS =	 ${OPENSSLLINKOBJS}  \
+DSTOBJS =	 spnego.o ${OPENSSLLINKOBJS}  \
 		dst_api.o dst_lib.o dst_parse.o dst_result.o \
 		gssapi_link.o gssapictx.o hmac_link.o key.o
 
@@ -152,7 +152,7 @@ OPENSSLLINKSRCS = openssl_link.c openssldh_link.c openssldsa_link.c \
 PKCS11LINKSRCS	= pkcs11dh_link.c pkcs11dsa_link.c pkcs11rsa_link.c \
 		pkcs11ecdsa_link.c pkcs11gost_link.c pkcs11.c
 
-DSTSRCS =	 ${OPENSSLLINKSRCS}  \
+DSTSRCS =	 spnego.c ${OPENSSLLINKSRCS}  \
 		dst_api.c dst_lib.c dst_parse.c \
 		dst_result.c gssapi_link.c gssapictx.c \
 		hmac_link.c key.c
@@ -219,7 +219,7 @@ DESTDIR =
 
 
 
-top_builddir =	/home/mkoi/bind9
+top_builddir =	/home/marcin/ClionProjects/myDig/bind_lib
 
 ###
 ### All
@@ -288,17 +288,17 @@ install clean distclean maintainer-clean doc docclean man manclean::
 ###     EXT_CFLAGS
 
 CC = 		gcc
-CFLAGS =	-g -O2  -fPIC
+CFLAGS =	-fPIC -I/usr/include/libxml2  -fPIC
 LDFLAGS =	
 STD_CINCLUDES =	
 STD_CDEFINES =	 -D_GNU_SOURCE
 STD_CWARNINGS =	 -W -Wall -Wmissing-prototypes -Wcast-qual -Wwrite-strings -Wformat -Wpointer-arith -fno-strict-aliasing -fno-delete-null-pointer-checks
 
 BUILD_CC = gcc
-BUILD_CFLAGS = -g -O2  -fPIC
+BUILD_CFLAGS = -fPIC -I/usr/include/libxml2  -fPIC
 BUILD_CPPFLAGS =  -D_GNU_SOURCE 
 BUILD_LDFLAGS = 
-BUILD_LIBS = -ldl -lz -lpthread 
+BUILD_LIBS = -ldl -lz -lpthread  -lxml2
 
 .SUFFIXES:
 .SUFFIXES: .c .o
@@ -491,10 +491,10 @@ INSTALL_LIBRARY =	${INSTALL_DATA}
 XSLTPROC =		xsltproc --novalid --xinclude --nonet
 XMLLINT =		xmllint
 PERL =			/usr/bin/perl
-LATEX =			latex
-PDFLATEX =		pdflatex
+LATEX =			/usr/bin/latex
+PDFLATEX =		/usr/bin/pdflatex
 DBLATEX =		dblatex
-W3M =			/usr/bin/w3m
+W3M =			w3m
 
 ###
 ### Script language program used to create internal symbol tables
@@ -561,7 +561,7 @@ libdns.la: ${OBJS}
 	${LIBTOOL_MODE_LINK} \
 		${CC} ${ALL_CFLAGS} ${LDFLAGS} -o libdns.la -rpath ${libdir} \
 		-version-info ${LIBINTERFACE}:${LIBREVISION}:${LIBAGE} \
-		${OBJS} ${ISCLIBS}  -lcrypto ${LIBS}
+		${OBJS} ${ISCLIBS}  -lgssapi_krb5 -lkrb5 -lk5crypto -lcom_err -lcrypto ${LIBS}
 
 timestamp: libdns.a
 	touch timestamp

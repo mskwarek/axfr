@@ -164,9 +164,32 @@ CMakeFiles/AxfrLib.dir/Scanner/InputReader.cpp.o.provides: CMakeFiles/AxfrLib.di
 
 CMakeFiles/AxfrLib.dir/Scanner/InputReader.cpp.o.provides.build: CMakeFiles/AxfrLib.dir/Scanner/InputReader.cpp.o
 
+CMakeFiles/AxfrLib.dir/GeneralUtils/ms_response_list.c.o: CMakeFiles/AxfrLib.dir/flags.make
+CMakeFiles/AxfrLib.dir/GeneralUtils/ms_response_list.c.o: GeneralUtils/ms_response_list.c
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/marcin/ClionProjects/myDig/CMakeFiles $(CMAKE_PROGRESS_6)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building C object CMakeFiles/AxfrLib.dir/GeneralUtils/ms_response_list.c.o"
+	gcc  $(C_DEFINES) $(C_FLAGS) -o CMakeFiles/AxfrLib.dir/GeneralUtils/ms_response_list.c.o   -c /home/marcin/ClionProjects/myDig/GeneralUtils/ms_response_list.c
+
+CMakeFiles/AxfrLib.dir/GeneralUtils/ms_response_list.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/AxfrLib.dir/GeneralUtils/ms_response_list.c.i"
+	gcc  $(C_DEFINES) $(C_FLAGS) -E /home/marcin/ClionProjects/myDig/GeneralUtils/ms_response_list.c > CMakeFiles/AxfrLib.dir/GeneralUtils/ms_response_list.c.i
+
+CMakeFiles/AxfrLib.dir/GeneralUtils/ms_response_list.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/AxfrLib.dir/GeneralUtils/ms_response_list.c.s"
+	gcc  $(C_DEFINES) $(C_FLAGS) -S /home/marcin/ClionProjects/myDig/GeneralUtils/ms_response_list.c -o CMakeFiles/AxfrLib.dir/GeneralUtils/ms_response_list.c.s
+
+CMakeFiles/AxfrLib.dir/GeneralUtils/ms_response_list.c.o.requires:
+.PHONY : CMakeFiles/AxfrLib.dir/GeneralUtils/ms_response_list.c.o.requires
+
+CMakeFiles/AxfrLib.dir/GeneralUtils/ms_response_list.c.o.provides: CMakeFiles/AxfrLib.dir/GeneralUtils/ms_response_list.c.o.requires
+	$(MAKE) -f CMakeFiles/AxfrLib.dir/build.make CMakeFiles/AxfrLib.dir/GeneralUtils/ms_response_list.c.o.provides.build
+.PHONY : CMakeFiles/AxfrLib.dir/GeneralUtils/ms_response_list.c.o.provides
+
+CMakeFiles/AxfrLib.dir/GeneralUtils/ms_response_list.c.o.provides.build: CMakeFiles/AxfrLib.dir/GeneralUtils/ms_response_list.c.o
+
 CMakeFiles/AxfrLib.dir/axfrlib.cpp.o: CMakeFiles/AxfrLib.dir/flags.make
 CMakeFiles/AxfrLib.dir/axfrlib.cpp.o: axfrlib.cpp
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/marcin/ClionProjects/myDig/CMakeFiles $(CMAKE_PROGRESS_6)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/marcin/ClionProjects/myDig/CMakeFiles $(CMAKE_PROGRESS_7)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/AxfrLib.dir/axfrlib.cpp.o"
 	g++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/AxfrLib.dir/axfrlib.cpp.o -c /home/marcin/ClionProjects/myDig/axfrlib.cpp
 
@@ -194,6 +217,7 @@ AxfrLib_OBJECTS = \
 "CMakeFiles/AxfrLib.dir/Scanner/axfrLookup.cpp.o" \
 "CMakeFiles/AxfrLib.dir/digUtils/dig_parser.c.o" \
 "CMakeFiles/AxfrLib.dir/Scanner/InputReader.cpp.o" \
+"CMakeFiles/AxfrLib.dir/GeneralUtils/ms_response_list.c.o" \
 "CMakeFiles/AxfrLib.dir/axfrlib.cpp.o"
 
 # External object files for target AxfrLib
@@ -204,13 +228,18 @@ build/lib/libAxfrLib.so: CMakeFiles/AxfrLib.dir/digUtils/dighost.c.o
 build/lib/libAxfrLib.so: CMakeFiles/AxfrLib.dir/Scanner/axfrLookup.cpp.o
 build/lib/libAxfrLib.so: CMakeFiles/AxfrLib.dir/digUtils/dig_parser.c.o
 build/lib/libAxfrLib.so: CMakeFiles/AxfrLib.dir/Scanner/InputReader.cpp.o
+build/lib/libAxfrLib.so: CMakeFiles/AxfrLib.dir/GeneralUtils/ms_response_list.c.o
 build/lib/libAxfrLib.so: CMakeFiles/AxfrLib.dir/axfrlib.cpp.o
 build/lib/libAxfrLib.so: CMakeFiles/AxfrLib.dir/build.make
 build/lib/libAxfrLib.so: bind_lib/lib/dns/libdns.a
-build/lib/libAxfrLib.so: bind_lib/lib/isccfg/libisccfg.a
+build/lib/libAxfrLib.so: bind_lib/lib/isc/libisc.a
 build/lib/libAxfrLib.so: bind_lib/lib/isc/libisc-nosymtbl.a
+build/lib/libAxfrLib.so: bind_lib/lib/irs/libirs.a
+build/lib/libAxfrLib.so: bind_lib/lib/isccc/libisccc.a
+build/lib/libAxfrLib.so: bind_lib/lib/isccfg/libisccfg.a
 build/lib/libAxfrLib.so: bind_lib/lib/lwres/liblwres.a
 build/lib/libAxfrLib.so: bind_lib/lib/bind9/libbind9.a
+build/lib/libAxfrLib.so: /usr/lib/x86_64-linux-gnu/libcrypto.so
 build/lib/libAxfrLib.so: CMakeFiles/AxfrLib.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --red --bold "Linking CXX shared library build/lib/libAxfrLib.so"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/AxfrLib.dir/link.txt --verbose=$(VERBOSE)
@@ -224,6 +253,7 @@ CMakeFiles/AxfrLib.dir/requires: CMakeFiles/AxfrLib.dir/digUtils/dighost.c.o.req
 CMakeFiles/AxfrLib.dir/requires: CMakeFiles/AxfrLib.dir/Scanner/axfrLookup.cpp.o.requires
 CMakeFiles/AxfrLib.dir/requires: CMakeFiles/AxfrLib.dir/digUtils/dig_parser.c.o.requires
 CMakeFiles/AxfrLib.dir/requires: CMakeFiles/AxfrLib.dir/Scanner/InputReader.cpp.o.requires
+CMakeFiles/AxfrLib.dir/requires: CMakeFiles/AxfrLib.dir/GeneralUtils/ms_response_list.c.o.requires
 CMakeFiles/AxfrLib.dir/requires: CMakeFiles/AxfrLib.dir/axfrlib.cpp.o.requires
 .PHONY : CMakeFiles/AxfrLib.dir/requires
 

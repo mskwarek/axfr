@@ -483,53 +483,6 @@ cleanup:
 }
 
 /*%
- * print the greeting message when the program first starts up.
- */
-static void
-printgreeting(int argc, char **argv, dig_lookup_t *lookup) {
-	int i;
-	size_t remaining;
-	static isc_boolean_t first = ISC_TRUE;
-	char append[MXNAME];
-
-	if (printcmd) {
-		lookup->cmdline[sizeof(lookup->cmdline) - 1] = 0;
-		snprintf(lookup->cmdline, sizeof(lookup->cmdline),
-			 "%s; <<>> DiG  <<>>",
-			 first?"\n":"");
-		i = 1;
-		while (i < argc) {
-			snprintf(append, sizeof(append), " %s", argv[i++]);
-			remaining = sizeof(lookup->cmdline) -
-				    strlen(lookup->cmdline) - 1;
-			strncat(lookup->cmdline, append, remaining);
-		}
-		remaining = sizeof(lookup->cmdline) -
-			    strlen(lookup->cmdline) - 1;
-		strncat(lookup->cmdline, "\n", remaining);
-		if (first && addresscount != 0) {
-			snprintf(append, sizeof(append),
-				 "; (%d server%s found)\n",
-				 addresscount,
-				 addresscount > 1 ? "s" : "");
-			remaining = sizeof(lookup->cmdline) -
-				    strlen(lookup->cmdline) - 1;
-			strncat(lookup->cmdline, append, remaining);
-		}
-		if (first) {
-			snprintf(append, sizeof(append),
-				 ";; global options:%s%s\n",
-				 short_form ? " +short" : "",
-				 printcmd ? " +cmd" : "");
-			first = ISC_FALSE;
-			remaining = sizeof(lookup->cmdline) -
-				    strlen(lookup->cmdline) - 1;
-			strncat(lookup->cmdline, append, remaining);
-		}
-	}
-}
-
-/*%
  * We're not using isc_commandline_parse() here since the command line
  * syntax of dig is quite a bit different from that which can be described
  * by that routine.
@@ -1394,7 +1347,6 @@ dash_option(char *option, char *next, dig_lookup_t **lookup,
 						     (*lookup)->ns_search_only);
 			(*lookup)->new_search = ISC_TRUE;
 			if (*firstarg) {
-				printgreeting(argc, argv, *lookup);
 				*firstarg = ISC_FALSE;
 			}
 			ISC_LIST_APPEND(lookup_list, (*lookup), link);
@@ -1490,7 +1442,6 @@ dash_option(char *option, char *next, dig_lookup_t **lookup,
 				(*lookup)->rdclass = dns_rdataclass_in;
 			(*lookup)->new_search = ISC_TRUE;
 			if (*firstarg) {
-				printgreeting(argc, argv, *lookup);
 				*firstarg = ISC_FALSE;
 			}
 			ISC_LIST_APPEND(lookup_list, *lookup, link);
@@ -1776,7 +1727,6 @@ parse_args(isc_boolean_t is_batchfile, isc_boolean_t config_only,
 						     lookup->ns_search_only);
 				lookup->new_search = ISC_TRUE;
 				if (firstarg) {
-					printgreeting(argc, argv, lookup);
 					firstarg = ISC_FALSE;
 				}
 				ISC_LIST_APPEND(lookup_list, lookup, link);
@@ -1841,7 +1791,6 @@ parse_args(isc_boolean_t is_batchfile, isc_boolean_t config_only,
 		lookup->rdtype = dns_rdatatype_ns;
 		lookup->rdtypeset = ISC_TRUE;
 		if (firstarg) {
-			printgreeting(argc, argv, lookup);
 			firstarg = ISC_FALSE;
 		}
 		ISC_LIST_APPEND(lookup_list, lookup, link);
@@ -1904,7 +1853,7 @@ dighost_shutdown(void) {
 
 /*% Main processing routine for dig */
 int
-main(int argc, char **argv) {
+tryLookup(int argc, char **argv) {
 	isc_result_t result;
 
 	ISC_LIST_INIT(lookup_list);
@@ -1936,9 +1885,7 @@ main(int argc, char **argv) {
 			fclose(batchfp);
 		batchname = NULL;
 	}
-#ifdef DIG_SIGCHASE
-	clean_trustedkey();
-#endif
+
 	cancel_all();
 	destroy_libs();
 	isc_app_finish();

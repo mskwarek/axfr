@@ -164,9 +164,32 @@ CMakeFiles/myDig.dir/Scanner/InputReader.cpp.o.provides: CMakeFiles/myDig.dir/Sc
 
 CMakeFiles/myDig.dir/Scanner/InputReader.cpp.o.provides.build: CMakeFiles/myDig.dir/Scanner/InputReader.cpp.o
 
+CMakeFiles/myDig.dir/GeneralUtils/ms_response_list.c.o: CMakeFiles/myDig.dir/flags.make
+CMakeFiles/myDig.dir/GeneralUtils/ms_response_list.c.o: GeneralUtils/ms_response_list.c
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/marcin/ClionProjects/myDig/CMakeFiles $(CMAKE_PROGRESS_6)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building C object CMakeFiles/myDig.dir/GeneralUtils/ms_response_list.c.o"
+	gcc  $(C_DEFINES) $(C_FLAGS) -o CMakeFiles/myDig.dir/GeneralUtils/ms_response_list.c.o   -c /home/marcin/ClionProjects/myDig/GeneralUtils/ms_response_list.c
+
+CMakeFiles/myDig.dir/GeneralUtils/ms_response_list.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/myDig.dir/GeneralUtils/ms_response_list.c.i"
+	gcc  $(C_DEFINES) $(C_FLAGS) -E /home/marcin/ClionProjects/myDig/GeneralUtils/ms_response_list.c > CMakeFiles/myDig.dir/GeneralUtils/ms_response_list.c.i
+
+CMakeFiles/myDig.dir/GeneralUtils/ms_response_list.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/myDig.dir/GeneralUtils/ms_response_list.c.s"
+	gcc  $(C_DEFINES) $(C_FLAGS) -S /home/marcin/ClionProjects/myDig/GeneralUtils/ms_response_list.c -o CMakeFiles/myDig.dir/GeneralUtils/ms_response_list.c.s
+
+CMakeFiles/myDig.dir/GeneralUtils/ms_response_list.c.o.requires:
+.PHONY : CMakeFiles/myDig.dir/GeneralUtils/ms_response_list.c.o.requires
+
+CMakeFiles/myDig.dir/GeneralUtils/ms_response_list.c.o.provides: CMakeFiles/myDig.dir/GeneralUtils/ms_response_list.c.o.requires
+	$(MAKE) -f CMakeFiles/myDig.dir/build.make CMakeFiles/myDig.dir/GeneralUtils/ms_response_list.c.o.provides.build
+.PHONY : CMakeFiles/myDig.dir/GeneralUtils/ms_response_list.c.o.provides
+
+CMakeFiles/myDig.dir/GeneralUtils/ms_response_list.c.o.provides.build: CMakeFiles/myDig.dir/GeneralUtils/ms_response_list.c.o
+
 CMakeFiles/myDig.dir/main.cpp.o: CMakeFiles/myDig.dir/flags.make
 CMakeFiles/myDig.dir/main.cpp.o: main.cpp
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/marcin/ClionProjects/myDig/CMakeFiles $(CMAKE_PROGRESS_6)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/marcin/ClionProjects/myDig/CMakeFiles $(CMAKE_PROGRESS_7)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/myDig.dir/main.cpp.o"
 	g++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/myDig.dir/main.cpp.o -c /home/marcin/ClionProjects/myDig/main.cpp
 
@@ -194,6 +217,7 @@ myDig_OBJECTS = \
 "CMakeFiles/myDig.dir/Scanner/axfrLookup.cpp.o" \
 "CMakeFiles/myDig.dir/digUtils/dig_parser.c.o" \
 "CMakeFiles/myDig.dir/Scanner/InputReader.cpp.o" \
+"CMakeFiles/myDig.dir/GeneralUtils/ms_response_list.c.o" \
 "CMakeFiles/myDig.dir/main.cpp.o"
 
 # External object files for target myDig
@@ -204,13 +228,18 @@ build/myDig: CMakeFiles/myDig.dir/digUtils/dighost.c.o
 build/myDig: CMakeFiles/myDig.dir/Scanner/axfrLookup.cpp.o
 build/myDig: CMakeFiles/myDig.dir/digUtils/dig_parser.c.o
 build/myDig: CMakeFiles/myDig.dir/Scanner/InputReader.cpp.o
+build/myDig: CMakeFiles/myDig.dir/GeneralUtils/ms_response_list.c.o
 build/myDig: CMakeFiles/myDig.dir/main.cpp.o
 build/myDig: CMakeFiles/myDig.dir/build.make
 build/myDig: bind_lib/lib/dns/libdns.a
-build/myDig: bind_lib/lib/isccfg/libisccfg.a
+build/myDig: bind_lib/lib/isc/libisc.a
 build/myDig: bind_lib/lib/isc/libisc-nosymtbl.a
+build/myDig: bind_lib/lib/irs/libirs.a
+build/myDig: bind_lib/lib/isccc/libisccc.a
+build/myDig: bind_lib/lib/isccfg/libisccfg.a
 build/myDig: bind_lib/lib/lwres/liblwres.a
 build/myDig: bind_lib/lib/bind9/libbind9.a
+build/myDig: /usr/lib/x86_64-linux-gnu/libcrypto.so
 build/myDig: CMakeFiles/myDig.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --red --bold "Linking CXX executable build/myDig"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/myDig.dir/link.txt --verbose=$(VERBOSE)
@@ -224,6 +253,7 @@ CMakeFiles/myDig.dir/requires: CMakeFiles/myDig.dir/digUtils/dighost.c.o.require
 CMakeFiles/myDig.dir/requires: CMakeFiles/myDig.dir/Scanner/axfrLookup.cpp.o.requires
 CMakeFiles/myDig.dir/requires: CMakeFiles/myDig.dir/digUtils/dig_parser.c.o.requires
 CMakeFiles/myDig.dir/requires: CMakeFiles/myDig.dir/Scanner/InputReader.cpp.o.requires
+CMakeFiles/myDig.dir/requires: CMakeFiles/myDig.dir/GeneralUtils/ms_response_list.c.o.requires
 CMakeFiles/myDig.dir/requires: CMakeFiles/myDig.dir/main.cpp.o.requires
 .PHONY : CMakeFiles/myDig.dir/requires
 

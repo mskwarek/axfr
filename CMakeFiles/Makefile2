@@ -59,7 +59,7 @@ CMAKE_BINARY_DIR = /home/marcin/ClionProjects/myDig
 CMakeFiles/AxfrLib.dir/all:
 	$(MAKE) -f CMakeFiles/AxfrLib.dir/build.make CMakeFiles/AxfrLib.dir/depend
 	$(MAKE) -f CMakeFiles/AxfrLib.dir/build.make CMakeFiles/AxfrLib.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/marcin/ClionProjects/myDig/CMakeFiles  1 2 3 4 5 6
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/marcin/ClionProjects/myDig/CMakeFiles  1 2 3 4 5 6 7
 	@echo "Built target AxfrLib"
 .PHONY : CMakeFiles/AxfrLib.dir/all
 
@@ -69,7 +69,7 @@ all: CMakeFiles/AxfrLib.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/AxfrLib.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/marcin/ClionProjects/myDig/CMakeFiles 6
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/marcin/ClionProjects/myDig/CMakeFiles 7
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/AxfrLib.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/marcin/ClionProjects/myDig/CMakeFiles 0
 .PHONY : CMakeFiles/AxfrLib.dir/rule
@@ -85,41 +85,6 @@ CMakeFiles/AxfrLib.dir/clean:
 
 # clean rule for target.
 clean: CMakeFiles/AxfrLib.dir/clean
-.PHONY : clean
-
-#=============================================================================
-# Target rules for target CMakeFiles/myDig.dir
-
-# All Build rule for target.
-CMakeFiles/myDig.dir/all:
-	$(MAKE) -f CMakeFiles/myDig.dir/build.make CMakeFiles/myDig.dir/depend
-	$(MAKE) -f CMakeFiles/myDig.dir/build.make CMakeFiles/myDig.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/marcin/ClionProjects/myDig/CMakeFiles  7 8 9 10 11 12
-	@echo "Built target myDig"
-.PHONY : CMakeFiles/myDig.dir/all
-
-# Include target in all.
-all: CMakeFiles/myDig.dir/all
-.PHONY : all
-
-# Build rule for subdir invocation for target.
-CMakeFiles/myDig.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/marcin/ClionProjects/myDig/CMakeFiles 6
-	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/myDig.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/marcin/ClionProjects/myDig/CMakeFiles 0
-.PHONY : CMakeFiles/myDig.dir/rule
-
-# Convenience name for target.
-myDig: CMakeFiles/myDig.dir/rule
-.PHONY : myDig
-
-# clean rule for target.
-CMakeFiles/myDig.dir/clean:
-	$(MAKE) -f CMakeFiles/myDig.dir/build.make CMakeFiles/myDig.dir/clean
-.PHONY : CMakeFiles/myDig.dir/clean
-
-# clean rule for target.
-clean: CMakeFiles/myDig.dir/clean
 .PHONY : clean
 
 #=============================================================================

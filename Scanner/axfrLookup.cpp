@@ -35,14 +35,14 @@ void axfrLookup::save_data_xml(response_t* res)
 
 void axfrLookup::performLookup(const char* domain, const char* asked_ns)
 {
-    try
-    {
-      int_parse(tryLookup(domain, asked_ns));
-    }
-    catch(...)
-    {
-
-    }
+//    try
+//    {
+//      int_parse(tryLookup(domain, asked_ns));
+//    }
+//    catch(...)
+//    {
+//
+//    }
 }
 
 std::vector<ScanningResult*>* axfrLookup::get_domains()

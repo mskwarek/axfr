@@ -1,2 +1,1 @@
 /home/marcin/ClionProjects/myDig/CMakeFiles/AxfrLib.dir
-/home/marcin/ClionProjects/myDig/CMakeFiles/myDig.dir

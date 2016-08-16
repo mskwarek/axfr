@@ -36,30 +36,30 @@ LIBAGE = 4
 # latter case, because there are no machine-generated OS-specific
 # headers.
 
-ISC_INCLUDES = -I/home/mkoi/bind9/lib/isc/include \
+ISC_INCLUDES = -I/home/marcin/ClionProjects/myDig/bind_lib/lib/isc/include \
 	-I${top_srcdir}/lib/isc \
 	-I${top_srcdir}/lib/isc/include \
 	-I${top_srcdir}/lib/isc/unix/include \
 	-I${top_srcdir}/lib/isc/pthreads/include \
 	-I${top_srcdir}/lib/isc/x86_32/include
 
-ISCCC_INCLUDES = -I/home/mkoi/bind9/lib/isccc/include \
+ISCCC_INCLUDES = -I/home/marcin/ClionProjects/myDig/bind_lib/lib/isccc/include \
        -I${top_srcdir}/lib/isccc/include
 
-ISCCFG_INCLUDES = -I/home/mkoi/bind9/lib/isccfg/include \
+ISCCFG_INCLUDES = -I/home/marcin/ClionProjects/myDig/bind_lib/lib/isccfg/include \
        -I${top_srcdir}/lib/isccfg/include
 
-DNS_INCLUDES = -I/home/mkoi/bind9/lib/dns/include \
+DNS_INCLUDES = -I/home/marcin/ClionProjects/myDig/bind_lib/lib/dns/include \
 	-I${top_srcdir}/lib/dns/include
 
-IRS_INCLUDES = -I/home/mkoi/bind9/lib/irs/include \
+IRS_INCLUDES = -I/home/marcin/ClionProjects/myDig/bind_lib/lib/irs/include \
 	-I${top_srcdir}/lib/irs/include
 
-LWRES_INCLUDES = -I/home/mkoi/bind9/lib/lwres/include \
+LWRES_INCLUDES = -I/home/marcin/ClionProjects/myDig/bind_lib/lib/lwres/include \
 	-I${top_srcdir}/lib/lwres/unix/include \
 	-I${top_srcdir}/lib/lwres/include
 
-BIND9_INCLUDES = -I/home/mkoi/bind9/lib/bind9/include \
+BIND9_INCLUDES = -I/home/marcin/ClionProjects/myDig/bind_lib/lib/bind9/include \
 	-I${top_srcdir}/lib/bind9/include
 
 TEST_INCLUDES = \
@@ -130,7 +130,7 @@ SRCS =		    \
 		strtoul.c symtab.c task.c taskpool.c timer.c \
 		tm.c version.c
 
-LIBS =		 -lcrypto -ldl -lz -lpthread 
+LIBS =		 -lcrypto -ldl -lz -lpthread  -lxml2
 
 # Note: the order of SUBDIRS is important.
 # Attempt to disable parallel processing.
@@ -171,7 +171,7 @@ DESTDIR =
 
 
 
-top_builddir =	/home/mkoi/bind9
+top_builddir =	/home/marcin/ClionProjects/myDig/bind_lib
 
 ###
 ### All
@@ -240,17 +240,17 @@ install clean distclean maintainer-clean doc docclean man manclean::
 ###     EXT_CFLAGS
 
 CC = 		gcc
-CFLAGS =	-g -O2  -fPIC
+CFLAGS =	-fPIC -I/usr/include/libxml2  -fPIC
 LDFLAGS =	
 STD_CINCLUDES =	
 STD_CDEFINES =	 -D_GNU_SOURCE
 STD_CWARNINGS =	 -W -Wall -Wmissing-prototypes -Wcast-qual -Wwrite-strings -Wformat -Wpointer-arith -fno-strict-aliasing -fno-delete-null-pointer-checks
 
 BUILD_CC = gcc
-BUILD_CFLAGS = -g -O2  -fPIC
+BUILD_CFLAGS = -fPIC -I/usr/include/libxml2  -fPIC
 BUILD_CPPFLAGS =  -D_GNU_SOURCE 
 BUILD_LDFLAGS = 
-BUILD_LIBS = -ldl -lz -lpthread 
+BUILD_LIBS = -ldl -lz -lpthread  -lxml2
 
 .SUFFIXES:
 .SUFFIXES: .c .o
@@ -443,10 +443,10 @@ INSTALL_LIBRARY =	${INSTALL_DATA}
 XSLTPROC =		xsltproc --novalid --xinclude --nonet
 XMLLINT =		xmllint
 PERL =			/usr/bin/perl
-LATEX =			latex
-PDFLATEX =		pdflatex
+LATEX =			/usr/bin/latex
+PDFLATEX =		/usr/bin/pdflatex
 DBLATEX =		dblatex
-W3M =			/usr/bin/w3m
+W3M =			w3m
 
 ###
 ### Script language program used to create internal symbol tables
