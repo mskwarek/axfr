@@ -232,14 +232,10 @@ build/myDig: CMakeFiles/myDig.dir/GeneralUtils/ms_response_list.c.o
 build/myDig: CMakeFiles/myDig.dir/main.cpp.o
 build/myDig: CMakeFiles/myDig.dir/build.make
 build/myDig: bind_lib/lib/dns/libdns.a
-build/myDig: bind_lib/lib/isc/libisc.a
-build/myDig: bind_lib/lib/isc/libisc-nosymtbl.a
-build/myDig: bind_lib/lib/irs/libirs.a
-build/myDig: bind_lib/lib/isccc/libisccc.a
-build/myDig: bind_lib/lib/isccfg/libisccfg.a
 build/myDig: bind_lib/lib/lwres/liblwres.a
 build/myDig: bind_lib/lib/bind9/libbind9.a
-build/myDig: /usr/lib/x86_64-linux-gnu/libcrypto.so
+build/myDig: bind_lib/lib/isccfg/libisccfg.a
+build/myDig: bind_lib/lib/isc/libisc.a
 build/myDig: CMakeFiles/myDig.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --red --bold "Linking CXX executable build/myDig"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/myDig.dir/link.txt --verbose=$(VERBOSE)

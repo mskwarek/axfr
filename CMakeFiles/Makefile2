@@ -88,6 +88,41 @@ clean: CMakeFiles/AxfrLib.dir/clean
 .PHONY : clean
 
 #=============================================================================
+# Target rules for target CMakeFiles/myDig.dir
+
+# All Build rule for target.
+CMakeFiles/myDig.dir/all:
+	$(MAKE) -f CMakeFiles/myDig.dir/build.make CMakeFiles/myDig.dir/depend
+	$(MAKE) -f CMakeFiles/myDig.dir/build.make CMakeFiles/myDig.dir/build
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/marcin/ClionProjects/myDig/CMakeFiles  8 9 10 11 12 13 14
+	@echo "Built target myDig"
+.PHONY : CMakeFiles/myDig.dir/all
+
+# Include target in all.
+all: CMakeFiles/myDig.dir/all
+.PHONY : all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/myDig.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/marcin/ClionProjects/myDig/CMakeFiles 7
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/myDig.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/marcin/ClionProjects/myDig/CMakeFiles 0
+.PHONY : CMakeFiles/myDig.dir/rule
+
+# Convenience name for target.
+myDig: CMakeFiles/myDig.dir/rule
+.PHONY : myDig
+
+# clean rule for target.
+CMakeFiles/myDig.dir/clean:
+	$(MAKE) -f CMakeFiles/myDig.dir/build.make CMakeFiles/myDig.dir/clean
+.PHONY : CMakeFiles/myDig.dir/clean
+
+# clean rule for target.
+clean: CMakeFiles/myDig.dir/clean
+.PHONY : clean
+
+#=============================================================================
 # Special targets to cleanup operation of make.
 
 # Special rule to run CMake to check the build system integrity.

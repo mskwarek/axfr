@@ -95,25 +95,19 @@ find_package (Threads)
 find_library(DNS NAMES libdns.a PATHS "${CMAKE_CURRENT_SOURCE_DIR}/bind_lib/lib/dns/libdns.a")
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR})
-FIND_PACKAGE(Krb5 REQUIRED gssapi)
-find_package(Krb5 REQUIRED krb5)
-
-find_package(DIG_LIBS
-		NAMES dl z pthread xml2 gssapi_krb5 krb5 k5crypto com_err dns readline termcap crypto isc
-		PATHS
-		/usr
-		/usr/lib
-		/usr/lib64
-		/usr/local/lib
-		/usr/local/lib64)
-find_path(GssApiIncludes gssapi_krb5 PATHS
-		/usr/lib
-		/usr/lib64
-		/usr/local/lib
-		/usr/local/lib64)
-if(NOT GssApiIncludes OR NOT DIG_LIBS )
-	message(FATAL_ERROR "Can't find folder containing gssapi.h")
-endif()
+#FIND_PACKAGE(Krb5 REQUIRED gssapi)
+#find_package(Krb5 REQUIRED krb5)
+#
+#add_dependencies(myDig
+#		)
+#find_path(GssApiIncludes gssapi_krb5 PATHS
+#		/usr/lib
+#		/usr/lib64
+#		/usr/local/lib
+#		/usr/local/lib64)
+#if(NOT GssApiIncludes)
+#	message(FATAL_ERROR "Can't find folder containing gssapi.h")
+#endif()
 message(${DIG_LIBS})
 link_libraries(${DNS_LIBS})
 
@@ -149,15 +143,15 @@ target_link_libraries(AxfrLib
 add_executable(myDig ${common_src} main.cpp)
 
 target_link_libraries(myDig
-		${CMAKE_THREAD_LIBS_INIT}
+
+
 		${CMAKE_CURRENT_SOURCE_DIR}/bind_lib/lib/dns/libdns.a
-		${CMAKE_CURRENT_SOURCE_DIR}/bind_lib/lib/isc/libisc.a
-		${CMAKE_CURRENT_SOURCE_DIR}/bind_lib/lib/isc/libisc-nosymtbl.a
-		${CMAKE_CURRENT_SOURCE_DIR}/bind_lib/lib/irs/libirs.a
-		${CMAKE_CURRENT_SOURCE_DIR}/bind_lib/lib/isccc/libisccc.a
-		${CMAKE_CURRENT_SOURCE_DIR}/bind_lib/lib/isccfg/libisccfg.a
+		gssapi_krb5 krb5 k5crypto com_err crypto
 		${CMAKE_CURRENT_SOURCE_DIR}/bind_lib/lib/lwres/liblwres.a
 		${CMAKE_CURRENT_SOURCE_DIR}/bind_lib/lib/bind9/libbind9.a
-		${DIG_LIBS}
-		${LIBXML2_LIBRARIES}
+		${CMAKE_CURRENT_SOURCE_DIR}/bind_lib/lib/isccfg/libisccfg.a
+		${CMAKE_CURRENT_SOURCE_DIR}/bind_lib/lib/isc/libisc.a
+		dl z pthread  xml2
+
+
 		)
