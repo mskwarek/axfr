@@ -1,21 +1,12 @@
 /*
- * Copyright (C) 1999-2001, 2003  Internet Software Consortium.
+ * Copyright (C) 1999-2001, 2003-2007, 2009, 2011-2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: log.c,v 1.33.2.4 2003/10/09 07:32:37 marka Exp $ */
+/*! \file */
 
 /* Principal Authors: DCL */
 
@@ -25,15 +16,15 @@
 
 #include <dns/log.h>
 
-/*
+/*%
  * When adding a new category, be sure to add the appropriate
- * #define to <dns/log.h>.
+ * \#define to <dns/log.h>.
  */
 LIBDNS_EXTERNAL_DATA isc_logcategory_t dns_categories[] = {
 	{ "notify", 	0 },
 	{ "database", 	0 },
 	{ "security", 	0 },
-	{ "oldconfig",  0 }, /* Placeholder */
+	{ "_placeholder", 0 },
 	{ "dnssec",	0 },
 	{ "resolver",	0 },
 	{ "xfer-in",	0 },
@@ -41,12 +32,18 @@ LIBDNS_EXTERNAL_DATA isc_logcategory_t dns_categories[] = {
 	{ "dispatch",	0 },
 	{ "lame-servers", 0 },
 	{ "delegation-only", 0 },
+	{ "edns-disabled", 0 },
+	{ "rpz",	0 },
+	{ "rate-limit",	0 },
+	{ "cname",	0 },
+	{ "spill",	0 },
+	{ "dnstap",	0 },
 	{ NULL, 	0 }
 };
 
-/*
+/*%
  * When adding a new module, be sure to add the appropriate
- * #define to <dns/log.h>.
+ * \#define to <dns/log.h>.
  */
 LIBDNS_EXTERNAL_DATA isc_logmodule_t dns_modules[] = {
 	{ "dns/db",	 	0 },
@@ -74,6 +71,14 @@ LIBDNS_EXTERNAL_DATA isc_logmodule_t dns_modules[] = {
 	{ "dns/sdb",		0 },
 	{ "dns/diff",		0 },
 	{ "dns/hints",		0 },
+	{ "dns/acache",		0 },
+	{ "dns/dlz",		0 },
+	{ "dns/dnssec",		0 },
+	{ "dns/crypto",		0 },
+	{ "dns/packets",	0 },
+	{ "dns/nta",		0 },
+	{ "dns/dyndb",		0 },
+	{ "dns/dnstap",		0 },
 	{ NULL, 		0 }
 };
 

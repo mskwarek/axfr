@@ -1,21 +1,12 @@
 /*
- * Copyright (C) 1999-2001, 2003  Internet Software Consortium.
+ * Copyright (C) 1999-2004, 2007, 2009, 2011, 2012, 2014-2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: tkey_249.c,v 1.48.2.2 2003/10/09 07:32:43 marka Exp $ */
+/* $Id$ */
 
 /*
  * Reviewed: Thu Mar 16 17:35:30 PST 2000 by halley.
@@ -37,7 +28,7 @@ fromtext_tkey(ARGS_FROMTEXT) {
 	long i;
 	char *e;
 
-	REQUIRE(type == 249);
+	REQUIRE(type == dns_rdatatype_tkey);
 
 	UNUSED(type);
 	UNUSED(rdclass);
@@ -50,8 +41,9 @@ fromtext_tkey(ARGS_FROMTEXT) {
 				      ISC_FALSE));
 	dns_name_init(&name, NULL);
 	buffer_fromregion(&buffer, &token.value.as_region);
-	origin = (origin != NULL) ? origin : dns_rootname;
-	RETTOK(dns_name_fromtext(&name, &buffer, origin, downcase, target));
+	if (origin == NULL)
+		origin = dns_rootname;
+	RETTOK(dns_name_fromtext(&name, &buffer, origin, options, target));
 
 
 	/*
@@ -85,7 +77,7 @@ fromtext_tkey(ARGS_FROMTEXT) {
 	if (dns_tsigrcode_fromtext(&rcode, &token.value.as_textregion)
 				!= ISC_R_SUCCESS)
 	{
-		i = strtol(token.value.as_pointer, &e, 10);
+		i = strtol(DNS_AS_STR(token), &e, 10);
 		if (*e != 0)
 			RETTOK(DNS_R_UNKNOWN);
 		if (i < 0 || i > 0xffff)
@@ -126,13 +118,13 @@ fromtext_tkey(ARGS_FROMTEXT) {
 static inline isc_result_t
 totext_tkey(ARGS_TOTEXT) {
 	isc_region_t sr, dr;
-	char buf[sizeof "4294967295 "];
+	char buf[sizeof("4294967295 ")];
 	unsigned long n;
 	dns_name_t name;
 	dns_name_t prefix;
 	isc_boolean_t sub;
 
-	REQUIRE(rdata->type == 249);
+	REQUIRE(rdata->type == dns_rdatatype_tkey);
 	REQUIRE(rdata->length != 0);
 
 	dns_rdata_toregion(rdata, &sr);
@@ -201,8 +193,11 @@ totext_tkey(ARGS_TOTEXT) {
 	if ((tctx->flags & DNS_STYLEFLAG_MULTILINE) != 0)
 		RETERR(str_totext(" (", target));
 	RETERR(str_totext(tctx->linebreak, target));
-	RETERR(isc_base64_totext(&dr, tctx->width - 2,
-				 tctx->linebreak, target));
+	if (tctx->width == 0)   /* No splitting */
+		RETERR(isc_base64_totext(&dr, 60, "", target));
+	else
+		RETERR(isc_base64_totext(&dr, tctx->width - 2,
+					 tctx->linebreak, target));
 	if ((tctx->flags & DNS_STYLEFLAG_MULTILINE) != 0)
 		RETERR(str_totext(" ) ", target));
 	else
@@ -227,8 +222,11 @@ totext_tkey(ARGS_TOTEXT) {
 	    if ((tctx->flags & DNS_STYLEFLAG_MULTILINE) != 0)
 		    RETERR(str_totext(" (", target));
 	    RETERR(str_totext(tctx->linebreak, target));
-	    RETERR(isc_base64_totext(&dr, tctx->width - 2,
-				     tctx->linebreak, target));
+		if (tctx->width == 0)   /* No splitting */
+			RETERR(isc_base64_totext(&dr, 60, "", target));
+		else
+			RETERR(isc_base64_totext(&dr, tctx->width - 2,
+						 tctx->linebreak, target));
 	    if ((tctx->flags & DNS_STYLEFLAG_MULTILINE) != 0)
 		    RETERR(str_totext(" )", target));
 	}
@@ -241,7 +239,7 @@ fromwire_tkey(ARGS_FROMWIRE) {
 	unsigned long n;
 	dns_name_t name;
 
-	REQUIRE(type == 249);
+	REQUIRE(type == dns_rdatatype_tkey);
 
 	UNUSED(type);
 	UNUSED(rdclass);
@@ -252,7 +250,7 @@ fromwire_tkey(ARGS_FROMWIRE) {
 	 * Algorithm.
 	 */
 	dns_name_init(&name, NULL);
-	RETERR(dns_name_fromwire(&name, source, dctx, downcase, target));
+	RETERR(dns_name_fromwire(&name, source, dctx, options, target));
 
 	/*
 	 * Inception: 4
@@ -297,7 +295,7 @@ towire_tkey(ARGS_TOWIRE) {
 	dns_name_t name;
 	dns_offsets_t offsets;
 
-	REQUIRE(rdata->type == 249);
+	REQUIRE(rdata->type == dns_rdatatype_tkey);
 	REQUIRE(rdata->length != 0);
 
 	dns_compress_setmethods(cctx, DNS_COMPRESS_NONE);
@@ -323,7 +321,7 @@ compare_tkey(ARGS_COMPARE) {
 
 	REQUIRE(rdata1->type == rdata2->type);
 	REQUIRE(rdata1->rdclass == rdata2->rdclass);
-	REQUIRE(rdata1->type == 249);
+	REQUIRE(rdata1->type == dns_rdatatype_tkey);
 	REQUIRE(rdata1->length != 0);
 	REQUIRE(rdata2->length != 0);
 
@@ -340,14 +338,14 @@ compare_tkey(ARGS_COMPARE) {
 		return (order);
 	isc_region_consume(&r1, name_length(&name1));
 	isc_region_consume(&r2, name_length(&name2));
-	return (compare_region(&r1, &r2));
+	return (isc_region_compare(&r1, &r2));
 }
 
 static inline isc_result_t
 fromstruct_tkey(ARGS_FROMSTRUCT) {
 	dns_rdata_tkey_t *tkey = source;
 
-	REQUIRE(type == 249);
+	REQUIRE(type == dns_rdatatype_tkey);
 	REQUIRE(source != NULL);
 	REQUIRE(tkey->common.rdtype == type);
 	REQUIRE(tkey->common.rdclass == rdclass);
@@ -407,7 +405,7 @@ tostruct_tkey(ARGS_TOSTRUCT) {
 	dns_name_t alg;
 	isc_region_t sr;
 
-	REQUIRE(rdata->type == 249);
+	REQUIRE(rdata->type == dns_rdatatype_tkey);
 	REQUIRE(target != NULL);
 	REQUIRE(rdata->length != 0);
 
@@ -459,6 +457,7 @@ tostruct_tkey(ARGS_TOSTRUCT) {
 	/*
 	 * Key.
 	 */
+	INSIST(tkey->keylen + 2U <= sr.length);
 	tkey->key = mem_maybedup(mctx, sr.base, tkey->keylen);
 	if (tkey->key == NULL)
 		goto cleanup;
@@ -473,6 +472,7 @@ tostruct_tkey(ARGS_TOSTRUCT) {
 	/*
 	 * Other.
 	 */
+	INSIST(tkey->otherlen <= sr.length);
 	tkey->other = mem_maybedup(mctx, sr.base, tkey->otherlen);
 	if (tkey->other == NULL)
 		goto cleanup;
@@ -511,7 +511,7 @@ additionaldata_tkey(ARGS_ADDLDATA) {
 	UNUSED(add);
 	UNUSED(arg);
 
-	REQUIRE(rdata->type == 249);
+	REQUIRE(rdata->type == dns_rdatatype_tkey);
 
 	return (ISC_R_SUCCESS);
 }
@@ -522,9 +522,38 @@ digest_tkey(ARGS_DIGEST) {
 	UNUSED(digest);
 	UNUSED(arg);
 
-	REQUIRE(rdata->type == 249);
+	REQUIRE(rdata->type == dns_rdatatype_tkey);
 
 	return (ISC_R_NOTIMPLEMENTED);
 }
 
+static inline isc_boolean_t
+checkowner_tkey(ARGS_CHECKOWNER) {
+
+	REQUIRE(type == dns_rdatatype_tkey);
+
+	UNUSED(name);
+	UNUSED(type);
+	UNUSED(rdclass);
+	UNUSED(wildcard);
+
+	return (ISC_TRUE);
+}
+
+static inline isc_boolean_t
+checknames_tkey(ARGS_CHECKNAMES) {
+
+	REQUIRE(rdata->type == dns_rdatatype_tkey);
+
+	UNUSED(rdata);
+	UNUSED(owner);
+	UNUSED(bad);
+
+	return (ISC_TRUE);
+}
+
+static inline isc_result_t
+casecompare_tkey(ARGS_COMPARE) {
+	return (compare_tkey(rdata1, rdata2));
+}
 #endif	/* RDATA_GENERIC_TKEY_249_C */

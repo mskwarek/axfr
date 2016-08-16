@@ -1,21 +1,12 @@
 /*
- * Copyright (C) 2000-2002  Internet Software Consortium.
+ * Copyright (C) 2000, 2001, 2004, 2007, 2011, 2014, 2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: timedb.c,v 1.7.4.2 2002/08/05 06:57:09 marka Exp $ */
+/* $Id: timedb.c,v 1.12 2011/10/11 23:46:45 tbox Exp $ */
 
 /*
  * A simple database driver that enables the server to return the
@@ -43,18 +34,29 @@ static dns_sdbimplementation_t *timedb = NULL;
 /*
  * This database operates on relative names.
  *
- * "time" and "@" return the time in a TXT record.  
+ * "time" and "@" return the time in a TXT record.
  * "clock" is a CNAME to "time"
  * "current" is a DNAME to "@" (try time.current.time)
- */ 
+ */
+#ifdef DNS_CLIENTINFO_VERSION
+static isc_result_t
+timedb_lookup(const char *zone, const char *name, void *dbdata,
+	      dns_sdblookup_t *lookup, dns_clientinfomethods_t *methods,
+	      dns_clientinfo_t *clientinfo)
+#else
 static isc_result_t
 timedb_lookup(const char *zone, const char *name, void *dbdata,
 	      dns_sdblookup_t *lookup)
+#endif /* DNS_CLIENTINFO_VERSION */
 {
 	isc_result_t result;
 
 	UNUSED(zone);
 	UNUSED(dbdata);
+#ifdef DNS_CLIENTINFO_VERSION
+	UNUSED(methods);
+	UNUSED(clientinfo);
+#endif /* DNS_CLIENTINFO_VERSION */
 
 	if (strcmp(name, "@") == 0 || strcmp(name, "time") == 0) {
 		time_t now = time(NULL);
@@ -119,7 +121,8 @@ static dns_sdbmethods_t timedb_methods = {
 	timedb_authority,
 	NULL,	/* allnodes */
 	NULL,	/* create */
-	NULL	/* destroy */
+	NULL,	/* destroy */
+	NULL	/* lookup2 */
 };
 
 /*

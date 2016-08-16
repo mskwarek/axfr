@@ -1,21 +1,12 @@
 /*
- * Copyright (C) 1998-2001  Internet Software Consortium.
+ * Copyright (C) 1998-2001, 2004, 2007, 2013-2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: timer_test.c,v 1.36 2001/01/09 21:41:45 bwelling Exp $ */
+/* $Id: timer_test.c,v 1.40 2007/06/19 23:46:59 tbox Exp $ */
 
 #include <config.h>
 
@@ -24,6 +15,7 @@
 #include <unistd.h>
 
 #include <isc/mem.h>
+#include <isc/print.h>
 #include <isc/task.h>
 #include <isc/time.h>
 #include <isc/timer.h>
@@ -94,6 +86,10 @@ timeout(isc_task_t *task, isc_event_t *event) {
 	isc_task_shutdown(task);
 }
 
+static char one[] = "1";
+static char two[] = "2";
+static char three[] = "3";
+
 int
 main(int argc, char *argv[]) {
 	isc_taskmgr_t *manager = NULL;
@@ -102,9 +98,13 @@ main(int argc, char *argv[]) {
 	isc_time_t expires, now;
 	isc_interval_t interval;
 
-	if (argc > 1)
+	if (argc > 1) {
 		workers = atoi(argv[1]);
-	else
+		if (workers < 1)
+			workers = 1;
+		if (workers > 8192)
+			workers = 8192;
+	} else
 		workers = 2;
 	printf("%d workers\n", workers);
 
@@ -119,27 +119,27 @@ main(int argc, char *argv[]) {
 		      ISC_R_SUCCESS);
 	RUNTIME_CHECK(isc_task_create(manager, 0, &t3) ==
 		      ISC_R_SUCCESS);
-	RUNTIME_CHECK(isc_task_onshutdown(t1, shutdown_task, "1") ==
+	RUNTIME_CHECK(isc_task_onshutdown(t1, shutdown_task, one) ==
 		      ISC_R_SUCCESS);
-	RUNTIME_CHECK(isc_task_onshutdown(t2, shutdown_task, "2") ==
+	RUNTIME_CHECK(isc_task_onshutdown(t2, shutdown_task, two) ==
 		      ISC_R_SUCCESS);
-	RUNTIME_CHECK(isc_task_onshutdown(t3, shutdown_task, "3") ==
+	RUNTIME_CHECK(isc_task_onshutdown(t3, shutdown_task, three) ==
 		      ISC_R_SUCCESS);
 
 	printf("task 1: %p\n", t1);
 	printf("task 2: %p\n", t2);
 	printf("task 3: %p\n", t3);
 
-	(void)isc_time_now(&now);
+	TIME_NOW(&now);
 
 	isc_interval_set(&interval, 2, 0);
 	RUNTIME_CHECK(isc_timer_create(timgr, isc_timertype_once, NULL,
-				       &interval, t2, timeout, "2", &ti2) ==
+				       &interval, t2, timeout, two, &ti2) ==
 		      ISC_R_SUCCESS);
 
 	isc_interval_set(&interval, 1, 0);
 	RUNTIME_CHECK(isc_timer_create(timgr, isc_timertype_ticker, NULL,
-				       &interval, t1, tick, "1", &ti1) ==
+				       &interval, t1, tick, one, &ti1) ==
 		      ISC_R_SUCCESS);
 
 	isc_interval_set(&interval, 10, 0);
@@ -147,19 +147,27 @@ main(int argc, char *argv[]) {
 		      ISC_R_SUCCESS);
 	isc_interval_set(&interval, 2, 0);
 	RUNTIME_CHECK(isc_timer_create(timgr, isc_timertype_once, &expires,
-				       &interval, t3, timeout, "3", &ti3) ==
+				       &interval, t3, timeout, three, &ti3) ==
 		      ISC_R_SUCCESS);
 
 	isc_task_detach(&t1);
 	isc_task_detach(&t2);
 	isc_task_detach(&t3);
 
+#ifndef WIN32
 	sleep(15);
+#else
+	Sleep(15000);
+#endif
 	printf("destroy\n");
 	isc_timer_detach(&ti1);
 	isc_timer_detach(&ti2);
 	isc_timer_detach(&ti3);
+#ifndef WIN32
 	sleep(2);
+#else
+	Sleep(2000);
+#endif
 	isc_timermgr_destroy(&timgr);
 	isc_taskmgr_destroy(&manager);
 	printf("destroyed\n");

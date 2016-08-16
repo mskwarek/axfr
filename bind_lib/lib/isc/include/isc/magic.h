@@ -1,39 +1,33 @@
 /*
- * Copyright (C) 1999-2001  Internet Software Consortium.
+ * Copyright (C) 1999-2001, 2004-2007, 2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: magic.h,v 1.11 2001/01/09 21:57:10 bwelling Exp $ */
+/* $Id: magic.h,v 1.18 2007/06/19 23:47:18 tbox Exp $ */
 
 #ifndef ISC_MAGIC_H
 #define ISC_MAGIC_H 1
+
+#include <isc/util.h>
+
+/*! \file isc/magic.h */
 
 typedef struct {
 	unsigned int magic;
 } isc__magic_t;
 
 
-/*
+/*%
  * To use this macro the magic number MUST be the first thing in the
  * structure, and MUST be of type "unsigned int".
- *
  * The intent of this is to allow magic numbers to be checked even though
  * the object is otherwise opaque.
  */
-#define ISC_MAGIC_VALID(a,b)	(((a) != NULL) && \
-				 (((const isc__magic_t *)(a))->magic == (b)))
+#define ISC_MAGIC_VALID(a,b)	(ISC_LIKELY((a) != NULL) && \
+				 ISC_LIKELY(((const isc__magic_t *)(a))->magic == (b)))
 
 #define ISC_MAGIC(a, b, c, d)	((a) << 24 | (b) << 16 | (c) << 8 | (d))
 

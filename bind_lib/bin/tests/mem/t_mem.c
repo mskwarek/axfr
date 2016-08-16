@@ -1,21 +1,12 @@
 /*
- * Copyright (C) 1999-2001  Internet Software Consortium.
+ * Copyright (C) 1999-2001, 2004, 2007, 2009, 2013, 2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: t_mem.c,v 1.9 2001/01/09 21:42:00 bwelling Exp $ */
+/* $Id: t_mem.c,v 1.15 2009/01/22 23:47:54 tbox Exp $ */
 
 #include <config.h>
 
@@ -88,7 +79,7 @@ memtest(void) {
 	/*
 	 * Allocate MP1_MAXALLOC items from the pool.  This is our max.
 	 */
-	for (i = 0 ; i < MP1_MAXALLOC ; i++) {
+	for (i = 0; i < MP1_MAXALLOC; i++) {
 		items1[i] = isc_mempool_get(mp1);
 		if (items1[i] == NULL) {
 			t_info("isc_mempool_get unexpectedly failed\n");
@@ -110,7 +101,7 @@ memtest(void) {
 	 * the free list (which is our max).
 	 */
 
-	for (i = 0 ; i < 11 ; i++) {
+	for (i = 0; i < 11; i++) {
 		isc_mempool_put(mp1, items1[i]);
 		items1[i] = NULL;
 	}
@@ -143,15 +134,15 @@ memtest(void) {
 	isc_mempool_setfillcount(mp2, 25);
 
 	t_info("exercising the memory pool\n");
-	for (j = 0 ; j < 500000 ; j++) {
-		for (i = 0 ; i < 50 ; i++) {
+	for (j = 0; j < 500000; j++) {
+		for (i = 0; i < 50; i++) {
 			items2[i] = isc_mempool_get(mp2);
 			if (items2[i] == NULL) {
 				t_info("items2[%d] is unexpectedly null\n", i);
 				++nfails;
 			}
 		}
-		for (i = 0 ; i < 50 ; i++) {
+		for (i = 0; i < 50; i++) {
 			isc_mempool_put(mp2, items2[i]);
 			items2[i] = NULL;
 		}
@@ -162,7 +153,7 @@ memtest(void) {
 	/*
 	 * Free all the other items and blow away this pool.
 	 */
-	for (i = 11 ; i < MP1_MAXALLOC ; i++) {
+	for (i = 11; i < MP1_MAXALLOC; i++) {
 		isc_mempool_put(mp1, items1[i]);
 		items1[i] = NULL;
 	}
@@ -190,7 +181,7 @@ t1(void) {
 	int	rval;
 	int	result;
 
-	t_assert("mem", 1, T_REQUIRED, a1);
+	t_assert("mem", 1, T_REQUIRED, "%s", a1);
 
 	rval = memtest();
 
@@ -202,7 +193,14 @@ t1(void) {
 }
 
 testspec_t	T_testlist[] = {
-	{	t1,	"basic memory subsystem"	},
-	{	NULL,	NULL				}
+	{	(PFV) t1,	"basic memory subsystem"	},
+	{	(PFV) 0,	NULL				}
 };
 
+#ifdef WIN32
+int
+main(int argc, char **argv) {
+	t_settests(T_testlist);
+	return (t_main(argc, argv));
+}
+#endif

@@ -1,27 +1,20 @@
 /*
- * Copyright (C) 1999-2001  Internet Software Consortium.
+ * Copyright (C) 1999-2001, 2004, 2005, 2007, 2009, 2011-2013, 2015, 2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: t_db.c,v 1.29 2001/08/08 22:54:30 gson Exp $ */
+/* $Id: t_db.c,v 1.41 2011/03/12 04:59:46 tbox Exp $ */
 
 #include <config.h>
 
 #include <ctype.h>
 #include <stdlib.h>
 
+#include <isc/entropy.h>
+#include <isc/hash.h>
 #include <isc/mem.h>
 #include <isc/string.h>
 #include <isc/util.h>
@@ -44,7 +37,7 @@ t_create(const char *db_type, const char *origin, const char *class,
 	int			len;
 	isc_result_t		dns_result;
 	dns_dbtype_t		dbtype;
-	isc_constregion_t	region;
+	isc_textregion_t	region;
 	isc_buffer_t		origin_buffer;
 	dns_fixedname_t		dns_origin;
 	dns_rdataclass_t	rdataclass;
@@ -56,20 +49,19 @@ t_create(const char *db_type, const char *origin, const char *class,
 
 	dns_fixedname_init(&dns_origin);
 	len = strlen(origin);
-	isc_buffer_init(&origin_buffer, origin, len);
+	isc_buffer_constinit(&origin_buffer, origin, len);
 	isc_buffer_add(&origin_buffer, len);
 	dns_result = dns_name_fromtext(dns_fixedname_name(&dns_origin),
-				       &origin_buffer, NULL, ISC_FALSE, NULL);
+				       &origin_buffer, NULL, 0, NULL);
 	if (dns_result != ISC_R_SUCCESS) {
 		t_info("dns_name_fromtext failed %s\n",
 		       dns_result_totext(dns_result));
 		return(dns_result);
 	}
 
-	region.base = class;
+	DE_CONST(class, region.base);
 	region.length = strlen(class);
-	dns_result = dns_rdataclass_fromtext(&rdataclass,
-					     (isc_textregion_t *)&region);
+	dns_result = dns_rdataclass_fromtext(&rdataclass, &region);
 	if (dns_result != ISC_R_SUCCESS) {
 		t_info("dns_rdataclass_fromtext failed %s\n",
 		       dns_result_totext(dns_result));
@@ -105,6 +97,7 @@ t_dns_db_load(char **av) {
 	isc_result_t		dns_result;
 	isc_result_t		isc_result;
 	isc_mem_t		*mctx;
+	isc_entropy_t		*ectx;
 	dns_dbnode_t		*nodep;
 	isc_textregion_t	textregion;
 	isc_buffer_t		findname_buffer;
@@ -116,9 +109,9 @@ t_dns_db_load(char **av) {
 	isc_result_t		exp_load_result;
 	isc_result_t		exp_find_result;
 
-	result = T_UNRESOLVED;
 	db = NULL;
 	mctx = NULL;
+	ectx = NULL;
 	filename = T_ARG(0);
 	db_type = T_ARG(1);
 	origin = T_ARG(2);
@@ -141,8 +134,27 @@ t_dns_db_load(char **av) {
 		return(T_UNRESOLVED);
 	}
 
+	isc_result = isc_entropy_create(mctx, &ectx);
+	if (isc_result != ISC_R_SUCCESS) {
+		t_info("isc_entropy_create failed %s\n",
+				isc_result_totext(isc_result));
+		isc_mem_destroy(&mctx);
+		return(T_UNRESOLVED);
+	}
+
+	isc_result = isc_hash_create(mctx, ectx, DNS_NAME_MAXWIRE);
+	if (isc_result != ISC_R_SUCCESS) {
+		t_info("isc_hash_create failed %s\n",
+				isc_result_totext(isc_result));
+		isc_entropy_detach(&ectx);
+		isc_mem_destroy(&mctx);
+		return(T_UNRESOLVED);
+	}
+
 	dns_result = t_create(db_type, origin, class, model, mctx, &db);
 	if (dns_result != ISC_R_SUCCESS) {
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -153,6 +165,8 @@ t_dns_db_load(char **av) {
 				dns_result_totext(dns_result),
 				dns_result_totext(exp_load_result));
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_FAIL);
 	}
@@ -166,11 +180,13 @@ t_dns_db_load(char **av) {
 	isc_buffer_init(&findname_buffer, findname, len);
 	isc_buffer_add(&findname_buffer, len);
 	dns_result = dns_name_fromtext(dns_fixedname_name(&dns_findname),
-				&findname_buffer, NULL, ISC_FALSE, NULL);
+				&findname_buffer, NULL, 0, NULL);
 	if (dns_result != ISC_R_SUCCESS) {
 		t_info("dns_name_fromtext failed %s\n",
 			dns_result_totext(dns_result));
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -183,6 +199,8 @@ t_dns_db_load(char **av) {
 				find_type,
 				dns_result_totext(dns_result));
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -223,6 +241,8 @@ t_dns_db_load(char **av) {
 		dns_db_closeversion(db, &versionp, ISC_FALSE);
  cleanup_db:
 	dns_db_detach(&db);
+	isc_hash_destroy();
+	isc_entropy_detach(&ectx);
 	isc_mem_destroy(&mctx);
 	return(result);
 }
@@ -235,7 +255,7 @@ static void
 t1(void) {
 	int	result;
 
-	t_assert("dns_db_load", 1, T_REQUIRED, a1);
+	t_assert("dns_db_load", 1, T_REQUIRED, "%s", a1);
 	result = t_eval("dns_db_load_data", t_dns_db_load, 9);
 	t_result(result);
 }
@@ -256,15 +276,15 @@ t_dns_db_zc_x(char *filename, char *db_type, char *origin, char *class,
 	isc_result_t		dns_result;
 	isc_result_t		isc_result;
 	isc_mem_t		*mctx;
+	isc_entropy_t		*ectx;
 	dns_rdataclass_t	rdataclass;
 	isc_textregion_t	textregion;
 	isc_buffer_t		origin_buffer;
 	dns_fixedname_t		dns_origin;
 
-	result = T_UNRESOLVED;
-
 	db = NULL;
 	mctx = NULL;
+	ectx = NULL;
 
 	t_info("testing using file %s\n", filename);
 
@@ -273,7 +293,7 @@ t_dns_db_zc_x(char *filename, char *db_type, char *origin, char *class,
 	isc_buffer_init(&origin_buffer, origin, len);
 	isc_buffer_add(&origin_buffer, len);
 	dns_result = dns_name_fromtext(dns_fixedname_name(&dns_origin),
-				       &origin_buffer, NULL, ISC_FALSE, NULL);
+				       &origin_buffer, NULL, 0, NULL);
 	if (dns_result != ISC_R_SUCCESS) {
 		t_info("dns_name_fromtext failed %s\n",
 		       dns_result_totext(dns_result));
@@ -296,12 +316,31 @@ t_dns_db_zc_x(char *filename, char *db_type, char *origin, char *class,
 		return(T_UNRESOLVED);
 	}
 
+	isc_result = isc_entropy_create(mctx, &ectx);
+	if (isc_result != ISC_R_SUCCESS) {
+		t_info("isc_entropy_create failed %s\n",
+				isc_result_totext(isc_result));
+		isc_mem_destroy(&mctx);
+		return(T_UNRESOLVED);
+	}
+
+	isc_result = isc_hash_create(mctx, ectx, DNS_NAME_MAXWIRE);
+	if (isc_result != ISC_R_SUCCESS) {
+		t_info("isc_hash_create failed %s\n",
+				isc_result_totext(isc_result));
+		isc_entropy_detach(&ectx);
+		isc_mem_destroy(&mctx);
+		return(T_UNRESOLVED);
+	}
+
 	dns_result = dns_db_create(mctx, db_type,
 				   dns_fixedname_name(&dns_origin),
 				   dbtype, rdataclass, 0, NULL, &db);
 	if (dns_result != ISC_R_SUCCESS) {
 		t_info("dns_db_create failed %s\n",
 		       dns_result_totext(dns_result));
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -319,6 +358,8 @@ t_dns_db_zc_x(char *filename, char *db_type, char *origin, char *class,
 	}
 
 	dns_db_detach(&db);
+	isc_hash_destroy();
+	isc_entropy_detach(&ectx);
 	isc_mem_destroy(&mctx);
 	return(result);
 }
@@ -350,8 +391,10 @@ test_dns_db_zc_x(const char *filename, dns_dbtype_t dbtype,
 			/*
 			 * Skip comment lines.
 			 */
-			if ((isspace((unsigned char)*p)) || (*p == '#'))
+			if ((isspace((unsigned char)*p)) || (*p == '#')) {
+				(void)free(p);
 				continue;
+			}
 
 			cnt = t_bustline(p, tokens);
 			if (cnt == 4) {
@@ -396,7 +439,7 @@ static void
 t2(void) {
 	int	result;
 
-	t_assert("dns_db_iscache", 2, T_REQUIRED, a2);
+	t_assert("dns_db_iscache", 2, T_REQUIRED, "%s", a2);
 	result = test_dns_db_zc_x("dns_db_iscache_1_data",
 				  dns_dbtype_cache, dns_db_iscache, ISC_TRUE);
 	t_result(result);
@@ -412,7 +455,7 @@ static void
 t3(void) {
 	int	result;
 
-	t_assert("dns_db_iscache", 3, T_REQUIRED, a3);
+	t_assert("dns_db_iscache", 3, T_REQUIRED, "%s", a3);
 	result = test_dns_db_zc_x("dns_db_iscache_2_data",
 				  dns_dbtype_zone, dns_db_iscache, ISC_FALSE);
 	t_result(result);
@@ -428,7 +471,7 @@ static void
 t4(void) {
 	int	result;
 
-	t_assert("dns_db_iszone", 4, T_REQUIRED, a4);
+	t_assert("dns_db_iszone", 4, T_REQUIRED, "%s", a4);
 	result = test_dns_db_zc_x("dns_db_iszone_1_data",
 				  dns_dbtype_zone, dns_db_iszone, ISC_TRUE);
 	t_result(result);
@@ -443,7 +486,7 @@ static void
 t5(void) {
 	int	result;
 
-	t_assert("dns_db_iszone", 5, T_REQUIRED, a5);
+	t_assert("dns_db_iszone", 5, T_REQUIRED, "%s", a5);
 	result = test_dns_db_zc_x("dns_db_iszone_2_data",
 				  dns_dbtype_cache, dns_db_iszone, ISC_FALSE);
 	t_result(result);
@@ -461,6 +504,7 @@ t_dns_db_origin(char **av) {
 	isc_result_t		dns_result;
 	isc_result_t		isc_result;
 	isc_mem_t		*mctx;
+	isc_entropy_t		*ectx;
 	dns_db_t		*db;
 	dns_fixedname_t		dns_origin;
 	dns_fixedname_t		dns_dborigin;
@@ -468,7 +512,7 @@ t_dns_db_origin(char **av) {
 
 	db = NULL;
 	mctx = NULL;
-
+	ectx = NULL;
 
 	filename = T_ARG(0);
 	origin = T_ARG(1);
@@ -483,10 +527,29 @@ t_dns_db_origin(char **av) {
 		return(T_UNRESOLVED);
 	}
 
+	isc_result = isc_entropy_create(mctx, &ectx);
+	if (isc_result != ISC_R_SUCCESS) {
+		t_info("isc_entropy_create failed %s\n",
+				isc_result_totext(isc_result));
+		isc_mem_destroy(&mctx);
+		return(T_UNRESOLVED);
+	}
+
+	isc_result = isc_hash_create(mctx, ectx, DNS_NAME_MAXWIRE);
+	if (isc_result != ISC_R_SUCCESS) {
+		t_info("isc_hash_create failed %s\n",
+				isc_result_totext(isc_result));
+		isc_entropy_detach(&ectx);
+		isc_mem_destroy(&mctx);
+		return(T_UNRESOLVED);
+	}
+
 	dns_result = t_create("rbt", origin, "in", "isc_true", mctx, &db);
 	if (dns_result != ISC_R_SUCCESS) {
 		t_info("t_create failed %s\n",
 			dns_result_totext(dns_result));
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -502,16 +565,20 @@ t_dns_db_origin(char **av) {
 		t_info("dns_db_load failed %s\n",
 				dns_result_totext(dns_result));
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
 
 	dns_result = dns_name_fromtext(dns_fixedname_name(&dns_origin),
-				&origin_buffer, NULL, ISC_FALSE, NULL);
+				&origin_buffer, NULL, 0, NULL);
 	if (dns_result != ISC_R_SUCCESS) {
 		t_info("dns_name_fromtext failed %s\n",
 				dns_result_totext(dns_result));
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -525,6 +592,8 @@ t_dns_db_origin(char **av) {
 	}
 
 	dns_db_detach(&db);
+	isc_hash_destroy();
+	isc_entropy_detach(&ectx);
 	isc_mem_destroy(&mctx);
 	return(result);
 
@@ -537,7 +606,7 @@ static void
 t6(void) {
 	int	result;
 
-	t_assert("dns_db_origin", 6, T_REQUIRED, a6);
+	t_assert("dns_db_origin", 6, T_REQUIRED, "%s", a6);
 	result = t_eval("dns_db_origin_data", t_dns_db_origin, 2);
 	t_result(result);
 }
@@ -559,6 +628,7 @@ t_dns_db_class(char **av) {
 	isc_result_t		dns_result;
 	isc_result_t		isc_result;
 	isc_mem_t		*mctx;
+	isc_entropy_t		*ectx;
 	dns_db_t		*db;
 	dns_rdataclass_t	rdataclass;
 	dns_rdataclass_t	db_rdataclass;
@@ -568,7 +638,7 @@ t_dns_db_class(char **av) {
 	class = T_ARG(1);
 	db = NULL;
 	mctx = NULL;
-
+	ectx = NULL;
 
 	t_info("testing with database %s and class %s\n",
 			filename, class);
@@ -589,10 +659,29 @@ t_dns_db_class(char **av) {
 		return(T_UNRESOLVED);
 	}
 
+	isc_result = isc_entropy_create(mctx, &ectx);
+	if (isc_result != ISC_R_SUCCESS) {
+		t_info("isc_entropy_create failed %s\n",
+				isc_result_totext(isc_result));
+		isc_mem_destroy(&mctx);
+		return(T_UNRESOLVED);
+	}
+
+	isc_result = isc_hash_create(mctx, ectx, DNS_NAME_MAXWIRE);
+	if (isc_result != ISC_R_SUCCESS) {
+		t_info("isc_hash_create failed %s\n",
+				isc_result_totext(isc_result));
+		isc_entropy_detach(&ectx);
+		isc_mem_destroy(&mctx);
+		return(T_UNRESOLVED);
+	}
+
 	dns_result = t_create("rbt", ".", class, "isc_true", mctx, &db);
 	if (dns_result != ISC_R_SUCCESS) {
 		t_info("t_create failed %s\n",
 			dns_result_totext(dns_result));
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -602,6 +691,8 @@ t_dns_db_class(char **av) {
 		t_info("dns_db_load failed %s\n",
 				dns_result_totext(dns_result));
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -619,6 +710,8 @@ t_dns_db_class(char **av) {
 	}
 
 	dns_db_detach(&db);
+	isc_hash_destroy();
+	isc_entropy_detach(&ectx);
 	isc_mem_destroy(&mctx);
 	return(result);
 
@@ -627,7 +720,7 @@ static void
 t7(void) {
 	int	result;
 
-	t_assert("dns_db_class", 7, T_REQUIRED, a7);
+	t_assert("dns_db_class", 7, T_REQUIRED, "%s", a7);
 	result = t_eval("dns_db_class_data", t_dns_db_class, 2);
 	t_result(result);
 }
@@ -653,6 +746,7 @@ t_dns_db_currentversion(char **av) {
 	isc_result_t		dns_result;
 	isc_result_t		isc_result;
 	isc_mem_t		*mctx;
+	isc_entropy_t		*ectx;
 	dns_dbnode_t		*nodep;
 	isc_textregion_t	textregion;
 	isc_buffer_t		findname_buffer;
@@ -663,8 +757,6 @@ t_dns_db_currentversion(char **av) {
 	dns_dbversion_t		*cversionp;
 	dns_dbversion_t		*nversionp;
 
-	result = T_UNRESOLVED;
-
 	filename = T_ARG(0);
 	db_type = T_ARG(1);
 	origin = T_ARG(2);
@@ -674,6 +766,7 @@ t_dns_db_currentversion(char **av) {
 	findtype = T_ARG(6);
 	db = NULL;
 	mctx = NULL;
+	ectx = NULL;
 
 	t_info("testing using file %s and name %s\n", filename, findname);
 
@@ -684,8 +777,27 @@ t_dns_db_currentversion(char **av) {
 		return(T_UNRESOLVED);
 	}
 
+	isc_result = isc_entropy_create(mctx, &ectx);
+	if (isc_result != ISC_R_SUCCESS) {
+		t_info("isc_entropy_create failed %s\n",
+				isc_result_totext(isc_result));
+		isc_mem_destroy(&mctx);
+		return(T_UNRESOLVED);
+	}
+
+	isc_result = isc_hash_create(mctx, ectx, DNS_NAME_MAXWIRE);
+	if (isc_result != ISC_R_SUCCESS) {
+		t_info("isc_hash_create failed %s\n",
+				isc_result_totext(isc_result));
+		isc_entropy_detach(&ectx);
+		isc_mem_destroy(&mctx);
+		return(T_UNRESOLVED);
+	}
+
 	dns_result = t_create(db_type, origin, class, model, mctx, &db);
 	if (dns_result != ISC_R_SUCCESS) {
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -695,6 +807,8 @@ t_dns_db_currentversion(char **av) {
 		t_info("dns_db_load returned %s\n",
 				dns_result_totext(dns_result));
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -704,11 +818,13 @@ t_dns_db_currentversion(char **av) {
 	isc_buffer_init(&findname_buffer, findname, len);
 	isc_buffer_add(&findname_buffer, len);
 	dns_result = dns_name_fromtext(dns_fixedname_name(&dns_findname),
-				&findname_buffer, NULL, ISC_FALSE, NULL);
+				&findname_buffer, NULL, 0, NULL);
 	if (dns_result != ISC_R_SUCCESS) {
 		t_info("dns_name_fromtext failed %s\n",
 			dns_result_totext(dns_result));
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -721,6 +837,8 @@ t_dns_db_currentversion(char **av) {
 				findtype,
 				dns_result_totext(dns_result));
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -749,6 +867,8 @@ t_dns_db_currentversion(char **av) {
 		t_info("unable to find %s using current version\n", findname);
 		dns_db_closeversion(db, &cversionp, ISC_FALSE);
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -771,6 +891,8 @@ t_dns_db_currentversion(char **av) {
 		dns_rdataset_disassociate(&rdataset);
 		dns_db_closeversion(db, &cversionp, ISC_FALSE);
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -787,6 +909,8 @@ t_dns_db_currentversion(char **av) {
 		dns_db_closeversion(db, &nversionp, ISC_FALSE);
 		dns_db_closeversion(db, &cversionp, ISC_FALSE);
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -817,6 +941,8 @@ t_dns_db_currentversion(char **av) {
 		dns_db_closeversion(db, &cversionp, ISC_FALSE);
 		dns_db_closeversion(db, &nversionp, ISC_FALSE);
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_FAIL);
 	}
@@ -843,6 +969,8 @@ t_dns_db_currentversion(char **av) {
 		t_info("cound not find %s using current version\n", findname);
 		dns_db_closeversion(db, &cversionp, ISC_FALSE);
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		result = T_FAIL;
 	}
@@ -852,6 +980,8 @@ t_dns_db_currentversion(char **av) {
 
 	dns_db_closeversion(db, &cversionp, ISC_FALSE);
 	dns_db_detach(&db);
+	isc_hash_destroy();
+	isc_entropy_detach(&ectx);
 	isc_mem_destroy(&mctx);
 
 	return(result);
@@ -861,7 +991,7 @@ static void
 t8(void) {
 	int	result;
 
-	t_assert("dns_db_currentversion", 8, T_REQUIRED, a8);
+	t_assert("dns_db_currentversion", 8, T_REQUIRED, "%s", a8);
 	result = t_eval("dns_db_currentversion_data",
 			t_dns_db_currentversion, 7);
 	t_result(result);
@@ -889,6 +1019,7 @@ t_dns_db_newversion(char **av) {
 	isc_result_t		dns_result;
 	isc_result_t		isc_result;
 	isc_mem_t		*mctx;
+	isc_entropy_t		*ectx;
 	dns_dbnode_t		*nodep;
 	dns_dbnode_t		*found_nodep;
 	isc_textregion_t	textregion;
@@ -905,8 +1036,6 @@ t_dns_db_newversion(char **av) {
 	dns_dbversion_t		*nversionp;
 	dns_rdatalist_t		rdatalist;
 
-	result = T_UNRESOLVED;
-
 	filename = T_ARG(0);
 	db_type = T_ARG(1);
 	origin = T_ARG(2);
@@ -916,6 +1045,7 @@ t_dns_db_newversion(char **av) {
 	newtype = T_ARG(6);
 	db = NULL;
 	mctx = NULL;
+	ectx = NULL;
 
 	/*
 	 * Open a new version, add some data, commit it,
@@ -932,8 +1062,27 @@ t_dns_db_newversion(char **av) {
 		return(T_UNRESOLVED);
 	}
 
+	isc_result = isc_entropy_create(mctx, &ectx);
+	if (isc_result != ISC_R_SUCCESS) {
+		t_info("isc_entropy_create failed %s\n",
+				isc_result_totext(isc_result));
+		isc_mem_destroy(&mctx);
+		return(T_UNRESOLVED);
+	}
+
+	isc_result = isc_hash_create(mctx, ectx, DNS_NAME_MAXWIRE);
+	if (isc_result != ISC_R_SUCCESS) {
+		t_info("isc_hash_create failed %s\n",
+				isc_result_totext(isc_result));
+		isc_entropy_detach(&ectx);
+		isc_mem_destroy(&mctx);
+		return(T_UNRESOLVED);
+	}
+
 	dns_result = t_create(db_type, origin, class, model, mctx, &db);
 	if (dns_result != ISC_R_SUCCESS) {
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -943,6 +1092,8 @@ t_dns_db_newversion(char **av) {
 		t_info("dns_db_load returned %s\n",
 				dns_result_totext(dns_result));
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -956,11 +1107,13 @@ t_dns_db_newversion(char **av) {
 	isc_buffer_init(&newname_buffer, newname, len);
 	isc_buffer_add(&newname_buffer, len);
 	dns_result = dns_name_fromtext(dns_fixedname_name(&dns_newname),
-				&newname_buffer, NULL, ISC_FALSE, NULL);
+				&newname_buffer, NULL, 0, NULL);
 	if (dns_result != ISC_R_SUCCESS) {
 		t_info("dns_name_fromtext failed %s\n",
 			dns_result_totext(dns_result));
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -972,6 +1125,8 @@ t_dns_db_newversion(char **av) {
 		t_info("dns_db_findnode failed %s\n",
 				dns_result_totext(dns_result));
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -990,6 +1145,8 @@ t_dns_db_newversion(char **av) {
 				dns_result_totext(dns_result));
 		dns_db_detachnode(db, &nodep);
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -1002,6 +1159,8 @@ t_dns_db_newversion(char **av) {
 				dns_result_totext(dns_result));
 		dns_db_detachnode(db, &nodep);
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -1013,20 +1172,20 @@ t_dns_db_newversion(char **av) {
 	added_rdata.rdclass = rdataclass;
 	added_rdata.type = rdatatype;
 
-	dns_rdataset_init(&added_rdataset);
+	dns_rdatalist_init(&rdatalist);
 	rdatalist.type = rdatatype;
-	rdatalist.covers = 0;
 	rdatalist.rdclass = rdataclass;
-	rdatalist.ttl = 0;
-	ISC_LIST_INIT(rdatalist.rdata);
 	ISC_LIST_APPEND(rdatalist.rdata, &added_rdata, link);
 
+	dns_rdataset_init(&added_rdataset);
 	dns_result = dns_rdatalist_tordataset(&rdatalist, &added_rdataset);
 	if (dns_result != ISC_R_SUCCESS) {
 		t_info("dns_rdatalist_tordataset failed %s\n",
 				dns_result_totext(dns_result));
 		dns_db_detachnode(db, &nodep);
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -1038,6 +1197,8 @@ t_dns_db_newversion(char **av) {
 				dns_result_totext(dns_result));
 		dns_db_detachnode(db, &nodep);
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -1050,6 +1211,8 @@ t_dns_db_newversion(char **av) {
 		dns_db_closeversion(db, &nversionp, ISC_FALSE);
 		dns_db_detachnode(db, &nodep);
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -1089,6 +1252,8 @@ t_dns_db_newversion(char **av) {
 		if (dns_rdataset_isassociated(&found_rdataset))
 			dns_rdataset_disassociate(&found_rdataset);
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_FAIL);
 	}
@@ -1102,6 +1267,8 @@ t_dns_db_newversion(char **av) {
 			dns_rdataset_disassociate(&found_rdataset);
 		dns_db_closeversion(db, &nversionp, ISC_FALSE);
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_FAIL);
 	}
@@ -1127,6 +1294,8 @@ t_dns_db_newversion(char **av) {
 		dns_rdataset_disassociate(&found_rdataset);
 	dns_db_detachnode(db, &found_nodep);
 	dns_db_detach(&db);
+	isc_hash_destroy();
+	isc_entropy_detach(&ectx);
 	isc_mem_destroy(&mctx);
 
 	return(result);
@@ -1136,7 +1305,7 @@ static void
 t9(void) {
 	int	result;
 
-	t_assert("dns_db_newversion", 9, T_REQUIRED, a9);
+	t_assert("dns_db_newversion", 9, T_REQUIRED, "%s", a9);
 	result = t_eval("dns_db_newversion_data", t_dns_db_newversion, 7);
 	t_result(result);
 }
@@ -1167,6 +1336,7 @@ t_dns_db_closeversion_1(char **av) {
 	isc_result_t		dns_result;
 	isc_result_t		isc_result;
 	isc_mem_t		*mctx;
+	isc_entropy_t		*ectx;
 	dns_dbnode_t		*nodep;
 	isc_textregion_t	textregion;
 	isc_buffer_t		name_buffer;
@@ -1196,9 +1366,9 @@ t_dns_db_closeversion_1(char **av) {
 	existing_type = T_ARG(8);
 
 	nfails = 0;
-	result = T_UNRESOLVED;
 	db = NULL;
 	mctx = NULL;
+	ectx = NULL;
 
 	/*
 	 * Open a new version, add some data,
@@ -1215,8 +1385,27 @@ t_dns_db_closeversion_1(char **av) {
 		return(T_UNRESOLVED);
 	}
 
+	isc_result = isc_entropy_create(mctx, &ectx);
+	if (isc_result != ISC_R_SUCCESS) {
+		t_info("isc_entropy_create failed %s\n",
+				isc_result_totext(isc_result));
+		isc_mem_destroy(&mctx);
+		return(T_UNRESOLVED);
+	}
+
+	isc_result = isc_hash_create(mctx, ectx, DNS_NAME_MAXWIRE);
+	if (isc_result != ISC_R_SUCCESS) {
+		t_info("isc_hash_create failed %s\n",
+				isc_result_totext(isc_result));
+		isc_entropy_detach(&ectx);
+		isc_mem_destroy(&mctx);
+		return(T_UNRESOLVED);
+	}
+
 	dns_result = t_create(db_type, origin, class, model, mctx, &db);
 	if (dns_result != ISC_R_SUCCESS) {
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -1226,6 +1415,8 @@ t_dns_db_closeversion_1(char **av) {
 		t_info("dns_db_load returned %s\n",
 				dns_result_totext(dns_result));
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -1239,11 +1430,13 @@ t_dns_db_closeversion_1(char **av) {
 	isc_buffer_init(&name_buffer, existing_name, len);
 	isc_buffer_add(&name_buffer, len);
 	dns_result = dns_name_fromtext(dns_fixedname_name(&dns_existingname),
-			&name_buffer, NULL, ISC_FALSE, NULL);
+			&name_buffer, NULL, 0, NULL);
 	if (dns_result != ISC_R_SUCCESS) {
 		t_info("dns_name_fromtext failed %s\n",
 			dns_result_totext(dns_result));
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -1257,6 +1450,8 @@ t_dns_db_closeversion_1(char **av) {
 				dns_result_totext(dns_result));
 		dns_db_detachnode(db, &nodep);
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -1268,6 +1463,8 @@ t_dns_db_closeversion_1(char **av) {
 		t_info("dns_db_findnode %s\n",
 				dns_result_totext(dns_result));
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -1280,6 +1477,8 @@ t_dns_db_closeversion_1(char **av) {
 				dns_result_totext(dns_result));
 		dns_db_detachnode(db, &nodep);
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -1292,6 +1491,8 @@ t_dns_db_closeversion_1(char **av) {
 		dns_db_closeversion(db, &nversionp, ISC_FALSE);
 		dns_db_detachnode(db, &nodep);
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -1308,12 +1509,14 @@ t_dns_db_closeversion_1(char **av) {
 	isc_buffer_init(&name_buffer, new_name, len);
 	isc_buffer_add(&name_buffer, len);
 	dns_result = dns_name_fromtext(dns_fixedname_name(&dns_newname),
-				&name_buffer, NULL, ISC_FALSE, NULL);
+				&name_buffer, NULL, 0, NULL);
 	if (dns_result != ISC_R_SUCCESS) {
 		t_info("dns_name_fromtext failed %s\n",
 			dns_result_totext(dns_result));
 		dns_db_closeversion(db, &nversionp, ISC_FALSE);
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -1325,6 +1528,8 @@ t_dns_db_closeversion_1(char **av) {
 				dns_result_totext(dns_result));
 		dns_db_closeversion(db, &nversionp, ISC_FALSE);
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -1342,6 +1547,8 @@ t_dns_db_closeversion_1(char **av) {
 				dns_result_totext(dns_result));
 		dns_db_detachnode(db, &nodep);
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -1354,6 +1561,8 @@ t_dns_db_closeversion_1(char **av) {
 				dns_result_totext(dns_result));
 		dns_db_detachnode(db, &nodep);
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -1365,20 +1574,20 @@ t_dns_db_closeversion_1(char **av) {
 	added_rdata.rdclass = rdataclass;
 	added_rdata.type = new_rdatatype;
 
-	dns_rdataset_init(&added_rdataset);
+	dns_rdatalist_init(&rdatalist);
 	rdatalist.type = new_rdatatype;
-	rdatalist.covers = 0;
 	rdatalist.rdclass = rdataclass;
-	rdatalist.ttl = 0;
-	ISC_LIST_INIT(rdatalist.rdata);
 	ISC_LIST_APPEND(rdatalist.rdata, &added_rdata, link);
 
+	dns_rdataset_init(&added_rdataset);
 	dns_result = dns_rdatalist_tordataset(&rdatalist, &added_rdataset);
 	if (dns_result != ISC_R_SUCCESS) {
 		t_info("dns_rdatalist_tordataset failed %s\n",
 				dns_result_totext(dns_result));
 		dns_db_detachnode(db, &nodep);
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -1391,6 +1600,8 @@ t_dns_db_closeversion_1(char **av) {
 		dns_db_closeversion(db, &nversionp, ISC_FALSE);
 		dns_db_detachnode(db, &nodep);
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -1426,6 +1637,8 @@ t_dns_db_closeversion_1(char **av) {
 		if (dns_rdataset_isassociated(&found_rdataset))
 			dns_rdataset_disassociate(&found_rdataset);
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_FAIL);
 	}
@@ -1439,6 +1652,8 @@ t_dns_db_closeversion_1(char **av) {
 			dns_rdataset_disassociate(&found_rdataset);
 		dns_db_closeversion(db, &cversionp, ISC_FALSE);
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_FAIL);
 	}
@@ -1482,6 +1697,8 @@ t_dns_db_closeversion_1(char **av) {
 
 	dns_db_closeversion(db, &cversionp, ISC_FALSE);
 	dns_db_detach(&db);
+	isc_hash_destroy();
+	isc_entropy_detach(&ectx);
 	isc_mem_destroy(&mctx);
 
 	if (nfails == 0)
@@ -1496,7 +1713,7 @@ static void
 t10(void) {
 	int	result;
 
-	t_assert("dns_db_closeversion", 10, T_REQUIRED, a10);
+	t_assert("dns_db_closeversion", 10, T_REQUIRED, "%s", a10);
 	result = t_eval("dns_db_closeversion_1_data",
 			t_dns_db_closeversion_1, 9);
 	t_result(result);
@@ -1528,6 +1745,7 @@ t_dns_db_closeversion_2(char **av) {
 	isc_result_t		dns_result;
 	isc_result_t		isc_result;
 	isc_mem_t		*mctx;
+	isc_entropy_t		*ectx;
 	dns_dbnode_t		*nodep;
 	isc_textregion_t	textregion;
 	isc_buffer_t		name_buffer;
@@ -1557,9 +1775,9 @@ t_dns_db_closeversion_2(char **av) {
 	existing_type = T_ARG(8);
 
 	nfails = 0;
-	result = T_UNRESOLVED;
 	db = NULL;
 	mctx = NULL;
+	ectx = NULL;
 
 	/*
 	 * Open a new version, add some data,
@@ -1576,8 +1794,27 @@ t_dns_db_closeversion_2(char **av) {
 		return(T_UNRESOLVED);
 	}
 
+	isc_result = isc_entropy_create(mctx, &ectx);
+	if (isc_result != ISC_R_SUCCESS) {
+		t_info("isc_entropy_create failed %s\n",
+				isc_result_totext(isc_result));
+		isc_mem_destroy(&mctx);
+		return(T_UNRESOLVED);
+	}
+
+	isc_result = isc_hash_create(mctx, ectx, DNS_NAME_MAXWIRE);
+	if (isc_result != ISC_R_SUCCESS) {
+		t_info("isc_hash_create failed %s\n",
+				isc_result_totext(isc_result));
+		isc_entropy_detach(&ectx);
+		isc_mem_destroy(&mctx);
+		return(T_UNRESOLVED);
+	}
+
 	dns_result = t_create(db_type, origin, class, model, mctx, &db);
 	if (dns_result != ISC_R_SUCCESS) {
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -1587,6 +1824,8 @@ t_dns_db_closeversion_2(char **av) {
 		t_info("dns_db_load returned %s\n",
 				dns_result_totext(dns_result));
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -1600,11 +1839,13 @@ t_dns_db_closeversion_2(char **av) {
 	isc_buffer_init(&name_buffer, existing_name, len);
 	isc_buffer_add(&name_buffer, len);
 	dns_result = dns_name_fromtext(dns_fixedname_name(&dns_existingname),
-			&name_buffer, NULL, ISC_FALSE, NULL);
+			&name_buffer, NULL, 0, NULL);
 	if (dns_result != ISC_R_SUCCESS) {
 		t_info("dns_name_fromtext failed %s\n",
 			dns_result_totext(dns_result));
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -1618,6 +1859,8 @@ t_dns_db_closeversion_2(char **av) {
 				dns_result_totext(dns_result));
 		dns_db_detachnode(db, &nodep);
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -1629,6 +1872,8 @@ t_dns_db_closeversion_2(char **av) {
 		t_info("dns_db_findnode %s\n",
 				dns_result_totext(dns_result));
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -1643,6 +1888,8 @@ t_dns_db_closeversion_2(char **av) {
 				dns_result_totext(dns_result));
 		dns_db_detachnode(db, &nodep);
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -1655,6 +1902,8 @@ t_dns_db_closeversion_2(char **av) {
 		dns_db_closeversion(db, &nversionp, ISC_FALSE);
 		dns_db_detachnode(db, &nodep);
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -1671,12 +1920,14 @@ t_dns_db_closeversion_2(char **av) {
 	isc_buffer_init(&name_buffer, new_name, len);
 	isc_buffer_add(&name_buffer, len);
 	dns_result = dns_name_fromtext(dns_fixedname_name(&dns_newname),
-				       &name_buffer, NULL, ISC_FALSE, NULL);
+				       &name_buffer, NULL, 0, NULL);
 	if (dns_result != ISC_R_SUCCESS) {
 		t_info("dns_name_fromtext failed %s\n",
 		       dns_result_totext(dns_result));
 		dns_db_closeversion(db, &nversionp, ISC_FALSE);
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -1688,6 +1939,8 @@ t_dns_db_closeversion_2(char **av) {
 		       dns_result_totext(dns_result));
 		dns_db_closeversion(db, &nversionp, ISC_FALSE);
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -1700,6 +1953,8 @@ t_dns_db_closeversion_2(char **av) {
 		       new_type, dns_result_totext(dns_result));
 		dns_db_detachnode(db, &nodep);
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -1712,6 +1967,8 @@ t_dns_db_closeversion_2(char **av) {
 		       dns_result_totext(dns_result));
 		dns_db_detachnode(db, &nodep);
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -1723,20 +1980,20 @@ t_dns_db_closeversion_2(char **av) {
 	added_rdata.rdclass = rdataclass;
 	added_rdata.type = new_rdatatype;
 
-	dns_rdataset_init(&added_rdataset);
+	dns_rdatalist_init(&rdatalist);
 	rdatalist.type = new_rdatatype;
-	rdatalist.covers = 0;
 	rdatalist.rdclass = rdataclass;
-	rdatalist.ttl = 0;
-	ISC_LIST_INIT(rdatalist.rdata);
 	ISC_LIST_APPEND(rdatalist.rdata, &added_rdata, link);
 
+	dns_rdataset_init(&added_rdataset);
 	dns_result = dns_rdatalist_tordataset(&rdatalist, &added_rdataset);
 	if (dns_result != ISC_R_SUCCESS) {
 		t_info("dns_rdatalist_tordataset failed %s\n",
 		       dns_result_totext(dns_result));
 		dns_db_detachnode(db, &nodep);
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -1749,6 +2006,8 @@ t_dns_db_closeversion_2(char **av) {
 		dns_db_closeversion(db, &nversionp, ISC_FALSE);
 		dns_db_detachnode(db, &nodep);
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -1780,6 +2039,8 @@ t_dns_db_closeversion_2(char **av) {
 		if (dns_rdataset_isassociated(&found_rdataset))
 			dns_rdataset_disassociate(&found_rdataset);
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_FAIL);
 	}
@@ -1793,6 +2054,8 @@ t_dns_db_closeversion_2(char **av) {
 			dns_rdataset_disassociate(&found_rdataset);
 		dns_db_closeversion(db, &nversionp, ISC_FALSE);
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_FAIL);
 	}
@@ -1872,6 +2135,8 @@ t_dns_db_closeversion_2(char **av) {
 		dns_db_detachnode(db, &nodep);
 		dns_db_closeversion(db, &cversionp, ISC_FALSE);
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_FAIL);
 	}
@@ -1904,6 +2169,8 @@ t_dns_db_closeversion_2(char **av) {
 	dns_rdataset_disassociate(&found_rdataset);
 	dns_db_closeversion(db, &cversionp, ISC_FALSE);
 	dns_db_detach(&db);
+	isc_hash_destroy();
+	isc_entropy_detach(&ectx);
 	isc_mem_destroy(&mctx);
 
 	if (nfails == 0)
@@ -1918,7 +2185,7 @@ static void
 t11(void) {
 	int	result;
 
-	t_assert("dns_db_closeversion", 11, T_REQUIRED, a11);
+	t_assert("dns_db_closeversion", 11, T_REQUIRED, "%s", a11);
 	result = t_eval("dns_db_closeversion_2_data",
 			t_dns_db_closeversion_2, 9);
 	t_result(result);
@@ -1947,6 +2214,7 @@ t_dns_db_expirenode(char **av) {
 	isc_result_t		exp_result;
 	isc_result_t		isc_result;
 	isc_mem_t		*mctx;
+	isc_entropy_t		*ectx;
 	dns_dbnode_t		*nodep;
 	isc_buffer_t		name_buffer;
 	dns_fixedname_t		dns_foundname;
@@ -1964,8 +2232,8 @@ t_dns_db_expirenode(char **av) {
 	node_xtime = T_ARG(5);
 	find_xtime = T_ARG(6);
 	exp_find_result = T_ARG(7);
-
-	result = T_UNRESOLVED;
+	mctx = NULL;
+	ectx = NULL;
 
 	/*
 	 * Find a node, mark it as stale, do a dns_db_find on the name and
@@ -1985,14 +2253,13 @@ t_dns_db_expirenode(char **av) {
 	isc_buffer_init(&name_buffer, existing_name, len);
 	isc_buffer_add(&name_buffer, len);
 	dns_result = dns_name_fromtext(dns_fixedname_name(&dns_existingname),
-				       &name_buffer, NULL, ISC_FALSE, NULL);
+				       &name_buffer, NULL, 0, NULL);
 	if (dns_result != ISC_R_SUCCESS) {
 		t_info("dns_name_fromtext failed %s\n",
 		       dns_result_totext(dns_result));
 		return(T_UNRESOLVED);
 	}
 
-	mctx = NULL;
 	isc_result = isc_mem_create(0, 0, &mctx);
 	if (isc_result != ISC_R_SUCCESS) {
 		t_info("isc_mem_create failed %s\n",
@@ -2000,9 +2267,28 @@ t_dns_db_expirenode(char **av) {
 		return(T_UNRESOLVED);
 	}
 
+	isc_result = isc_entropy_create(mctx, &ectx);
+	if (isc_result != ISC_R_SUCCESS) {
+		t_info("isc_entropy_create failed %s\n",
+				isc_result_totext(isc_result));
+		isc_mem_destroy(&mctx);
+		return(T_UNRESOLVED);
+	}
+
+	isc_result = isc_hash_create(mctx, ectx, DNS_NAME_MAXWIRE);
+	if (isc_result != ISC_R_SUCCESS) {
+		t_info("isc_hash_create failed %s\n",
+				isc_result_totext(isc_result));
+		isc_entropy_detach(&ectx);
+		isc_mem_destroy(&mctx);
+		return(T_UNRESOLVED);
+	}
+
 	db = NULL;
 	dns_result = t_create(db_type, origin, class, "cache", mctx, &db);
 	if (dns_result != ISC_R_SUCCESS) {
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -2012,6 +2298,8 @@ t_dns_db_expirenode(char **av) {
 		t_info("dns_db_load returned %s\n",
 		       dns_result_totext(dns_result));
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -2026,6 +2314,8 @@ t_dns_db_expirenode(char **av) {
 	if (dns_result != ISC_R_SUCCESS) {
 		t_info("unable to find %s\n", existing_name);
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -2042,6 +2332,8 @@ t_dns_db_expirenode(char **av) {
 		       dns_result_totext(dns_result));
 		dns_db_detachnode(db, &nodep);
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_FAIL);
 	}
@@ -2085,6 +2377,8 @@ t_dns_db_expirenode(char **av) {
 
 
 	dns_db_detach(&db);
+	isc_hash_destroy();
+	isc_entropy_detach(&ectx);
 	isc_mem_destroy(&mctx);
 
 	return(result);
@@ -2094,7 +2388,7 @@ static void
 t12(void) {
 	int	result;
 
-	t_assert("dns_db_expirenode", 12, T_REQUIRED, a12);
+	t_assert("dns_db_expirenode", 12, T_REQUIRED, "%s", a12);
 	result = t_eval("dns_db_expirenode_data", t_dns_db_expirenode, 8);
 	t_result(result);
 }
@@ -2122,6 +2416,7 @@ t_dns_db_findnode_1(char **av) {
 	isc_result_t		dns_result;
 	isc_result_t		isc_result;
 	isc_mem_t		*mctx;
+	isc_entropy_t		*ectx;
 	dns_dbnode_t		*nodep;
 	isc_buffer_t		name_buffer;
 	dns_rdataset_t		rdataset;
@@ -2142,7 +2437,7 @@ t_dns_db_findnode_1(char **av) {
 
 	db = NULL;
 	mctx = NULL;
-	result = T_UNRESOLVED;
+	ectx = NULL;
 
 	t_info("testing using file %s and name %s\n", filename, find_name);
 
@@ -2162,6 +2457,22 @@ t_dns_db_findnode_1(char **av) {
 	if (isc_result != ISC_R_SUCCESS) {
 		t_info("isc_mem_create failed %s\n",
 				isc_result_totext(isc_result));
+		return(T_UNRESOLVED);
+	}
+
+	isc_result = isc_entropy_create(mctx, &ectx);
+	if (isc_result != ISC_R_SUCCESS) {
+		t_info("isc_entropy_create failed %s\n",
+				isc_result_totext(isc_result));
+		isc_mem_destroy(&mctx);
+		return(T_UNRESOLVED);
+	}
+
+	isc_result = isc_hash_create(mctx, ectx, DNS_NAME_MAXWIRE);
+	if (isc_result != ISC_R_SUCCESS) {
+		t_info("isc_hash_create failed %s\n",
+				isc_result_totext(isc_result));
+		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
 
@@ -2187,7 +2498,14 @@ t_dns_db_findnode_1(char **av) {
 	isc_buffer_init(&name_buffer, find_name, len);
 	isc_buffer_add(&name_buffer, len);
 	dns_result = dns_name_fromtext(dns_fixedname_name(&dns_name),
-				&name_buffer, NULL, ISC_FALSE, NULL);
+				&name_buffer, NULL, 0, NULL);
+	if (dns_result != ISC_R_SUCCESS) {
+		t_info("dns_name_fromtext failed %s\n",
+			       dns_result_totext(dns_result));
+		dns_db_detach(&db);
+		isc_mem_destroy(&mctx);
+		return(T_UNRESOLVED);
+	}
 
 	dns_result = dns_db_findnode(db, dns_fixedname_name(&dns_name),
 				ISC_FALSE, &nodep);
@@ -2231,6 +2549,8 @@ t_dns_db_findnode_1(char **av) {
 	}
 
 	dns_db_detach(&db);
+	isc_hash_destroy();
+	isc_entropy_detach(&ectx);
 	isc_mem_destroy(&mctx);
 
 	return(result);
@@ -2240,7 +2560,7 @@ static void
 t13(void) {
 	int	result;
 
-	t_assert("dns_db_findnode", 13, T_REQUIRED, a13);
+	t_assert("dns_db_findnode", 13, T_REQUIRED, "%s", a13);
 	result = t_eval("dns_db_findnode_1_data", t_dns_db_findnode_1, 8);
 	t_result(result);
 }
@@ -2267,6 +2587,7 @@ t_dns_db_findnode_2(char **av) {
 	isc_result_t		dns_result;
 	isc_result_t		isc_result;
 	isc_mem_t		*mctx;
+	isc_entropy_t		*ectx;
 	dns_dbnode_t		*nodep;
 	dns_dbnode_t		*newnodep;
 	isc_buffer_t		name_buffer;
@@ -2282,9 +2603,9 @@ t_dns_db_findnode_2(char **av) {
 	model = T_ARG(4);
 	newname = T_ARG(5);
 
-	result = T_UNRESOLVED;
 	db = NULL;
 	mctx = NULL;
+	ectx = NULL;
 	nfails = 0;
 
 	t_info("testing using file %s and name %s\n", filename, newname);
@@ -2296,8 +2617,24 @@ t_dns_db_findnode_2(char **av) {
 		return(T_UNRESOLVED);
 	}
 
+	isc_result = isc_entropy_create(mctx, &ectx);
+	if (isc_result != ISC_R_SUCCESS) {
+		t_info("isc_entropy_create failed %s\n",
+				isc_result_totext(isc_result));
+		return(T_UNRESOLVED);
+	}
+
+	isc_result = isc_hash_create(mctx, ectx, DNS_NAME_MAXWIRE);
+	if (isc_result != ISC_R_SUCCESS) {
+		t_info("isc_hash_create failed %s\n",
+				isc_result_totext(isc_result));
+		return(T_UNRESOLVED);
+	}
+
 	dns_result = t_create(db_type, origin, class, model, mctx, &db);
 	if (dns_result != ISC_R_SUCCESS) {
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -2307,6 +2644,8 @@ t_dns_db_findnode_2(char **av) {
 		t_info("dns_db_load returned %s\n",
 				dns_result_totext(dns_result));
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -2321,7 +2660,16 @@ t_dns_db_findnode_2(char **av) {
 	isc_buffer_init(&name_buffer, newname, len);
 	isc_buffer_add(&name_buffer, len);
 	dns_result = dns_name_fromtext(dns_fixedname_name(&dns_name),
-				       &name_buffer, NULL, ISC_FALSE, NULL);
+				       &name_buffer, NULL, 0, NULL);
+	if (dns_result != ISC_R_SUCCESS) {
+		t_info("dns_name_fromtext returned %s\n",
+				dns_result_totext(dns_result));
+		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
+		isc_mem_destroy(&mctx);
+		return(T_UNRESOLVED);
+	}
 
 	dns_result = dns_db_findnode(db, dns_fixedname_name(&dns_name),
 				     ISC_FALSE, &nodep);
@@ -2332,6 +2680,8 @@ t_dns_db_findnode_2(char **av) {
 		       dns_result_totext(dns_result));
 		dns_db_detachnode(db, &nodep);
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -2345,6 +2695,8 @@ t_dns_db_findnode_2(char **av) {
 		t_info("dns_db_findnode %s\n",
 				dns_result_totext(dns_result));
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_FAIL);
 	}
@@ -2398,6 +2750,8 @@ t_dns_db_findnode_2(char **av) {
 	dns_db_detachnode(db, &nodep);
 	dns_db_closeversion(db, &cversionp, ISC_FALSE);
 	dns_db_detach(&db);
+	isc_hash_destroy();
+	isc_entropy_detach(&ectx);
 	isc_mem_destroy(&mctx);
 
 	if (nfails == 0)
@@ -2412,7 +2766,7 @@ static void
 t14(void) {
 	int	result;
 
-	t_assert("dns_db_findnode", 14, T_REQUIRED, a14);
+	t_assert("dns_db_findnode", 14, T_REQUIRED, "%s", a14);
 	result = t_eval("dns_db_findnode_2_data", t_dns_db_findnode_2, 6);
 	t_result(result);
 }
@@ -2440,6 +2794,7 @@ t_dns_db_find_x(char **av) {
 	isc_stdtime_t		now;
 	isc_result_t		exp_result;
 	isc_mem_t		*mctx;
+	isc_entropy_t		*ectx;
 	dns_dbnode_t		*nodep;
 	isc_textregion_t	textregion;
 	isc_buffer_t		findname_buffer;
@@ -2448,8 +2803,6 @@ t_dns_db_find_x(char **av) {
 	dns_rdataset_t		rdataset;
 	dns_rdatatype_t		rdatatype;
 	dns_dbversion_t		*cversionp;
-
-	result = T_UNRESOLVED;
 
 	dbfile = T_ARG(0);
 	dbtype = T_ARG(1);
@@ -2463,6 +2816,7 @@ t_dns_db_find_x(char **av) {
 	expected_result = T_ARG(9);
 	db = NULL;
 	mctx = NULL;
+	ectx = NULL;
 	opts = 0;
 
 	t_info("testing using %s, name %s, type %s\n", dbfile, findname,
@@ -2475,8 +2829,27 @@ t_dns_db_find_x(char **av) {
 		return(T_UNRESOLVED);
 	}
 
+	isc_result = isc_entropy_create(mctx, &ectx);
+	if (isc_result != ISC_R_SUCCESS) {
+		t_info("isc_entropy_create failed %s\n",
+				isc_result_totext(isc_result));
+		isc_mem_destroy(&mctx);
+		return(T_UNRESOLVED);
+	}
+
+	isc_result = isc_hash_create(mctx, ectx, DNS_NAME_MAXWIRE);
+	if (isc_result != ISC_R_SUCCESS) {
+		t_info("isc_hash_create failed %s\n",
+				isc_result_totext(isc_result));
+		isc_entropy_detach(&ectx);
+		isc_mem_destroy(&mctx);
+		return(T_UNRESOLVED);
+	}
+
 	dns_result = t_create(dbtype, dborigin, dbclass, dbmodel, mctx, &db);
 	if (dns_result != ISC_R_SUCCESS) {
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -2486,6 +2859,8 @@ t_dns_db_find_x(char **av) {
 		t_info("dns_db_load returned %s\n",
 				dns_result_totext(dns_result));
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -2497,11 +2872,13 @@ t_dns_db_find_x(char **av) {
 	isc_buffer_init(&findname_buffer, findname, len);
 	isc_buffer_add(&findname_buffer, len);
 	dns_result = dns_name_fromtext(dns_fixedname_name(&dns_findname),
-				&findname_buffer, NULL, ISC_FALSE, NULL);
+				&findname_buffer, NULL, 0, NULL);
 	if (dns_result != ISC_R_SUCCESS) {
 		t_info("dns_name_fromtext failed %s\n",
 			dns_result_totext(dns_result));
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -2514,6 +2891,8 @@ t_dns_db_find_x(char **av) {
 				findtype,
 				dns_result_totext(dns_result));
 		dns_db_detach(&db);
+		isc_hash_destroy();
+		isc_entropy_detach(&ectx);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -2568,6 +2947,8 @@ t_dns_db_find_x(char **av) {
 	if (dns_db_iszone(db))
 		dns_db_closeversion(db, &cversionp, ISC_FALSE);
 	dns_db_detach(&db);
+	isc_hash_destroy();
+	isc_entropy_detach(&ectx);
 	isc_mem_destroy(&mctx);
 
 	return(result);
@@ -2582,7 +2963,7 @@ static void
 t15(void) {
 	int	result;
 
-	t_assert("dns_db_find", 15, T_REQUIRED, a15);
+	t_assert("dns_db_find", 15, T_REQUIRED, "%s", a15);
 	result = t_eval("dns_db_find_1_data", t_dns_db_find_x, 10);
 	t_result(result);
 }
@@ -2598,7 +2979,7 @@ static void
 t16(void) {
 	int	result;
 
-	t_assert("dns_db_find", 16, T_REQUIRED, a16);
+	t_assert("dns_db_find", 16, T_REQUIRED, "%s", a16);
 	result = t_eval("dns_db_find_2_data", t_dns_db_find_x, 10);
 	t_result(result);
 }
@@ -2611,7 +2992,7 @@ static void
 t17(void) {
 	int	result;
 
-	t_assert("dns_db_find", 17, T_REQUIRED, a17);
+	t_assert("dns_db_find", 17, T_REQUIRED, "%s", a17);
 	result = t_eval("dns_db_find_3_data", t_dns_db_find_x, 10);
 	t_result(result);
 }
@@ -2624,7 +3005,7 @@ static void
 t18(void) {
 	int	result;
 
-	t_assert("dns_db_find", 18, T_REQUIRED, a18);
+	t_assert("dns_db_find", 18, T_REQUIRED, "%s", a18);
 	result = t_eval("dns_db_find_4_data", t_dns_db_find_x, 10);
 	t_result(result);
 }
@@ -2637,7 +3018,7 @@ static void
 t19(void) {
 	int	result;
 
-	t_assert("dns_db_find", 19, T_REQUIRED, a19);
+	t_assert("dns_db_find", 19, T_REQUIRED, "%s", a19);
 	result = t_eval("dns_db_find_5_data", t_dns_db_find_x, 10);
 	t_result(result);
 }
@@ -2650,7 +3031,7 @@ static void
 t20(void) {
 	int	result;
 
-	t_assert("dns_db_find", 20, T_REQUIRED, a20);
+	t_assert("dns_db_find", 20, T_REQUIRED, "%s", a20);
 	result = t_eval("dns_db_find_6_data", t_dns_db_find_x, 10);
 	t_result(result);
 }
@@ -2663,7 +3044,7 @@ static void
 t21(void) {
 	int	result;
 
-	t_assert("dns_db_find", 21, T_REQUIRED, a21);
+	t_assert("dns_db_find", 21, T_REQUIRED, "%s", a21);
 	result = t_eval("dns_db_find_7_data", t_dns_db_find_x, 10);
 	t_result(result);
 }
@@ -2676,7 +3057,7 @@ static void
 t22(void) {
 	int	result;
 
-	t_assert("dns_db_find", 22, T_REQUIRED, a22);
+	t_assert("dns_db_find", 22, T_REQUIRED, "%s", a22);
 	result = t_eval("dns_db_find_8_data", t_dns_db_find_x, 10);
 	t_result(result);
 }
@@ -2690,7 +3071,7 @@ static void
 t23(void) {
 	int	result;
 
-	t_assert("dns_db_find", 23, T_REQUIRED, a23);
+	t_assert("dns_db_find", 23, T_REQUIRED, "%s", a23);
 	result = t_eval("dns_db_find_9_data", t_dns_db_find_x, 10);
 	t_result(result);
 }
@@ -2703,7 +3084,7 @@ static void
 t24(void) {
 	int	result;
 
-	t_assert("dns_db_find", 24, T_REQUIRED, a24);
+	t_assert("dns_db_find", 24, T_REQUIRED, "%s", a24);
 	result = t_eval("dns_db_find_10_data", t_dns_db_find_x, 10);
 	t_result(result);
 }
@@ -2716,36 +3097,44 @@ static void
 t25(void) {
 	int	result;
 
-	t_assert("dns_db_load", 25, T_REQUIRED, a25);
+	t_assert("dns_db_load", 25, T_REQUIRED, "%s", a25);
 	result = t_eval("dns_db_load_soa_not_top", t_dns_db_load, 9);
 	t_result(result);
 }
 
 testspec_t	T_testlist[] = {
-	{	t1,		"dns_db_load"		},
-	{	t2,		"dns_db_iscache"	},
-	{	t3,		"dns_db_iscache"	},
-	{	t4,		"dns_db_iszone"		},
-	{	t5,		"dns_db_iszone"		},
-	{	t6,		"dns_db_origin"		},
-	{	t7,		"dns_db_class"		},
-	{	t8,		"dns_db_currentversion"	},
-	{	t9,		"dns_db_newversion"	},
-	{	t10,		"dns_db_closeversion"	},
-	{	t11,		"dns_db_closeversion"	},
-	{	t12,		"dns_db_expirenode"	},
-	{	t13,		"dns_db_findnode"	},
-	{	t14,		"dns_db_findnode"	},
-	{	t15,		"dns_db_find"		},
-	{	t16,		"dns_db_find"		},
-	{	t17,		"dns_db_find"		},
-	{	t18,		"dns_db_find"		},
-	{	t19,		"dns_db_find"		},
-	{	t20,		"dns_db_find"		},
-	{	t21,		"dns_db_find"		},
-	{	t22,		"dns_db_find"		},
-	{	t23,		"dns_db_find"		},
-	{	t24,		"dns_db_find"		},
-	{	t25,		"dns_db_load"		},
-	{	NULL,		NULL			}
+	{	(PFV) t1,		"dns_db_load"		},
+	{	(PFV) t2,		"dns_db_iscache"	},
+	{	(PFV) t3,		"dns_db_iscache"	},
+	{	(PFV) t4,		"dns_db_iszone"		},
+	{	(PFV) t5,		"dns_db_iszone"		},
+	{	(PFV) t6,		"dns_db_origin"		},
+	{	(PFV) t7,		"dns_db_class"		},
+	{	(PFV) t8,		"dns_db_currentversion"	},
+	{	(PFV) t9,		"dns_db_newversion"	},
+	{	(PFV) t10,		"dns_db_closeversion"	},
+	{	(PFV) t11,		"dns_db_closeversion"	},
+	{	(PFV) t12,		"dns_db_expirenode"	},
+	{	(PFV) t13,		"dns_db_findnode"	},
+	{	(PFV) t14,		"dns_db_findnode"	},
+	{	(PFV) t15,		"dns_db_find"		},
+	{	(PFV) t16,		"dns_db_find"		},
+	{	(PFV) t17,		"dns_db_find"		},
+	{	(PFV) t18,		"dns_db_find"		},
+	{	(PFV) t19,		"dns_db_find"		},
+	{	(PFV) t20,		"dns_db_find"		},
+	{	(PFV) t21,		"dns_db_find"		},
+	{	(PFV) t22,		"dns_db_find"		},
+	{	(PFV) t23,		"dns_db_find"		},
+	{	(PFV) t24,		"dns_db_find"		},
+	{	(PFV) t25,		"dns_db_load"		},
+	{	(PFV) 0,		NULL			}
 };
+
+#ifdef WIN32
+int
+main(int argc, char **argv) {
+	t_settests(T_testlist);
+	return (t_main(argc, argv));
+}
+#endif

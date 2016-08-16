@@ -1,21 +1,12 @@
 #!/bin/sh
 #
-# Copyright (C) 2000, 2001  Internet Software Consortium.
+# Copyright (C) 2000, 2001, 2004, 2007, 2012, 2016  Internet Systems Consortium, Inc. ("ISC")
 #
-# Permission to use, copy, modify, and distribute this software for any
-# purpose with or without fee is hereby granted, provided that the above
-# copyright notice and this permission notice appear in all copies.
-#
-# THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
-# DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
-# INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
-# INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
-# FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
-# NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
-# WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# $Id: tests.sh,v 1.4 2001/01/13 00:02:55 gson Exp $
+# $Id: tests.sh,v 1.9 2007/09/14 01:46:05 marka Exp $
 
 SYSTEMTESTTOP=..
 . $SYSTEMTESTTOP/conf.sh
@@ -38,17 +29,23 @@ $DIG +tcp +noadd +nosea +nostat +noquest +noauth +nocomm +nocmd a.example. \
 # result RRs is significant.
 diff test1.dig test1.good || status=1
 
-echo "I:test 1-element sortlist statement"
-for n in 2 3
-do
+echo "I:test 1-element sortlist statement and undocumented BIND 8 features"
 	cat <<EOF >test2.good
 b.example.		300	IN	A	10.53.0.$n
 EOF
-	$DIG +tcp +noadd +nosea +nostat +noquest +noauth +nocomm +nocmd \
-		b.example. \
-		@10.53.0.1 -b 10.53.0.$n -p 5300 | sed 1q >test2.dig
-	diff test2.dig test2.good || status=1
-done		
+
+$DIG +tcp +noadd +nosea +nostat +noquest +noauth +nocomm +nocmd \
+	b.example. @10.53.0.1 -b 10.53.0.2 -p 5300 | sed 1q | \
+        egrep '10.53.0.(2|3)$' > test2.out &&
+$DIG +tcp +noadd +nosea +nostat +noquest +noauth +nocomm +nocmd \
+	b.example. @10.53.0.1 -b 10.53.0.3 -p 5300 | sed 1q | \
+        egrep '10.53.0.(2|3)$' >> test2.out &&
+$DIG +tcp +noadd +nosea +nostat +noquest +noauth +nocomm +nocmd \
+	b.example. @10.53.0.1 -b 10.53.0.4 -p 5300 | sed 1q | \
+        egrep '10.53.0.4$' >> test2.out &&
+$DIG +tcp +noadd +nosea +nostat +noquest +noauth +nocomm +nocmd \
+	b.example. @10.53.0.1 -b 10.53.0.5 -p 5300 | sed 1q | \
+        egrep '10.53.0.5$' >> test2.out || status=1
 
 echo "I:exit status: $status"
-exit $status
+[ $status -eq 0 ] || exit 1

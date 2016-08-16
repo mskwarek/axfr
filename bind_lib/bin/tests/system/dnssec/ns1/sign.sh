@@ -1,50 +1,37 @@
-#!/bin/sh
+#!/bin/sh -e
 #
-# Copyright (C) 2000, 2001  Internet Software Consortium.
+# Copyright (C) 2000-2004, 2006-2014, 2016  Internet Systems Consortium, Inc. ("ISC")
 #
-# Permission to use, copy, modify, and distribute this software for any
-# purpose with or without fee is hereby granted, provided that the above
-# copyright notice and this permission notice appear in all copies.
-#
-# THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
-# DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
-# INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
-# INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
-# FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
-# NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
-# WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-
-# $Id: sign.sh,v 1.12 2001/01/09 21:42:49 bwelling Exp $
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 SYSTEMTESTTOP=../..
 . $SYSTEMTESTTOP/conf.sh
-
-RANDFILE=../random.data
 
 zone=.
 infile=root.db.in
 zonefile=root.db
 
-keyname=`$KEYGEN -a RSA -b 768 -n zone -r $RANDFILE $zone`
+(cd ../ns2 && $SHELL sign.sh )
+(cd ../ns6 && $SHELL sign.sh )
+(cd ../ns7 && $SHELL sign.sh )
 
-(cd ../ns2 && sh sign.sh )
+cp ../ns2/dsset-example. .
+cp ../ns2/dsset-dlv. .
+cp ../ns2/dsset-in-addr.arpa. .
 
-cp ../ns2/keyset-example. .
+grep "8 [12] " ../ns2/dsset-algroll. > dsset-algroll.
+cp ../ns6/dsset-optout-tld. .
 
-$KEYSIGNER -r $RANDFILE keyset-example. $keyname > /dev/null
-
-cat signedkey-example. >> ../ns2/example.db.signed
-
-$KEYSETTOOL -r $RANDFILE -t 3600 $keyname > /dev/null
+keyname=`$KEYGEN -q -r $RANDFILE -a RSAMD5 -b 768 -n zone $zone`
 
 cat $infile $keyname.key > $zonefile
 
-$SIGNER -r $RANDFILE -o $zone $zonefile > /dev/null
+$SIGNER -P -g -r $RANDFILE -o $zone $zonefile > /dev/null
 
 # Configure the resolving server with a trusted key.
-
-cat $keyname.key | $PERL -n -e '
+cat $keyname.key | grep -v '^; ' | $PERL -n -e '
 local ($dn, $class, $type, $flags, $proto, $alg, @rest) = split;
 local $key = join("", @rest);
 print <<EOF
@@ -53,6 +40,26 @@ trusted-keys {
 };
 EOF
 ' > trusted.conf
+
+# ...or with a managed key.
+cat $keyname.key | grep -v '^; ' | $PERL -n -e '
+local ($dn, $class, $type, $flags, $proto, $alg, @rest) = split;
+local $key = join("", @rest);
+print <<EOF
+managed-keys {
+    "$dn" initial-key $flags $proto $alg "$key";
+};
+EOF
+' > managed.conf
 cp trusted.conf ../ns2/trusted.conf
 cp trusted.conf ../ns3/trusted.conf
 cp trusted.conf ../ns4/trusted.conf
+cp trusted.conf ../ns6/trusted.conf
+cp trusted.conf ../ns7/trusted.conf
+cp managed.conf ../ns4/managed.conf
+#
+#  Save keyid for managed key id test.
+#
+keyid=`expr $keyname : 'K.+001+\(.*\)'`
+keyid=`expr $keyid + 0`
+echo "$keyid" > managed.key.id

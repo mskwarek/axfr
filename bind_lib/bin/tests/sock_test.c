@@ -1,21 +1,12 @@
 /*
- * Copyright (C) 1998-2001  Internet Software Consortium.
+ * Copyright (C) 1998-2001, 2004, 2007, 2008, 2012-2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: sock_test.c,v 1.47 2001/01/09 21:41:41 bwelling Exp $ */
+/* $Id: sock_test.c,v 1.55 2008/07/23 23:27:54 marka Exp $ */
 
 #include <config.h>
 
@@ -24,6 +15,7 @@
 #include <unistd.h>
 
 #include <isc/mem.h>
+#include <isc/print.h>
 #include <isc/task.h>
 #include <isc/socket.h>
 #include <isc/timer.h>
@@ -60,7 +52,8 @@ my_send(isc_task_t *task, isc_event_t *event) {
 		isc_task_shutdown(task);
 	}
 
-	isc_mem_put(mctx, dev->region.base, dev->region.length);
+	if (dev->region.base != NULL)
+		isc_mem_put(mctx, dev->region.base, dev->region.length);
 
 	isc_event_free(&event);
 }
@@ -82,12 +75,12 @@ my_recv(isc_task_t *task, isc_event_t *event) {
 	       dev->n, dev->result);
 	if (dev->address.type.sa.sa_family == AF_INET6) {
 		inet_ntop(AF_INET6, &dev->address.type.sin6.sin6_addr,
-			  host, sizeof (host));
+			  host, sizeof(host));
 		printf("\tFrom: %s port %d\n", host,
 		       ntohs(dev->address.type.sin6.sin6_port));
 	} else {
 		inet_ntop(AF_INET, &dev->address.type.sin.sin_addr,
-			  host, sizeof (host));
+			  host, sizeof(host));
 		printf("\tFrom: %s port %d\n", host,
 		       ntohs(dev->address.type.sin.sin_port));
 	}
@@ -95,8 +88,8 @@ my_recv(isc_task_t *task, isc_event_t *event) {
 	if (dev->result != ISC_R_SUCCESS) {
 		isc_socket_detach(&sock);
 
-		isc_mem_put(mctx, dev->region.base,
-			    dev->region.length);
+		if (dev->region.base != NULL)
+			isc_mem_put(mctx, dev->region.base, dev->region.length);
 		isc_event_free(&event);
 
 		isc_task_shutdown(task);
@@ -111,8 +104,11 @@ my_recv(isc_task_t *task, isc_event_t *event) {
 		sprintf(buf, "\r\nReceived: %.*s\r\n\r\n",
 			(int)dev->n, (char *)region.base);
 		region.base = isc_mem_get(mctx, strlen(buf) + 1);
-		region.length = strlen(buf) + 1;
-		strcpy((char *)region.base, buf);  /* strcpy is safe */
+		if (region.base != NULL) {
+			region.length = strlen(buf) + 1;
+			strcpy((char *)region.base, buf);  /* strcpy is safe */
+		} else
+			region.length = 0;
 		isc_socket_send(sock, &region, task, my_send, event->ev_arg);
 	} else {
 		region = dev->region;
@@ -142,6 +138,8 @@ my_http_get(isc_task_t *task, isc_event_t *event) {
 	if (dev->result != ISC_R_SUCCESS) {
 		isc_socket_detach(&sock);
 		isc_task_shutdown(task);
+		if (dev->region.base != NULL)
+			isc_mem_put(mctx, dev->region.base, dev->region.length);
 		isc_event_free(&event);
 		return;
 	}
@@ -178,8 +176,11 @@ my_connect(isc_task_t *task, isc_event_t *event) {
 	strcpy(buf, "GET / HTTP/1.1\r\nHost: www.flame.org\r\n"
 	       "Connection: Close\r\n\r\n");
 	region.base = isc_mem_get(mctx, strlen(buf) + 1);
-	region.length = strlen(buf) + 1;
-	strcpy((char *)region.base, buf);  /* This strcpy is safe. */
+	if (region.base != NULL) {
+		region.length = strlen(buf) + 1;
+		strcpy((char *)region.base, buf);  /* This strcpy is safe. */
+	} else
+		region.length = 0;
 
 	isc_socket_send(sock, &region, task, my_http_get, event->ev_arg);
 
@@ -204,8 +205,9 @@ my_listen(isc_task_t *task, isc_event_t *event) {
 		/*
 		 * Queue another listen on this socket.
 		 */
-		isc_socket_accept(event->ev_sender, task, my_listen,
-				  event->ev_arg);
+		RUNTIME_CHECK(isc_socket_accept(event->ev_sender, task,
+						my_listen, event->ev_arg)
+			      == ISC_R_SUCCESS);
 
 		region.base = isc_mem_get(mctx, 20);
 		region.length = 20;
@@ -245,6 +247,11 @@ timeout(isc_task_t *task, isc_event_t *event) {
 	isc_event_free(&event);
 }
 
+static char one[] = "1";
+static char two[] = "2";
+static char xso1[] = "so1";
+static char xso2[] = "so2";
+
 int
 main(int argc, char *argv[]) {
 	isc_task_t *t1, *t2;
@@ -261,9 +268,13 @@ main(int argc, char *argv[]) {
 	isc_result_t result;
 	int pf;
 
-	if (argc > 1)
+	if (argc > 1) {
 		workers = atoi(argv[1]);
-	else
+		if (workers < 1)
+			workers = 1;
+		if (workers > 8192)
+			workers = 8192;
+	} else
 		workers = 2;
 	printf("%d workers\n", workers);
 
@@ -295,9 +306,9 @@ main(int argc, char *argv[]) {
 	RUNTIME_CHECK(isc_task_create(manager, 0, &t1) == ISC_R_SUCCESS);
 	t2 = NULL;
 	RUNTIME_CHECK(isc_task_create(manager, 0, &t2) == ISC_R_SUCCESS);
-	RUNTIME_CHECK(isc_task_onshutdown(t1, my_shutdown, "1") ==
+	RUNTIME_CHECK(isc_task_onshutdown(t1, my_shutdown, one) ==
 		      ISC_R_SUCCESS);
-	RUNTIME_CHECK(isc_task_onshutdown(t2, my_shutdown, "2") ==
+	RUNTIME_CHECK(isc_task_onshutdown(t2, my_shutdown, two) ==
 		      ISC_R_SUCCESS);
 
 	printf("task 1 = %p\n", t1);
@@ -320,14 +331,14 @@ main(int argc, char *argv[]) {
 	}
 	RUNTIME_CHECK(isc_socket_create(socketmgr, pf, isc_sockettype_tcp,
 					&so1) == ISC_R_SUCCESS);
-	result = isc_socket_bind(so1, &sockaddr);
+	result = isc_socket_bind(so1, &sockaddr, ISC_SOCKET_REUSEADDRESS);
 	RUNTIME_CHECK(result == ISC_R_SUCCESS);
 	RUNTIME_CHECK(isc_socket_listen(so1, 0) == ISC_R_SUCCESS);
 
 	/*
 	 * Queue up the first accept event.
 	 */
-	RUNTIME_CHECK(isc_socket_accept(so1, t1, my_listen, "so1")
+	RUNTIME_CHECK(isc_socket_accept(so1, t1, my_listen, xso1)
 		      == ISC_R_SUCCESS);
 	isc_time_settoepoch(&expires);
 	isc_interval_set(&interval, 10, 0);
@@ -351,7 +362,7 @@ main(int argc, char *argv[]) {
 					&so2) == ISC_R_SUCCESS);
 
 	RUNTIME_CHECK(isc_socket_connect(so2, &sockaddr, t2,
-					 my_connect, "so2") == ISC_R_SUCCESS);
+					 my_connect, xso2) == ISC_R_SUCCESS);
 
 	/*
 	 * Detaching these is safe, since the socket will attach to the
@@ -363,7 +374,11 @@ main(int argc, char *argv[]) {
 	/*
 	 * Wait a short while.
 	 */
+#ifndef WIN32
 	sleep(10);
+#else
+	Sleep(10000);
+#endif
 
 	fprintf(stderr, "Destroying socket manager\n");
 	isc_socketmgr_destroy(&socketmgr);

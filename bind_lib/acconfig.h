@@ -1,21 +1,14 @@
 /*
- * Copyright (C) 1999-2001, 2003  Internet Software Consortium.
+ * Copyright (C) 1999-2005, 2007, 2008, 2012, 2014, 2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: acconfig.h,v 1.35.2.5 2003/08/05 00:42:53 marka Exp $ */
+/* $Id: acconfig.h,v 1.53 2008/12/01 23:47:44 tbox Exp $ */
+
+/*! \file */
 
 /***
  *** This file is not to be included by any public header files, because
@@ -23,97 +16,94 @@
  ***/
 @TOP@
 
-/* define to `int' if <sys/types.h> doesn't define.  */
-#undef ssize_t
-
-/* define on DEC OSF to enable 4.4BSD style sa_len support */
+/** define on DEC OSF to enable 4.4BSD style sa_len support */
 #undef _SOCKADDR_LEN
 
-/* define if your system needs pthread_init() before using pthreads */
+/** define if your system needs pthread_init() before using pthreads */
 #undef NEED_PTHREAD_INIT
 
-/* define if your system has sigwait() */
+/** define if your system has sigwait() */
 #undef HAVE_SIGWAIT
 
-/* define if sigwait() is the UnixWare flavor */
+/** define if sigwait() is the UnixWare flavor */
 #undef HAVE_UNIXWARE_SIGWAIT
 
-/* define on Solaris to get sigwait() to work using pthreads semantics */
+/** define on Solaris to get sigwait() to work using pthreads semantics */
 #undef _POSIX_PTHREAD_SEMANTICS
 
-/* define if LinuxThreads is in use */
+/** define if LinuxThreads is in use */
 #undef HAVE_LINUXTHREADS
 
-/* define if sysconf() is available */
+/** define if sysconf() is available */
 #undef HAVE_SYSCONF
 
-/* define if sysctlbyname() is available */
+/** define if sysctlbyname() is available */
 #undef HAVE_SYSCTLBYNAME
 
-/* define if catgets() is available */
+/** define if catgets() is available */
 #undef HAVE_CATGETS
 
-/* define if you have the NET_RT_IFLIST sysctl variable and sys/sysctl.h */
+/** define if getifaddrs() exists */
+#undef HAVE_GETIFADDRS
+
+/** define if you have the NET_RT_IFLIST sysctl variable and sys/sysctl.h */
 #undef HAVE_IFLIST_SYSCTL
 
-/* define if you need to #define _XPG4_2 before including sys/socket.h */
-#undef NEED_XPG4_2_BEFORE_SOCKET_H
+/** define if tzset() is available */
+#undef HAVE_TZSET
 
-/* define if you need to #define _XOPEN_SOURCE_ENTENDED before including
- * sys/socket.h
- */
-#undef NEED_XSE_BEFORE_SOCKET_H
-
-/* define if chroot() is available */
-#undef HAVE_CHROOT
-
-/* define if struct addrinfo exists */
+/** define if struct addrinfo exists */
 #undef HAVE_ADDRINFO
 
-/* define if getaddrinfo() exists */
+/** define if getaddrinfo() exists */
 #undef HAVE_GETADDRINFO
 
-/* define if gai_strerror() exists */
+/** define if gai_strerror() exists */
 #undef HAVE_GAISTRERROR
 
-/* define if arc4random() exists */
+/** define if arc4random() exists */
 #undef HAVE_ARC4RANDOM
 
-/* define if pthread_setconcurrency() should be called to tell the
+/** define if arc4random_addrandom() exists */
+#undef HAVE_ARC4RANDOM_ADDRANDOM
+
+/**
+ * define if pthread_setconcurrency() should be called to tell the
  * OS how many threads we might want to run.
  */
 #undef CALL_PTHREAD_SETCONCURRENCY
 
-/* define if IPv6 is not disabled */
+/** define if IPv6 is not disabled */
 #undef WANT_IPV6
 
-/* define if flockfile() is available */
+/** define if flockfile() is available */
 #undef HAVE_FLOCKFILE
 
-/* define if getc_unlocked() is available */
+/** define if getc_unlocked() is available */
 #undef HAVE_GETCUNLOCKED
 
-/* Shut up warnings about sputaux in stdio.h on BSD/OS pre-4.1 */
+/** Shut up warnings about sputaux in stdio.h on BSD/OS pre-4.1 */
 #undef SHUTUP_SPUTAUX
 #ifdef SHUTUP_SPUTAUX
 struct __sFILE;
 extern __inline int __sputaux(int _c, struct __sFILE *_p);
 #endif
 
-/* Shut up warnings about missing sigwait prototype on BSD/OS 4.0* */
+/** Shut up warnings about missing sigwait prototype on BSD/OS 4.0* */
 #undef SHUTUP_SIGWAIT
 #ifdef SHUTUP_SIGWAIT
 int sigwait(const unsigned int *set, int *sig);
 #endif
 
-/* Shut up warnings from gcc -Wcast-qual on BSD/OS 4.1. */
+/** Shut up warnings from gcc -Wcast-qual on BSD/OS 4.1. */
 #undef SHUTUP_STDARG_CAST
 #if defined(SHUTUP_STDARG_CAST) && defined(__GNUC__)
-#include <stdarg.h>		/* Grr.  Must be included *every time*. */
-/*
+#include <stdarg.h>		/** Grr.  Must be included *every time*. */
+/**
  * The silly continuation line is to keep configure from
  * commenting out the #undef.
  */
+
 #undef \
 	va_start
 #define	va_start(ap, last) \
@@ -122,16 +112,31 @@ int sigwait(const unsigned int *set, int *sig);
 		_u.konst = &(last); \
 		ap = (va_list)(_u.var + __va_words(__typeof(last))); \
 	} while (0)
-#endif /* SHUTUP_STDARG_CAST && __GNUC__ */
+#endif /** SHUTUP_STDARG_CAST && __GNUC__ */
 
-/* define if the system has a random number generating device */
+/** define if the system has a random number generating device */
 #undef PATH_RANDOMDEV
 
-/* define if pthread_attr_getstacksize() is available */
+/** define if pthread_attr_getstacksize() is available */
 #undef HAVE_PTHREAD_ATTR_GETSTACKSIZE
 
-/* define if pthread_attr_setstacksize() is available */
+/** define if pthread_attr_setstacksize() is available */
 #undef HAVE_PTHREAD_ATTR_SETSTACKSIZE
 
-/* define if you have strerror in the C library. */
+/** define if you have strerror in the C library. */
 #undef HAVE_STRERROR
+
+/* Define if OpenSSL includes DSA support */
+#undef HAVE_OPENSSL_DSA
+
+/* Define if you have getpassphrase in the C library. */
+#undef HAVE_GETPASSPHRASE
+
+/* Define to the length type used by the socket API (socklen_t, size_t, int). */
+#undef ISC_SOCKADDR_LEN_T
+
+/* Define if threads need PTHREAD_SCOPE_SYSTEM */
+#undef NEED_PTHREAD_SCOPE_SYSTEM
+
+/* Define to 1 if you have the uname library function. */
+#undef HAVE_UNAME

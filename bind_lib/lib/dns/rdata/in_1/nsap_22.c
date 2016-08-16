@@ -1,25 +1,16 @@
 /*
- * Copyright (C) 1999-2001  Internet Software Consortium.
+ * Copyright (C) 1999-2002, 2004, 2005, 2007, 2009, 2013, 2015, 2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: nsap_22.c,v 1.33 2001/07/16 03:06:47 marka Exp $ */
+/* $Id: nsap_22.c,v 1.44 2009/12/04 22:06:37 tbox Exp $ */
 
 /* Reviewed: Fri Mar 17 10:41:07 PST 2000 by gson */
 
-/* RFC 1706 */
+/* RFC1706 */
 
 #ifndef RDATA_IN_1_NSAP_22_C
 #define RDATA_IN_1_NSAP_22_C
@@ -31,15 +22,16 @@ fromtext_in_nsap(ARGS_FROMTEXT) {
 	isc_token_t token;
 	isc_textregion_t *sr;
 	int n;
-	int digits;
+	isc_boolean_t valid = ISC_FALSE;
+	int digits = 0;
 	unsigned char c = 0;
 
-	REQUIRE(type == 22);
-	REQUIRE(rdclass == 1);
+	REQUIRE(type == dns_rdatatype_nsap);
+	REQUIRE(rdclass == dns_rdataclass_in);
 
 	UNUSED(type);
 	UNUSED(origin);
-	UNUSED(downcase);
+	UNUSED(options);
 	UNUSED(rdclass);
 	UNUSED(callbacks);
 
@@ -52,8 +44,6 @@ fromtext_in_nsap(ARGS_FROMTEXT) {
 	if (sr->base[0] != '0' || (sr->base[1] != 'x' && sr->base[1] != 'X'))
 		RETTOK(DNS_R_SYNTAX);
 	isc_textregion_consume(sr, 2);
-	digits = 0;
-	n = 0;
 	while (sr->length > 0) {
 		if (sr->base[0] == '.') {
 			isc_textregion_consume(sr, 1);
@@ -65,11 +55,13 @@ fromtext_in_nsap(ARGS_FROMTEXT) {
 		c += n;
 		if (++digits == 2) {
 			RETERR(mem_tobuffer(target, &c, 1));
+			valid = ISC_TRUE;
 			digits = 0;
+			c = 0;
 		}
 		isc_textregion_consume(sr, 1);
 	}
-	if (digits)
+	if (digits != 0 || !valid)
 		RETTOK(ISC_R_UNEXPECTEDEND);
 	return (ISC_R_SUCCESS);
 }
@@ -77,10 +69,10 @@ fromtext_in_nsap(ARGS_FROMTEXT) {
 static inline isc_result_t
 totext_in_nsap(ARGS_TOTEXT) {
 	isc_region_t region;
-	char buf[sizeof "xx"];
+	char buf[sizeof("xx")];
 
-	REQUIRE(rdata->type == 22);
-	REQUIRE(rdata->rdclass == 1);
+	REQUIRE(rdata->type == dns_rdatatype_nsap);
+	REQUIRE(rdata->rdclass == dns_rdataclass_in);
 	REQUIRE(rdata->length != 0);
 
 	UNUSED(tctx);
@@ -99,12 +91,12 @@ static inline isc_result_t
 fromwire_in_nsap(ARGS_FROMWIRE) {
 	isc_region_t region;
 
-	REQUIRE(type == 22);
-	REQUIRE(rdclass == 1);
+	REQUIRE(type == dns_rdatatype_nsap);
+	REQUIRE(rdclass == dns_rdataclass_in);
 
 	UNUSED(type);
 	UNUSED(dctx);
-	UNUSED(downcase);
+	UNUSED(options);
 	UNUSED(rdclass);
 
 	isc_buffer_activeregion(source, &region);
@@ -118,8 +110,8 @@ fromwire_in_nsap(ARGS_FROMWIRE) {
 
 static inline isc_result_t
 towire_in_nsap(ARGS_TOWIRE) {
-	REQUIRE(rdata->type == 22);
-	REQUIRE(rdata->rdclass == 1);
+	REQUIRE(rdata->type == dns_rdatatype_nsap);
+	REQUIRE(rdata->rdclass == dns_rdataclass_in);
 	REQUIRE(rdata->length != 0);
 
 	UNUSED(cctx);
@@ -134,22 +126,22 @@ compare_in_nsap(ARGS_COMPARE) {
 
 	REQUIRE(rdata1->type == rdata2->type);
 	REQUIRE(rdata1->rdclass == rdata2->rdclass);
-	REQUIRE(rdata1->type == 22);
-	REQUIRE(rdata1->rdclass == 1);
+	REQUIRE(rdata1->type == dns_rdatatype_nsap);
+	REQUIRE(rdata1->rdclass == dns_rdataclass_in);
 	REQUIRE(rdata1->length != 0);
 	REQUIRE(rdata2->length != 0);
 
 	dns_rdata_toregion(rdata1, &r1);
 	dns_rdata_toregion(rdata2, &r2);
-	return (compare_region(&r1, &r2));
+	return (isc_region_compare(&r1, &r2));
 }
 
 static inline isc_result_t
 fromstruct_in_nsap(ARGS_FROMSTRUCT) {
 	dns_rdata_in_nsap_t *nsap = source;
 
-	REQUIRE(type == 22);
-	REQUIRE(rdclass == 1);
+	REQUIRE(type == dns_rdatatype_nsap);
+	REQUIRE(rdclass == dns_rdataclass_in);
 	REQUIRE(source != NULL);
 	REQUIRE(nsap->common.rdtype == type);
 	REQUIRE(nsap->common.rdclass == rdclass);
@@ -166,8 +158,8 @@ tostruct_in_nsap(ARGS_TOSTRUCT) {
 	dns_rdata_in_nsap_t *nsap = target;
 	isc_region_t r;
 
-	REQUIRE(rdata->type == 22);
-	REQUIRE(rdata->rdclass == 1);
+	REQUIRE(rdata->type == dns_rdatatype_nsap);
+	REQUIRE(rdata->rdclass == dns_rdataclass_in);
 	REQUIRE(target != NULL);
 	REQUIRE(rdata->length != 0);
 
@@ -190,8 +182,8 @@ freestruct_in_nsap(ARGS_FREESTRUCT) {
 	dns_rdata_in_nsap_t *nsap = source;
 
 	REQUIRE(source != NULL);
-	REQUIRE(nsap->common.rdclass == 1);
-	REQUIRE(nsap->common.rdtype == 22);
+	REQUIRE(nsap->common.rdclass == dns_rdataclass_in);
+	REQUIRE(nsap->common.rdtype == dns_rdatatype_nsap);
 
 	if (nsap->mctx == NULL)
 		return;
@@ -203,8 +195,8 @@ freestruct_in_nsap(ARGS_FREESTRUCT) {
 
 static inline isc_result_t
 additionaldata_in_nsap(ARGS_ADDLDATA) {
-	REQUIRE(rdata->type == 22);
-	REQUIRE(rdata->rdclass == 1);
+	REQUIRE(rdata->type == dns_rdatatype_nsap);
+	REQUIRE(rdata->rdclass == dns_rdataclass_in);
 
 	UNUSED(rdata);
 	UNUSED(add);
@@ -217,12 +209,44 @@ static inline isc_result_t
 digest_in_nsap(ARGS_DIGEST) {
 	isc_region_t r;
 
-	REQUIRE(rdata->type == 22);
-	REQUIRE(rdata->rdclass == 1);
+	REQUIRE(rdata->type == dns_rdatatype_nsap);
+	REQUIRE(rdata->rdclass == dns_rdataclass_in);
 
 	dns_rdata_toregion(rdata, &r);
 
 	return ((digest)(arg, &r));
+}
+
+static inline isc_boolean_t
+checkowner_in_nsap(ARGS_CHECKOWNER) {
+
+	REQUIRE(type == dns_rdatatype_nsap);
+	REQUIRE(rdclass == dns_rdataclass_in);
+
+	UNUSED(name);
+	UNUSED(type);
+	UNUSED(rdclass);
+	UNUSED(wildcard);
+
+	return (ISC_TRUE);
+}
+
+static inline isc_boolean_t
+checknames_in_nsap(ARGS_CHECKNAMES) {
+
+	REQUIRE(rdata->type == dns_rdatatype_nsap);
+	REQUIRE(rdata->rdclass == dns_rdataclass_in);
+
+	UNUSED(rdata);
+	UNUSED(owner);
+	UNUSED(bad);
+
+	return (ISC_TRUE);
+}
+
+static inline int
+casecompare_in_nsap(ARGS_COMPARE) {
+	return (compare_in_nsap(rdata1, rdata2));
 }
 
 #endif	/* RDATA_IN_1_NSAP_22_C */

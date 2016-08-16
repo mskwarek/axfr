@@ -1,21 +1,14 @@
 /*
- * Copyright (C) 1998-2001, 2003  Internet Software Consortium.
+ * Copyright (C) 1998-2001, 2003-2005, 2007, 2009, 2013-2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: base64.c,v 1.23.2.2 2003/07/22 04:03:47 marka Exp $ */
+/* $Id: base64.c,v 1.34 2009/10/21 23:48:05 tbox Exp $ */
+
+/*! \file */
 
 #include <config.h>
 
@@ -32,7 +25,8 @@
 	} while (0)
 
 
-/*
+/*@{*/
+/*!
  * These static functions are also present in lib/dns/rdata.c.  I'm not
  * sure where they should go. -- bwelling
  */
@@ -44,6 +38,7 @@ mem_tobuffer(isc_buffer_t *target, void *base, unsigned int length);
 
 static const char base64[] =
 	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+/*@}*/
 
 isc_result_t
 isc_base64_totext(isc_region_t *source, int wordlength,
@@ -55,7 +50,7 @@ isc_base64_totext(isc_region_t *source, int wordlength,
 	if (wordlength < 4)
 		wordlength = 4;
 
-	memset(buf, 0, sizeof buf);
+	memset(buf, 0, sizeof(buf));
 	while (source->length > 2) {
 		buf[0] = base64[(source->base[0]>>2)&0x3f];
 		buf[1] = base64[((source->base[0]<<4)&0x30)|
@@ -81,23 +76,25 @@ isc_base64_totext(isc_region_t *source, int wordlength,
 		buf[2] = base64[((source->base[1]<<2)&0x3c)];
 		buf[3] = '=';
 		RETERR(str_totext(buf, target));
+		isc_region_consume(source, 2);
 	} else if (source->length == 1) {
 		buf[0] = base64[(source->base[0]>>2)&0x3f];
 		buf[1] = base64[((source->base[0]<<4)&0x30)];
 		buf[2] = buf[3] = '=';
 		RETERR(str_totext(buf, target));
+		isc_region_consume(source, 1);
 	}
 	return (ISC_R_SUCCESS);
 }
 
-/*
+/*%
  * State of a base64 decoding process in progress.
  */
 typedef struct {
-	int length;		/* Desired length of binary data or -1 */
-	isc_buffer_t *target;	/* Buffer for resulting binary data */
-	int digits;		/* Number of buffered base64 digits */
-	isc_boolean_t seen_end;	/* True if "=" end marker seen */
+	int length;		/*%< Desired length of binary data or -1 */
+	isc_buffer_t *target;	/*%< Buffer for resulting binary data */
+	int digits;		/*%< Number of buffered base64 digits */
+	isc_boolean_t seen_end;	/*%< True if "=" end marker seen */
 	int val[4];
 } base64_decode_ctx_t;
 
@@ -112,13 +109,13 @@ base64_decode_init(base64_decode_ctx_t *ctx, int length, isc_buffer_t *target)
 
 static inline isc_result_t
 base64_decode_char(base64_decode_ctx_t *ctx, int c) {
-	char *s;
+	const char *s;
 
 	if (ctx->seen_end)
 		return (ISC_R_BADBASE64);
 	if ((s = strchr(base64, c)) == NULL)
 		return (ISC_R_BADBASE64);
-	ctx->val[ctx->digits++] = s - base64;
+	ctx->val[ctx->digits++] = (int)(s - base64);
 	if (ctx->digits == 4) {
 		int n;
 		unsigned char buf[3];
@@ -191,7 +188,7 @@ isc_base64_tobuffer(isc_lex_t *lexer, isc_buffer_t *target, int length) {
 		if (token.type != isc_tokentype_string)
 			break;
 		tr = &token.value.as_textregion;
-		for (i = 0 ;i < tr->length; i++)
+		for (i = 0; i < tr->length; i++)
 			RETERR(base64_decode_char(&ctx, tr->base[i]));
 	}
 	if (ctx.length < 0 && !ctx.seen_end)
@@ -213,7 +210,7 @@ isc_base64_decodestring(const char *cstr, isc_buffer_t *target) {
 			continue;
 		RETERR(base64_decode_char(&ctx, c));
 	}
-	RETERR(base64_decode_finish(&ctx));	
+	RETERR(base64_decode_finish(&ctx));
 	return (ISC_R_SUCCESS);
 }
 
@@ -228,7 +225,7 @@ str_totext(const char *source, isc_buffer_t *target) {
 	if (l > region.length)
 		return (ISC_R_NOSPACE);
 
-	memcpy(region.base, source, l);
+	memmove(region.base, source, l);
 	isc_buffer_add(target, l);
 	return (ISC_R_SUCCESS);
 }
@@ -240,7 +237,7 @@ mem_tobuffer(isc_buffer_t *target, void *base, unsigned int length) {
 	isc_buffer_availableregion(target, &tr);
 	if (length > tr.length)
 		return (ISC_R_NOSPACE);
-	memcpy(tr.base, base, length);
+	memmove(tr.base, base, length);
 	isc_buffer_add(target, length);
 	return (ISC_R_SUCCESS);
 }

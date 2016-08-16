@@ -1,28 +1,15 @@
 /*
- * Copyright (C) 2003  Internet Software Consortium.
+ * Copyright (C) 2003-2007, 2009, 2013-2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: hash.c,v 1.2.2.4 2003/07/30 01:15:18 marka Exp $ */
-
-/*
+/*! \file
  * Some portion of this code was derived from universal hash function
- * libraries of Rice University. 
- */
-
-/*  "UH Universal Hashing Library"
+ * libraries of Rice University.
+\section license UH Universal Hashing Library
 
 Copyright ((c)) 2002, Rice University
 All rights reserved.
@@ -68,40 +55,43 @@ if advised of the possibility of such damage.
 #include <isc/once.h>
 #include <isc/random.h>
 #include <isc/refcount.h>
-#include <isc/rwlock.h>
 #include <isc/string.h>
 #include <isc/util.h>
 
 #define HASH_MAGIC		ISC_MAGIC('H', 'a', 's', 'h')
 #define VALID_HASH(h)		ISC_MAGIC_VALID((h), HASH_MAGIC)
 
-/*
+/*%
  * A large 32-bit prime number that specifies the range of the hash output.
  */
 #define PRIME32 0xFFFFFFFB              /* 2^32 -  5 */
 
-/*
+/*@{*/
+/*%
  * Types of random seed and hash accumulator.  Perhaps they can be system
  * dependent.
  */
 typedef isc_uint32_t hash_accum_t;
 typedef isc_uint16_t hash_random_t;
+/*@}*/
 
+/*% isc hash structure */
 struct isc_hash {
 	unsigned int	magic;
 	isc_mem_t	*mctx;
 	isc_mutex_t	lock;
 	isc_boolean_t	initialized;
 	isc_refcount_t	refcnt;
-	isc_entropy_t	*entropy; /* entropy source */
-	unsigned int	limit;	/* upper limit of key length */
-	size_t		vectorlen; /* size of the vector below */
-	hash_random_t	*rndvector; /* random vector for universal hashing */
+	isc_entropy_t	*entropy; /*%< entropy source */
+	size_t		limit;	/*%< upper limit of key length */
+	size_t		vectorlen; /*%< size of the vector below */
+	hash_random_t	*rndvector; /*%< random vector for universal hashing */
 };
 
-static isc_rwlock_t createlock;
+static isc_mutex_t createlock;
 static isc_once_t once = ISC_ONCE_INIT;
-static isc_hash_t *hash = NULL;
+
+LIBISC_EXTERNAL_DATA isc_hash_t *isc_hashctx = NULL;
 
 static unsigned char maptolower[] = {
 	0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
@@ -140,9 +130,9 @@ static unsigned char maptolower[] = {
 
 isc_result_t
 isc_hash_ctxcreate(isc_mem_t *mctx, isc_entropy_t *entropy,
-		   unsigned int limit, isc_hash_t **hctxp)
+		   size_t limit, isc_hash_t **hctxp)
 {
-	isc_result_t ret;
+	isc_result_t result;
 	isc_hash_t *hctx;
 	size_t vlen;
 	hash_random_t *rv;
@@ -168,17 +158,16 @@ isc_hash_ctxcreate(isc_mem_t *mctx, isc_entropy_t *entropy,
 	vlen = sizeof(hash_random_t) * (limit + 1);
 	rv = isc_mem_get(mctx, vlen);
 	if (rv == NULL) {
-		ret = ISC_R_NOMEMORY;
+		result = ISC_R_NOMEMORY;
 		goto errout;
 	}
 
 	/*
 	 * We need a lock.
 	 */
-	if (isc_mutex_init(&hctx->lock) != ISC_R_SUCCESS) {
-		ret = ISC_R_UNEXPECTED;
+	result = isc_mutex_init(&hctx->lock);
+	if (result != ISC_R_SUCCESS)
 		goto errout;
-	}
 
 	/*
 	 * From here down, no failures will/can occur.
@@ -187,7 +176,9 @@ isc_hash_ctxcreate(isc_mem_t *mctx, isc_entropy_t *entropy,
 	hctx->mctx = NULL;
 	isc_mem_attach(mctx, &hctx->mctx);
 	hctx->initialized = ISC_FALSE;
-	isc_refcount_init(&hctx->refcnt, 1);
+	result = isc_refcount_init(&hctx->refcnt, 1);
+	if (result != ISC_R_SUCCESS)
+		goto cleanup_lock;
 	hctx->entropy = NULL;
 	hctx->limit = limit;
 	hctx->vectorlen = vlen;
@@ -199,17 +190,19 @@ isc_hash_ctxcreate(isc_mem_t *mctx, isc_entropy_t *entropy,
 	*hctxp = hctx;
 	return (ISC_R_SUCCESS);
 
+ cleanup_lock:
+	DESTROYLOCK(&hctx->lock);
  errout:
 	isc_mem_put(mctx, hctx, sizeof(isc_hash_t));
 	if (rv != NULL)
 		isc_mem_put(mctx, rv, vlen);
 
-	return (ret);
+	return (result);
 }
 
 static void
 initialize_lock(void) {
-	RUNTIME_CHECK(isc_rwlock_init(&createlock, 0, 0) == ISC_R_SUCCESS);
+	RUNTIME_CHECK(isc_mutex_init(&createlock) == ISC_R_SUCCESS);
 }
 
 isc_result_t
@@ -217,37 +210,39 @@ isc_hash_create(isc_mem_t *mctx, isc_entropy_t *entropy, size_t limit) {
 	isc_result_t result = ISC_R_SUCCESS;
 
 	REQUIRE(mctx != NULL);
-	INSIST(hash == NULL);
+	INSIST(isc_hashctx == NULL);
 
 	RUNTIME_CHECK(isc_once_do(&once, initialize_lock) == ISC_R_SUCCESS);
 
-	RWLOCK(&createlock, isc_rwlocktype_write);
+	LOCK(&createlock);
 
-	if (hash == NULL)
-		result = isc_hash_ctxcreate(mctx, entropy, limit, &hash);
+	if (isc_hashctx == NULL)
+		result = isc_hash_ctxcreate(mctx, entropy, limit,
+					    &isc_hashctx);
 
-	RWUNLOCK(&createlock, isc_rwlocktype_write);
+	UNLOCK(&createlock);
 
 	return (result);
 }
 
 void
 isc_hash_ctxinit(isc_hash_t *hctx) {
-	isc_result_t result;
-
 	LOCK(&hctx->lock);
 
 	if (hctx->initialized == ISC_TRUE)
 		goto out;
 
-	if (hctx->entropy) {
-		result = isc_entropy_getdata(hctx->entropy, 
-					     hctx->rndvector, hctx->vectorlen,
+	if (hctx->entropy != NULL) {
+		isc_result_t result;
+
+		result = isc_entropy_getdata(hctx->entropy,
+					     hctx->rndvector,
+					     (unsigned int)hctx->vectorlen,
 					     NULL, 0);
 		INSIST(result == ISC_R_SUCCESS);
 	} else {
 		isc_uint32_t pr;
-		unsigned int i, copylen;
+		size_t i, copylen;
 		unsigned char *p;
 
 		p = (unsigned char *)hctx->rndvector;
@@ -258,7 +253,7 @@ isc_hash_ctxinit(isc_hash_t *hctx) {
 			else
 				copylen = hctx->vectorlen - i;
 
-			memcpy(p, &pr, copylen);
+			memmove(p, &pr, copylen);
 		}
 		INSIST(p == (unsigned char *)hctx->rndvector +
 		       hctx->vectorlen);
@@ -271,10 +266,10 @@ isc_hash_ctxinit(isc_hash_t *hctx) {
 }
 
 void
-isc_hash_init() {
-	INSIST(hash != NULL && VALID_HASH(hash));
-	
-	isc_hash_ctxinit(hash);
+isc_hash_init(void) {
+	INSIST(isc_hashctx != NULL && VALID_HASH(isc_hashctx));
+
+	isc_hash_ctxinit(isc_hashctx);
 }
 
 void
@@ -330,15 +325,15 @@ isc_hash_ctxdetach(isc_hash_t **hctxp) {
 }
 
 void
-isc_hash_destroy() {
+isc_hash_destroy(void) {
 	unsigned int refs;
 
-	INSIST(hash != NULL && VALID_HASH(hash));
+	INSIST(isc_hashctx != NULL && VALID_HASH(isc_hashctx));
 
-	isc_refcount_decrement(&hash->refcnt, &refs);
+	isc_refcount_decrement(&isc_hashctx->refcnt, &refs);
 	INSIST(refs == 0);
 
-	destroy(&hash);
+	destroy(&isc_hashctx);
 }
 
 static inline unsigned int
@@ -380,8 +375,191 @@ unsigned int
 isc_hash_calc(const unsigned char *key, unsigned int keylen,
 	      isc_boolean_t case_sensitive)
 {
-	INSIST(hash != NULL && VALID_HASH(hash));
-	REQUIRE(keylen <= hash->limit);
+	INSIST(isc_hashctx != NULL && VALID_HASH(isc_hashctx));
+	REQUIRE(keylen <= isc_hashctx->limit);
 
-	return (hash_calc(hash, key, keylen, case_sensitive));
+	return (hash_calc(isc_hashctx, key, keylen, case_sensitive));
+}
+
+void
+isc__hash_setvec(const isc_uint16_t *vec) {
+	int i;
+	hash_random_t *p;
+
+	if (isc_hashctx == NULL)
+		return;
+
+	p = isc_hashctx->rndvector;
+	for (i = 0; i < 256; i++) {
+		p[i] = vec[i];
+	}
+}
+
+static isc_uint32_t fnv_offset_basis;
+static isc_once_t fnv_once = ISC_ONCE_INIT;
+
+static void
+fnv_initialize(void) {
+	/*
+	 * This function should not leave fnv_offset_basis set to
+	 * 0. Also, after this function has been called, if it is called
+	 * again, it should not change fnv_offset_basis.
+	 */
+	while (fnv_offset_basis == 0) {
+		isc_random_get(&fnv_offset_basis);
+	}
+}
+
+const void *
+isc_hash_get_initializer(void) {
+	RUNTIME_CHECK(isc_once_do(&fnv_once, fnv_initialize) == ISC_R_SUCCESS);
+
+	return (&fnv_offset_basis);
+}
+
+void
+isc_hash_set_initializer(const void *initializer) {
+	REQUIRE(initializer != NULL);
+
+	/*
+	 * Ensure that fnv_initialize() is not called after
+	 * isc_hash_set_initializer() is called.
+	 */
+	RUNTIME_CHECK(isc_once_do(&fnv_once, fnv_initialize) == ISC_R_SUCCESS);
+
+	fnv_offset_basis = *((const unsigned int *) initializer);
+}
+
+isc_uint32_t
+isc_hash_function(const void *data, size_t length,
+		  isc_boolean_t case_sensitive,
+		  const isc_uint32_t *previous_hashp)
+{
+	isc_uint32_t hval;
+	const unsigned char *bp;
+	const unsigned char *be;
+
+	INSIST(data == NULL || length > 0);
+	RUNTIME_CHECK(isc_once_do(&fnv_once, fnv_initialize) == ISC_R_SUCCESS);
+
+	hval = ISC_UNLIKELY(previous_hashp != NULL) ?
+		*previous_hashp : fnv_offset_basis;
+
+	if (length == 0)
+		return (hval);
+
+	bp = (const unsigned char *) data;
+	be = bp + length;
+
+	/*
+	 * Fowler-Noll-Vo FNV-1a hash function.
+	 *
+	 * NOTE: A random FNV offset basis is used by default to avoid
+	 * collision attacks as the hash function is reversible. This
+	 * makes the mapping non-deterministic, but the distribution in
+	 * the domain is still uniform.
+	 */
+
+	if (case_sensitive) {
+		while (bp < be - 4) {
+			hval ^= (isc_uint32_t) bp[0];
+			hval *= 16777619;
+			hval ^= (isc_uint32_t) bp[1];
+			hval *= 16777619;
+			hval ^= (isc_uint32_t) bp[2];
+			hval *= 16777619;
+			hval ^= (isc_uint32_t) bp[3];
+			hval *= 16777619;
+			bp += 4;
+		}
+		while (bp < be) {
+			hval ^= (isc_uint32_t) *bp++;
+			hval *= 16777619;
+		}
+	} else {
+		while (bp < be - 4) {
+			hval ^= (isc_uint32_t) maptolower[bp[0]];
+			hval *= 16777619;
+			hval ^= (isc_uint32_t) maptolower[bp[1]];
+			hval *= 16777619;
+			hval ^= (isc_uint32_t) maptolower[bp[2]];
+			hval *= 16777619;
+			hval ^= (isc_uint32_t) maptolower[bp[3]];
+			hval *= 16777619;
+			bp += 4;
+		}
+		while (bp < be) {
+			hval ^= (isc_uint32_t) maptolower[*bp++];
+			hval *= 16777619;
+		}
+	}
+
+	return (hval);
+}
+
+isc_uint32_t
+isc_hash_function_reverse(const void *data, size_t length,
+			  isc_boolean_t case_sensitive,
+			  const isc_uint32_t *previous_hashp)
+{
+	isc_uint32_t hval;
+	const unsigned char *bp;
+	const unsigned char *be;
+
+	INSIST(data == NULL || length > 0);
+	RUNTIME_CHECK(isc_once_do(&fnv_once, fnv_initialize) == ISC_R_SUCCESS);
+
+	hval = ISC_UNLIKELY(previous_hashp != NULL) ?
+		*previous_hashp : fnv_offset_basis;
+
+	if (length == 0)
+		return (hval);
+
+	bp = (const unsigned char *) data;
+	be = bp + length;
+
+	/*
+	 * Fowler-Noll-Vo FNV-1a hash function.
+	 *
+	 * NOTE: A random FNV offset basis is used by default to avoid
+	 * collision attacks as the hash function is reversible. This
+	 * makes the mapping non-deterministic, but the distribution in
+	 * the domain is still uniform.
+	 */
+
+	if (case_sensitive) {
+		while (be >= bp + 4) {
+			be -= 4;
+			hval ^= (isc_uint32_t) be[3];
+			hval *= 16777619;
+			hval ^= (isc_uint32_t) be[2];
+			hval *= 16777619;
+			hval ^= (isc_uint32_t) be[1];
+			hval *= 16777619;
+			hval ^= (isc_uint32_t) be[0];
+			hval *= 16777619;
+		}
+		while (--be >= bp) {
+			hval ^= (isc_uint32_t) *be;
+			hval *= 16777619;
+		}
+	} else {
+		while (be >= bp + 4) {
+			be -= 4;
+			hval ^= (isc_uint32_t) maptolower[be[3]];
+			hval *= 16777619;
+			hval ^= (isc_uint32_t) maptolower[be[2]];
+			hval *= 16777619;
+			hval ^= (isc_uint32_t) maptolower[be[1]];
+			hval *= 16777619;
+			hval ^= (isc_uint32_t) maptolower[be[0]];
+			hval *= 16777619;
+		}
+		while (--be >= bp) {
+			hval ^= (isc_uint32_t) maptolower[*be];
+			hval *= 16777619;
+		}
+	}
+
+	return (hval);
 }

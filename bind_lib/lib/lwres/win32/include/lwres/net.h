@@ -1,21 +1,12 @@
 /*
- * Copyright (C) 2000, 2001  Internet Software Consortium.
+ * Copyright (C) 2000, 2001, 2004, 2007, 2013, 2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: net.h,v 1.2.2.2 2002/08/08 21:27:47 marka Exp $ */
+/* $Id: net.h,v 1.6 2007/06/19 23:47:23 tbox Exp $ */
 
 #ifndef LWRES_NET_H
 #define LWRES_NET_H 1
@@ -77,16 +68,16 @@
 #undef FD_CLR
 #define FD_CLR(fd, set) do { \
     u_int __i; \
-    for (__i = 0; __i < ((fd_set FAR *)(set))->fd_count ; __i++) { \
-        if (((fd_set FAR *)(set))->fd_array[__i] == (SOCKET) fd) { \
-            while (__i < ((fd_set FAR *)(set))->fd_count-1) { \
-                ((fd_set FAR *)(set))->fd_array[__i] = \
-                    ((fd_set FAR *)(set))->fd_array[__i+1]; \
-                __i++; \
-            } \
-            ((fd_set FAR *)(set))->fd_count--; \
-            break; \
-        } \
+    for (__i = 0; __i < ((fd_set FAR *)(set))->fd_count; __i++) { \
+	if (((fd_set FAR *)(set))->fd_array[__i] == (SOCKET) fd) { \
+	    while (__i < ((fd_set FAR *)(set))->fd_count-1) { \
+		((fd_set FAR *)(set))->fd_array[__i] = \
+		    ((fd_set FAR *)(set))->fd_array[__i+1]; \
+		__i++; \
+	    } \
+	    ((fd_set FAR *)(set))->fd_count--; \
+	    break; \
+	} \
     } \
 } while (0)
 
@@ -94,15 +85,15 @@
 #define FD_SET(fd, set) do { \
     u_int __i; \
     for (__i = 0; __i < ((fd_set FAR *)(set))->fd_count; __i++) { \
-        if (((fd_set FAR *)(set))->fd_array[__i] == (SOCKET)(fd)) { \
-            break; \
-        } \
+	if (((fd_set FAR *)(set))->fd_array[__i] == (SOCKET)(fd)) { \
+	    break; \
+	} \
     } \
     if (__i == ((fd_set FAR *)(set))->fd_count) { \
-        if (((fd_set FAR *)(set))->fd_count < FD_SETSIZE) { \
-            ((fd_set FAR *)(set))->fd_array[__i] = (SOCKET)(fd); \
-            ((fd_set FAR *)(set))->fd_count++; \
-        } \
+	if (((fd_set FAR *)(set))->fd_count < FD_SETSIZE) { \
+	    ((fd_set FAR *)(set))->fd_array[__i] = (SOCKET)(fd); \
+	    ((fd_set FAR *)(set))->fd_count++; \
+	} \
     } \
 } while (0)
 
@@ -112,41 +103,113 @@
  * Use the WSA constants instead.
  */
 
+#include <errno.h>
+
+#ifndef EWOULDBLOCK
 #define EWOULDBLOCK             WSAEWOULDBLOCK
+#endif
+#ifndef EINPROGRESS
 #define EINPROGRESS             WSAEINPROGRESS
+#endif
+#ifndef EALREADY
 #define EALREADY                WSAEALREADY
+#endif
+#ifndef ENOTSOCK
 #define ENOTSOCK                WSAENOTSOCK
+#endif
+#ifndef EDESTADDRREQ
 #define EDESTADDRREQ            WSAEDESTADDRREQ
+#endif
+#ifndef EMSGSIZE
 #define EMSGSIZE                WSAEMSGSIZE
+#endif
+#ifndef EPROTOTYPE
 #define EPROTOTYPE              WSAEPROTOTYPE
+#endif
+#ifndef ENOPROTOOPT
 #define ENOPROTOOPT             WSAENOPROTOOPT
+#endif
+#ifndef EPROTONOSUPPORT
 #define EPROTONOSUPPORT         WSAEPROTONOSUPPORT
+#endif
+#ifndef ESOCKTNOSUPPORT
 #define ESOCKTNOSUPPORT         WSAESOCKTNOSUPPORT
+#endif
+#ifndef EOPNOTSUPP
 #define EOPNOTSUPP              WSAEOPNOTSUPP
+#endif
+#ifndef EPFNOSUPPORT
 #define EPFNOSUPPORT            WSAEPFNOSUPPORT
+#endif
+#ifndef EAFNOSUPPORT
 #define EAFNOSUPPORT            WSAEAFNOSUPPORT
+#endif
+#ifndef EADDRINUSE
 #define EADDRINUSE              WSAEADDRINUSE
+#endif
+#ifndef EADDRNOTAVAIL
 #define EADDRNOTAVAIL           WSAEADDRNOTAVAIL
+#endif
+#ifndef ENETDOWN
 #define ENETDOWN                WSAENETDOWN
+#endif
+#ifndef ENETUNREACH
 #define ENETUNREACH             WSAENETUNREACH
+#endif
+#ifndef ENETRESET
 #define ENETRESET               WSAENETRESET
+#endif
+#ifndef ECONNABORTED
 #define ECONNABORTED            WSAECONNABORTED
+#endif
+#ifndef ECONNRESET
 #define ECONNRESET              WSAECONNRESET
+#endif
+#ifndef ENOBUFS
 #define ENOBUFS                 WSAENOBUFS
+#endif
+#ifndef EISCONN
 #define EISCONN                 WSAEISCONN
+#endif
+#ifndef ENOTCONN
 #define ENOTCONN                WSAENOTCONN
+#endif
+#ifndef ESHUTDOWN
 #define ESHUTDOWN               WSAESHUTDOWN
+#endif
+#ifndef ETOOMANYREFS
 #define ETOOMANYREFS            WSAETOOMANYREFS
+#endif
+#ifndef ETIMEDOUT
 #define ETIMEDOUT               WSAETIMEDOUT
+#endif
+#ifndef ECONNREFUSED
 #define ECONNREFUSED            WSAECONNREFUSED
+#endif
+#ifndef ELOOP
 #define ELOOP                   WSAELOOP
+#endif
+#ifndef EHOSTDOWN
 #define EHOSTDOWN               WSAEHOSTDOWN
+#endif
+#ifndef EHOSTUNREACH
 #define EHOSTUNREACH            WSAEHOSTUNREACH
+#endif
+#ifndef EPROCLIM
 #define EPROCLIM                WSAEPROCLIM
+#endif
+#ifndef EUSERS
 #define EUSERS                  WSAEUSERS
+#endif
+#ifndef EDQUOT
 #define EDQUOT                  WSAEDQUOT
+#endif
+#ifndef ESTALE
 #define ESTALE                  WSAESTALE
+#endif
+#ifndef EREMOTE
 #define EREMOTE                 WSAEREMOTE
+#endif
 
 LWRES_LANG_BEGINDECLS
 

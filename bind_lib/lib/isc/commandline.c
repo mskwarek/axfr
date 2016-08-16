@@ -1,18 +1,9 @@
 /*
- * Portions Copyright (C) 1999-2001  Internet Software Consortium.
+ * Portions Copyright (C) 1999-2001, 2004, 2005, 2007, 2008, 2014-2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
 /*
@@ -27,11 +18,7 @@
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- * 3. All advertising materials mentioning features or use of this software
- *    must display the following acknowledgement:
- *	This product includes software developed by the University of
- *	California, Berkeley and its contributors.
- * 4. Neither the name of the University nor the names of its contributors
+ * 3. Neither the name of the University nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
  *
@@ -48,9 +35,9 @@
  * SUCH DAMAGE.
  */
 
-/* $Id: commandline.c,v 1.15 2001/07/16 03:52:06 mayer Exp $ */
+/* $Id: commandline.c,v 1.22 2008/09/25 04:02:39 tbox Exp $ */
 
-/*
+/*! \file
  * This file was adapted from the NetBSD project's source tree, RCS ID:
  *    NetBSD: getopt.c,v 1.15 1999/09/20 04:39:37 lukem Exp
  *
@@ -59,8 +46,8 @@
  */
 
 /*
- * Principal Authors: Computer Systems Research Group at UC Berkeley
- * Principal ISC caretaker: DCL
+ * \author Principal Authors: Computer Systems Research Group at UC Berkeley
+ * \author Principal ISC caretaker: DCL
  */
 
 #include <config.h>
@@ -68,21 +55,23 @@
 #include <stdio.h>
 
 #include <isc/commandline.h>
+#include <isc/mem.h>
 #include <isc/msgs.h>
+#include <isc/print.h>
 #include <isc/string.h>
 #include <isc/util.h>
 
-/* Index into parent argv vector. */
+/*% Index into parent argv vector. */
 LIBISC_EXTERNAL_DATA int isc_commandline_index = 1;
-/* Character checked for validity. */
+/*% Character checked for validity. */
 LIBISC_EXTERNAL_DATA int isc_commandline_option;
-/* Argument associated with option. */
+/*% Argument associated with option. */
 LIBISC_EXTERNAL_DATA char *isc_commandline_argument;
-/* For printing error messages. */
+/*% For printing error messages. */
 LIBISC_EXTERNAL_DATA char *isc_commandline_progname;
-/* Print error messages. */
+/*% Print error messages. */
 LIBISC_EXTERNAL_DATA isc_boolean_t isc_commandline_errprint = ISC_TRUE;
-/* Reset processing. */
+/*% Reset processing. */
 LIBISC_EXTERNAL_DATA isc_boolean_t isc_commandline_reset = ISC_TRUE;
 
 static char endopt = '\0';
@@ -91,14 +80,14 @@ static char endopt = '\0';
 #define	BADARG	':'
 #define ENDOPT  &endopt
 
-/*
+/*!
  * getopt --
  *	Parse argc/argv argument vector.
  */
 int
 isc_commandline_parse(int argc, char * const *argv, const char *options) {
 	static char *place = ENDOPT;
-	char *option;			/* Index into *options of option. */
+	const char *option;		/* Index into *options of option. */
 
 	REQUIRE(argc >= 0 && argv != NULL && options != NULL);
 
@@ -107,7 +96,10 @@ isc_commandline_parse(int argc, char * const *argv, const char *options) {
 	 * the previous argv was finished.
 	 */
 	if (isc_commandline_reset || *place == '\0') {
-		isc_commandline_reset = ISC_FALSE;
+		if (isc_commandline_reset) {
+			isc_commandline_index = 1;
+			isc_commandline_reset = ISC_FALSE;
+		}
 
 		if (isc_commandline_progname == NULL)
 			isc_commandline_progname = argv[0];
@@ -219,4 +211,63 @@ isc_commandline_parse(int argc, char * const *argv, const char *options) {
 	}
 
 	return (isc_commandline_option);
+}
+
+isc_result_t
+isc_commandline_strtoargv(isc_mem_t *mctx, char *s, unsigned int *argcp,
+			  char ***argvp, unsigned int n)
+{
+	isc_result_t result;
+
+ restart:
+	/* Discard leading whitespace. */
+	while (*s == ' ' || *s == '\t')
+		s++;
+
+	if (*s == '\0') {
+		/* We have reached the end of the string. */
+		*argcp = n;
+		*argvp = isc_mem_get(mctx, n * sizeof(char *));
+		if (*argvp == NULL)
+			return (ISC_R_NOMEMORY);
+	} else {
+		char *p = s;
+		while (*p != ' ' && *p != '\t' && *p != '\0' && *p != '{') {
+			if (*p == '\n') {
+				*p = ' ';
+				goto restart;
+			}
+			p++;
+		}
+
+		/* do "grouping", items between { and } are one arg */
+		if (*p == '{') {
+			char *t = p;
+			/*
+			 * shift all characters to left by 1 to get rid of '{'
+			 */
+			while (*t != '\0') {
+				t++;
+				*(t-1) = *t;
+			}
+			while (*p != '\0' && *p != '}') {
+				p++;
+			}
+			/* get rid of '}' character */
+			if (*p == '}') {
+				*p = '\0';
+				p++;
+			}
+			/* normal case, no "grouping" */
+		} else if (*p != '\0')
+			*p++ = '\0';
+
+		result = isc_commandline_strtoargv(mctx, p,
+						   argcp, argvp, n + 1);
+		if (result != ISC_R_SUCCESS)
+			return (result);
+		(*argvp)[n] = s;
+	}
+
+	return (ISC_R_SUCCESS);
 }

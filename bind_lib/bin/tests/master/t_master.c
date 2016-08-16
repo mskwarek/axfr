@@ -1,21 +1,12 @@
 /*
- * Copyright (C) 1998-2001  Internet Software Consortium.
+ * Copyright (C) 1998-2001, 2003-2005, 2007, 2009, 2011, 2013, 2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: t_master.c,v 1.30 2001/05/22 01:44:36 gson Exp $ */
+/* $Id: t_master.c,v 1.41 2011/03/12 04:59:46 tbox Exp $ */
 
 #include <config.h>
 
@@ -77,7 +68,6 @@ test_master(char *testfile, char *origin, char *class, isc_result_t exp_result)
 	dns_rdataclass_t	rdataclass;
 	isc_textregion_t	textregion;
 
-	result = T_UNRESOLVED;
 	if (T1_mctx == NULL)
 		isc_result = isc_mem_create(0, 0, &T1_mctx);
 	else
@@ -94,7 +84,7 @@ test_master(char *testfile, char *origin, char *class, isc_result_t exp_result)
 	isc_buffer_init(&target, name_buf, BUFLEN);
 	dns_name_init(&dns_origin, NULL);
 	dns_result = dns_name_fromtext(&dns_origin, &source, dns_rootname,
-				   ISC_FALSE, &target);
+				       0, &target);
 	if (dns_result != ISC_R_SUCCESS) {
 		t_info("dns_name_fromtext failed %s\n",
 				dns_result_totext(dns_result));
@@ -153,8 +143,10 @@ test_master_x(const char *filename) {
 			/*
 			 * Skip comment lines.
 			 */
-			if ((isspace(*p & 0xff)) || (*p == '#'))
+			if ((isspace(*p & 0xff)) || (*p == '#')) {
+				(void)free(p);
 				continue;
+			}
 
 			/*
 			 * Name of data file, origin, zclass, expected result.
@@ -183,7 +175,7 @@ static const char *a1 =	"dns_master_loadfile loads a valid master file and "
 static void
 t1(void) {
 	int	result;
-	t_assert("dns_master_loadfile", 1, T_REQUIRED, a1);
+	t_assert("dns_master_loadfile", 1, T_REQUIRED, "%s", a1);
 	result = test_master_x("dns_master_load_1_data");
 	t_result(result);
 }
@@ -195,7 +187,7 @@ static const char *a2 =
 static void
 t2(void) {
 	int	result;
-	t_assert("dns_master_loadfile", 2, T_REQUIRED, a2);
+	t_assert("dns_master_loadfile", 2, T_REQUIRED, "%s", a2);
 	result = test_master_x("dns_master_load_2_data");
 	t_result(result);
 }
@@ -206,7 +198,7 @@ static const char *a3 =	"dns_master_loadfile returns DNS_R_NOOWNER when the "
 static void
 t3() {
 	int	result;
-	t_assert("dns_master_loadfile", 3, T_REQUIRED, a3);
+	t_assert("dns_master_loadfile", 3, T_REQUIRED, "%s", a3);
 	result = test_master_x("dns_master_load_3_data");
 	t_result(result);
 }
@@ -218,7 +210,7 @@ static const char *a4 =	"dns_master_loadfile accepts broken zone files "
 static void
 t4() {
 	int	result;
-	t_assert("dns_master_loadfile", 4, T_REQUIRED, a4);
+	t_assert("dns_master_loadfile", 4, T_REQUIRED, "%s", a4);
 	result = test_master_x("dns_master_load_4_data");
 	t_result(result);
 }
@@ -230,35 +222,35 @@ static void
 t5() {
 	int	result;
 
-	t_assert("dns_master_loadfile", 5, T_REQUIRED, a5);
+	t_assert("dns_master_loadfile", 5, T_REQUIRED, "%s", a5);
 	result = test_master_x("dns_master_load_5_data");
 
 	t_result(result);
 }
 
 static const char *a6 =
-	"dns_master_loadfile understands KEY RR specifications "
+	"dns_master_loadfile understands DNSKEY RR specifications "
 	"containing key material";
 
 static void
 t6() {
 	int	result;
 
-	t_assert("dns_master_loadfile", 6, T_REQUIRED, a6);
+	t_assert("dns_master_loadfile", 6, T_REQUIRED, "%s", a6);
 	result = test_master_x("dns_master_load_6_data");
 
 	t_result(result);
 }
 
 static const char *a7 =
-	"dns_master_loadfile understands KEY RR specifications "
+	"dns_master_loadfile understands DNSKEY RR specifications "
 	"containing no key material";
 
 static void
 t7() {
 	int	result;
 
-	t_assert("dns_master_loadfile", 7, T_REQUIRED, a7);
+	t_assert("dns_master_loadfile", 7, T_REQUIRED, "%s", a7);
 	result = test_master_x("dns_master_load_7_data");
 
 	t_result(result);
@@ -271,7 +263,7 @@ static void
 t8() {
 	int	result;
 
-	t_assert("dns_master_loadfile", 8, T_REQUIRED, a8);
+	t_assert("dns_master_loadfile", 8, T_REQUIRED, "%s", a8);
 	result = test_master_x("dns_master_load_8_data");
 
 	t_result(result);
@@ -284,7 +276,7 @@ static void
 t9() {
 	int	result;
 
-	t_assert("dns_master_loadfile", 9, T_REQUIRED, a9);
+	t_assert("dns_master_loadfile", 9, T_REQUIRED, "%s", a9);
 	result = test_master_x("dns_master_load_9_data");
 
 	t_result(result);
@@ -297,7 +289,7 @@ static void
 t10() {
 	int	result;
 
-	t_assert("dns_master_loadfile", 10, T_REQUIRED, a10);
+	t_assert("dns_master_loadfile", 10, T_REQUIRED, "%s", a10);
 	result = test_master_x("dns_master_load_10_data");
 
 	t_result(result);
@@ -310,7 +302,7 @@ static void
 t11() {
 	int	result;
 
-	t_assert("dns_master_loadfile", 11, T_REQUIRED, a11);
+	t_assert("dns_master_loadfile", 11, T_REQUIRED, "%s", a11);
 	result = test_master_x("dns_master_load_11_data");
 
 	t_result(result);
@@ -318,17 +310,24 @@ t11() {
 
 
 testspec_t	T_testlist[] = {
-	{	t1,	"ISC_R_SUCCESS"		},
-	{	t2,	"ISC_R_UNEXPECTEDEND"	},
-	{	t3,	"DNS_NOOWNER"		},
-	{	t4,	"DNS_NOTTL"		},
-	{	t5,	"DNS_BADCLASS"		},
-	{	t6,	"KEY RR 1"		},
-	{	t7,	"KEY RR 2"		},
-	{	t8,	"$INCLUDE"		},
-	{	t9,	"$INCLUDE w/ DNS_BADCLASS"	},
-	{	t10,	"non empty blank lines"	},
-	{	t11,	"leading zeros in serial"	},
-	{	NULL,	NULL			}
+	{	(PFV) t1,	"ISC_R_SUCCESS"			},
+	{	(PFV) t2,	"ISC_R_UNEXPECTEDEND"		},
+	{	(PFV) t3,	"DNS_NOOWNER"			},
+	{	(PFV) t4,	"DNS_NOTTL"			},
+	{	(PFV) t5,	"DNS_BADCLASS"			},
+	{	(PFV) t6,	"DNSKEY RR 1"			},
+	{	(PFV) t7,	"DNSKEY RR 2"			},
+	{	(PFV) t8,	"$INCLUDE"			},
+	{	(PFV) t9,	"$INCLUDE w/ DNS_BADCLASS"	},
+	{	(PFV) t10,	"non empty blank lines"		},
+	{	(PFV) t11,	"leading zeros in serial"	},
+	{	(PFV) 0,	NULL				}
 };
 
+#ifdef WIN32
+int
+main(int argc, char **argv) {
+	t_settests(T_testlist);
+	return (t_main(argc, argv));
+}
+#endif

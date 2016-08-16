@@ -1,21 +1,14 @@
 /*
- * Copyright (C) 2000, 2001  Internet Software Consortium.
+ * Copyright (C) 2000, 2001, 2003-2007, 2009, 2013-2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: lwdgrbn.c,v 1.11 2001/01/24 01:42:41 bwelling Exp $ */
+/* $Id: lwdgrbn.c,v 1.22 2009/09/02 23:48:01 tbox Exp $ */
+
+/*! \file */
 
 #include <config.h>
 
@@ -100,7 +93,7 @@ iterate_node(lwres_grbnresponse_t *grbn, dns_db_t *db, dns_dbnode_t *node,
 		dns_rdataset_init(&set);
 		dns_rdatasetiter_current(iter, &set);
 
-		if (set.type != dns_rdatatype_sig) {
+		if (set.type != dns_rdatatype_rrsig) {
 			dns_rdataset_disassociate(&set);
 			continue;
 		}
@@ -122,8 +115,8 @@ iterate_node(lwres_grbnresponse_t *grbn, dns_db_t *db, dns_dbnode_t *node,
 			lens = isc_mem_get(mctx, size * sizeof(*lens));
 			if (lens == NULL)
 				goto out;
-			memcpy(rdatas, oldrdatas, used * sizeof(*rdatas));
-			memcpy(lens, oldlens, used * sizeof(*lens));
+			memmove(rdatas, oldrdatas, used * sizeof(*rdatas));
+			memmove(lens, oldlens, used * sizeof(*lens));
 			isc_mem_put(mctx, oldrdatas,
 				    oldsize * sizeof(*oldrdatas));
 			isc_mem_put(mctx, oldlens, oldsize * sizeof(*oldlens));
@@ -156,8 +149,8 @@ iterate_node(lwres_grbnresponse_t *grbn, dns_db_t *db, dns_dbnode_t *node,
 		newlens = isc_mem_get(mctx, used * sizeof(*lens));
 		if (newlens == NULL)
 			goto out;
-		memcpy(newrdatas, rdatas, used * sizeof(*rdatas));
-		memcpy(newlens, lens, used * sizeof(*lens));
+		memmove(newrdatas, rdatas, used * sizeof(*rdatas));
+		memmove(newlens, lens, used * sizeof(*lens));
 		isc_mem_put(mctx, rdatas, size * sizeof(*rdatas));
 		isc_mem_put(mctx, lens, size * sizeof(*lens));
 		grbn->rdatas = newrdatas;
@@ -182,9 +175,7 @@ iterate_node(lwres_grbnresponse_t *grbn, dns_db_t *db, dns_dbnode_t *node,
 	if (oldlens != NULL)
 		isc_mem_put(mctx, oldlens, oldsize * sizeof(*oldlens));
 	if (newrdatas != NULL)
-		isc_mem_put(mctx, newrdatas, used * sizeof(*oldrdatas));
-	if (newlens != NULL)
-		isc_mem_put(mctx, newlens, used * sizeof(*oldlens));
+		isc_mem_put(mctx, newrdatas, used * sizeof(*newrdatas));
 	return (result);
 }
 
@@ -203,6 +194,8 @@ lookup_done(isc_task_t *task, isc_event_t *event) {
 	isc_buffer_t b;
 	lwres_grbnresponse_t *grbn;
 	int i;
+
+	REQUIRE(event != NULL);
 
 	UNUSED(task);
 
@@ -324,9 +317,6 @@ lookup_done(isc_task_t *task, isc_event_t *event) {
 				 (grbn->nsigs == 1) ? "" : "s");
 	}
 
-	dns_lookup_destroy(&client->lookup);
-	isc_event_free(&event);
-
 	/*
 	 * Render the packet.
 	 */
@@ -358,9 +348,12 @@ lookup_done(isc_task_t *task, isc_event_t *event) {
 	client->sendlength = r.length;
 	result = ns_lwdclient_sendreply(client, &r);
 	if (result != ISC_R_SUCCESS)
-		goto out;
+		goto out2;
 
 	NS_LWDCLIENT_SETSEND(client);
+
+	dns_lookup_destroy(&client->lookup);
+	isc_event_free(&event);
 
 	return;
 
@@ -378,14 +371,13 @@ lookup_done(isc_task_t *task, isc_event_t *event) {
 	if (grbn->siglen != NULL)
 		isc_mem_put(cm->mctx, grbn->siglen,
 			    grbn->nsigs * sizeof(lwres_uint16_t));
-
+ out2:
 	if (client->lookup != NULL)
 		dns_lookup_destroy(&client->lookup);
 	if (lwb.base != NULL)
 		lwres_context_freemem(cm->lwctx, lwb.base, lwb.length);
 
-	if (event != NULL)
-		isc_event_free(&event);
+	isc_event_free(&event);
 
 	ns_lwdclient_log(50, "error constructing getrrsetbyname response");
 	ns_lwdclient_errorpktsend(client, LWRES_R_FAILURE);
@@ -402,14 +394,18 @@ start_lookup(ns_lwdclient_t *client) {
 	INSIST(client->lookup == NULL);
 
 	dns_fixedname_init(&absname);
-	result = ns_lwsearchctx_current(&client->searchctx,
-					dns_fixedname_name(&absname));
+
 	/*
-	 * This will return failure if relative name + suffix is too long.
-	 * In this case, just go on to the next entry in the search path.
+	 * Perform search across all search domains until success
+	 * is returned. Return in case of failure.
 	 */
-	if (result != ISC_R_SUCCESS)
-		start_lookup(client);
+	while (ns_lwsearchctx_current(&client->searchctx,
+			dns_fixedname_name(&absname)) != ISC_R_SUCCESS) {
+		if (ns_lwsearchctx_next(&client->searchctx) != ISC_R_SUCCESS) {
+			ns_lwdclient_errorpktsend(client, LWRES_R_FAILURE);
+			return;
+		}
+	}
 
 	result = dns_lookup_create(cm->mctx,
 				   dns_fixedname_name(&absname),
@@ -472,7 +468,7 @@ ns_lwdclient_processgrbn(ns_lwdclient_t *client, lwres_buffer_t *b) {
 
 	dns_fixedname_init(&client->query_name);
 	result = dns_name_fromtext(dns_fixedname_name(&client->query_name),
-				   &namebuf, NULL, ISC_FALSE, NULL);
+				   &namebuf, NULL, 0, NULL);
 	if (result != ISC_R_SUCCESS)
 		goto out;
 	ns_lwsearchctx_init(&client->searchctx,

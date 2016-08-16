@@ -1,30 +1,26 @@
 /*
- * Copyright (C) 2000, 2001, 2003  Internet Software Consortium.
+ * Copyright (C) 2000, 2001, 2003, 2004, 2007, 2009, 2012, 2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: stat.h,v 1.3.2.2 2003/07/22 04:03:52 marka Exp $ */
+/* $Id: stat.h,v 1.9 2009/10/01 23:48:08 tbox Exp $ */
 
 #ifndef ISC_STAT_H
 #define ISC_STAT_H 1
 
 #include <sys/stat.h>
 
+/*
+ * Windows doesn't typedef this.
+ */
+typedef unsigned short mode_t;
+
 /* open() under unix allows setting of read/write permissions
  * at the owner, group and other levels.  These don't exist in NT
- * We'll just map them all to the NT equivalent 
+ * We'll just map them all to the NT equivalent
  */
 
 #define S_IREAD	_S_IREAD	/* read permission, owner */
@@ -35,6 +31,19 @@
 #define S_IWGRP _S_IWRITE	/* Group write permission */
 #define S_IROTH _S_IREAD	/* Other read permission */
 #define S_IWOTH _S_IWRITE	/* Other write permission */
+
+#ifndef S_IFMT
+# define S_IFMT   _S_IFMT
+#endif
+#ifndef S_IFDIR
+# define S_IFDIR  _S_IFDIR
+#endif
+#ifndef S_IFCHR
+# define S_IFCHR  _S_IFCHR
+#endif
+#ifndef S_IFREG
+# define S_IFREG  _S_IFREG
+#endif
 
 #ifndef S_ISDIR
 # define S_ISDIR(m)	(((m) & S_IFMT) == S_IFDIR)

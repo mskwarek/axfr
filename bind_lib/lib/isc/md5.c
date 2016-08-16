@@ -1,23 +1,14 @@
 /*
- * Copyright (C) 2000, 2001  Internet Software Consortium.
+ * Copyright (C) 2000, 2001, 2004, 2005, 2007, 2009, 2014-2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: md5.c,v 1.9 2001/01/09 21:56:14 bwelling Exp $ */
+/* $Id: md5.c,v 1.16 2009/02/06 23:47:42 tbox Exp $ */
 
-/*
+/*! \file
  * This code implements the MD5 message-digest algorithm.
  * The algorithm is due to Ron Rivest.  This code was
  * written by Colin Plumb in 1993, no copyright is claimed.
@@ -38,9 +29,87 @@
 
 #include <isc/assertions.h>
 #include <isc/md5.h>
+#include <isc/platform.h>
 #include <isc/string.h>
 #include <isc/types.h>
+
+#if PKCS11CRYPTO
+#include <pk11/internal.h>
+#include <pk11/pk11.h>
+#endif
+
 #include <isc/util.h>
+
+#ifdef ISC_PLATFORM_OPENSSLHASH
+void
+isc_md5_init(isc_md5_t *ctx) {
+	RUNTIME_CHECK(EVP_DigestInit(ctx, EVP_md5()) == 1);
+}
+
+void
+isc_md5_invalidate(isc_md5_t *ctx) {
+	EVP_MD_CTX_cleanup(ctx);
+}
+
+void
+isc_md5_update(isc_md5_t *ctx, const unsigned char *buf, unsigned int len) {
+	if (len == 0U)
+		return;
+	RUNTIME_CHECK(EVP_DigestUpdate(ctx,
+				       (const void *) buf,
+				       (size_t) len) == 1);
+}
+
+void
+isc_md5_final(isc_md5_t *ctx, unsigned char *digest) {
+	RUNTIME_CHECK(EVP_DigestFinal(ctx, digest, NULL) == 1);
+}
+
+#elif PKCS11CRYPTO
+
+void
+isc_md5_init(isc_md5_t *ctx) {
+	CK_RV rv;
+	CK_MECHANISM mech = { CKM_MD5, NULL, 0 };
+
+	RUNTIME_CHECK(pk11_get_session(ctx, OP_DIGEST, ISC_TRUE, ISC_FALSE,
+				       ISC_FALSE, NULL, 0) == ISC_R_SUCCESS);
+	PK11_FATALCHECK(pkcs_C_DigestInit, (ctx->session, &mech));
+}
+
+void
+isc_md5_invalidate(isc_md5_t *ctx) {
+	CK_BYTE garbage[ISC_MD5_DIGESTLENGTH];
+	CK_ULONG len = ISC_MD5_DIGESTLENGTH;
+
+	if (ctx->handle == NULL)
+		return;
+	(void) pkcs_C_DigestFinal(ctx->session, garbage, &len);
+	memset(garbage, 0, sizeof(garbage));
+	pk11_return_session(ctx);
+}
+
+void
+isc_md5_update(isc_md5_t *ctx, const unsigned char *buf, unsigned int len) {
+	CK_RV rv;
+	CK_BYTE_PTR pPart;
+
+	DE_CONST(buf, pPart);
+	PK11_FATALCHECK(pkcs_C_DigestUpdate,
+			(ctx->session, pPart, (CK_ULONG) len));
+}
+
+void
+isc_md5_final(isc_md5_t *ctx, unsigned char *digest) {
+	CK_RV rv;
+	CK_ULONG len = ISC_MD5_DIGESTLENGTH;
+
+	PK11_FATALCHECK(pkcs_C_DigestFinal,
+			(ctx->session, (CK_BYTE_PTR) digest, &len));
+	pk11_return_session(ctx);
+}
+
+#else
 
 static void
 byteSwap(isc_uint32_t *buf, unsigned words)
@@ -54,7 +123,7 @@ byteSwap(isc_uint32_t *buf, unsigned words)
 	} while (--words);
 }
 
-/*
+/*!
  * Start MD5 accumulation.  Set bit count to 0 and buffer to mysterious
  * initialization constants.
  */
@@ -74,19 +143,21 @@ isc_md5_invalidate(isc_md5_t *ctx) {
 	memset(ctx, 0, sizeof(isc_md5_t));
 }
 
-/* The four core functions - F1 is optimized somewhat */
+/*@{*/
+/*! The four core functions - F1 is optimized somewhat */
 
 /* #define F1(x, y, z) (x & y | ~x & z) */
 #define F1(x, y, z) (z ^ (x & (y ^ z)))
 #define F2(x, y, z) F1(z, x, y)
 #define F3(x, y, z) (x ^ y ^ z)
 #define F4(x, y, z) (y ^ (x | ~z))
+/*@}*/
 
-/* This is the central step in the MD5 algorithm. */
+/*! This is the central step in the MD5 algorithm. */
 #define MD5STEP(f,w,x,y,z,in,s) \
 	 (w += f(x,y,z) + in, w = (w<<s | w>>(32-s)) + x)
 
-/*
+/*!
  * The core of the MD5 algorithm, this alters an existing MD5 hash to
  * reflect the addition of 16 longwords of new data.  MD5Update blocks
  * the data and converts bytes into longwords for this routine.
@@ -174,7 +245,7 @@ transform(isc_uint32_t buf[4], isc_uint32_t const in[16]) {
 	buf[3] += d;
 }
 
-/*
+/*!
  * Update context to reflect the concatenation of another buffer full
  * of bytes.
  */
@@ -190,11 +261,11 @@ isc_md5_update(isc_md5_t *ctx, const unsigned char *buf, unsigned int len) {
 
 	t = 64 - (t & 0x3f);	/* Space available in ctx->in (at least 1) */
 	if (t > len) {
-		memcpy((unsigned char *)ctx->in + 64 - t, buf, len);
+		memmove((unsigned char *)ctx->in + 64 - t, buf, len);
 		return;
 	}
 	/* First chunk is an odd size */
-	memcpy((unsigned char *)ctx->in + 64 - t, buf, t);
+	memmove((unsigned char *)ctx->in + 64 - t, buf, t);
 	byteSwap(ctx->in, 16);
 	transform(ctx->buf, ctx->in);
 	buf += t;
@@ -202,7 +273,7 @@ isc_md5_update(isc_md5_t *ctx, const unsigned char *buf, unsigned int len) {
 
 	/* Process data in 64-byte chunks */
 	while (len >= 64) {
-		memcpy(ctx->in, buf, 64);
+		memmove(ctx->in, buf, 64);
 		byteSwap(ctx->in, 16);
 		transform(ctx->buf, ctx->in);
 		buf += 64;
@@ -210,10 +281,10 @@ isc_md5_update(isc_md5_t *ctx, const unsigned char *buf, unsigned int len) {
 	}
 
 	/* Handle any remaining bytes of data. */
-	memcpy(ctx->in, buf, len);
+	memmove(ctx->in, buf, len);
 }
 
-/*
+/*!
  * Final wrapup - pad to 64-byte boundary with the bit pattern
  * 1 0* (64-bit count of bits processed, MSB-first)
  */
@@ -244,6 +315,7 @@ isc_md5_final(isc_md5_t *ctx, unsigned char *digest) {
 	transform(ctx->buf, ctx->in);
 
 	byteSwap(ctx->buf, 4);
-	memcpy(digest, ctx->buf, 16);
+	memmove(digest, ctx->buf, 16);
 	memset(ctx, 0, sizeof(isc_md5_t));	/* In case it's sensitive */
 }
+#endif

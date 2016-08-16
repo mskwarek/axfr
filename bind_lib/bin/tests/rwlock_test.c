@@ -1,21 +1,12 @@
 /*
- * Copyright (C) 1998-2001  Internet Software Consortium.
+ * Copyright (C) 1998-2001, 2004, 2005, 2007, 2013, 2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: rwlock_test.c,v 1.20 2001/05/02 17:35:52 gson Exp $ */
+/* $Id: rwlock_test.c,v 1.26 2007/06/19 23:46:59 tbox Exp $ */
 
 #include <config.h>
 
@@ -23,16 +14,24 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include <isc/print.h>
 #include <isc/thread.h>
 #include <isc/rwlock.h>
 #include <isc/string.h>
 #include <isc/util.h>
 
+#ifdef WIN32
+#define sleep(x)	Sleep(1000 * x)
+#endif
+
 #ifdef ISC_PLATFORM_USETHREADS
 
 isc_rwlock_t lock;
 
-static void *
+static isc_threadresult_t
+#ifdef WIN32
+WINAPI
+#endif
 run1(void *arg) {
 	char *message = arg;
 
@@ -57,10 +56,13 @@ run1(void *arg) {
 	printf("%s giving up WRITE lock\n", message);
 	RUNTIME_CHECK(isc_rwlock_unlock(&lock, isc_rwlocktype_write) ==
 	       ISC_R_SUCCESS);
-	return (NULL);
+	return ((isc_threadresult_t)0);
 }
 
-static void *
+static isc_threadresult_t
+#ifdef WIN32
+WINAPI
+#endif
 run2(void *arg) {
 	char *message = arg;
 
@@ -85,7 +87,7 @@ run2(void *arg) {
 	printf("%s giving up READ lock\n", message);
 	RUNTIME_CHECK(isc_rwlock_unlock(&lock, isc_rwlocktype_read) ==
 	       ISC_R_SUCCESS);
-	return (NULL);
+	return ((isc_threadresult_t)0);
 }
 
 int
@@ -135,7 +137,7 @@ main(int argc, char *argv[]) {
 	UNUSED(argc);
 	UNUSED(argv);
 	fprintf(stderr, "This test requires threads.\n");
-	exit(1);
+	return(1);
 }
 
 #endif

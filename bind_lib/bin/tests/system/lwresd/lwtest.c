@@ -1,29 +1,22 @@
 /*
- * Copyright (C) 2000-2003  Internet Software Consortium.
+ * Copyright (C) 2000-2002, 2004, 2007, 2008, 2012, 2013, 2015, 2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: lwtest.c,v 1.22.2.4 2003/07/22 04:03:38 marka Exp $ */
+/* $Id: lwtest.c,v 1.32 2008/04/02 02:37:42 marka Exp $ */
 
 #include <config.h>
 
 #include <assert.h>
 #include <stdlib.h>
-#include <string.h>
 
 #include <isc/net.h>
+#include <isc/print.h>
+#include <isc/string.h>
+#include <isc/util.h>
 
 #include <lwres/lwres.h>
 #include <lwres/netdb.h>
@@ -350,6 +343,7 @@ test_getipnodebyname(const char *name, const char *address, int af,
 		if (hp->h_addrtype != af) {
 			printf("I:getipnodebyname(%s) returned wrong family\n",
 			       name);
+			freehostent(hp);
 			fails++;
 			return;
 		}
@@ -361,6 +355,7 @@ test_getipnodebyname(const char *name, const char *address, int af,
 					outbuf, sizeof(outbuf));
 			printf("I:getipnodebyname(%s) returned %s, "
 			       "expected %s\n", name, outbuf, address);
+			freehostent(hp);
 			fails++;
 			return;
 		}
@@ -398,7 +393,7 @@ test_gethostbyaddr(const char *address, int af, const char *name) {
 			return;
 		}
 	} else {
-		if (strcmp(hp->h_name, name) != 0) {
+		if (name != NULL && strcmp(hp->h_name, name) != 0) {
 			printf("I:gethostbyname(%s) returned %s, "
 			       "expected %s\n", address, hp->h_name, name);
 			fails++;
@@ -427,20 +422,21 @@ test_getipnodebyaddr(const char *address, int af, const char *name) {
 		if (name == NULL && error_num == HOST_NOT_FOUND)
 			return;
 		else if (error_num != HOST_NOT_FOUND) {
-			printf("I:gethostbyaddr(%s) failed: %d\n",
+			printf("I:getipnodebyaddr(%s) failed: %d\n",
 			       address, error_num);
 			fails++;
 			return;
 		} else {
-			printf("I:gethostbyaddr(%s) returned not found\n",
+			printf("I:getipnodebyaddr(%s) returned not found\n",
 			       address);
 			fails++;
 			return;
 		}
 	} else {
-		if (strcmp(hp->h_name, name) != 0) {
-			printf("I:gethostbyname(%s) returned %s, "
+		if (name != NULL && strcmp(hp->h_name, name) != 0) {
+			printf("I:getipnodebyaddr(%s) returned %s, "
 			       "expected %s\n", address, hp->h_name, name);
+			freehostent(hp);
 			fails++;
 			return;
 		}
@@ -588,12 +584,12 @@ test_getnameinfo(const char *address, int af, const char *name) {
 		}
 	} else {
 		if (name == NULL) {
-			printf("I:getaddrinfo(%s) returned %s, "
+			printf("I:getnameinfo(%s) returned %s, "
 			       "expected NULL\n", address, host);
 			fails++;
 			return;
 		} else if (strcmp(host, name) != 0) {
-			printf("I:getaddrinfo(%s) returned %s, expected %s\n",
+			printf("I:getnameinfo(%s) returned %s, expected %s\n",
 			       address, host, name);
 			fails++;
 			return;
@@ -636,11 +632,17 @@ test_getrrsetbyname(const char *name, int rdclass, int rdtype,
 }
 
 int
-main(void) {
+main(int argc, char **argv) {
 	lwres_result_t ret;
+	int nosearch = 0;
+
+	UNUSED(argc);
 
 	lwres_udp_port = 9210;
 	lwres_resolv_conf = "resolv.conf";
+
+	if (argv[1] != NULL && strcmp(argv[1], "-nosearch") == 0)
+		nosearch = 1;
 
 	ret = lwres_context_create(&ctx, NULL, NULL, NULL, 0);
 	CHECK(ret, "lwres_context_create");
@@ -660,10 +662,16 @@ main(void) {
 		  LWRES_ADDRTYPE_V4);
 	test_gabn("a.example3", LWRES_R_NOTFOUND, NULL, LWRES_ADDRTYPE_V4);
 	test_gabn("a.example3.", LWRES_R_NOTFOUND, NULL, LWRES_ADDRTYPE_V4);
-	test_gabn("a", LWRES_R_SUCCESS, "10.0.1.1", LWRES_ADDRTYPE_V4);
+	if (nosearch)
+		test_gabn("a", LWRES_R_NOTFOUND, NULL, LWRES_ADDRTYPE_V4);
+	else
+		test_gabn("a", LWRES_R_SUCCESS, "10.0.1.1", LWRES_ADDRTYPE_V4);
 	test_gabn("a.", LWRES_R_NOTFOUND, NULL, LWRES_ADDRTYPE_V4);
 
-	test_gabn("a2", LWRES_R_SUCCESS, "10.0.1.1", LWRES_ADDRTYPE_V4);
+	if (nosearch)
+		test_gabn("a2", LWRES_R_NOTFOUND, NULL, LWRES_ADDRTYPE_V4);
+	else
+		test_gabn("a2", LWRES_R_SUCCESS, "10.0.1.1", LWRES_ADDRTYPE_V4);
 	test_gabn("a3", LWRES_R_NOTFOUND, NULL, LWRES_ADDRTYPE_V4);
 
 	test_gabn("b.example1", LWRES_R_SUCCESS,
@@ -680,9 +688,12 @@ main(void) {
 		  LWRES_ADDRTYPE_V6);
 	test_gabn("b.example3", LWRES_R_NOTFOUND, NULL, LWRES_ADDRTYPE_V6);
 	test_gabn("b.example3.", LWRES_R_NOTFOUND, NULL, LWRES_ADDRTYPE_V6);
-	test_gabn("b", LWRES_R_SUCCESS,
-		  "eeee:eeee:eeee:eeee:ffff:ffff:ffff:ffff",
-		  LWRES_ADDRTYPE_V6);
+	if (nosearch)
+		test_gabn("b", LWRES_R_NOTFOUND, NULL, LWRES_ADDRTYPE_V6);
+	else
+		test_gabn("b", LWRES_R_SUCCESS,
+			  "eeee:eeee:eeee:eeee:ffff:ffff:ffff:ffff",
+			  LWRES_ADDRTYPE_V6);
 	test_gabn("b.", LWRES_R_NOTFOUND, NULL, LWRES_ADDRTYPE_V6);
 
 	test_gabn("d.example1", LWRES_R_NOTFOUND, NULL, LWRES_ADDRTYPE_V6);
@@ -695,11 +706,11 @@ main(void) {
 	test_gnba("10.10.10.17", LWRES_ADDRTYPE_V4, LWRES_R_NOTFOUND,
 		  NULL);
 	test_gnba("0123:4567:89ab:cdef:0123:4567:89ab:cdef",
-		  LWRES_ADDRTYPE_V6, LWRES_R_SUCCESS, "nibble.example");
+		  LWRES_ADDRTYPE_V6, LWRES_R_SUCCESS, "ip6.int.example");
 	test_gnba("0123:4567:89ab:cdef:0123:4567:89ab:cde0",
 		  LWRES_ADDRTYPE_V6, LWRES_R_NOTFOUND, NULL);
 	test_gnba("1123:4567:89ab:cdef:0123:4567:89ab:cdef",
-		  LWRES_ADDRTYPE_V6, LWRES_R_SUCCESS, "bitstring.example");
+		  LWRES_ADDRTYPE_V6, LWRES_R_SUCCESS, "ip6.arpa.example");
 	test_gnba("1123:4567:89ab:cdef:0123:4567:89ab:cde0",
 		  LWRES_ADDRTYPE_V6, LWRES_R_NOTFOUND, NULL);
 
@@ -728,16 +739,16 @@ main(void) {
 	test_gethostbyaddr("10.10.10.1", AF_INET, "ipv4.example");
 	test_gethostbyaddr("10.10.10.17", AF_INET, NULL);
 	test_gethostbyaddr("0123:4567:89ab:cdef:0123:4567:89ab:cdef",
-			   AF_INET6, "nibble.example");
+			   AF_INET6, "ip6.int.example");
 	test_gethostbyaddr("1123:4567:89ab:cdef:0123:4567:89ab:cdef",
-			   AF_INET6, "bitstring.example");
+			   AF_INET6, "ip6.arpa.example");
 
 	test_getipnodebyaddr("10.10.10.1", AF_INET, "ipv4.example");
 	test_getipnodebyaddr("10.10.10.17", AF_INET, NULL);
 	test_getipnodebyaddr("0123:4567:89ab:cdef:0123:4567:89ab:cdef",
-			     AF_INET6, "nibble.example");
+			     AF_INET6, "ip6.int.example");
 	test_getipnodebyaddr("1123:4567:89ab:cdef:0123:4567:89ab:cdef",
-			     AF_INET6, "bitstring.example");
+			     AF_INET6, "ip6.arpa.example");
 
 	test_getaddrinfo("a.example1.", AF_INET, 1, 1, "10.0.1.1");
 	test_getaddrinfo("a.example1.", AF_INET, 1, 0, "10.0.1.1");
@@ -751,27 +762,30 @@ main(void) {
 	test_getnameinfo("10.10.10.1", AF_INET, "ipv4.example");
 	test_getnameinfo("10.10.10.17", AF_INET, NULL);
 	test_getnameinfo("0123:4567:89ab:cdef:0123:4567:89ab:cdef",
-			 AF_INET6, "nibble.example");
+			 AF_INET6, "ip6.int.example");
 	test_getnameinfo("1123:4567:89ab:cdef:0123:4567:89ab:cdef",
-			 AF_INET6, "bitstring.example");
+			 AF_INET6, "ip6.arpa.example");
 	test_getnameinfo("1122:3344:5566:7788:99aa:bbcc:ddee:ff00",
 			 AF_INET6, "dname.example1");
 
-#ifdef ISC_RFC_2535
-	test_getrrsetbyname("a", 1, 1, 1, 0, 1);
+	if (nosearch)
+		test_getrrsetbyname("a", 1, 1, 0, 0, 0);
+	else
+		test_getrrsetbyname("a", 1, 1, 1, 0, 1);
 	test_getrrsetbyname("a.example1.", 1, 1, 1, 0, 1);
 	test_getrrsetbyname("e.example1.", 1, 1, 1, 1, 1);
 	test_getrrsetbyname("e.example1.", 1, 255, 1, 1, 0);
-	test_getrrsetbyname("e.example1.", 1, 24, 1, 0, 1);
+	test_getrrsetbyname("e.example1.", 1, 2, 1, 1, 1);
+	test_getrrsetbyname("e.example1.", 1, 46, 2, 0, 1);
 	test_getrrsetbyname("", 1, 1, 0, 0, 0);
-#else
-	test_getrrsetbyname("a", 1, 1, 1, 0, 1);
-	test_getrrsetbyname("a.example1.", 1, 1, 1, 0, 1);
-	test_getrrsetbyname("e.example1.", 1, 1, 1, 0, 1);
-	test_getrrsetbyname("e.example1.", 1, 255, 1, 0, 0);
-	/* test_getrrsetbyname("e.example1.", 1, 24, 1, 0, 1); */
-	test_getrrsetbyname("", 1, 1, 0, 0, 0);
-#endif
+
+	test_getrrsetbyname("123456789.123456789.123456789.123456789."
+			    "123456789.123456789.123456789.123456789."
+			    "123456789.123456789.123456789.123456789."
+			    "123456789.123456789.123456789.123456789."
+			    "123456789.123456789.123456789.123456789."
+			    "123456789.123456789.123456789.123456789."
+			    "123456789", 1, 1, 0, 0, 0);
 
 	if (fails == 0)
 		printf("I:ok\n");

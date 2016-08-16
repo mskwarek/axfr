@@ -1,21 +1,12 @@
 /*
- * Copyright (C) 1999-2001  Internet Software Consortium.
+ * Copyright (C) 1999-2001, 2004, 2005, 2007, 2009, 2011, 2012, 2014-2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: rbt_test.c,v 1.42 2001/01/09 21:41:32 bwelling Exp $ */
+/* $Id: rbt_test.c,v 1.52 2011/08/28 23:46:41 tbox Exp $ */
 
 #include <config.h>
 
@@ -23,6 +14,7 @@
 
 #include <isc/commandline.h>
 #include <isc/mem.h>
+#include <isc/print.h>
 #include <isc/string.h>
 #include <isc/util.h>
 
@@ -30,7 +22,7 @@
 #include <dns/fixedname.h>
 #include <dns/result.h>
 
-char *progname;
+const char *progname;
 isc_mem_t *mctx;
 
 #define DNSNAMELEN 255
@@ -71,8 +63,7 @@ create_name(char *s) {
 	dns_name_init(name, NULL);
 	isc_buffer_init(&target, name + 1, DNSNAMELEN);
 
-	result = dns_name_fromtext(name, &source, dns_rootname,
-				   ISC_FALSE, &target);
+	result = dns_name_fromtext(name, &source, dns_rootname, 0, &target);
 
 	if (result != ISC_R_SUCCESS) {
 		printf("dns_name_fromtext(%s) failed: %s\n",
@@ -89,7 +80,7 @@ delete_name(void *data, void *arg) {
 
 	UNUSED(arg);
 	name = data;
-	isc_mem_put(mctx, data, sizeof(dns_name_t) + DNSNAMELEN);
+	isc_mem_put(mctx, name, sizeof(*name) + DNSNAMELEN);
 }
 
 static void
@@ -224,7 +215,7 @@ iterate(dns_rbt_t *rbt, isc_boolean_t forward) {
 		printf("start not found!\n");
 
 	else {
-		while (1) {
+		for (;;) {
 			if (result == DNS_R_NEWORIGIN) {
 				printf("  new origin: ");
 				print_name(origin);
@@ -281,6 +272,7 @@ main(int argc, char **argv) {
 
 	argc -= isc_commandline_index;
 	argv += isc_commandline_index;
+	POST(argv);
 
 	if (argc > 1) {
 		printf("Usage: %s [-m]\n", progname);
@@ -292,7 +284,7 @@ main(int argc, char **argv) {
 	/*
 	 * So isc_mem_stats() can report any allocation leaks.
 	 */
-	isc_mem_debugging = 2;
+	isc_mem_debugging = ISC_MEM_DEBUGRECORD;
 
 	result = isc_mem_create(0, 0, &mctx);
 	if (result != ISC_R_SUCCESS) {
@@ -314,8 +306,8 @@ main(int argc, char **argv) {
 		length = strlen(buffer);
 
 		if (buffer[length - 1] != '\n') {
-			printf("line to long (%d max), ignored\n",
-			       sizeof(buffer) - 2);
+			printf("line to long (%lu max), ignored\n",
+			       (unsigned long)sizeof(buffer) - 2);
 			continue;
 		}
 
@@ -430,7 +422,7 @@ main(int argc, char **argv) {
 
 			} else if (CMDCHECK("print")) {
 				if (arg == NULL || *arg == '\0')
-					dns_rbt_printall(rbt);
+					dns_rbt_printtext(rbt, NULL, stdout);
 				else
 					printf("usage: print\n");
 

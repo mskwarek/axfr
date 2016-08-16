@@ -1,18 +1,9 @@
 /*
- * Copyright (C) 1999-2001  Internet Software Consortium.
+ * Copyright (C) 1999-2001, 2004-2007, 2009, 2014, 2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
 /*
@@ -27,11 +18,7 @@
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- * 3. All advertising materials mentioning features or use of this software
- *    must display the following acknowledgement:
- *	This product includes software developed by the University of
- *	California, Berkeley and its contributors.
- * 4. Neither the name of the University nor the names of its contributors
+ * 3. Neither the name of the University nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
  *
@@ -48,15 +35,15 @@
  * SUCH DAMAGE.
  */
 
-/* $Id: gen-win32.h,v 1.14 2001/07/26 20:31:48 gson Exp $ */
+/* $Id: gen-win32.h,v 1.25 2009/01/17 23:47:42 tbox Exp $ */
 
-/*
- * Principal Authors: Computer Systems Research Group at UC Berkeley
- * Principal ISC caretaker: DCL
+/*! \file
+ * \author Principal Authors: Computer Systems Research Group at UC Berkeley
+ * \author Principal ISC caretaker: DCL
  */
 
 /*
- * This file was adapted from the NetBSD project's source tree, RCS ID:
+ * \note This file was adapted from the NetBSD project's source tree, RCS ID:
  *    NetBSD: getopt.c,v 1.15 1999/09/20 04:39:37 lukem Exp
  *
  * The primary change has been to rename items to the ISC namespace
@@ -66,7 +53,7 @@
  * directly portable between Unix-like systems and Windows NT, option
  * parsing and directory scanning.  It is here because it was decided
  * that the "gen" build utility was not to depend on libisc.a, so
- * the functions delcared in isc/commandline.h and isc/dir.h could not
+ * the functions declared in isc/commandline.h and isc/dir.h could not
  * be used.
  *
  * The commandline stuff is pretty much a straight copy from the initial
@@ -89,7 +76,7 @@ int isc_commandline_option;		/* Character checked for validity. */
 char *isc_commandline_argument;		/* Argument associated with option. */
 char *isc_commandline_progname;		/* For printing error messages. */
 
-isc_boolean_t isc_commandline_errprint = ISC_TRUE;/* Print error messages. */
+isc_boolean_t isc_commandline_errprint = ISC_TRUE; /* Print error messages. */
 isc_boolean_t isc_commandline_reset = ISC_TRUE; /* Reset processing. */
 
 #define BADOPT	'?'

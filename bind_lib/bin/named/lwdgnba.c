@@ -1,21 +1,14 @@
 /*
- * Copyright (C) 2000, 2001, 2003  Internet Software Consortium.
+ * Copyright (C) 2000-2002, 2004, 2005, 2007, 2008, 2014, 2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: lwdgnba.c,v 1.13.2.2 2003/10/09 07:32:32 marka Exp $ */
+/* $Id: lwdgnba.c,v 1.22 2008/01/14 23:46:56 tbox Exp $ */
+
+/*! \file */
 
 #include <config.h>
 
@@ -67,7 +60,7 @@ byaddr_done(isc_task_t *task, isc_event_t *event) {
 		bevent = NULL;
 
 		if (client->na.family != AF_INET6 ||
-		    (client->options & DNS_BYADDROPT_IPV6NIBBLE) == 0) {
+		    (client->options & DNS_BYADDROPT_IPV6INT) != 0) {
 			if (result == DNS_R_NCACHENXDOMAIN ||
 			    result == DNS_R_NCACHENXRRSET ||
 			    result == DNS_R_NXDOMAIN ||
@@ -80,12 +73,10 @@ byaddr_done(isc_task_t *task, isc_event_t *event) {
 		}
 
 		/*
-		 * Fall back to IP6.INT nibble then IP6.ARPA bitstring.
+		 * Fall back to ip6.int reverse if the default ip6.arpa
+		 * fails.
 		 */
-		if ((client->options & DNS_BYADDROPT_IPV6INT) == 0)
-			client->options |= DNS_BYADDROPT_IPV6INT;
-		else
-			client->options &= ~DNS_BYADDROPT_IPV6NIBBLE;
+		client->options |= DNS_BYADDROPT_IPV6INT;
 
 		start_byaddr(client);
 		return;
@@ -182,11 +173,11 @@ init_gnba(ns_lwdclient_t *client) {
 	 * Initialize the real name and alias arrays in the reply we're
 	 * going to build up.
 	 */
-	for (i = 0 ; i < LWRES_MAX_ALIASES ; i++) {
+	for (i = 0; i < LWRES_MAX_ALIASES; i++) {
 		client->aliases[i] = NULL;
 		client->aliaslen[i] = 0;
 	}
-	for (i = 0 ; i < LWRES_MAX_ADDRS ; i++) {
+	for (i = 0; i < LWRES_MAX_ADDRS; i++) {
 		client->addrs[i].family = 0;
 		client->addrs[i].length = 0;
 		memset(client->addrs[i].address, 0, LWRES_ADDR_MAXLEN);
@@ -220,23 +211,18 @@ ns_lwdclient_processgnba(ns_lwdclient_t *client, lwres_buffer_t *b) {
 					 b, &client->pkt, &req);
 	if (result != LWRES_R_SUCCESS)
 		goto out;
-	if (req->addr.address == NULL)
-		goto out;
 
-	/*
-	 * Start with IP6.ARPA NIBBLE lookups.
-	 */
-	client->options = DNS_BYADDROPT_IPV6NIBBLE;
+	client->options = 0;
 	if (req->addr.family == LWRES_ADDRTYPE_V4) {
 		client->na.family = AF_INET;
 		if (req->addr.length != 4)
 			goto out;
-		memcpy(&client->na.type.in, req->addr.address, 4);
+		memmove(&client->na.type.in, req->addr.address, 4);
 	} else if (req->addr.family == LWRES_ADDRTYPE_V6) {
 		client->na.family = AF_INET6;
 		if (req->addr.length != 16)
 			goto out;
-		memcpy(&client->na.type.in6, req->addr.address, 16);
+		memmove(&client->na.type.in6, req->addr.address, 16);
 	} else {
 		goto out;
 	}
@@ -255,6 +241,7 @@ ns_lwdclient_processgnba(ns_lwdclient_t *client, lwres_buffer_t *b) {
 	 * going to build up.
 	 */
 	init_gnba(client);
+	client->options = 0;
 
 	/*
 	 * Start the find.

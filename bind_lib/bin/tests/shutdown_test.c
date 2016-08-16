@@ -1,21 +1,12 @@
 /*
- * Copyright (C) 1998-2001  Internet Software Consortium.
+ * Copyright (C) 1998-2001, 2004, 2007, 2011, 2013, 2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: shutdown_test.c,v 1.18 2001/01/09 21:41:38 bwelling Exp $ */
+/* $Id: shutdown_test.c,v 1.25 2011/08/28 23:46:41 tbox Exp $ */
 
 #include <config.h>
 
@@ -24,6 +15,7 @@
 
 #include <isc/app.h>
 #include <isc/mem.h>
+#include <isc/print.h>
 #include <isc/task.h>
 #include <isc/time.h>
 #include <isc/timer.h>
@@ -79,7 +71,7 @@ shutdown_action(isc_task_t *task, isc_event_t *event) {
 		isc_timer_detach(&info->timer);
 		nevent = isc_event_allocate(info->mctx, info, T2_SHUTDOWNOK,
 					    t2_shutdown, &tasks[1],
-					    sizeof *event);
+					    sizeof(*event));
 		RUNTIME_CHECK(nevent != NULL);
 		info->exiting = ISC_TRUE;
 		isc_task_sendanddetach(&info->peer, &nevent);
@@ -94,8 +86,7 @@ foo_event(isc_task_t *task, isc_event_t *event) {
 }
 
 static void
-tick(isc_task_t *task, isc_event_t *event)
-{
+tick(isc_task_t *task, isc_event_t *event) {
 	t_info *info = event->ev_arg;
 	isc_event_t *nevent;
 
@@ -113,7 +104,7 @@ tick(isc_task_t *task, isc_event_t *event)
 			nevent = isc_event_allocate(info->mctx, info,
 						    T2_SHUTDOWNDONE,
 						    t1_shutdown, &tasks[0],
-						    sizeof *event);
+						    sizeof(*event));
 			RUNTIME_CHECK(nevent != NULL);
 			isc_task_send(info->peer, &nevent);
 			isc_task_detach(&info->peer);
@@ -123,7 +114,7 @@ tick(isc_task_t *task, isc_event_t *event)
 		nevent = isc_event_allocate(info->mctx, info,
 					    FOO_EVENT,
 					    foo_event, task,
-					    sizeof *event);
+					    sizeof(*event));
 		RUNTIME_CHECK(nevent != NULL);
 		isc_task_sendanddetach(&task, &nevent);
 	}
@@ -168,15 +159,19 @@ new_task(isc_mem_t *mctx, const char *name) {
 int
 main(int argc, char *argv[]) {
 	unsigned int workers;
-	t_info *t1, *t2, *t3;
+	t_info *t1, *t2;
 	isc_task_t *task;
 	isc_mem_t *mctx, *mctx2;
 
 	RUNTIME_CHECK(isc_app_start() == ISC_R_SUCCESS);
 
-	if (argc > 1)
+	if (argc > 1) {
 		workers = atoi(argv[1]);
-	else
+		if (workers < 1)
+			workers = 1;
+		if (workers > 8192)
+			workers = 8192;
+	} else
 		workers = 2;
 	printf("%d workers\n", workers);
 
@@ -197,7 +192,7 @@ main(int argc, char *argv[]) {
 	/*
 	 * Test run-triggered shutdown.
 	 */
-	t3 = new_task(mctx2, "foo");
+	(void)new_task(mctx2, "foo");
 
 	/*
 	 * Test implicit shutdown.

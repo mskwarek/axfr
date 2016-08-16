@@ -1,21 +1,12 @@
 /*
- * Copyright (C) 1999-2001  Internet Software Consortium.
+ * Copyright (C) 1999-2001, 2004, 2007-2009, 2011, 2013, 2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: t_timers.c,v 1.22 2001/08/08 22:54:34 gson Exp $ */
+/* $Id: t_timers.c,v 1.33 2011/03/14 14:13:10 fdupont Exp $ */
 
 #include <config.h>
 
@@ -55,7 +46,7 @@ static	int		Tx_nanoseconds;
 static void
 require_threads(void) {
 	t_info("This test requires threads\n");
-	t_result(T_UNTESTED);
+	t_result(T_THREADONLY);
 	return;
 }
 
@@ -63,8 +54,8 @@ static void
 tx_sde(isc_task_t *task, isc_event_t *event) {
 	isc_result_t	isc_result;
 
-	task = task;
-	event = event;
+	UNUSED(task);
+	UNUSED(event);
 
 	/*
 	 * Signal shutdown processing complete.
@@ -119,8 +110,7 @@ tx_te(isc_task_t *task, isc_event_t *event) {
 
 	isc_result = isc_time_now(&now);
 	if (isc_result == ISC_R_SUCCESS) {
-		interval.seconds = Tx_seconds;
-		interval.nanoseconds = Tx_nanoseconds;
+		isc_interval_set(&interval, Tx_seconds, Tx_nanoseconds);
 		isc_result = isc_time_add(&Tx_lasttime, &interval, &base);
 		if (isc_result != ISC_R_SUCCESS) {
 			t_info("isc_time_add failed %s\n",
@@ -134,8 +124,8 @@ tx_te(isc_task_t *task, isc_event_t *event) {
 	}
 
 	if (isc_result == ISC_R_SUCCESS) {
-		interval.seconds = Tx_FUDGE_SECONDS;
-		interval.nanoseconds = Tx_FUDGE_NANOSECONDS;
+		isc_interval_set(&interval,
+				 Tx_FUDGE_SECONDS, Tx_FUDGE_NANOSECONDS);
 		isc_result = isc_time_add(&base, &interval, &ulim);
 		if (isc_result != ISC_R_SUCCESS) {
 			t_info("isc_time_add failed %s\n",
@@ -237,7 +227,7 @@ t_timers_x(isc_timertype_t timertype, isc_time_t *expires,
 		t_info("isc_taskmgr_create failed %s\n",
 		       isc_result_totext(isc_result));
 		DESTROYLOCK(&Tx_mx);
-		isc_condition_destroy(&Tx_cv);
+		(void) isc_condition_destroy(&Tx_cv);
 		isc_mem_destroy(&mctx);
 		++Tx_nprobs;
 		return;
@@ -250,20 +240,20 @@ t_timers_x(isc_timertype_t timertype, isc_time_t *expires,
 		       isc_result_totext(isc_result));
 		isc_taskmgr_destroy(&tmgr);
 		DESTROYLOCK(&Tx_mx);
-		isc_condition_destroy(&Tx_cv);
+		(void) isc_condition_destroy(&Tx_cv);
 		isc_mem_destroy(&mctx);
 		++Tx_nprobs;
 		return;
 	}
 
-	isc_mutex_lock(&Tx_mx);
+	isc_result = isc_mutex_lock(&Tx_mx);
 	if (isc_result != ISC_R_SUCCESS) {
 		t_info("isc_mutex_lock failed %s\n",
 		       isc_result_totext(isc_result));
 		isc_timermgr_destroy(&timermgr);
 		isc_taskmgr_destroy(&tmgr);
 		DESTROYLOCK(&Tx_mx);
-		isc_condition_destroy(&Tx_cv);
+		(void) isc_condition_destroy(&Tx_cv);
 		isc_mem_destroy(&mctx);
 		++Tx_nprobs;
 		return;
@@ -277,7 +267,7 @@ t_timers_x(isc_timertype_t timertype, isc_time_t *expires,
 		isc_timermgr_destroy(&timermgr);
 		isc_taskmgr_destroy(&tmgr);
 		DESTROYLOCK(&Tx_mx);
-		isc_condition_destroy(&Tx_cv);
+		(void) isc_condition_destroy(&Tx_cv);
 		isc_mem_destroy(&mctx);
 		++Tx_nprobs;
 		return;
@@ -291,7 +281,7 @@ t_timers_x(isc_timertype_t timertype, isc_time_t *expires,
 		isc_task_destroy(&task);
 		isc_taskmgr_destroy(&tmgr);
 		DESTROYLOCK(&Tx_mx);
-		isc_condition_destroy(&Tx_cv);
+		(void) isc_condition_destroy(&Tx_cv);
 		isc_mem_destroy(&mctx);
 		++Tx_nprobs;
 		return;
@@ -303,7 +293,7 @@ t_timers_x(isc_timertype_t timertype, isc_time_t *expires,
 		isc_task_destroy(&task);
 		isc_taskmgr_destroy(&tmgr);
 		DESTROYLOCK(&Tx_mx);
-		isc_condition_destroy(&Tx_cv);
+		(void) isc_condition_destroy(&Tx_cv);
 		isc_mem_destroy(&mctx);
 		++Tx_nprobs;
 		return;
@@ -319,7 +309,7 @@ t_timers_x(isc_timertype_t timertype, isc_time_t *expires,
 		isc_task_destroy(&task);
 		isc_taskmgr_destroy(&tmgr);
 		DESTROYLOCK(&Tx_mx);
-		isc_condition_destroy(&Tx_cv);
+		(void) isc_condition_destroy(&Tx_cv);
 		isc_mem_destroy(&mctx);
 		++Tx_nprobs;
 		return;
@@ -348,7 +338,7 @@ t_timers_x(isc_timertype_t timertype, isc_time_t *expires,
 	isc_taskmgr_destroy(&tmgr);
 	isc_timermgr_destroy(&timermgr);
 	DESTROYLOCK(&Tx_mx);
-	isc_condition_destroy(&Tx_cv);
+	(void) isc_condition_destroy(&Tx_cv);
 	isc_mem_destroy(&mctx);
 
 }
@@ -367,7 +357,7 @@ t1(void) {
 	isc_time_t	expires;
 	isc_interval_t	interval;
 
-	t_assert("isc_timer_create", 1, T_REQUIRED, a1);
+	t_assert("isc_timer_create", 1, T_REQUIRED, "%s", a1);
 
 	if (threaded) {
 		Tx_nfails	= 0;
@@ -408,7 +398,7 @@ t2(void) {
 	isc_time_t	expires;
 	isc_interval_t	interval;
 
-	t_assert("isc_timer_create", 2, T_REQUIRED, a2);
+	t_assert("isc_timer_create", 2, T_REQUIRED, "%s", a2);
 
 	if (threaded) {
 		Tx_nfails	= 0;
@@ -463,8 +453,7 @@ t3_te(isc_task_t *task, isc_event_t *event) {
 	}
 
 	if (isc_result == ISC_R_SUCCESS) {
-		interval.seconds = Tx_seconds;
-		interval.nanoseconds = Tx_nanoseconds;
+		isc_interval_set(&interval, Tx_seconds, Tx_nanoseconds);
 		isc_result = isc_time_add(&Tx_lasttime, &interval, &base);
 		if (isc_result != ISC_R_SUCCESS) {
 			t_info("isc_time_add failed %s\n",
@@ -474,8 +463,8 @@ t3_te(isc_task_t *task, isc_event_t *event) {
 	}
 
 	if (isc_result == ISC_R_SUCCESS) {
-		interval.seconds = Tx_FUDGE_SECONDS;
-		interval.nanoseconds = Tx_FUDGE_NANOSECONDS;
+		isc_interval_set(&interval,
+				 Tx_FUDGE_SECONDS, Tx_FUDGE_NANOSECONDS);
 		isc_result = isc_time_add(&base, &interval, &ulim);
 		if (isc_result != ISC_R_SUCCESS) {
 			t_info("isc_time_add failed %s\n",
@@ -534,7 +523,7 @@ t3(void) {
 	isc_time_t	expires;
 	isc_interval_t	interval;
 
-	t_assert("isc_timer_create", 3, T_REQUIRED, a3);
+	t_assert("isc_timer_create", 3, T_REQUIRED, "%s", a3);
 
 	if (threaded) {
 		Tx_nfails	= 0;
@@ -599,8 +588,7 @@ t4_te(isc_task_t *task, isc_event_t *event) {
 	}
 
 	if (isc_result == ISC_R_SUCCESS) {
-		interval.seconds = Tx_seconds;
-		interval.nanoseconds = Tx_nanoseconds;
+		isc_interval_set(&interval, Tx_seconds, Tx_nanoseconds);
 		isc_result = isc_time_add(&Tx_lasttime, &interval, &base);
 		if (isc_result != ISC_R_SUCCESS) {
 			t_info("isc_time_add failed %s\n",
@@ -610,8 +598,8 @@ t4_te(isc_task_t *task, isc_event_t *event) {
 	}
 
 	if (isc_result == ISC_R_SUCCESS) {
-		interval.seconds = Tx_FUDGE_SECONDS;
-		interval.nanoseconds = Tx_FUDGE_NANOSECONDS;
+		isc_interval_set(&interval,
+				 Tx_FUDGE_SECONDS, Tx_FUDGE_NANOSECONDS);
 		isc_result = isc_time_add(&base, &interval, &ulim);
 		if (isc_result != ISC_R_SUCCESS) {
 			t_info("isc_time_add failed %s\n",
@@ -697,7 +685,7 @@ t4(void) {
 	isc_time_t	expires;
 	isc_interval_t	interval;
 
-	t_assert("isc_timer_reset", 4, T_REQUIRED, a4);
+	t_assert("isc_timer_reset", 4, T_REQUIRED, "%s", a4);
 
 	if (threaded) {
 		Tx_nfails = 0;
@@ -776,7 +764,7 @@ t5_tick_event(isc_task_t *task, isc_event_t *event) {
 	isc_time_t	expires;
 	isc_interval_t	interval;
 
-	task = task;
+	UNUSED(task);
 
 	++T5_eventcnt;
 	t_info("t5_tick_event %d\n", T5_eventcnt);
@@ -929,7 +917,7 @@ t_timers5(void) {
 		t_info("isc_taskmgr_create failed %s\n",
 		       isc_result_totext(isc_result));
 		DESTROYLOCK(&T5_mx);
-		isc_condition_destroy(&T5_cv);
+		(void) isc_condition_destroy(&T5_cv);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -941,7 +929,7 @@ t_timers5(void) {
 		       isc_result_totext(isc_result));
 		isc_taskmgr_destroy(&tmgr);
 		DESTROYLOCK(&T5_mx);
-		isc_condition_destroy(&T5_cv);
+		(void) isc_condition_destroy(&T5_cv);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -954,7 +942,7 @@ t_timers5(void) {
 		isc_timermgr_destroy(&timermgr);
 		isc_taskmgr_destroy(&tmgr);
 		DESTROYLOCK(&T5_mx);
-		isc_condition_destroy(&T5_cv);
+		(void) isc_condition_destroy(&T5_cv);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -967,7 +955,7 @@ t_timers5(void) {
 		isc_task_destroy(&T5_task1);
 		isc_taskmgr_destroy(&tmgr);
 		DESTROYLOCK(&T5_mx);
-		isc_condition_destroy(&T5_cv);
+		(void) isc_condition_destroy(&T5_cv);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -981,7 +969,7 @@ t_timers5(void) {
 		isc_task_destroy(&T5_task1);
 		isc_taskmgr_destroy(&tmgr);
 		DESTROYLOCK(&T5_mx);
-		isc_condition_destroy(&T5_cv);
+		(void) isc_condition_destroy(&T5_cv);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -993,7 +981,7 @@ t_timers5(void) {
 		isc_timermgr_destroy(&timermgr);
 		isc_taskmgr_destroy(&tmgr);
 		DESTROYLOCK(&T5_mx);
-		isc_condition_destroy(&T5_cv);
+		(void) isc_condition_destroy(&T5_cv);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -1018,7 +1006,7 @@ t_timers5(void) {
 		isc_task_destroy(&T5_task2);
 		isc_taskmgr_destroy(&tmgr);
 		DESTROYLOCK(&T5_mx);
-		isc_condition_destroy(&T5_cv);
+		(void) isc_condition_destroy(&T5_cv);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -1035,7 +1023,7 @@ t_timers5(void) {
 		isc_task_destroy(&T5_task2);
 		isc_taskmgr_destroy(&tmgr);
 		DESTROYLOCK(&T5_mx);
-		isc_condition_destroy(&T5_cv);
+		(void) isc_condition_destroy(&T5_cv);
 		isc_mem_destroy(&mctx);
 		return(T_UNRESOLVED);
 	}
@@ -1054,7 +1042,7 @@ t_timers5(void) {
 		isc_task_destroy(&T5_task2);
 		isc_taskmgr_destroy(&tmgr);
 		DESTROYLOCK(&T5_mx);
-		isc_condition_destroy(&T5_cv);
+		(void) isc_condition_destroy(&T5_cv);
 		isc_mem_destroy(&mctx);
 		++T5_nprobs;
 		return(T_UNRESOLVED);
@@ -1091,7 +1079,7 @@ t_timers5(void) {
 	isc_task_destroy(&T5_task2);
 	isc_taskmgr_destroy(&tmgr);
 	DESTROYLOCK(&T5_mx);
-	isc_condition_destroy(&T5_cv);
+	(void) isc_condition_destroy(&T5_cv);
 	isc_mem_destroy(&mctx);
 
 	result = T_UNRESOLVED;
@@ -1110,7 +1098,7 @@ static const char *a5 =
 
 static void
 t5(void) {
-	t_assert("isc_timer_reset", 5, T_REQUIRED, a5);
+	t_assert("isc_timer_reset", 5, T_REQUIRED, "%s", a5);
 
 	if (threaded)
 		t_result(t_timers5());
@@ -1119,10 +1107,18 @@ t5(void) {
 }
 
 testspec_t	T_testlist[] = {
-	{	t1,		"timer_create"		},
-	{	t2,		"timer_create"		},
-	{	t3,		"timer_create"		},
-	{	t4,		"timer_reset"		},
-	{	t5,		"timer_reset"		},
-	{	NULL,		NULL			}
+	{	(PFV) t1,		"timer_create"		},
+	{	(PFV) t2,		"timer_create"		},
+	{	(PFV) t3,		"timer_create"		},
+	{	(PFV) t4,		"timer_reset"		},
+	{	(PFV) t5,		"timer_reset"		},
+	{	(PFV) NULL,		NULL			}
 };
+
+#ifdef WIN32
+int
+main(int argc, char **argv) {
+	t_settests(T_testlist);
+	return (t_main(argc, argv));
+}
+#endif

@@ -1,21 +1,12 @@
 /*
- * Copyright (C) 1999-2001  Internet Software Consortium.
+ * Copyright (C) 1999-2001, 2004, 2007, 2009, 2015, 2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: master_test.c,v 1.27 2001/01/09 21:41:18 bwelling Exp $ */
+/* $Id: master_test.c,v 1.32 2009/09/02 23:48:01 tbox Exp $ */
 
 #include <config.h>
 
@@ -24,6 +15,7 @@
 
 #include <isc/buffer.h>
 #include <isc/mem.h>
+#include <isc/print.h>
 #include <isc/util.h>
 
 #include <dns/callbacks.h>
@@ -75,7 +67,7 @@ main(int argc, char *argv[]) {
 		isc_buffer_init(&target, name_buf, 255);
 		dns_name_init(&origin, NULL);
 		result = dns_name_fromtext(&origin, &source, dns_rootname,
-					   ISC_FALSE, &target);
+					   0, &target);
 		if (result != ISC_R_SUCCESS) {
 			fprintf(stdout, "dns_name_fromtext: %s\n",
 				dns_result_totext(result));
@@ -85,7 +77,7 @@ main(int argc, char *argv[]) {
 		dns_rdatacallbacks_init_stdio(&callbacks);
 		callbacks.add = print_dataset;
 
-		result = dns_master_loadfile(argv[1], &origin, &origin, 
+		result = dns_master_loadfile(argv[1], &origin, &origin,
 					     dns_rdataclass_in, 0,
 					     &callbacks, mctx);
 		fprintf(stdout, "dns_master_loadfile: %s\n",

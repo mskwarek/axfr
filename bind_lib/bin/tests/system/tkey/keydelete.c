@@ -1,21 +1,12 @@
 /*
- * Copyright (C) 2001  Internet Software Consortium.
+ * Copyright (C) 2001, 2004, 2005, 2007, 2009-2011, 2014-2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: keydelete.c,v 1.4 2001/02/28 03:05:01 bwelling Exp $ */
+/* $Id: keydelete.c,v 1.18 2011/01/11 23:47:13 tbox Exp $ */
 
 #include <config.h>
 
@@ -25,8 +16,10 @@
 #include <isc/app.h>
 #include <isc/base64.h>
 #include <isc/entropy.h>
+#include <isc/hash.h>
 #include <isc/log.h>
 #include <isc/mem.h>
+#include <isc/print.h>
 #include <isc/sockaddr.h>
 #include <isc/socket.h>
 #include <isc/task.h>
@@ -117,7 +110,9 @@ sendquery(isc_task_t *task, isc_event_t *event) {
 
 	isc_event_free(&event);
 
-	inet_pton(AF_INET, "10.53.0.1", &inaddr);
+	result = ISC_R_FAILURE;
+	if (inet_pton(AF_INET, "10.53.0.1", &inaddr) != 1)
+		CHECK("inet_pton", result);
 	isc_sockaddr_fromin(&address, &inaddr, PORT);
 
 	query = NULL;
@@ -129,8 +124,8 @@ sendquery(isc_task_t *task, isc_event_t *event) {
 
 	request = NULL;
 	result = dns_request_create(requestmgr, query, &address,
-				    0, tsigkey, TIMEOUT, task,
-				    recvquery, query, &request);
+				    DNS_REQUESTOPT_TCP, tsigkey, TIMEOUT,
+				    task, recvquery, query, &request);
 	CHECK("dns_request_create", result);
 }
 
@@ -153,6 +148,7 @@ main(int argc, char **argv) {
 	isc_logconfig_t *logconfig;
 	isc_task_t *task;
 	isc_result_t result;
+	int type;
 
 	RUNCHECK(isc_app_start());
 
@@ -169,7 +165,8 @@ main(int argc, char **argv) {
 
 	ectx = NULL;
 	RUNCHECK(isc_entropy_create(mctx, &ectx));
-	RUNCHECK(isc_entropy_createfilesource(ectx, "random.data"));
+	RUNCHECK(isc_entropy_createfilesource(ectx, "../random.data"));
+	RUNCHECK(isc_hash_create(mctx, ectx, DNS_NAME_MAXWIRE));
 
 	log = NULL;
 	logconfig = NULL;
@@ -220,14 +217,14 @@ main(int argc, char **argv) {
 	RUNCHECK(isc_app_onrun(mctx, task, sendquery, NULL));
 
 	dstkey = NULL;
-	result = dst_key_fromnamedfile(keyname,
-				       DST_TYPE_PUBLIC | DST_TYPE_PRIVATE,
-				       mctx, &dstkey);
+	type = DST_TYPE_PUBLIC | DST_TYPE_PRIVATE | DST_TYPE_KEY;
+	result = dst_key_fromnamedfile(keyname, NULL, type, mctx, &dstkey);
 	CHECK("dst_key_fromnamedfile", result);
 	result = dns_tsigkey_createfromkey(dst_key_name(dstkey),
 					   DNS_TSIG_HMACMD5_NAME,
 					   dstkey, ISC_TRUE, NULL, 0, 0,
 					   mctx, ring, &tsigkey);
+	dst_key_free(&dstkey);
 	CHECK("dns_tsigkey_createfromkey", result);
 
 	(void)isc_app_run();
@@ -243,6 +240,8 @@ main(int argc, char **argv) {
 	isc_socketmgr_destroy(&socketmgr);
 	isc_timermgr_destroy(&timermgr);
 
+	dns_tsigkeyring_detach(&ring);
+
 	dns_tsigkey_detach(&tsigkey);
 
 	dns_tkeyctx_destroy(&tctx);
@@ -252,6 +251,7 @@ main(int argc, char **argv) {
 	isc_log_destroy(&log);
 
 	dst_lib_destroy();
+	isc_hash_destroy();
 	isc_entropy_detach(&ectx);
 
 	isc_mem_destroy(&mctx);

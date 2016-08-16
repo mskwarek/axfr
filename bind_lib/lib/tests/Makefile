@@ -1,41 +1,22 @@
-# Copyright (C) 1998-2001  Internet Software Consortium.
+# Copyright (C) 1998-2001, 2003, 2004, 2007, 2009, 2012, 2016  Internet Systems Consortium, Inc. ("ISC")
 #
-# Permission to use, copy, modify, and distribute this software for any
-# purpose with or without fee is hereby granted, provided that the above
-# copyright notice and this permission notice appear in all copies.
-#
-# THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
-# DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
-# INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
-# INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
-# FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
-# NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
-# WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# $Id: Makefile.in,v 1.14 2001/01/09 22:00:34 bwelling Exp $
+# $Id: Makefile.in,v 1.28 2009/12/05 23:31:41 each Exp $
 
 srcdir =	.
 
 top_srcdir =	../..
 
-
-# Copyright (C) 1999-2001  Internet Software Consortium.
+# Copyright (C) 1999-2001, 2004, 2005, 2007, 2012, 2014, 2016  Internet Systems Consortium, Inc. ("ISC")
 #
-# Permission to use, copy, modify, and distribute this software for any
-# purpose with or without fee is hereby granted, provided that the above
-# copyright notice and this permission notice appear in all copies.
-#
-# THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
-# DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
-# INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
-# INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
-# FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
-# NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
-# WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# $Id: includes.in,v 1.15 2001/07/10 19:59:03 gson Exp $
+# $Id: includes.in,v 1.21 2007/06/19 23:47:24 tbox Exp $
 
 # Search for machine-generated header files in the build tree,
 # and for normal headers in the source tree (${top_srcdir}).
@@ -43,25 +24,31 @@ top_srcdir =	../..
 # latter case, because there are no machine-generated OS-specific
 # headers.
 
-ISC_INCLUDES = -I/home/mkoi/mgr/myDig/bind_lib/lib/isc/include \
+ISC_INCLUDES = -I/home/mkoi/bind9/lib/isc/include \
 	-I${top_srcdir}/lib/isc \
 	-I${top_srcdir}/lib/isc/include \
 	-I${top_srcdir}/lib/isc/unix/include \
-	-I${top_srcdir}/lib/isc/nothreads/include
+	-I${top_srcdir}/lib/isc/pthreads/include \
+	-I${top_srcdir}/lib/isc/x86_32/include
 
-ISCCC_INCLUDES = -I/home/mkoi/mgr/myDig/bind_lib/lib/isccc/include \
+ISCCC_INCLUDES = -I/home/mkoi/bind9/lib/isccc/include \
        -I${top_srcdir}/lib/isccc/include
 
-ISCCFG_INCLUDES = -I/home/mkoi/mgr/myDig/bind_lib/lib/isccfg/include \
+ISCCFG_INCLUDES = -I/home/mkoi/bind9/lib/isccfg/include \
        -I${top_srcdir}/lib/isccfg/include
 
-DNS_INCLUDES = -I/home/mkoi/mgr/myDig/bind_lib/lib/dns/include \
-	-I${top_srcdir}/lib/dns/include \
-	-I${top_srcdir}/lib/dns/sec/dst/include
+DNS_INCLUDES = -I/home/mkoi/bind9/lib/dns/include \
+	-I${top_srcdir}/lib/dns/include
 
-LWRES_INCLUDES = -I/home/mkoi/mgr/myDig/bind_lib/lib/lwres/include \
+IRS_INCLUDES = -I/home/mkoi/bind9/lib/irs/include \
+	-I${top_srcdir}/lib/irs/include
+
+LWRES_INCLUDES = -I/home/mkoi/bind9/lib/lwres/include \
 	-I${top_srcdir}/lib/lwres/unix/include \
 	-I${top_srcdir}/lib/lwres/include
+
+BIND9_INCLUDES = -I/home/mkoi/bind9/lib/bind9/include \
+	-I${top_srcdir}/lib/bind9/include
 
 TEST_INCLUDES = \
 	-I${top_srcdir}/lib/tests/include
@@ -70,6 +57,12 @@ CINCLUDES =	${DNS_INCLUDES} ${ISC_INCLUDES} ${TEST_INCLUDES}
 CDEFINES =
 CWARNINGS =
 
+ISCLIBS =	../../lib/isc/libisc.a
+ISCCCLIBS =	../../lib/isccc/libisccc.a
+
+ISCDEPLIBS =	../../lib/isc/libisc.a
+ISCCCDEPLIBS =	libisccc.a
+
 OBJS =		t_api.o
 
 SRCS =		t_api.c
@@ -77,23 +70,11 @@ SRCS =		t_api.c
 SUBDIRS =	include
 TARGETS =	timestamp
 
-
-# Copyright (C) 1998-2003  Internet Software Consortium.
+# Copyright (C) 1998-2009, 2011-2016  Internet Systems Consortium, Inc. ("ISC")
 #
-# Permission to use, copy, modify, and distribute this software for any
-# purpose with or without fee is hereby granted, provided that the above
-# copyright notice and this permission notice appear in all copies.
-#
-# THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
-# DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
-# INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
-# INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
-# FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
-# NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
-# WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-
-# $Id: rules.in,v 1.40.2.5 2003/05/12 06:39:54 marka Exp $
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 ###
 ### Common Makefile rules for BIND 9.
@@ -113,21 +94,23 @@ includedir =	${prefix}/include
 libdir =	${exec_prefix}/lib
 sysconfdir =	/etc
 localstatedir =	/var
-mandir =	${prefix}/man
+mandir =	${datarootdir}/man
+datarootdir =   ${prefix}/share
 
 DESTDIR =
 
 
 
-top_builddir =	/home/mkoi/mgr/myDig/bind_lib
+top_builddir =	/home/mkoi/bind9
 
 ###
 ### All
 ###
 ### Makefile may define:
+###	PREREQS
 ###	TARGETS
 
-all: subdirs ${TARGETS}
+all: ${PREREQS} subdirs ${TARGETS} testdirs
 
 ###
 ### Subdirectories
@@ -136,11 +119,12 @@ all: subdirs ${TARGETS}
 ###	SUBDIRS
 
 ALL_SUBDIRS = ${SUBDIRS} nulldir
+ALL_TESTDIRS = ${TESTDIRS} nulldir
 
 #
 # We use a single-colon rule so that additional dependencies of
 # subdirectories can be specified after the inclusion of this file.
-# The "depend" target is treated the same way.
+# The "depend" and "testdirs" targets are treated the same way.
 #
 subdirs:
 	@for i in ${ALL_SUBDIRS}; do \
@@ -150,10 +134,21 @@ subdirs:
 		fi; \
 	done
 
+#
+# Tests are built after the targets instead of before
+#
+testdirs:
+	@for i in ${ALL_TESTDIRS}; do \
+		if [ "$$i" != "nulldir" -a -d $$i ]; then \
+			echo "making all in `pwd`/$$i"; \
+			(cd $$i; ${MAKE} ${MAKEDEFS} DESTDIR="${DESTDIR}" all) || exit 1; \
+		fi; \
+	done
+
 install:: all
 
 install clean distclean maintainer-clean doc docclean man manclean::
-	@for i in ${ALL_SUBDIRS}; do \
+	@for i in ${ALL_SUBDIRS} ${ALL_TESTDIRS}; do \
 		if [ "$$i" != "nulldir" -a -d $$i ]; then \
 			echo "making $@ in `pwd`/$$i"; \
 			(cd $$i; ${MAKE} ${MAKEDEFS} DESTDIR="${DESTDIR}" $@) || exit 1; \
@@ -167,6 +162,7 @@ install clean distclean maintainer-clean doc docclean man manclean::
 ###	CC
 ### Makefile may define
 ###	CFLAGS
+###	LDFLAGS
 ###	CINCLUDES
 ###	CDEFINES
 ###	CWARNINGS
@@ -174,41 +170,135 @@ install clean distclean maintainer-clean doc docclean man manclean::
 ###     EXT_CFLAGS
 
 CC = 		gcc
-CFLAGS =	-fPIC
+CFLAGS =	-g -O2  -fPIC
+LDFLAGS =	
 STD_CINCLUDES =	
-STD_CDEFINES =	
-STD_CWARNINGS =	 -W -Wall -Wmissing-prototypes -Wcast-qual -Wwrite-strings -Wformat
+STD_CDEFINES =	 -D_GNU_SOURCE
+STD_CWARNINGS =	 -W -Wall -Wmissing-prototypes -Wcast-qual -Wwrite-strings -Wformat -Wpointer-arith -fno-strict-aliasing -fno-delete-null-pointer-checks
+
+BUILD_CC = gcc
+BUILD_CFLAGS = -g -O2  -fPIC
+BUILD_CPPFLAGS =  -D_GNU_SOURCE 
+BUILD_LDFLAGS = 
+BUILD_LIBS = -ldl -lz -lpthread 
 
 .SUFFIXES:
 .SUFFIXES: .c .o
 
-ALWAYS_INCLUDES = -I${top_builddir}
-ALWAYS_DEFINES = 
+ALWAYS_INCLUDES = -I${top_builddir} -I${top_srcdir}
+ALWAYS_DEFINES = -D_REENTRANT
 ALWAYS_WARNINGS =
 
 ALL_CPPFLAGS = \
 	${ALWAYS_INCLUDES} ${CINCLUDES} ${STD_CINCLUDES} \
 	${ALWAYS_DEFINES} ${CDEFINES} ${STD_CDEFINES}
 
-ALL_CFLAGS = ${EXT_CFLAGS} ${CFLAGS} \
-	${ALL_CPPFLAGS} \
+ALL_CFLAGS = ${EXT_CFLAGS} ${ALL_CPPFLAGS} ${CFLAGS} \
 	${ALWAYS_WARNINGS} ${STD_CWARNINGS} ${CWARNINGS}
 
 .c.o:
-	${LIBTOOL} ${CC} ${ALL_CFLAGS} -c $<
+	${LIBTOOL_MODE_COMPILE} ${CC} ${ALL_CFLAGS} -c $<
 
 SHELL = /bin/bash
 LIBTOOL = 
+LIBTOOL_MODE_COMPILE = ${LIBTOOL} 
+LIBTOOL_MODE_INSTALL = ${LIBTOOL} 
+LIBTOOL_MODE_LINK = ${LIBTOOL} 
 PURIFY = 
 
 MKDEP = ${SHELL} ${top_builddir}/make/mkdep
+
+###
+### This is a template compound command to build an executable binary with
+### an internal symbol table.
+### This process is tricky.  We first link all objects including a tentative
+### empty symbol table, then get a tentative list of symbols from the resulting
+### binary ($@tmp0).  Next, we re-link all objects, but this time with the
+### symbol table just created ($tmp@1).  The set of symbols should be the same,
+### but the corresponding addresses would be changed due to the difference on
+### the size of symbol tables.  So we create the symbol table and re-create the
+### objects once again.  Finally, we check the symbol table embedded in the
+### final binaryis consistent with the binary itself; otherwise the process is
+### terminated.
+###
+### To minimize the overhead of creating symbol tables, the autoconf switch
+### --enable-symtable takes an argument so that the symbol table can be created
+### on a per application basis: unless the argument is set to "all", the symbol
+### table is created only when a shell (environment) variable "MAKE_SYMTABLE" is
+### set to a non-null value in the rule to build the executable binary.
+###
+### Each Makefile.in that uses this macro is expected to define "LIBS" and
+### "NOSYMLIBS"; the former includes libisc with an empty symbol table, and
+### the latter includes libisc without the definition of a symbol table.
+### The rule to make the executable binary will look like this
+### binary: ${OBJS}
+###     #export MAKE_SYMTABLE="yes"; \  <- enable if symtable is always needed
+###	export BASEOBJS="${OBJS}"; \
+###	${FINALBUILDCMD}
+###
+### Normally, ${LIBS} includes all necessary libraries to build the binary;
+### there are some exceptions however, where the rule lists some of the
+### necessary libraries explicitly in addition to (or instead of) ${LIBS},
+### like this:
+### binary: ${OBJS}
+###     cc -o $@ ${OBJS} ${OTHERLIB1} ${OTHERLIB2} ${lIBS}
+### in order to modify such a rule to use this compound command, a separate
+### variable "LIBS0" should be deinfed for the explicitly listed libraries,
+### while making sure ${LIBS} still includes libisc.  So the above rule would
+### be modified as follows:
+### binary: ${OBJS}
+###	export BASEOBJS="${OBJS}"; \
+###	export LIBS0="${OTHERLIB1} ${OTHERLIB2}"; \
+###     ${FINALBUILDCMD}
+### See bin/check/Makefile.in for a complete example of the use of LIBS0.
+###
+FINALBUILDCMD = if [ X"${MKSYMTBL_PROGRAM}" = X -o X"$${MAKE_SYMTABLE:-${ALWAYS_MAKE_SYMTABLE}}" = X ] ; then \
+		${LIBTOOL_MODE_LINK} ${PURIFY} ${CC} ${ALL_CFLAGS} ${LDFLAGS} \
+		-o $@ $${BASEOBJS} $${LIBS0} ${LIBS}; \
+	else \
+		rm -f $@tmp0; \
+		${LIBTOOL_MODE_LINK} ${PURIFY} ${CC} ${ALL_CFLAGS} ${LDFLAGS} \
+		-o $@tmp0 $${BASEOBJS} $${LIBS0} ${LIBS} || exit 1; \
+		rm -f $@-symtbl.c $@-symtbl.o; \
+		${MKSYMTBL_PROGRAM} ${top_srcdir}/util/mksymtbl.pl \
+		-o $@-symtbl.c $@tmp0 || exit 1; \
+		$(MAKE) $@-symtbl.o || exit 1; \
+		rm -f $@tmp1; \
+		${LIBTOOL_MODE_LINK} ${PURIFY} ${CC} ${ALL_CFLAGS} ${LDFLAGS} \
+		-o $@tmp1 $${BASEOBJS} $@-symtbl.o $${LIBS0} ${NOSYMLIBS} || exit 1; \
+		rm -f $@-symtbl.c $@-symtbl.o; \
+		${MKSYMTBL_PROGRAM} ${top_srcdir}/util/mksymtbl.pl \
+		-o $@-symtbl.c $@tmp1 || exit 1; \
+		$(MAKE) $@-symtbl.o || exit 1; \
+		${LIBTOOL_MODE_LINK} ${PURIFY} ${CC} ${ALL_CFLAGS} ${LDFLAGS} \
+		-o $@tmp2 $${BASEOBJS} $@-symtbl.o $${LIBS0} ${NOSYMLIBS}; \
+		${MKSYMTBL_PROGRAM} ${top_srcdir}/util/mksymtbl.pl \
+		-o $@-symtbl2.c $@tmp2; \
+		count=0; \
+		until diff $@-symtbl.c $@-symtbl2.c > /dev/null ; \
+		do \
+			count=`expr $$count + 1` ; \
+			test $$count = 42 && exit 1 ; \
+			rm -f $@-symtbl.c $@-symtbl.o; \
+			${MKSYMTBL_PROGRAM} ${top_srcdir}/util/mksymtbl.pl \
+			-o $@-symtbl.c $@tmp2 || exit 1; \
+			$(MAKE) $@-symtbl.o || exit 1; \
+			${LIBTOOL_MODE_LINK} ${PURIFY} ${CC} ${ALL_CFLAGS} \
+			${LDFLAGS} -o $@tmp2 $${BASEOBJS} $@-symtbl.o \
+			$${LIBS0} ${NOSYMLIBS}; \
+			${MKSYMTBL_PROGRAM} ${top_srcdir}/util/mksymtbl.pl \
+			-o $@-symtbl2.c $@tmp2; \
+		done ; \
+		mv $@tmp2 $@; \
+		rm -f $@tmp0 $@tmp1 $@tmp2 $@-symtbl2.c; \
+	fi
 
 cleandir: distclean
 superclean: maintainer-clean
 
 clean distclean maintainer-clean::
-	rm -f *.o *.lo *.la core *.core .depend
-	rm -rf .libs
+	rm -f *.o *.o *.lo *.la core *.core *-symtbl.c *tmp0 *tmp1 *tmp2
+	rm -rf .depend .libs
 
 distclean maintainer-clean::
 	rm -f Makefile
@@ -220,20 +310,38 @@ depend:
 			(cd $$i; ${MAKE} ${MAKEDEFS} DESTDIR="${DESTDIR}" $@) || exit 1; \
 		fi; \
 	done
-	@if [ X"${SRCS}" != X -a X"${PSRCS}" != X ] ; then \
-		echo ${MKDEP} ${ALL_CPPFLAGS} ${SRCS}; \
-		${MKDEP} ${ALL_CPPFLAGS} ${SRCS}; \
-		echo ${MKDEP} -ap ${ALL_CPPFLAGS} ${PSRCS}; \
-		${MKDEP} -ap ${ALL_CPPFLAGS} ${PSRCS}; \
-		${DEPENDEXTRA} \
-	elif [ X"${SRCS}" != X ] ; then \
-		echo ${MKDEP} ${ALL_CPPFLAGS} ${SRCS}; \
-		${MKDEP} ${ALL_CPPFLAGS} ${SRCS}; \
-		${DEPENDEXTRA} \
-	elif [ X"${PSRCS}" != X ] ; then \
-		echo ${MKDEP} ${ALL_CPPFLAGS} ${PSRCS}; \
-		${MKDEP} -p ${ALL_CPPFLAGS} ${PSRCS}; \
-		${DEPENDEXTRA} \
+	@if [ X"${srcdir}" != X. ] ; then \
+		if [ X"${SRCS}" != X -a X"${PSRCS}" != X ] ; then \
+			echo ${MKDEP} -vpath ${srcdir} ${ALL_CPPFLAGS} ${ALL_CFLAGS} ${SRCS}; \
+			${MKDEP} -vpath ${srcdir} ${ALL_CPPFLAGS} ${ALL_CFLAGS} ${SRCS}; \
+			echo ${MKDEP} -vpath ${srcdir} -ap ${ALL_CPPFLAGS} ${ALL_CFLAGS} ${PSRCS}; \
+			${MKDEP} -vpath ${srcdir} -ap ${ALL_CPPFLAGS} ${ALL_CFLAGS} ${PSRCS}; \
+			${DEPENDEXTRA} \
+		elif [ X"${SRCS}" != X ] ; then \
+			echo ${MKDEP} -vpath ${srcdir} ${ALL_CPPFLAGS} ${ALL_CFLAGS} ${SRCS}; \
+			${MKDEP} -vpath ${srcdir} ${ALL_CPPFLAGS} ${ALL_CFLAGS} ${SRCS}; \
+			${DEPENDEXTRA} \
+		elif [ X"${PSRCS}" != X ] ; then \
+			echo ${MKDEP} -vpath ${srcdir} ${ALL_CPPFLAGS} ${ALL_CFLAGS} ${PSRCS}; \
+			${MKDEP} -vpath ${srcdir} -p ${ALL_CPPFLAGS} ${ALL_CFLAGS} ${PSRCS}; \
+			${DEPENDEXTRA} \
+		fi \
+	else \
+		if [ X"${SRCS}" != X -a X"${PSRCS}" != X ] ; then \
+			echo ${MKDEP} ${ALL_CPPFLAGS} ${ALL_CFLAGS} ${SRCS}; \
+			${MKDEP} ${ALL_CPPFLAGS} ${ALL_CFLAGS} ${SRCS}; \
+			echo ${MKDEP} -ap ${ALL_CPPFLAGS} ${ALL_CFLAGS} ${PSRCS}; \
+			${MKDEP} -ap ${ALL_CPPFLAGS} ${ALL_CFLAGS} ${PSRCS}; \
+			${DEPENDEXTRA} \
+		elif [ X"${SRCS}" != X ] ; then \
+			echo ${MKDEP} ${ALL_CPPFLAGS} ${ALL_CFLAGS} ${SRCS}; \
+			${MKDEP} ${ALL_CPPFLAGS} ${ALL_CFLAGS} ${SRCS}; \
+			${DEPENDEXTRA} \
+		elif [ X"${PSRCS}" != X ] ; then \
+			echo ${MKDEP} ${ALL_CPPFLAGS} ${ALL_CFLAGS} ${PSRCS}; \
+			${MKDEP} -p ${ALL_CPPFLAGS} ${ALL_CFLAGS} ${PSRCS}; \
+			${DEPENDEXTRA} \
+		fi \
 	fi
 
 FORCE:
@@ -252,8 +360,33 @@ RANLIB =	ranlib
 
 INSTALL =		/usr/bin/install -c
 INSTALL_PROGRAM =	${INSTALL}
+LINK_PROGRAM =		ln -s
 INSTALL_SCRIPT =	${INSTALL}
 INSTALL_DATA =		${INSTALL} -m 644
+INSTALL_LIBRARY =	${INSTALL_DATA}
+
+###
+### Programs used when generating documentation.  It's ok for these
+### not to exist when not generating documentation.
+###
+
+XSLTPROC =		xsltproc --novalid --xinclude --nonet
+XMLLINT =		xmllint
+PERL =			/usr/bin/perl
+LATEX =			latex
+PDFLATEX =		pdflatex
+DBLATEX =		dblatex
+W3M =			/usr/bin/w3m
+
+###
+### Script language program used to create internal symbol tables
+###
+MKSYMTBL_PROGRAM =	/usr/bin/perl
+
+###
+### Switch to create internal symbol table selectively
+###
+ALWAYS_MAKE_SYMTABLE =	
 
 ###
 ### DocBook -> HTML
@@ -262,53 +395,42 @@ INSTALL_DATA =		${INSTALL} -m 644
 
 .SUFFIXES: .docbook .html .1 .2 .3 .4 .5 .6 .7 .8
 
-OPENJADE = openjade
-SGMLCATALOG = catalog
-HTMLSTYLE = html/docbook.dsl
-XMLDCL = docbook/dsssl/modular/dtds/decls/xml.dcl
-DOCBOOK2MANSPEC = docbook2X/docbook2man-spec.pl
-JADETEX = jadetex
-PDFJADETEX = pdfjadetex
-
-ONSGMLS = onsgmls
-SGMLSPL = sgmlspl
-
-#
-# Note: this rule assumes the docbook.dsl stylesheet
-# is being used.  If another stylesheet is used, the
-# filename 'r1.htm' in the rule might have to be
-# be changed.
-#
 .docbook.html:
-	${OPENJADE} -c ${SGMLCATALOG} -t sgml -d ${HTMLSTYLE} $<
-	echo "" >> r1.htm
-	cat ${top_srcdir}/docutil/HTML_COPYRIGHT r1.htm > $@
+	${XSLTPROC} -o $@ ${top_srcdir}/doc/xsl/isc-docbook-html.xsl $<
 
 .docbook.1:
-	sh ${top_srcdir}/docutil/docbook2man-wrapper.sh ${top_srcdir} $< $@
+	${XSLTPROC} -o $@ ${top_srcdir}/doc/xsl/isc-manpage.xsl $<
+
 .docbook.2:
-	sh ${top_srcdir}/docutil/docbook2man-wrapper.sh ${top_srcdir} $< $@
+	${XSLTPROC} -o $@ ${top_srcdir}/doc/xsl/isc-manpage.xsl $<
+
 .docbook.3:
-	sh ${top_srcdir}/docutil/docbook2man-wrapper.sh ${top_srcdir} $< $@
+	${XSLTPROC} -o $@ ${top_srcdir}/doc/xsl/isc-manpage.xsl $<
+
 .docbook.4:
-	sh ${top_srcdir}/docutil/docbook2man-wrapper.sh ${top_srcdir} $< $@
+	${XSLTPROC} -o $@ ${top_srcdir}/doc/xsl/isc-manpage.xsl $<
+
 .docbook.5:
-	sh ${top_srcdir}/docutil/docbook2man-wrapper.sh ${top_srcdir} $< $@
+	${XSLTPROC} -o $@ ${top_srcdir}/doc/xsl/isc-manpage.xsl $<
+
 .docbook.6:
-	sh ${top_srcdir}/docutil/docbook2man-wrapper.sh ${top_srcdir} $< $@
+	${XSLTPROC} -o $@ ${top_srcdir}/doc/xsl/isc-manpage.xsl $<
+
 .docbook.7:
-	sh ${top_srcdir}/docutil/docbook2man-wrapper.sh ${top_srcdir} $< $@
+	${XSLTPROC} -o $@ ${top_srcdir}/doc/xsl/isc-manpage.xsl $<
+
 .docbook.8:
-	sh ${top_srcdir}/docutil/docbook2man-wrapper.sh ${top_srcdir} $< $@
+	${XSLTPROC} -o $@ ${top_srcdir}/doc/xsl/isc-manpage.xsl $<
+
 
 libt_api.a: ${OBJS}
 	${AR} ${ARFLAGS} $@ ${OBJS}
 	${RANLIB} $@
 
 libt_api.la: ${OBJS}
-	${LIBTOOL} --mode=link \
-		${CC} ${ALL_CFLAGS} -o libt_api.la -rpath ${libdir} \
-		${OBJS} ${LIBS}
+	${LIBTOOL_MODE_LINK} \
+		${CC} ${ALL_CFLAGS} ${LDFLAGS} -o libt_api.la -rpath ${libdir} \
+		${OBJS} ${ISCLIBS} ${LIBS}  
 
 timestamp: libt_api.a
 	touch timestamp

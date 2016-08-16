@@ -1,24 +1,17 @@
 /*
- * Copyright (C) 1999-2001  Internet Software Consortium.
+ * Copyright (C) 1999-2001, 2004-2007, 2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: secproto.h,v 1.9 2001/01/09 21:53:28 bwelling Exp $ */
+/* $Id: secproto.h,v 1.16 2007/06/19 23:47:17 tbox Exp $ */
 
 #ifndef DNS_SECPROTO_H
 #define DNS_SECPROTO_H 1
+
+/*! \file dns/secproto.h */
 
 #include <isc/lang.h>
 
@@ -28,40 +21,40 @@ ISC_LANG_BEGINDECLS
 
 isc_result_t
 dns_secproto_fromtext(dns_secproto_t *secprotop, isc_textregion_t *source);
-/*
+/*%<
  * Convert the text 'source' refers to into a DNSSEC security protocol value.
  * The text may contain either a mnemonic protocol name or a decimal protocol
  * number.
  *
  * Requires:
- *	'secprotop' is a valid pointer.
+ *\li	'secprotop' is a valid pointer.
  *
- *	'source' is a valid text region.
+ *\li	'source' is a valid text region.
  *
  * Returns:
- *	ISC_R_SUCCESS			on success
- *	ISC_R_RANGE			numeric type is out of range
- *	DNS_R_UNKNOWN			mnemonic type is unknown
+ *\li	ISC_R_SUCCESS			on success
+ *\li	ISC_R_RANGE			numeric type is out of range
+ *\li	DNS_R_UNKNOWN			mnemonic type is unknown
  */
 
 isc_result_t
 dns_secproto_totext(dns_secproto_t secproto, isc_buffer_t *target);
-/*
+/*%<
  * Put a textual representation of the DNSSEC security protocol 'secproto'
  * into 'target'.
  *
  * Requires:
- *	'secproto' is a valid secproto.
+ *\li	'secproto' is a valid secproto.
  *
- *	'target' is a valid text buffer.
+ *\li	'target' is a valid text buffer.
  *
- * Ensures:
- *	If the result is success:
- *		The used space in 'target' is updated.
+ * Ensures,
+ *	if the result is success:
+ *	\li	The used space in 'target' is updated.
  *
  * Returns:
- *	ISC_R_SUCCESS			on success
- *	ISC_R_NOSPACE			target buffer is too small
+ *\li	ISC_R_SUCCESS			on success
+ *\li	ISC_R_NOSPACE			target buffer is too small
  */
 
 ISC_LANG_ENDDECLS

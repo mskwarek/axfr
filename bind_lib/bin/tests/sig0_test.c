@@ -1,21 +1,12 @@
 /*
- * Copyright (C) 2000, 2001  Internet Software Consortium.
+ * Copyright (C) 2000, 2001, 2004, 2005, 2007-2009, 2012, 2015, 2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: sig0_test.c,v 1.9 2001/03/28 02:43:44 bwelling Exp $ */
+/* $Id: sig0_test.c,v 1.19 2009/09/02 23:48:01 tbox Exp $ */
 
 #include <config.h>
 
@@ -33,6 +24,7 @@
 #include <isc/mem.h>
 #include <isc/mutex.h>
 #include <isc/net.h>
+#include <isc/print.h>
 #include <isc/task.h>
 #include <isc/timer.h>
 #include <isc/socket.h>
@@ -68,7 +60,7 @@ isc_buffer_t qbuffer, rbuffer;
 isc_taskmgr_t *taskmgr;
 isc_entropy_t *ent = NULL;
 isc_task_t *task1;
-isc_log_t *log = NULL;
+isc_log_t *lctx = NULL;
 isc_logconfig_t *logconfig = NULL;
 isc_socket_t *s;
 isc_sockaddr_t address;
@@ -148,17 +140,15 @@ buildquery(void) {
 
 	result = dns_message_gettemprdataset(query, &question);
 	CHECK("dns_message_gettemprdataset", result);
-	dns_rdataset_init(question);
 	dns_rdataset_makequestion(question, dns_rdataclass_in,
 				  dns_rdatatype_a);
 	result = dns_message_gettempname(query, &qname);
 	CHECK("dns_message_gettempname", result);
 	isc_buffer_init(&namesrc, nametext, strlen(nametext));
 	isc_buffer_add(&namesrc, strlen(nametext));
-	isc_buffer_init(&namedst, namedata, sizeof namedata);
+	isc_buffer_init(&namedst, namedata, sizeof(namedata));
 	dns_name_init(qname, NULL);
-	result = dns_name_fromtext(qname, &namesrc, dns_rootname, ISC_FALSE,
-				   &namedst);
+	result = dns_name_fromtext(qname, &namesrc, dns_rootname, 0, &namedst);
 	CHECK("dns_name_fromtext", result);
 	ISC_LIST_APPEND(qname->list, question, link);
 	dns_message_addname(query, qname, DNS_SECTION_QUESTION);
@@ -189,7 +179,7 @@ buildquery(void) {
 
 	isc_buffer_usedregion(&qbuffer, &r);
 	isc_sockaddr_any(&sa);
-	result = isc_socket_bind(s, &sa);
+	result = isc_socket_bind(s, &sa, 0);
 	CHECK("isc_socket_bind", result);
 	result = isc_socket_sendto(s, &r, task1, senddone, NULL, &address,
 				   NULL);
@@ -250,7 +240,7 @@ main(int argc, char *argv[]) {
 	socketmgr = NULL;
 	RUNTIME_CHECK(isc_socketmgr_create(mctx, &socketmgr) == ISC_R_SUCCESS);
 
-	RUNTIME_CHECK(isc_log_create(mctx, &log, &logconfig) == ISC_R_SUCCESS);
+	RUNTIME_CHECK(isc_log_create(mctx, &lctx, &logconfig) == ISC_R_SUCCESS);
 
 	s = NULL;
 	RUNTIME_CHECK(isc_socket_create(socketmgr, PF_INET,
@@ -262,9 +252,9 @@ main(int argc, char *argv[]) {
 
 	dns_fixedname_init(&fname);
 	name = dns_fixedname_name(&fname);
-	isc_buffer_init(&b, "child.example.", strlen("child.example."));
+	isc_buffer_constinit(&b, "child.example.", strlen("child.example."));
 	isc_buffer_add(&b, strlen("child.example."));
-	result = dns_name_fromtext(name, &b, dns_rootname, ISC_FALSE, NULL);
+	result = dns_name_fromtext(name, &b, dns_rootname, 0, NULL);
 	CHECK("dns_name_fromtext", result);
 
 	key = NULL;
@@ -291,7 +281,7 @@ main(int argc, char *argv[]) {
 
 	isc_entropy_detach(&ent);
 
-	isc_log_destroy(&log);
+	isc_log_destroy(&lctx);
 
 	if (verbose)
 		isc_mem_stats(mctx, stdout);

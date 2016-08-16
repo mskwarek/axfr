@@ -1,21 +1,14 @@
 /*
- * Copyright (C) 2001  Internet Software Consortium.
+ * Copyright (C) 2001, 2004, 2005, 2007, 2009, 2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: strerror.c,v 1.1.2.1 2001/10/22 23:28:25 gson Exp $ */
+/* $Id: strerror.c,v 1.10 2009/02/16 23:48:04 tbox Exp $ */
+
+/*! \file */
 
 #include <config.h>
 
@@ -29,7 +22,7 @@
 #include <isc/util.h>
 
 #ifdef HAVE_STRERROR
-/*
+/*%
  * We need to do this this way for profiled locks.
  */
 static isc_mutex_t isc_strerror_lock;
@@ -41,11 +34,11 @@ extern const char * const sys_errlist[];
 extern const int sys_nerr;
 #endif
 
-char *
+void
 isc__strerror(int num, char *buf, size_t size) {
 #ifdef HAVE_STRERROR
 	char *msg;
-	unsigned int unum = num;
+	unsigned int unum = (unsigned int)num;
 	static isc_once_t once = ISC_ONCE_INIT;
 
 	REQUIRE(buf != NULL);
@@ -59,9 +52,8 @@ isc__strerror(int num, char *buf, size_t size) {
 	else
 		snprintf(buf, size, "Unknown error: %u", unum);
 	UNLOCK(&isc_strerror_lock);
-	return (buf);
 #else
-	unsigned int unum = num;
+	unsigned int unum = (unsigned int)num;
 
 	REQUIRE(buf != NULL);
 
@@ -69,6 +61,5 @@ isc__strerror(int num, char *buf, size_t size) {
 		snprintf(buf, size, "%s", sys_errlist[num]);
 	else
 		snprintf(buf, size, "Unknown error: %u", unum);
-	return (buf);
 #endif
 }
