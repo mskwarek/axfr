@@ -7,6 +7,8 @@
 #include <iterator>
 #include <sstream>
 #include <algorithm>
+#include <digQuery.h>
+#include <dig_parser.h>
 
 #include "axfrLookup.h"
 
