@@ -26,3 +26,24 @@ void push(ms_response_list_node * head, response_t val) {
     current->next->val = val;
     current->next->next = NULL;
 }
+
+list_operation_result string_list_create(string_list_node* head)
+{
+    head = malloc(sizeof(char));
+    if(head == NULL)
+    {
+        return OPERATION_LIST_ERROR;
+    }
+    return OPERATION_LIST_OK;
+}
+
+void push_string(string_list_node * head, char* val) {
+    string_list_node * current = head;
+    while (current->next != NULL) {
+        current = current->next;
+    }
+
+    current->next = malloc(sizeof(char));
+    current->next->val = val;
+    current->next->next = NULL;
+}

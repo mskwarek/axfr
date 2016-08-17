@@ -60,59 +60,6 @@ include_directories(
 		-I/usr/include/libxml2
 	)
 
-# - Try to find LibXml2
-# Once done this will define
-#  LIBXML2_FOUND - System has LibXml2
-#  LIBXML2_INCLUDE_DIRS - The LibXml2 include directories
-#  LIBXML2_LIBRARIES - The libraries needed to use LibXml2
-#  LIBXML2_DEFINITIONS - Compiler switches required for using LibXml2
-
-find_package(PkgConfig)
-pkg_check_modules(PC_LIBXML QUIET libxml-2.0)
-set(LIBXML2_DEFINITIONS ${PC_LIBXML_CFLAGS_OTHER})
-
-find_path(LIBXML2_INCLUDE_DIR libxml/xpath.h
-		HINTS ${PC_LIBXML_INCLUDEDIR} ${PC_LIBXML_INCLUDE_DIRS}
-		PATH_SUFFIXES libxml2 )
-
-find_library(LIBXML2_LIBRARY NAMES xml2 libxml2
-		HINTS ${PC_LIBXML_LIBDIR} ${PC_LIBXML_LIBRARY_DIRS} )
-
-include(FindPackageHandleStandardArgs)
-# handle the QUIETLY and REQUIRED arguments and set LIBXML2_FOUND to TRUE
-# if all listed variables are TRUE
-find_package_handle_standard_args(LibXml2  DEFAULT_MSG
-		LIBXML2_LIBRARY LIBXML2_INCLUDE_DIR)
-
-mark_as_advanced(LIBXML2_INCLUDE_DIR LIBXML2_LIBRARY )
-
-set(LIBXML2_LIBRARIES ${LIBXML2_LIBRARY} )
-set(LIBXML2_INCLUDE_DIRS ${LIBXML2_INCLUDE_DIR} )
-
-
-
-find_package (Threads)
-find_library(DNS NAMES libdns.a PATHS "${CMAKE_CURRENT_SOURCE_DIR}/bind_lib/lib/dns/libdns.a")
-
-set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR})
-#FIND_PACKAGE(Krb5 REQUIRED gssapi)
-#find_package(Krb5 REQUIRED krb5)
-#
-#add_dependencies(myDig
-#		)
-#find_path(GssApiIncludes gssapi_krb5 PATHS
-#		/usr/lib
-#		/usr/lib64
-#		/usr/local/lib
-#		/usr/local/lib64)
-#if(NOT GssApiIncludes)
-#	message(FATAL_ERROR "Can't find folder containing gssapi.h")
-#endif()
-message(${DIG_LIBS})
-link_libraries(${DNS_LIBS})
-
-
-
 set(common_src digUtils/digQuery.c
 		digUtils/dighost.c
 		Scanner/axfrLookup.cpp
@@ -129,22 +76,18 @@ set(common_src digUtils/digQuery.c
 add_library(AxfrLib SHARED ${common_src} axfrlib.cpp)
 
 target_link_libraries(AxfrLib
-        ${CMAKE_CURRENT_SOURCE_DIR}/bind_lib/lib/dns/libdns.a
-		${CMAKE_CURRENT_SOURCE_DIR}/bind_lib/lib/isc/libisc.a
-		${CMAKE_CURRENT_SOURCE_DIR}/bind_lib/lib/isc/libisc-nosymtbl.a
-		${CMAKE_CURRENT_SOURCE_DIR}/bind_lib/lib/irs/libirs.a
-		${CMAKE_CURRENT_SOURCE_DIR}/bind_lib/lib/isccc/libisccc.a
-        ${CMAKE_CURRENT_SOURCE_DIR}/bind_lib/lib/isccfg/libisccfg.a
+		${CMAKE_CURRENT_SOURCE_DIR}/bind_lib/lib/dns/libdns.a
+		gssapi_krb5 krb5 k5crypto com_err crypto
 		${CMAKE_CURRENT_SOURCE_DIR}/bind_lib/lib/lwres/liblwres.a
 		${CMAKE_CURRENT_SOURCE_DIR}/bind_lib/lib/bind9/libbind9.a
-		${DIG_LIBS})
+		${CMAKE_CURRENT_SOURCE_DIR}/bind_lib/lib/isccfg/libisccfg.a
+		${CMAKE_CURRENT_SOURCE_DIR}/bind_lib/lib/isc/libisc.a
+		dl z pthread  xml2)
 
 
 add_executable(myDig ${common_src} main.cpp)
 
 target_link_libraries(myDig
-
-
 		${CMAKE_CURRENT_SOURCE_DIR}/bind_lib/lib/dns/libdns.a
 		gssapi_krb5 krb5 k5crypto com_err crypto
 		${CMAKE_CURRENT_SOURCE_DIR}/bind_lib/lib/lwres/liblwres.a
@@ -152,6 +95,4 @@ target_link_libraries(myDig
 		${CMAKE_CURRENT_SOURCE_DIR}/bind_lib/lib/isccfg/libisccfg.a
 		${CMAKE_CURRENT_SOURCE_DIR}/bind_lib/lib/isc/libisc.a
 		dl z pthread  xml2
-
-
 		)

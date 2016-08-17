@@ -7,7 +7,10 @@
 #include <iterator>
 #include <sstream>
 #include <algorithm>
-#include <digQuery.h>
+extern "C"
+{
+#include "../digUtils/digQuery.h"
+}
 #include <dig_parser.h>
 
 #include "axfrLookup.h"
@@ -35,6 +38,8 @@ void axfrLookup::save_data_xml(response_t* res)
 
 void axfrLookup::performLookup(const char* domain, const char* asked_ns)
 {
+    char *args[2] = {"onet.pl", "dns1.onet.pl"};
+    tryLookup(3, args);
 //    try
 //    {
 //      int_parse(tryLookup(domain, asked_ns));

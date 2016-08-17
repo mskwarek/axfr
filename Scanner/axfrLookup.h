@@ -10,7 +10,7 @@
 extern "C"
 {
 #include <dig_parser.h>
-#include <digQuery.h>
+#include "../digUtils/digQuery.h"
 };
 
 class axfrLookup {

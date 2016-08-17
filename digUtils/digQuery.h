@@ -7,7 +7,7 @@
 
 #include <dig_parser.h>
 
-response_t* tryLookup(const char* domain, const char* const asked_ns);
+int tryLookup(int argc, char **argv);
 response_t getResponse();
 
 #endif //MYDIG_DIGQUERY_H

@@ -13,10 +13,20 @@ typedef struct list_node
     struct list_node* next;
 } ms_response_list_node;
 
+typedef struct string_node
+{
+    char* val;
+    struct string_node* next;
+} string_list_node;
+
 typedef enum
 {
     OPERATION_LIST_ERROR,
     OPERATION_LIST_OK
 } list_operation_result;
+
+list_operation_result string_list_create(string_list_node* head);
+void push_string(string_list_node * head, char* val);
+
 
 #endif //MYDIG_MS_RESPONSE_LIST_H
