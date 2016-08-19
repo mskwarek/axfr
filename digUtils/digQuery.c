@@ -38,6 +38,8 @@
 #include <digQuery.h>
 #include "../GeneralUtils/ms_response_list.h"
 
+#define printf(...)
+
 #define ADD_STRING(b, s) { 				\
 	if (strlen(s) >= isc_buffer_availablelength(b)) \
 		return (ISC_R_NOSPACE); 		\
@@ -48,6 +50,7 @@
 #define DIG_MAX_ADDRESSES 20
 
 static string_list_node response;
+static char* resp;
 
 dig_lookup_t *default_lookup = NULL;
 
@@ -476,8 +479,13 @@ buftoosmall:
 	if (headers && query->lookup->comments && !short_form)
 		printf("\n");
 
-	char* tmp = malloc((int)isc_buffer_usedlength(buf));
-	snprintf(tmp,(int)isc_buffer_usedlength(buf), "%.*s",
+	int size = (int)isc_buffer_usedlength(buf);
+	char* tmp = malloc(size);
+	snprintf(tmp,(int)isc_buffer_usedlength(buf), "%s",
+			(char *)isc_buffer_base(buf));
+
+	resp = malloc(size);
+	snprintf(resp,(int)isc_buffer_usedlength(buf), "%s",
 			(char *)isc_buffer_base(buf));
 
 	push_string(&response, tmp);
@@ -1859,7 +1867,7 @@ dighost_shutdown(void) {
 }
 
 /*% Main processing routine for dig */
-int
+char* 
 tryLookup(int argc, char **argv) {
 	isc_result_t result;
 
@@ -1898,7 +1906,13 @@ tryLookup(int argc, char **argv) {
 	cancel_all();
 	destroy_libs();
 	isc_app_finish();
-	return (exitcode);
+
+	return resp;
+}
+
+void print_result()
+{
+	print_list(&response);
 }
 
 

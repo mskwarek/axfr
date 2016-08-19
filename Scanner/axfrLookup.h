@@ -19,10 +19,14 @@ public:
     ~axfrLookup();
     void performLookup(const char* domain, const char* asked_ns);
     std::vector<ScanningResult*>* get_domains();
+    void print();
 private:
     AxfrDatabase* database;
     void save_data_xml(response_t* res);
     void int_parse(response_t* res);
+    void int_parse(char* res);
+    std::string response;
+
 };
 
 

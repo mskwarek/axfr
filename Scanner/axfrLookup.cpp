@@ -31,6 +31,16 @@ void axfrLookup::int_parse(response_t* res)
     save_data_xml(res);
 }
 
+void axfrLookup::int_parse(char* res)
+{
+    this->response = std::string(res);
+}
+
+void axfrLookup::print()
+{
+    std::cout<<this->response<<std::endl;
+}
+
 void axfrLookup::save_data_xml(response_t* res)
 {
     this->database->addToLocalDb(res);
@@ -38,16 +48,8 @@ void axfrLookup::save_data_xml(response_t* res)
 
 void axfrLookup::performLookup(const char* domain, const char* asked_ns)
 {
-    char *args[2] = {"onet.pl", "dns1.onet.pl"};
-    tryLookup(3, args);
-//    try
-//    {
-//      int_parse(tryLookup(domain, asked_ns));
-//    }
-//    catch(...)
-//    {
-//
-//    }
+    char *args[2] = {"onet.pl", "ns"};
+    int_parse(tryLookup(2, args));
 }
 
 std::vector<ScanningResult*>* axfrLookup::get_domains()

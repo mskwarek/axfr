@@ -43,7 +43,16 @@ void push_string(string_list_node * head, char* val) {
         current = current->next;
     }
 
-    current->next = malloc(sizeof(char));
+    current->next = malloc(sizeof(string_list_node));
     current->next->val = val;
     current->next->next = NULL;
+}
+
+void print_list(string_list_node * head)
+{
+    string_list_node * current = head;
+    while (current->next != NULL) {
+        printf(current->val);
+        current = current->next;
+    }
 }

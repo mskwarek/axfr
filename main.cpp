@@ -14,7 +14,11 @@ int main(int argc, char* argv[])
     lookup->performLookup(argv[1], argv[2]);
     
   }
+
+    lookup->print();
+
    delete lookup;
+
     return 0;
 }
 

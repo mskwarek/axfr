@@ -27,6 +27,7 @@ typedef enum
 
 list_operation_result string_list_create(string_list_node* head);
 void push_string(string_list_node * head, char* val);
+void print_list(string_list_node * head);
 
 
 #endif //MYDIG_MS_RESPONSE_LIST_H
