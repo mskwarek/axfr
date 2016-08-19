@@ -11,7 +11,7 @@ int main(int argc, char* argv[])
   axfrLookup* lookup = new axfrLookup();
    
   for(int i=0; i<1; ++i){
-    lookup->performLookup(argv[1], argv[2]);
+    lookup->performLookup("onet.pl", "@dns1.onet.pl");
     
   }
 

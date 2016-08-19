@@ -34,6 +34,19 @@ void axfrLookup::int_parse(response_t* res)
 void axfrLookup::int_parse(char* res)
 {
     this->response = std::string(res);
+    std::istringstream iss(this->response);
+    std::string line;
+    std::vector<std::string> lines;
+    while(std::getline(iss, line))
+    {
+        lines.push_back(line);
+    }
+
+    for(auto a : lines)
+    {
+        std::cout<<"linia"<<std::endl;
+        std::cout<<a<<std::endl;
+    }
 }
 
 void axfrLookup::print()
@@ -48,8 +61,8 @@ void axfrLookup::save_data_xml(response_t* res)
 
 void axfrLookup::performLookup(const char* domain, const char* asked_ns)
 {
-    char *args[2] = {"onet.pl", "ns"};
-    int_parse(tryLookup(2, args));
+    const char *args[4] = {"dupa", domain, asked_ns, "ns"};
+    int_parse(tryLookup(4, (char**) args));
 }
 
 std::vector<ScanningResult*>* axfrLookup::get_domains()

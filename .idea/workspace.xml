@@ -14,16 +14,9 @@
     </ADDITIONAL_GENERATION_ENVIRONMENT>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="06ab550a-00c0-48d8-9780-ea1f287f0f55" name="Default" comment="C interface">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/digUtils/dig.c" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/digUtils/host.c" afterPath="" />
+    <list default="true" id="06ab550a-00c0-48d8-9780-ea1f287f0f55" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GeneralUtils/ms_response_list.c" afterPath="$PROJECT_DIR$/GeneralUtils/ms_response_list.c" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GeneralUtils/ms_response_list.h" afterPath="$PROJECT_DIR$/GeneralUtils/ms_response_list.h" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Scanner/axfrLookup.cpp" afterPath="$PROJECT_DIR$/Scanner/axfrLookup.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Scanner/axfrLookup.h" afterPath="$PROJECT_DIR$/Scanner/axfrLookup.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/digUtils/digQuery.c" afterPath="$PROJECT_DIR$/digUtils/digQuery.c" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/digUtils/digQuery.h" afterPath="$PROJECT_DIR$/digUtils/digQuery.h" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/main.cpp" afterPath="$PROJECT_DIR$/main.cpp" />
     </list>
     <ignored path="myDig.iws" />
@@ -48,8 +41,8 @@
       <file leaf-file-name="axfrLookup.cpp" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Scanner/axfrLookup.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="311">
-              <caret line="50" column="35" selection-start-line="50" selection-start-column="35" selection-end-line="50" selection-end-column="35" />
+            <state relative-caret-position="200">
+              <caret line="36" column="43" selection-start-line="36" selection-start-column="43" selection-end-line="36" selection-end-column="43" />
               <folding>
                 <element signature="e#41#60#0" expanded="true" />
                 <element signature="e#188#211#0" expanded="true" />
@@ -61,9 +54,26 @@
       <file leaf-file-name="main.cpp" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/main.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="270">
-              <caret line="17" column="20" selection-start-line="17" selection-start-column="20" selection-end-line="17" selection-end-column="20" />
+            <state relative-caret-position="198">
+              <caret line="13" column="17" selection-start-line="13" selection-start-column="17" selection-end-line="13" selection-end-column="17" />
               <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="digQuery.c" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/digUtils/digQuery.c">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="360">
+              <caret line="1879" column="20" selection-start-line="1879" selection-start-column="20" selection-end-line="1879" selection-end-column="20" />
+              <folding>
+                <element signature="e#297#316#0" expanded="true" />
+                <element signature="e#17160#32486#0" expanded="false" />
+                <element signature="e#32638#39926#0" expanded="false" />
+                <element signature="e#39928#41007#0" expanded="false" />
+                <element signature="e#41009#48633#0" expanded="false" />
+                <element signature="e#48635#49721#0" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -86,33 +96,6 @@
             <state relative-caret-position="205">
               <caret line="4006" column="16" selection-start-line="4006" selection-start-column="16" selection-end-line="4006" selection-end-column="16" />
               <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="dig.h" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/bind_lib/bin/dig/include/dig/dig.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="421">
-              <caret line="402" column="5" selection-start-line="402" selection-start-column="0" selection-end-line="402" selection-end-column="12" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="digQuery.c" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/digUtils/digQuery.c">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="106">
-              <caret line="1869" column="6" selection-start-line="1869" selection-start-column="6" selection-end-line="1869" selection-end-column="6" />
-              <folding>
-                <element signature="e#297#316#0" expanded="true" />
-                <element signature="e#17160#32486#0" expanded="false" />
-                <element signature="e#32638#39926#0" expanded="false" />
-                <element signature="e#39928#41007#0" expanded="false" />
-                <element signature="e#41009#48633#0" expanded="false" />
-                <element signature="e#48635#49721#0" expanded="false" />
-              </folding>
             </state>
           </provider>
         </entry>
@@ -200,8 +183,8 @@
         <option value="$PROJECT_DIR$/GeneralUtils/ms_response_list.c" />
         <option value="$PROJECT_DIR$/digUtils/digQuery.c" />
         <option value="$PROJECT_DIR$/digUtils/digQuery.h" />
-        <option value="$PROJECT_DIR$/main.cpp" />
         <option value="$PROJECT_DIR$/Scanner/axfrLookup.h" />
+        <option value="$PROJECT_DIR$/main.cpp" />
         <option value="$PROJECT_DIR$/Scanner/axfrLookup.cpp" />
       </list>
     </option>
@@ -753,7 +736,14 @@
       <option name="project" value="LOCAL" />
       <updated>1471466488242</updated>
     </task>
-    <option name="localTasksCounter" value="31" />
+    <task id="LOCAL-00031" summary="C-&gt;c++ binding">
+      <created>1471599357756</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1471599357756</updated>
+    </task>
+    <option name="localTasksCounter" value="32" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -762,16 +752,16 @@
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.21197917" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32882413" sideWeight="0.24791667" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32882413" sideWeight="0.6432292" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="CMake" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32674298" sideWeight="0.46145833" order="11" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.5078044" sideWeight="0.52760416" order="8" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3506764" sideWeight="0.5546875" order="8" side_tool="true" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32882413" sideWeight="0.47604167" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33192834" sideWeight="0.49578822" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.5078044" sideWeight="0.47239584" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3506764" sideWeight="0.4453125" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24245578" sideWeight="0.47083333" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24245578" sideWeight="0.46875" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -816,7 +806,8 @@
     <MESSAGE value="rozgrzebany cmake" />
     <MESSAGE value="dzialajacy cmake" />
     <MESSAGE value="C interface" />
-    <option name="LAST_COMMIT_MESSAGE" value="C interface" />
+    <MESSAGE value="C-&gt;c++ binding" />
+    <option name="LAST_COMMIT_MESSAGE" value="C-&gt;c++ binding" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -833,7 +824,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/Scanner/axfrLookup.cpp</url>
-          <line>51</line>
+          <line>64</line>
           <option name="timeStamp" value="96" />
         </line-breakpoint>
       </breakpoints>
@@ -1050,14 +1041,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/bind_lib/bin/dig/include/dig/dig.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="421">
-          <caret line="402" column="5" selection-start-line="402" selection-start-column="0" selection-end-line="402" selection-end-column="12" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/digUtils/digQuery.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="162">
@@ -1074,26 +1057,19 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/GeneralUtils/ms_response_list.c">
+    <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="268">
-          <caret line="39" column="5" selection-start-line="39" selection-start-column="5" selection-end-line="39" selection-end-column="5" />
+        <state relative-caret-position="664">
+          <caret line="61" column="0" selection-start-line="61" selection-start-column="0" selection-end-line="61" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/digUtils/digQuery.c">
+    <entry file="file://$PROJECT_DIR$/bind_lib/bin/dig/include/dig/dig.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="106">
-          <caret line="1869" column="6" selection-start-line="1869" selection-start-column="6" selection-end-line="1869" selection-end-column="6" />
-          <folding>
-            <element signature="e#297#316#0" expanded="true" />
-            <element signature="e#17160#32486#0" expanded="false" />
-            <element signature="e#32638#39926#0" expanded="false" />
-            <element signature="e#39928#41007#0" expanded="false" />
-            <element signature="e#41009#48633#0" expanded="false" />
-            <element signature="e#48635#49721#0" expanded="false" />
-          </folding>
+        <state relative-caret-position="421">
+          <caret line="402" column="5" selection-start-line="402" selection-start-column="0" selection-end-line="402" selection-end-column="12" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1105,18 +1081,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
+    <entry file="file://$PROJECT_DIR$/GeneralUtils/ms_response_list.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="664">
-          <caret line="61" column="0" selection-start-line="61" selection-start-column="0" selection-end-line="61" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/main.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="17" column="20" selection-start-line="17" selection-start-column="20" selection-end-line="17" selection-end-column="20" />
+        <state relative-caret-position="268">
+          <caret line="39" column="5" selection-start-line="39" selection-start-column="5" selection-end-line="39" selection-end-column="5" />
           <folding />
         </state>
       </provider>
@@ -1131,10 +1099,33 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/digUtils/digQuery.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="360">
+          <caret line="1879" column="20" selection-start-line="1879" selection-start-column="20" selection-end-line="1879" selection-end-column="20" />
+          <folding>
+            <element signature="e#297#316#0" expanded="true" />
+            <element signature="e#17160#32486#0" expanded="false" />
+            <element signature="e#32638#39926#0" expanded="false" />
+            <element signature="e#39928#41007#0" expanded="false" />
+            <element signature="e#41009#48633#0" expanded="false" />
+            <element signature="e#48635#49721#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/main.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="198">
+          <caret line="13" column="17" selection-start-line="13" selection-start-column="17" selection-end-line="13" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Scanner/axfrLookup.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="311">
-          <caret line="50" column="35" selection-start-line="50" selection-start-column="35" selection-end-line="50" selection-end-column="35" />
+        <state relative-caret-position="200">
+          <caret line="36" column="43" selection-start-line="36" selection-start-column="43" selection-end-line="36" selection-end-column="43" />
           <folding>
             <element signature="e#41#60#0" expanded="true" />
             <element signature="e#188#211#0" expanded="true" />
