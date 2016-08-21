@@ -1,30 +1,21 @@
 /*
- * Copyright (C) 2000, 2001, 2003  Internet Software Consortium.
+ * Copyright (C) 2000, 2001, 2003-2005, 2007, 2009, 2011, 2012, 2014, 2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: sha1.c,v 1.10.2.2 2003/07/22 04:03:48 marka Exp $ */
+/* $Id$ */
 
 /*	$NetBSD: sha1.c,v 1.5 2000/01/22 22:19:14 mycroft Exp $	*/
 /*	$OpenBSD: sha1.c,v 1.9 1997/07/23 21:12:32 kstailey Exp $	*/
 
-/*
+/*! \file
  * SHA-1 in C
- * By Steve Reid <steve@edmweb.com>
+ * \author By Steve Reid <steve@edmweb.com>
  * 100% Public Domain
- *
+ * \verbatim
  * Test Vectors (from FIPS PUB 180-1)
  * "abc"
  *   A9993E36 4706816A BA3E2571 7850C26C 9CD0D89D
@@ -32,19 +23,107 @@
  *   84983E44 1C3BD26E BAAE4AA1 F95129E5 E54670F1
  * A million repetitions of "a"
  *   34AA973C D4C4DAA4 F61EEB2B DBAD2731 6534016F
+ * \endverbatim
  */
 
 #include "config.h"
 
 #include <isc/assertions.h>
+#include <isc/platform.h>
 #include <isc/sha1.h>
 #include <isc/string.h>
 #include <isc/types.h>
 #include <isc/util.h>
 
+#if PKCS11CRYPTO
+#include <pk11/internal.h>
+#include <pk11/pk11.h>
+#endif
+
+#ifdef ISC_PLATFORM_OPENSSLHASH
+void
+isc_sha1_init(isc_sha1_t *context)
+{
+	INSIST(context != NULL);
+
+	RUNTIME_CHECK(EVP_DigestInit(context, EVP_sha1()) == 1);
+}
+
+void
+isc_sha1_invalidate(isc_sha1_t *context) {
+	EVP_MD_CTX_cleanup(context);
+}
+
+void
+isc_sha1_update(isc_sha1_t *context, const unsigned char *data,
+		unsigned int len)
+{
+	INSIST(context != 0);
+	INSIST(data != 0);
+
+	RUNTIME_CHECK(EVP_DigestUpdate(context,
+				       (const void *) data,
+				       (size_t) len) == 1);
+}
+
+void
+isc_sha1_final(isc_sha1_t *context, unsigned char *digest) {
+	INSIST(digest != 0);
+	INSIST(context != 0);
+
+	RUNTIME_CHECK(EVP_DigestFinal(context, digest, NULL) == 1);
+}
+
+#elif PKCS11CRYPTO
+
+void
+isc_sha1_init(isc_sha1_t *ctx) {
+	CK_RV rv;
+	CK_MECHANISM mech = { CKM_SHA_1, NULL, 0 };
+
+	RUNTIME_CHECK(pk11_get_session(ctx, OP_DIGEST, ISC_TRUE, ISC_FALSE,
+				       ISC_FALSE, NULL, 0) == ISC_R_SUCCESS);
+	PK11_FATALCHECK(pkcs_C_DigestInit, (ctx->session, &mech));
+}
+
+void
+isc_sha1_invalidate(isc_sha1_t *ctx) {
+	CK_BYTE garbage[ISC_SHA1_DIGESTLENGTH];
+	CK_ULONG len = ISC_SHA1_DIGESTLENGTH;
+
+	if (ctx->handle == NULL)
+		return;
+	(void) pkcs_C_DigestFinal(ctx->session, garbage, &len);
+	memset(garbage, 0, sizeof(garbage));
+	pk11_return_session(ctx);
+}
+
+void
+isc_sha1_update(isc_sha1_t *ctx, const unsigned char *buf, unsigned int len) {
+	CK_RV rv;
+	CK_BYTE_PTR pPart;
+
+	DE_CONST(buf, pPart);
+	PK11_FATALCHECK(pkcs_C_DigestUpdate,
+			(ctx->session, pPart, (CK_ULONG) len));
+}
+
+void
+isc_sha1_final(isc_sha1_t *ctx, unsigned char *digest) {
+	CK_RV rv;
+	CK_ULONG len = ISC_SHA1_DIGESTLENGTH;
+
+	PK11_FATALCHECK(pkcs_C_DigestFinal,
+			(ctx->session, (CK_BYTE_PTR) digest, &len));
+	pk11_return_session(ctx);
+}
+
+#else
+
 #define rol(value, bits) (((value) << (bits)) | ((value) >> (32 - (bits))))
 
-/*
+/*@{*/
+/*!
  * blk0() and blk() perform the initial expand.
  * I got the idea of expanding during the round function from SSLeay
  */
@@ -61,7 +140,9 @@
 				^ block->l[(i + 2) & 15] \
 				^ block->l[i & 15], 1))
 
-/*
+/*@}*/
+/*@{*/
+/*!
  * (R0+R1), R2, R3, R4 are the different operations (rounds) used in SHA1
  */
 #define R0(v,w,x,y,z,i) \
@@ -80,16 +161,22 @@
 	z += (w ^ x ^ y) + blk(i) + 0xCA62C1D6 + rol(v, 5); \
 	w = rol(w, 30);
 
+/*@}*/
+
 typedef union {
 	unsigned char c[64];
 	unsigned int l[16];
 } CHAR64LONG16;
 
 #ifdef __sparc_v9__
-static void do_R01(u_int32_t *a, u_int32_t *b, u_int32_t *c, u_int32_t *d, u_int32_t *e, CHAR64LONG16 *);
-static void do_R2(u_int32_t *a, u_int32_t *b, u_int32_t *c, u_int32_t *d, u_int32_t *e, CHAR64LONG16 *);
-static void do_R3(u_int32_t *a, u_int32_t *b, u_int32_t *c, u_int32_t *d, u_int32_t *e, CHAR64LONG16 *);
-static void do_R4(u_int32_t *a, u_int32_t *b, u_int32_t *c, u_int32_t *d, u_int32_t *e, CHAR64LONG16 *);
+static void do_R01(isc_uint32_t *a, isc_uint32_t *b, isc_uint32_t *c,
+		   isc_uint32_t *d, isc_uint32_t *e, CHAR64LONG16 *);
+static void do_R2(isc_uint32_t *a, isc_uint32_t *b, isc_uint32_t *c,
+		  isc_uint32_t *d, isc_uint32_t *e, CHAR64LONG16 *);
+static void do_R3(isc_uint32_t *a, isc_uint32_t *b, isc_uint32_t *c,
+		  isc_uint32_t *d, isc_uint32_t *e, CHAR64LONG16 *);
+static void do_R4(isc_uint32_t *a, isc_uint32_t *b, isc_uint32_t *c,
+		  isc_uint32_t *d, isc_uint32_t *e, CHAR64LONG16 *);
 
 #define nR0(v,w,x,y,z,i) R0(*v,*w,*x,*y,*z,i)
 #define nR1(v,w,x,y,z,i) R1(*v,*w,*x,*y,*z,i)
@@ -98,7 +185,8 @@ static void do_R4(u_int32_t *a, u_int32_t *b, u_int32_t *c, u_int32_t *d, u_int3
 #define nR4(v,w,x,y,z,i) R4(*v,*w,*x,*y,*z,i)
 
 static void
-do_R01(u_int32_t *a, u_int32_t *b, u_int32_t *c, u_int32_t *d, u_int32_t *e, CHAR64LONG16 *block)
+do_R01(isc_uint32_t *a, isc_uint32_t *b, isc_uint32_t *c, isc_uint32_t *d,
+       isc_uint32_t *e, CHAR64LONG16 *block)
 {
 	nR0(a,b,c,d,e, 0); nR0(e,a,b,c,d, 1); nR0(d,e,a,b,c, 2);
 	nR0(c,d,e,a,b, 3); nR0(b,c,d,e,a, 4); nR0(a,b,c,d,e, 5);
@@ -110,7 +198,8 @@ do_R01(u_int32_t *a, u_int32_t *b, u_int32_t *c, u_int32_t *d, u_int32_t *e, CHA
 }
 
 static void
-do_R2(u_int32_t *a, u_int32_t *b, u_int32_t *c, u_int32_t *d, u_int32_t *e, CHAR64LONG16 *block)
+do_R2(isc_uint32_t *a, isc_uint32_t *b, isc_uint32_t *c, isc_uint32_t *d,
+      isc_uint32_t *e, CHAR64LONG16 *block)
 {
 	nR2(a,b,c,d,e,20); nR2(e,a,b,c,d,21); nR2(d,e,a,b,c,22);
 	nR2(c,d,e,a,b,23); nR2(b,c,d,e,a,24); nR2(a,b,c,d,e,25);
@@ -122,7 +211,8 @@ do_R2(u_int32_t *a, u_int32_t *b, u_int32_t *c, u_int32_t *d, u_int32_t *e, CHAR
 }
 
 static void
-do_R3(u_int32_t *a, u_int32_t *b, u_int32_t *c, u_int32_t *d, u_int32_t *e, CHAR64LONG16 *block)
+do_R3(isc_uint32_t *a, isc_uint32_t *b, isc_uint32_t *c, isc_uint32_t *d,
+      isc_uint32_t *e, CHAR64LONG16 *block)
 {
 	nR3(a,b,c,d,e,40); nR3(e,a,b,c,d,41); nR3(d,e,a,b,c,42);
 	nR3(c,d,e,a,b,43); nR3(b,c,d,e,a,44); nR3(a,b,c,d,e,45);
@@ -134,7 +224,8 @@ do_R3(u_int32_t *a, u_int32_t *b, u_int32_t *c, u_int32_t *d, u_int32_t *e, CHAR
 }
 
 static void
-do_R4(u_int32_t *a, u_int32_t *b, u_int32_t *c, u_int32_t *d, u_int32_t *e, CHAR64LONG16 *block)
+do_R4(isc_uint32_t *a, isc_uint32_t *b, isc_uint32_t *c, isc_uint32_t *d,
+      isc_uint32_t *e, CHAR64LONG16 *block)
 {
 	nR4(a,b,c,d,e,60); nR4(e,a,b,c,d,61); nR4(d,e,a,b,c,62);
 	nR4(c,d,e,a,b,63); nR4(b,c,d,e,a,64); nR4(a,b,c,d,e,65);
@@ -146,7 +237,7 @@ do_R4(u_int32_t *a, u_int32_t *b, u_int32_t *c, u_int32_t *d, u_int32_t *e, CHAR
 }
 #endif
 
-/*
+/*!
  * Hash a single 512-bit block. This is the core of the algorithm.
  */
 static void
@@ -159,7 +250,7 @@ transform(isc_uint32_t state[5], const unsigned char buffer[64]) {
 	INSIST(state != NULL);
 
 	block = &workspace;
-	(void)memcpy(block, buffer, 64);
+	(void)memmove(block, buffer, 64);
 
 	/* Copy context->state[] to working vars */
 	a = state[0];
@@ -206,10 +297,12 @@ transform(isc_uint32_t state[5], const unsigned char buffer[64]) {
 
 	/* Wipe variables */
 	a = b = c = d = e = 0;
+	/* Avoid compiler warnings */
+	POST(a); POST(b); POST(c); POST(d); POST(e);
 }
 
 
-/*
+/*!
  * isc_sha1_init - Initialize new context
  */
 void
@@ -232,7 +325,7 @@ isc_sha1_invalidate(isc_sha1_t *context) {
 	memset(context, 0, sizeof(isc_sha1_t));
 }
 
-/*
+/*!
  * Run your data through this.
  */
 void
@@ -249,20 +342,20 @@ isc_sha1_update(isc_sha1_t *context, const unsigned char *data,
 		context->count[1] += (len >> 29) + 1;
 	j = (j >> 3) & 63;
 	if ((j + len) > 63) {
-		(void)memcpy(&context->buffer[j], data, (i = 64 - j));
+		(void)memmove(&context->buffer[j], data, (i = 64 - j));
 		transform(context->state, context->buffer);
-		for ( ; i + 63 < len; i += 64)
+		for (; i + 63 < len; i += 64)
 			transform(context->state, &data[i]);
 		j = 0;
 	} else {
 		i = 0;
 	}
 
-	(void)memcpy(&context->buffer[j], &data[i], len - i);
+	(void)memmove(&context->buffer[j], &data[i], len - i);
 }
 
 
-/*
+/*!
  * Add padding and return the message digest.
  */
 
@@ -299,3 +392,4 @@ isc_sha1_final(isc_sha1_t *context, unsigned char *digest) {
 
 	memset(context, 0, sizeof(isc_sha1_t));
 }
+#endif

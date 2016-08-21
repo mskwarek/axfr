@@ -1,21 +1,12 @@
 #!/usr/bin/perl -w
 #
-# Copyright (C) 2001  Internet Software Consortium.
+# Copyright (C) 2001, 2004-2007, 2012, 2016  Internet Systems Consortium, Inc. ("ISC")
 #
-# Permission to use, copy, modify, and distribute this software for any
-# purpose with or without fee is hereby granted, provided that the above
-# copyright notice and this permission notice appear in all copies.
-#
-# THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
-# DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
-# INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
-# INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
-# FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
-# NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
-# WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# $Id: stop.pl,v 1.4 2001/03/08 02:34:01 neild Exp $
+# $Id: stop.pl,v 1.12 2007/06/19 23:47:00 tbox Exp $
 
 # Framework for stopping test servers
 # Based on the type of server specified, signal the server to stop, wait
@@ -50,7 +41,7 @@ my $errors = 0;
 
 die "$usage\n" unless defined($test);
 die "No test directory: \"$test\"\n" unless (-d $test);
-die "No server directory: \"$server\"\n" if (defined($server) && !-d $server);
+die "No server directory: \"$server\"\n" if (defined($server) && !-d "$test/$server");
     
 # Global variables
 my $testdir = abs_path($test);
@@ -80,7 +71,7 @@ if ($use_rndc) {
 		stop_rndc($server);
 	}
 
-	wait_for_servers(5, grep /^ns/, @servers);
+	wait_for_servers(30, grep /^ns/, @servers);
 }
 
 
@@ -88,12 +79,12 @@ if ($use_rndc) {
 foreach my $server (@servers) {
 	stop_signal($server, "TERM");
 }
-wait_for_servers(5, @servers);
 
+wait_for_servers(60, @servers);
 
-# Pass 3: SIGKILL
+# Pass 3: SIGABRT
 foreach my $server (@servers) {
-	stop_signal($server, "KILL");
+	stop_signal($server, "ABRT");
 }
 
 exit($errors ? 1 : 0);
@@ -157,7 +148,10 @@ sub stop_signal {
 	my $pid = read_pid($pid_file);
 	return unless defined($pid);
 
-	print "I:$server didn't die when sent a SIGTERM\n" if ($sig eq 'KILL');
+	if ($sig eq 'ABRT') {
+		print "I:$server didn't die when sent a SIGTERM\n";
+		$errors++;
+	}
 
 	my $result = kill $sig, $pid;
 	if (!$result) {

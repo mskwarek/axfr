@@ -1,21 +1,12 @@
 /*
- * Copyright (C) 1999-2001  Internet Software Consortium.
+ * Copyright (C) 1999-2002, 2004, 2005, 2007, 2011, 2013, 2014, 2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: interfacemgr.h,v 1.23 2001/08/28 03:58:00 marka Exp $ */
+/* $Id: interfacemgr.h,v 1.35 2011/07/28 23:47:58 tbox Exp $ */
 
 #ifndef NAMED_INTERFACEMGR_H
 #define NAMED_INTERFACEMGR_H 1
@@ -24,24 +15,23 @@
  ***** Module Info
  *****/
 
-/*
- * Interface manager
- *
+/*! \file
+ * \brief
  * The interface manager monitors the operating system's list
  * of network interfaces, creating and destroying listeners
  * as needed.
  *
  * Reliability:
- *	No impact expected.
+ *\li	No impact expected.
  *
  * Resources:
  *
  * Security:
- * 	The server will only be able to bind to the DNS port on
+ * \li	The server will only be able to bind to the DNS port on
  *	newly discovered interfaces if it is running as root.
  *
  * Standards:
- *	The API for scanning varies greatly among operating systems.
+ *\li	The API for scanning varies greatly among operating systems.
  *	This module attempts to hide the differences.
  */
 
@@ -65,20 +55,28 @@
 #define IFACE_MAGIC		ISC_MAGIC('I',':','-',')')
 #define NS_INTERFACE_VALID(t)	ISC_MAGIC_VALID(t, IFACE_MAGIC)
 
+#define NS_INTERFACEFLAG_ANYADDR	0x01U	/*%< bound to "any" address */
+#define MAX_UDP_DISPATCH 128		/*%< Maximum number of UDP dispatchers
+						     to start per interface */
+/*% The nameserver interface structure */
 struct ns_interface {
-	unsigned int		magic;		/* Magic number. */
-	ns_interfacemgr_t *	mgr;		/* Interface manager. */
+	unsigned int		magic;		/*%< Magic number. */
+	ns_interfacemgr_t *	mgr;		/*%< Interface manager. */
 	isc_mutex_t		lock;
-	int			references;	/* Locked */
-	unsigned int		generation;     /* Generation number. */
-	isc_sockaddr_t		addr;           /* Address and port. */
-	char 			name[32];	/* Null terminated. */
-	dns_dispatch_t *	udpdispatch;	/* UDP dispatcher. */
-	isc_socket_t *		tcpsocket;	/* TCP socket. */
-	int			ntcptarget;	/* Desired number of concurrent
-						   TCP accepts */
-	int			ntcpcurrent;	/* Current ditto, locked */
-	ns_clientmgr_t *	clientmgr;	/* Client manager. */
+	int			references;	/*%< Locked */
+	unsigned int		generation;     /*%< Generation number. */
+	isc_sockaddr_t		addr;           /*%< Address and port. */
+	unsigned int		flags;		/*%< Interface characteristics */
+	char 			name[32];	/*%< Null terminated. */
+	dns_dispatch_t *	udpdispatch[MAX_UDP_DISPATCH];
+						/*%< UDP dispatchers. */
+	isc_socket_t *		tcpsocket;	/*%< TCP socket. */
+	isc_dscp_t		dscp;		/*%< "listen-on" DSCP value */
+	int			ntcptarget;	/*%< Desired number of concurrent
+						     TCP accepts */
+	int			ntcpcurrent;	/*%< Current ditto, locked */
+	int			nudpdispatch;	/*%< Number of UDP dispatches */
+	ns_clientmgr_t *	clientmgr;	/*%< Client manager. */
 	ISC_LINK(ns_interface_t) link;
 };
 
@@ -90,8 +88,8 @@ isc_result_t
 ns_interfacemgr_create(isc_mem_t *mctx, isc_taskmgr_t *taskmgr,
 		       isc_socketmgr_t *socketmgr,
 		       dns_dispatchmgr_t *dispatchmgr,
-		       ns_interfacemgr_t **mgrp);
-/*
+		       isc_task_t *task, ns_interfacemgr_t **mgrp);
+/*%
  * Create a new interface manager.
  *
  * Initially, the new manager will not listen on any interfaces.
@@ -108,9 +106,16 @@ ns_interfacemgr_detach(ns_interfacemgr_t **targetp);
 void
 ns_interfacemgr_shutdown(ns_interfacemgr_t *mgr);
 
-void
+isc_boolean_t
+ns_interfacemgr_islistening(ns_interfacemgr_t *mgr);
+/*%
+ * Return if the manager is listening on any interface. It can be called
+ * after a scan or adjust.
+ */
+
+isc_result_t
 ns_interfacemgr_scan(ns_interfacemgr_t *mgr, isc_boolean_t verbose);
-/*
+/*%
  * Scan the operatings system's list of network interfaces
  * and create listeners when new interfaces are discovered.
  * Shut down the sockets for interfaces that go away.
@@ -120,16 +125,30 @@ ns_interfacemgr_scan(ns_interfacemgr_t *mgr, isc_boolean_t verbose);
  * in named.conf.
  */
 
+isc_result_t
+ns_interfacemgr_adjust(ns_interfacemgr_t *mgr, ns_listenlist_t *list,
+		       isc_boolean_t verbose);
+/*%
+ * Similar to ns_interfacemgr_scan(), but this function also tries to see the
+ * need for an explicit listen-on when a list element in 'list' is going to
+ * override an already-listening a wildcard interface.
+ *
+ * This function does not update localhost and localnets ACLs.
+ *
+ * This should be called once on server startup, after configuring views and
+ * zones.
+ */
+
 void
 ns_interfacemgr_setlistenon4(ns_interfacemgr_t *mgr, ns_listenlist_t *value);
-/*
+/*%
  * Set the IPv4 "listen-on" list of 'mgr' to 'value'.
  * The previous IPv4 listen-on list is freed.
  */
 
 void
 ns_interfacemgr_setlistenon6(ns_interfacemgr_t *mgr, ns_listenlist_t *value);
-/*
+/*%
  * Set the IPv6 "listen-on" list of 'mgr' to 'value'.
  * The previous IPv6 listen-on list is freed.
  */
@@ -145,9 +164,15 @@ ns_interface_detach(ns_interface_t **targetp);
 
 void
 ns_interface_shutdown(ns_interface_t *ifp);
-/*
+/*%
  * Stop listening for queries on interface 'ifp'.
  * May safely be called multiple times.
  */
+
+void
+ns_interfacemgr_dumprecursing(FILE *f, ns_interfacemgr_t *mgr);
+
+isc_boolean_t
+ns_interfacemgr_listeningon(ns_interfacemgr_t *mgr, isc_sockaddr_t *addr);
 
 #endif /* NAMED_INTERFACEMGR_H */

@@ -1,24 +1,17 @@
 /*
- * Copyright (C) 2000, 2001  Internet Software Consortium.
+ * Copyright (C) 2000, 2001, 2004-2008, 2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: hex.h,v 1.4 2001/03/22 00:07:07 bwelling Exp $ */
+/* $Id: hex.h,v 1.13 2008/09/25 04:02:39 tbox Exp $ */
 
 #ifndef ISC_HEX_H
 #define ISC_HEX_H 1
+
+/*! \file isc/hex.h */
 
 #include <isc/lang.h>
 #include <isc/types.h>
@@ -32,40 +25,40 @@ ISC_LANG_BEGINDECLS
 isc_result_t
 isc_hex_totext(isc_region_t *source, int wordlength,
 	       const char *wordbreak, isc_buffer_t *target);
-/*
- * Convert data into hex encoded text.
+/*!<
+ * \brief Convert data into hex encoded text.
  *
  * Notes:
- *	The hex encoded text in 'target' will be divided into
+ *\li	The hex encoded text in 'target' will be divided into
  *	words of at most 'wordlength' characters, separated by
  * 	the 'wordbreak' string.  No parentheses will surround
  *	the text.
  *
  * Requires:
- *	'source' is a region containing binary data
- *	'target' is a text buffer containing available space
- *	'wordbreak' points to a null-terminated string of
+ *\li	'source' is a region containing binary data
+ *\li	'target' is a text buffer containing available space
+ *\li	'wordbreak' points to a null-terminated string of
  *		zero or more whitespace characters
  *
  * Ensures:
- *	target will contain the hex encoded version of the data
+ *\li	target will contain the hex encoded version of the data
  *	in source.  The 'used' pointer in target will be advanced as
  *	necessary.
  */
 
 isc_result_t
-isc_hex_decodestring(char *cstr, isc_buffer_t *target);
-/*
- * Decode a null-terminated hex string.
+isc_hex_decodestring(const char *cstr, isc_buffer_t *target);
+/*!<
+ * \brief Decode a null-terminated hex string.
  *
  * Requires:
- *	'cstr' is non-null.
- *	'target' is a valid buffer.
+ *\li	'cstr' is non-null.
+ *\li	'target' is a valid buffer.
  *
  * Returns:
- *	ISC_R_SUCCESS	-- the entire decoded representation of 'cstring'
+ *\li	#ISC_R_SUCCESS	-- the entire decoded representation of 'cstring'
  *			   fit in 'target'.
- *	ISC_R_BADHEX -- 'cstr' is not a valid hex encoding.
+ *\li	#ISC_R_BADHEX -- 'cstr' is not a valid hex encoding.
  *
  * 	Other error returns are any possible error code from:
  *		isc_lex_create(),
@@ -75,16 +68,16 @@ isc_hex_decodestring(char *cstr, isc_buffer_t *target);
 
 isc_result_t
 isc_hex_tobuffer(isc_lex_t *lexer, isc_buffer_t *target, int length);
-/*
- * Convert hex encoded text from a lexer context into data.
+/*!<
+ * \brief Convert hex encoded text from a lexer context into data.
  *
  * Requires:
- *	'lex' is a valid lexer context
- *	'target' is a buffer containing binary data
- *	'length' is an integer
+ *\li	'lex' is a valid lexer context
+ *\li	'target' is a buffer containing binary data
+ *\li	'length' is an integer
  *
  * Ensures:
- *	target will contain the data represented by the hex encoded
+ *\li	target will contain the data represented by the hex encoded
  *	string parsed by the lexer.  No more than length bytes will be read,
  *	if length is positive.  The 'used' pointer in target will be
  *	advanced as necessary.

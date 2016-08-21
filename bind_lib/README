@@ -28,7 +28,7 @@ BIND 9
 
 
 	BIND version 9 development has been underwritten by the following
-	organisations:
+	organizations:
 
 		Sun Microsystems, Inc.
 		Hewlett Packard
@@ -42,131 +42,161 @@ BIND 9
 		Stichting NLnet - NLnet Foundation
 		Nominum, Inc.
 
-
-BIND 9.2.3
-	
-	BIND 9.2.3 is a maintenance release, containing fixes for
-	a number of bugs in 9.2.2.
-
-	A new zone type delegation-only is now supported.
-	A new view option root-delegation-only is now supported.
-
-	libbind: corresponds to that from BIND 8.4.0.
-
-BIND 9.2.2
-
-	BIND 9.2.2 is a maintenance release, containing fixes for
-	a number of bugs in 9.2.1 but no new features.  RFC 2535
-	style DNSSEC is disabled as it is incompatible with the
-	forthcoming DS style DNSSEC.
-
-	libbind: from BIND 8.3.3. [CERT CA-2002-19]
-	Minimum OpenSSL version now 0.9.6e. [CERT CA-2002-23]
-
-BIND 9.2.1
-
-	BIND 9.2.1 is a maintenance release, containing fixes for
-	a number of bugs in 9.2.0 but no new features.
-
-	NOTE: dig, nslookup name. now report "Not Implemented" as
-	NOTIMP rather than NOTIMPL.  This will have impact on scripts
-	that are looking for NOTIMPL.
-
-BIND 9.2.0
-
-	BIND 9.2.0 introduces a number of new features over 9.1,
-	including:
-
-	  - The size of the cache can now be limited using the
-            "max-cache-size" option.
-
-	  - The server can now automatically convert RFC1886-style
-	    recursive lookup requests into RFC2874-style lookups, 
-	    when enabled using the new option "allow-v6-synthesis".
-            This allows stub resolvers that support AAAA records
-            but not A6 record chains or binary labels to perform
-            lookups in domains that make use of these IPv6 DNS
-            features.
-
-	  - Performance has been improved.
-
-	  - The man pages now use the more portable "man" macros
-	    rather than the "mandoc" macros, and are installed
-            by "make install".
-
-          - The named.conf parser has been completely rewritten.
-            It now supports "include" directives in more
-            places such as inside "view" statements, and it no
-            longer has any reserved words.
-
-          - The "rndc status" command is now implemented.
-
-	  - rndc can now be configured automatically.
-
-	  - A BIND 8 compatible stub resolver library is now
-	    included in lib/bind.
-
-	  - OpenSSL has been removed from the distribution.  This
-	    means that to use DNSSEC, OpenSSL must be installed and
-	    the --with-openssl option must be supplied to configure.
-	    This does not apply to the use of TSIG, which does not
-	    require OpenSSL.
-
-	  - The source distribution now builds on Windows NT/2000.
-	    See win32utils/readme1.txt and win32utils/win32-build.txt
-	    for details.
-
-	This distribution also includes a new lightweight stub
-	resolver library and associated resolver daemon that fully
-	support forward and reverse lookups of both IPv4 and IPv6
-	addresses.  This library is considered experimental and
-	is not a complete replacement for the BIND 8 resolver library.
-	Applications that use the BIND 8 res_* functions to perform
-	DNS lookups or dynamic updates still need to be linked against
-	the BIND 8 libraries.  For DNS lookups, they can also use the
-	new "getrrsetbyname()" API.
-
-	BIND 9.2 is capable of acting as an authoritative server
-	for DNSSEC secured zones.  This functionality is believed to
-	be stable and complete except for lacking support for wildcard
-	records in secure zones.
-
-	When acting as a caching server, BIND 9.2 can be configured
-	to perform DNSSEC secure resolution on behalf of its clients.
-	This part of the DNSSEC implementation is still considered
-	experimental.  For detailed information about the state of the
-	DNSSEC implementation, see the file doc/misc/dnssec.
-
-	There are a few known bugs:
-
-		On some systems, IPv6 and IPv4 sockets interact in
-		unexpected ways.  For details, see doc/misc/ipv6.
-		To reduce the impact of these problems, the server
-		no longer listens for requests on IPv6 addresses
-		by default.  If you need to accept DNS queries over
-		IPv6, you must specify "listen-on-v6 { any; };"
-		in the named.conf options statement.
-
-		FreeBSD prior to 4.2 (and 4.2 if running as non-root)
-		and OpenBSD prior to 2.8 log messages like
-		"fcntl(8, F_SETFL, 4): Inappropriate ioctl for device".
-		This is due to a bug in "/dev/random" and impacts the
-		server's DNSSEC support.
-
-		OS X 10.1.4 (Darwin 5.4) reports errors like
-		"fcntl(3, F_SETFL, 4): Operation not supported by device".
-		This is due to a bug in "/dev/random" and impacts the
-		server's DNSSEC support.
-
-		--with-libtool does not work on AIX.
-
-	A bug in the Windows 2000 DNS server can cause zone transfers
-	from a BIND 9 server to a W2K server to fail.  For details,
-	see the "Zone Transfers" section in doc/misc/migration.
+	For a summary of functional enhancements in previous
+	releases, see the HISTORY file.
 
 	For a detailed list of user-visible changes from
 	previous releases, see the CHANGES file.
 
+	For up-to-date release notes and errata, see
+	http://www.isc.org/software/bind9/releasenotes
+
+BIND 9.11.0
+
+	BIND 9.11.0 includes a number of changes from BIND 9.10 and earlier
+	releases.  New features include:
+
+	- Added support for Catalog Zones, a new method for provisioning
+	  servers: a list of zones to be served is stored in a DNS zone,
+	  along with their configuration parameters. Changes to the
+	  catalog zone are propagated to slaves via normal AXFR/IXFR,
+	  whereupon the zones that are listed in it are automatically
+	  added, deleted or reconfigured.
+	- Added support for "dnstap", a fast and flexible method of
+	  capturing and logging DNS traffic.
+	- Added support for "dyndb", a new API for loading zone data
+	  from an external database, developed by Red Hat for the FreeIPA
+	  project.
+	- New "fetchlimit" quotas are now available for the use of
+	  recursive resolvers that are are under high query load for
+	  domains whose authoritative servers are nonresponsive or are
+	  experiencing a denial of service attack:
+	  + "fetches-per-server" limits the number of simultaneous queries
+	    that can be sent to any single authoritative server.  The
+	    configured value is a starting point; it is automatically
+	    adjusted downward if the server is partially or completely
+	    non-responsive. The algorithm used to adjust the quota can be
+	    configured via the "fetch-quota-params" option.
+	  + "fetches-per-zone" limits the number of simultaneous queries
+	    that can be sent for names within a single domain.  (Note:
+	    Unlike "fetches-per-server", this value is not self-tuning.)
+	  + New stats counters have been added to count
+	    queries spilled due to these quotas.
+	- Added a new "dnssec-keymgr" key mainenance utility, which can
+	  generate or update keys as needed to ensure that a zone's
+	  keys match a defined DNSSEC policy.
+	- The experimental "SIT" feature in BIND 9.10 has been renamed
+	  "COOKIE" and is no longer optional. EDNS COOKIE is a mechanism
+	  enabling clients to detect off-path spoofed responses, and
+	  servers to detect spoofed-source queries.  Clients that identify
+	  themselves using COOKIE options are not subject to response rate
+	  limiting (RRL) and can receive larger UDP responses.
+	- SERVFAIL responses can now be cached for a limited time
+	  (defaulting to 1 second, with an upper limit of 30).
+	  This can reduce the frequency of retries when a query is
+	  persistently failing.
+	- Added an "nsip-wait-recurse" switch to RPZ. This causes NSIP
+	  rules to be skipped if a name server IP address isn't in the
+	  cache yet; the address will be looked up and the rule will be
+	  applied on future queries.
+	- Added a Python RNDC module. This allows multiple commands to
+	  sent over a persistent RNDC channel, which saves time.
+	- The "controls" block in named.conf can now grant read-only
+	  "rndc" access to specified clients or keys. Read-only clients
+	  could, for example, check "rndc status" but could not
+	  reconfigure or shut down the server.
+	- "rndc" commands can now return arbitrarily large amounts of
+	  text to the caller.
+	- The zone serial number of a dynamically updatable zone
+	  can now be set via "rndc signing -serial <number> <zonename>".
+	  This allows inline-signing zones to be set to a specific
+	  serial number.
+	- The new "rndc nta" command can be used to set a Negative
+	  Trust Anchor (NTA), disabling DNSSEC validation for a
+	  specific domain; this can be used when responses from a
+	  domain are known to be failing validation due to administrative
+	  error rather than because of a spoofing attack.  Negative
+	  trust anchors are strictly temporary; by default they expire
+	  after one hour, but can be configured to last up to one week.
+	- "rndc delzone" can now be used on zones that were not originally
+	  created by "rndc addzone".
+	- "rndc modzone" reconfigures a single zone, without requiring
+	  the entire server to be reconfigured.
+	- "rndc showzone" displays the current configuration of a zone.
+	- "rndc managed-keys" can be used to check the status of RFC 5001
+	  managed trust anchors, or to force trust anchors to be refreshed.
+	- "max-cache-size" can now be set to a percentage of available
+	  memory. The default is 90%.
+	- Update forwarding performance has been improved by allowing
+	  a single TCP connection to be shared by multiple updates.
+	- The EDNS Client Subnet (ECS) option is now supported for
+	  authoritative servers; if a query contains an ECS option
+	  then ACLs containing "geoip" or "ecs" elements can match
+	  against the the address encoded in the option.  This can be
+	  used to select a view for a query, so that different answers
+	  can be provided depending on the client network.
+	- The EDNS EXPIRE option has been implemented on the client
+	  side, allowing a slave server to set the expiration timer
+	  correctly when transferring zone data from another slave
+	  server.
+	- The key generation and manipulation tools (dnssec-keygen,
+	  dnssec-settime, dnssec-importkey, dnssec-keyfromlabel) now
+	  take "-Psync" and "-Dsync" options to set the publication
+	  and deletion times of CDS and CDNSKEY parent-synchronization
+	  records.  Both named and dnssec-signzone can now publish and
+	  remove these records at the scheduled times.
+	- A new "minimal-any" option reduces the size of UDP responses
+	  for query type ANY by returning a single arbitrarily selected
+	  RRset instead of all RRsets.
+	- A new "masterfile-style" zone option controls the formatting
+	  of text zone files:  When set to "full", a zone file is dumped
+	  in single-line-per-record format.
+	- "serial-update-method" can now be set to "date". On update,
+	  the serial number will be set to the current date in YYYYMMDDNN
+	  format.
+	- "dnssec-signzone -N date" sets the serial number to YYYYMMDDNN.
+	- "named -L <filename>" causes named to send log messages to
+	   the specified file by default instead of to the system log.
+	- "dig +ttlunits" prints TTL values with time-unit suffixes:
+	  w, d, h, m, s for weeks, days, hours, minutes, and seconds.
+	- "dig +unknownformat" prints dig output in RFC 3597 "unknown
+	  record" presentation format.
+	- "dig +ednsopt" allows dig to set arbitrary EDNS options on
+	  requests.
+	- "dig +ednsflags" allows dig to set yet-to-be-defined EDNS
+	  flags on requests.
+	- "mdig" is an alternate version of dig which sends multiple
+	  pipelined TCP queries to a server.  Instead of waiting for a
+	  response after sending a query, it sends all queries
+	  immediately and displays responses in the order received.
+	- "serial-query-rate" no longer controls NOTIFY messages.
+	  These are separately controlled by "notify-rate" and
+	  "startup-notify-rate".
+	- "nsupdate" now performs "check-names" processing by default
+	  on records to be added.  This can be disabled with
+	  "check-names no".
+	- The statistics channel now supports DEFLATE compression,
+	  reducing the size of the data sent over the network when
+	  querying statistics.
+	- New counters have been added to the statistics channel
+	  to track the sizes of incoming queries and outgoing responses in
+	  histogram buckets, as specified in RSSAC002.
+	- A new NXDOMAIN redirect method (option "nxdomain-redirect")
+	  has been added, allowing redirection to a specified DNS
+	  namespace instead of a single redirect zone.
+	- When starting up, named now ensures that no other named
+	  process is already running.
+	- Files created by named to store information, including "mkeys"
+	  and "nzf" files, are now named after their corresponding views
+	  unless the view name contains characters incompatible with use
+	  as a filename. Old style filenames (based on the hash of the
+	  view name) will still work.
+
+	This release addresses the security flaws described in
+	CVE-2014-3214, CVE-2014-3859, CVE-2014-8500, CVE-2014-8680,
+	CVE-2015-1349, CVE-2015-5477, CVE-2015-5722, CVE-2015-5986,
+	CVE-2015-8000, CVE-2015-8704, CVE-2015-8705, CVE-2016-1285,
+	CVE-2016-1286, CVE-2016-2088 and CVE-2016-2775.
 
 Building
 
@@ -175,31 +205,36 @@ Building
 
 	We've had successful builds and tests on the following systems:
 
-		AIX 4.3
-		COMPAQ Tru64 UNIX 4.0D
-		COMPAQ Tru64 UNIX 5 (with IPv6 EAK)
-		FreeBSD 3.4-STABLE, 3.5, 4.0, 4.1
-		HP-UX 11.x, x < 11
-		IRIX64 6.5
-		NetBSD 1.5
-		Red Hat Linux 6.0, 6.1, 6.2, 7.0
-		Solaris 2.6, 7, 8
-		Windows NT/W2K
+		COMPAQ Tru64 UNIX 5.1B
+		Fedora Core 6
+		FreeBSD 4.10, 5.2.1, 6.2
+		HP-UX 11.11
+		Mac OS X 10.5
+		NetBSD 3.x, 4.0-beta, 5.0-beta
+		OpenBSD 3.3 and up
+		Solaris 8, 9, 9 (x86), 10
+		Ubuntu 7.04, 7.10
+		Windows XP/2003/2008
 
-	Additionally, we have unverified reports of success building
-	previous versions of BIND 9 from users of the following systems:
+	NOTE:  As of BIND 9.5.1, 9.4.3, and 9.3.6, older versions of
+	Windows, including Windows NT and Windows 2000, are no longer
+	supported.
 
-		AIX 5L
-		SuSE Linux 7.0
-		Slackware Linux 7.x, 8.0
-	        Red Hat Linux 7.1
-		Debian GNU/Linux 2.2 and 3.0
-		OpenBSD 2.6, 2.8, 2.9
-		UnixWare 7.1.1
-		HP-UX 10.20
-		BSD/OS 4.2
-		OpenUNIX 8
-		Mac OS X 10.1
+	We have recent reports from the user community that a supported
+	version of BIND will build and run on the following systems:
+
+		AIX 4.3, 5L
+		CentOS 4, 4.5, 5
+		Darwin 9.0.0d1/ARM
+		Debian 4, 5, 6
+		Fedora Core 5, 7, 8
+		FreeBSD 6, 7, 8
+		HP-UX 11.23 PA
+		MacOS X 10.5, 10.6, 10.7
+		Red Hat Enterprise Linux 4, 5, 6
+		SCO OpenServer 5.0.6
+		Slackware 9, 10
+		SuSE 9, 10
 
 	To build, just
 
@@ -212,15 +247,16 @@ Building
 	configure will affect compilation:
 
 	    CC
-		The C compiler to use.	configure tries to figure
+		The C compiler to use.  configure tries to figure
 		out the right one for supported systems.
 
 	    CFLAGS
 		C compiler flags.  Defaults to include -g and/or -O2
-		as supported by the compiler.
+		as supported by the compiler.  Please include '-g'
+		if you need to set CFLAGS.
 
 	    STD_CINCLUDES
-		System header file directories.	 Can be used to specify
+		System header file directories.  Can be used to specify
 		where add-on thread or IPv6 support is, for example.
 		Defaults to empty string.
 
@@ -229,14 +265,61 @@ Building
 		Defaults to empty string.
 
 		Possible settings:
-		-DISC_RFC2535
-			Enable support RFC 2535 style DNSSEC.  This
-			is incompatable with the upcoming DS support
-			and SHOULD NOT be set unless you are currently
-			making use of it.
+		Change the default syslog facility of named/lwresd.
+		  -DISC_FACILITY=LOG_LOCAL0
+		Enable DNSSEC signature chasing support in dig.
+		  -DDIG_SIGCHASE=1 (sets -DDIG_SIGCHASE_TD=1 and
+				    -DDIG_SIGCHASE_BU=1)
+		Disable dropping queries from particular well known ports.
+		  -DNS_CLIENT_DROPPORT=0
+		Sibling glue checking in named-checkzone is enabled by default.
+		To disable the default check set.  -DCHECK_SIBLING=0
+		named-checkzone checks out-of-zone addresses by default.
+		To disable this default set.  -DCHECK_LOCAL=0
+		To create the default pid files in ${localstatedir}/run rather
+		than ${localstatedir}/run/{named,lwresd}/ set.
+		  -DNS_RUN_PID_DIR=0
+		Enable workaround for Solaris kernel bug about /dev/poll
+		  -DISC_SOCKET_USE_POLLWATCH=1
+		  The watch timeout is also configurable, e.g.,
+		  -DISC_SOCKET_POLLWATCH_TIMEOUT=20
+
+	    LDFLAGS
+		Linker flags. Defaults to empty string.
+
+	The following need to be set when cross compiling.
+
+	    BUILD_CC
+		The native C compiler.
+	    BUILD_CFLAGS (optional)
+	    BUILD_CPPFLAGS (optional)
+		Possible Settings:
+		-DNEED_OPTARG=1         (optarg is not declared in <unistd.h>)
+	    BUILD_LDFLAGS (optional)
+	    BUILD_LIBS (optional)
+
+	On most platforms, BIND 9 is built with multithreading
+	support, allowing it to take advantage of multiple CPUs.
+	You can configure this by specifying "--enable-threads" or
+	"--disable-threads" on the configure command line.  The default
+	is to enable threads, except on some older operating systems
+	on which threads are known to have had problems in the past.
+	(Note: Prior to BIND 9.10, the default was to disable threads on
+	Linux systems; this has been reversed.  On Linux systems, the
+	threaded build is known to change BIND's behavior with respect
+	to file permissions; it may be necessary to specify a user with
+	the -u option when running named.)
 
 	To build shared libraries, specify "--with-libtool" on the
 	configure command line.
+
+	Certain compiled-in constants and default settings can be
+	increased to values better suited to large servers with abundant
+	memory resources (e.g, 64-bit servers with 12G or more of memory)
+	by specifying "--with-tuning=large" on the configure command
+	line. This can improve performance on big servers, but will
+	consume more memory and may degrade performance on smaller
+	systems.
 
 	For the server to support DNSSEC, you need to build it
 	with crypto support.  You must have OpenSSL 0.9.5a
@@ -245,15 +328,26 @@ Building
 	a nonstandard prefix, you can tell configure where to
 	look for it using "--with-openssl=/prefix".
 
-	To build libbind (the BIND 8 resolver library), specify
-	"--enable-libbind" on the configure command line.
+	To support the HTTP statistics channel, the server must
+	be linked with at least one of the following: libxml2
+	(http://xmlsoft.org) or json-c (https://github.com/json-c).
+	If these are installed at a nonstandard prefix, use
+	"--with-libxml2=/prefix" or "--with-libjson=/prefix".
 
-	On some platforms, BIND 9 can be built with multithreading
-	support, allowing it to take advantage of multiple CPUs.
-	You can specify whether to build a multithreaded BIND 9 
-	by specifying "--enable-threads" or "--disable-threads"
-	on the configure command line.  The default is operating
-	system dependent.
+	To support compression on the HTTP statistics channel, the
+	server must be linked against libzlib (--with-zlib=/prefix).
+
+	Python requires 'argparse' and 'ply' to be available.
+	'argparse' is a standard module as of Python 2.7 and Python 3.2.
+
+	On some platforms it is necessary to explicitly request large
+	file support to handle files bigger than 2GB.  This can be
+	done by "--enable-largefile" on the configure command line.
+
+	Support for the "fixed" rrset-order option can be enabled
+	or disabled by specifying "--enable-fixed-rrset" or
+	"--disable-fixed-rrset" on the configure command line.
+	The default is "disabled", to reduce memory footprint.
 
 	If your operating system has integrated support for IPv6, it
 	will be used automatically.  If you have installed KAME IPv6
@@ -263,7 +357,7 @@ Building
 	By default, installation is into /usr/local, but this can be changed
 	with the "--prefix" option when running "configure".
 
-	You may specify the option "--sysconfdir" to set the directory 
+	You may specify the option "--sysconfdir" to set the directory
 	where configuration files like "named.conf" go by default,
 	and "--localstatedir" to set the default parent directory
 	of "run/named.pid".   For backwards compatibility with BIND 8,
@@ -273,7 +367,7 @@ Building
 	defaults to "$prefix/var".
 
 	To see additional configure options, run "configure --help".
-	Note that the help message does not reflect the BIND 8 
+	Note that the help message does not reflect the BIND 8
 	compatibility defaults for sysconfdir and localstatedir.
 
 	If you're planning on making changes to the BIND 9 source, you
@@ -285,15 +379,26 @@ Building
 
 	Building with gcc is not supported, unless gcc is the vendor's usual
 	compiler (e.g. the various BSD systems, Linux).
-	
-	* gcc-3.2.1 and gcc-3.1.1 is known to cause problems with solaris-x86
-	  if the optimiser is enabled.  Use -O0 to disable the optimiser.
-	* gcc ultrasparc generates incorrect code at -02.
+
+	Known compiler issues:
+	* gcc-3.2.1 and gcc-3.1.1 is known to cause problems with solaris-x86.
+	* gcc prior to gcc-3.2.3 ultrasparc generates incorrect code at -02.
+	* gcc-3.3.5 powerpc generates incorrect code at -02.
+	* Irix, MipsPRO 7.4.1m is known to cause problems.
 
 	A limited test suite can be run with "make test".  Many of
 	the tests require you to configure a set of virtual IP addresses
 	on your system, and some require Perl; see bin/tests/system/README
 	for details.
+
+	SunOS 4 requires "printf" to be installed to make the shared
+	libraries.  sh-utils-1.16 provides a "printf" which compiles
+	on SunOS 4.
+
+Known limitations
+
+	Linux requires kernel build 2.6.39 or later to get the
+	performance benefits from using multiple sockets.
 
 Documentation
 
@@ -313,29 +418,94 @@ Documentation
 	Frequently asked questions and their answers can be found in
 	FAQ.
 
+	Additional information on various subjects can be found
+	in the other README files.
+
+
+Change Log
+
+	A detailed list of all changes to BIND 9 is included in the
+	file CHANGES, with the most recent changes listed first.
+	Change notes include tags indicating the category of the
+	change that was made; these categories are:
+
+	   [func]         New feature
+
+	   [bug]          General bug fix
+
+	   [security]     Fix for a significant security flaw
+
+	   [experimental] Used for new features when the syntax
+			  or other aspects of the design are still
+			  in flux and may change
+
+	   [port]         Portability enhancement
+
+	   [maint]        Updates to built-in data such as root
+			  server addresses and keys
+
+	   [tuning]       Changes to built-in configuration defaults
+			  and constants to improve performance
+
+	   [performance]  Other changes to improve server performance
+
+	   [protocol]     Updates to the DNS protocol such as new
+			  RR types
+
+	   [test]         Changes to the automatic tests, not
+			  affecting server functionality
+
+	   [cleanup]      Minor corrections and refactoring
+
+	   [doc]          Documentation
+
+	   [contrib]	  Changes to the contributed tools and
+			  libraries in the 'contrib' subdirectory
+
+	   [placeholder]  Used in the master development branch to
+			  reserve change numbers for use in other
+			  branches, e.g. when fixing a bug that only
+			  exists in older releases
+
+	In general, [func] and [experimental] tags will only appear
+	in new-feature releases (i.e., those with version numbers
+	ending in zero).  Some new functionality may be backported to
+	older releases on a case-by-case basis.  All other change
+	types may be applied to all currently-supported releases.
+
 
 Bug Reports and Mailing Lists
 
-	Bugs reports should be sent to
+	Bug reports should be sent to:
 
 		bind9-bugs@isc.org
 
-	Configuration questions should be sent to the BIND 9 Users
-	mailing list.  Compilation questions should be sent to the
-	BIND 9 Users mailing list.
+	Feature requests can be sent to:
 
-	To join the BIND 9 Users mailing list, send mail to
+		bind-suggest@isc.org
 
-		bind9-users-request@isc.org
- 
-	archives of which can be found via
+	To join or view the archives of the BIND Users mailing list,
+	visit:
 
-		http://www.isc.org/ml-archives/
+		https://lists.isc.org/mailman/listinfo/bind-users
 
 	If you're planning on making changes to the BIND 9 source
-	code, you might want to join the BIND Workers mailing list.
-	Send mail to
+	code, you may also want to join the BIND Workers mailing
+	list:
 
-		bind-workers-request@isc.org
+		https://lists.isc.org/mailman/listinfo/bind-workers
+
+	Information on read-only Git access, coding style and developer
+	guidelines can be found at:
+
+		http://www.isc.org/git/
 
 
+Acknowledgments
+
+	- This product includes software developed by the OpenSSL Project
+	  for use in the OpenSSL Toolkit. (http://www.OpenSSL.org/).
+	- This product includes cryptographic software written by Eric
+	  Young (eay@cryptsoft.com).
+	- This product includes software written by Tim Hudson
+	  (tjh@cryptsoft.com).

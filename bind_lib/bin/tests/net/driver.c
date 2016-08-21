@@ -1,21 +1,12 @@
 /*
- * Copyright (C) 2000, 2001  Internet Software Consortium.
+ * Copyright (C) 2000, 2001, 2004, 2007, 2015, 2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: driver.c,v 1.7 2001/01/09 21:42:05 bwelling Exp $ */
+/* $Id: driver.c,v 1.11 2007/06/19 23:47:00 tbox Exp $ */
 
 #include <config.h>
 
@@ -23,6 +14,7 @@
 #include <stdio.h>
 #include <time.h>
 
+#include <isc/print.h>
 #include <isc/string.h>
 #include <isc/util.h>
 
@@ -87,7 +79,7 @@ main(int argc, char **argv) {
 	printf("S:%s:%s\n", SUITENAME, gettime());
 
 	n_failed = 0;
-	for (testno = 0 ; testno < NTESTS ; testno++) {
+	for (testno = 0; testno < NTESTS; testno++) {
 		test = &tests[testno];
 		printf("T:%s:%u:A\n", test->tag, testno + 1);
 		printf("A:%s\n", test->description);

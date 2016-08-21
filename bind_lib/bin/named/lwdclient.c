@@ -1,21 +1,14 @@
 /*
- * Copyright (C) 2000, 2001  Internet Software Consortium.
+ * Copyright (C) 2000, 2001, 2004, 2005, 2007, 2015, 2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: lwdclient.c,v 1.13 2001/01/22 22:29:02 gson Exp $ */
+/* $Id: lwdclient.c,v 1.22 2007/06/18 23:47:18 tbox Exp $ */
+
+/*! \file */
 
 #include <config.h>
 
@@ -29,6 +22,7 @@
 #include <dns/log.h>
 
 #include <named/types.h>
+#include <named/log.h>
 #include <named/lwresd.h>
 #include <named/lwdclient.h>
 
@@ -56,11 +50,15 @@ ns_lwdclientmgr_create(ns_lwreslistener_t *listener, unsigned int nclients,
 	ns_lwdclientmgr_t *cm;
 	ns_lwdclient_t *client;
 	unsigned int i;
-	isc_result_t result = ISC_R_FAILURE;
+	isc_result_t result;
 
 	cm = isc_mem_get(lwresd->mctx, sizeof(ns_lwdclientmgr_t));
 	if (cm == NULL)
 		return (ISC_R_NOMEMORY);
+
+	result = isc_mutex_init(&cm->lock);
+	if (result != ISC_R_SUCCESS)
+		goto freecm;
 
 	cm->listener = NULL;
 	ns_lwreslistener_attach(listener, &cm->listener);
@@ -75,13 +73,13 @@ ns_lwdclientmgr_create(ns_lwreslistener_t *listener, unsigned int nclients,
 	ISC_LIST_INIT(cm->idle);
 	ISC_LIST_INIT(cm->running);
 
-	if (lwres_context_create(&cm->lwctx, cm->mctx,
-				 ns__lwresd_memalloc, ns__lwresd_memfree,
-				 LWRES_CONTEXT_SERVERMODE)
-	    != ISC_R_SUCCESS)
+	result = lwres_context_create(&cm->lwctx, cm->mctx,
+				      ns__lwresd_memalloc, ns__lwresd_memfree,
+				      LWRES_CONTEXT_SERVERMODE);
+	 if (result != ISC_R_SUCCESS)
 		goto errout;
 
-	for (i = 0 ; i < nclients ; i++) {
+	for (i = 0; i < nclients; i++) {
 		client = isc_mem_get(lwresd->mctx, sizeof(ns_lwdclient_t));
 		if (client != NULL) {
 			ns_lwdclient_log(50, "created client %p, manager %p",
@@ -93,12 +91,15 @@ ns_lwdclientmgr_create(ns_lwreslistener_t *listener, unsigned int nclients,
 	/*
 	 * If we could create no clients, clean up and return.
 	 */
-	if (ISC_LIST_EMPTY(cm->idle))
+	if (ISC_LIST_EMPTY(cm->idle)) {
+		result = ISC_R_NOMEMORY;
 		goto errout;
+	}
 
 	result = isc_task_create(taskmgr, 0, &cm->task);
 	if (result != ISC_R_SUCCESS)
 		goto errout;
+	isc_task_setname(cm->task, "lwdclient", NULL);
 
 	/*
 	 * This MUST be last, since there is no way to cancel an onshutdown...
@@ -116,7 +117,7 @@ ns_lwdclientmgr_create(ns_lwreslistener_t *listener, unsigned int nclients,
 	client = ISC_LIST_HEAD(cm->idle);
 	while (client != NULL) {
 		ISC_LIST_UNLINK(cm->idle, client, link);
-		isc_mem_put(lwresd->mctx, client, sizeof (*client));
+		isc_mem_put(lwresd->mctx, client, sizeof(*client));
 		client = ISC_LIST_HEAD(cm->idle);
 	}
 
@@ -126,7 +127,10 @@ ns_lwdclientmgr_create(ns_lwreslistener_t *listener, unsigned int nclients,
 	if (cm->lwctx != NULL)
 		lwres_context_destroy(&cm->lwctx);
 
-	isc_mem_put(lwresd->mctx, cm, sizeof (*cm));
+	DESTROYLOCK(&cm->lock);
+
+ freecm:
+	isc_mem_put(lwresd->mctx, cm, sizeof(*cm));
 	return (result);
 }
 
@@ -135,11 +139,14 @@ lwdclientmgr_destroy(ns_lwdclientmgr_t *cm) {
 	ns_lwdclient_t *client;
 	ns_lwreslistener_t *listener;
 
-	if (!SHUTTINGDOWN(cm))
+	LOCK(&cm->lock);
+	if (!SHUTTINGDOWN(cm)) {
+		UNLOCK(&cm->lock);
 		return;
+	}
 
 	/*
-	 * run through the idle list and free the clients there.  Idle
+	 * Run through the idle list and free the clients there.  Idle
 	 * clients do not have a recv running nor do they have any finds
 	 * or similar running.
 	 */
@@ -148,22 +155,28 @@ lwdclientmgr_destroy(ns_lwdclientmgr_t *cm) {
 		ns_lwdclient_log(50, "destroying client %p, manager %p",
 				 client, cm);
 		ISC_LIST_UNLINK(cm->idle, client, link);
-		isc_mem_put(cm->mctx, client, sizeof (*client));
+		isc_mem_put(cm->mctx, client, sizeof(*client));
 		client = ISC_LIST_HEAD(cm->idle);
 	}
 
-	if (!ISC_LIST_EMPTY(cm->running))
+	if (!ISC_LIST_EMPTY(cm->running)) {
+		UNLOCK(&cm->lock);
 		return;
+	}
+
+	UNLOCK(&cm->lock);
 
 	lwres_context_destroy(&cm->lwctx);
 	cm->view = NULL;
 	isc_socket_detach(&cm->sock);
 	isc_task_detach(&cm->task);
 
+	DESTROYLOCK(&cm->lock);
+
 	listener = cm->listener;
 	ns_lwreslistener_unlinkcm(listener, cm);
 	ns_lwdclient_log(50, "destroying manager %p", cm);
-	isc_mem_put(cm->mctx, cm, sizeof (*cm));
+	isc_mem_put(cm->mctx, cm, sizeof(*cm));
 	ns_lwreslistener_detach(&listener);
 }
 
@@ -211,6 +224,7 @@ process_request(ns_lwdclient_t *client) {
 
 void
 ns_lwdclient_recv(isc_task_t *task, isc_event_t *ev) {
+	isc_result_t result;
 	ns_lwdclient_t *client = ev->ev_arg;
 	ns_lwdclientmgr_t *cm = client->clientmgr;
 	isc_socketevent_t *dev = (isc_socketevent_t *)ev;
@@ -220,8 +234,10 @@ ns_lwdclient_recv(isc_task_t *task, isc_event_t *ev) {
 
 	NS_LWDCLIENT_SETRECVDONE(client);
 
+	LOCK(&cm->lock);
 	INSIST((cm->flags & NS_LWDCLIENTMGR_FLAGRECVPENDING) != 0);
 	cm->flags &= ~NS_LWDCLIENTMGR_FLAGRECVPENDING;
+	UNLOCK(&cm->lock);
 
 	ns_lwdclient_log(50,
 			 "event received: task %p, length %u, result %u (%s)",
@@ -250,7 +266,13 @@ ns_lwdclient_recv(isc_task_t *task, isc_event_t *ev) {
 	isc_event_free(&ev);
 	dev = NULL;
 
-	ns_lwdclient_startrecv(cm);
+	result = ns_lwdclient_startrecv(cm);
+	if (result != ISC_R_SUCCESS)
+		isc_log_write(ns_g_lctx, NS_LOGCATEGORY_GENERAL,
+			      NS_LOGMODULE_LWRESD, ISC_LOG_ERROR,
+			      "could not start lwres "
+			      "client handler: %s",
+			      isc_result_totext(result));
 
 	process_request(client);
 }
@@ -263,25 +285,41 @@ ns_lwdclient_startrecv(ns_lwdclientmgr_t *cm) {
 	ns_lwdclient_t *client;
 	isc_result_t result;
 	isc_region_t r;
+	isc_boolean_t destroy = ISC_FALSE;
 
+
+	LOCK(&cm->lock);
 	if (SHUTTINGDOWN(cm)) {
-		lwdclientmgr_destroy(cm);
-		return (ISC_R_SUCCESS);
+		destroy = ISC_TRUE;
+		result = ISC_R_SUCCESS;
+		goto unlock;
 	}
 
 	/*
 	 * If a recv is already running, don't bother.
 	 */
-	if ((cm->flags & NS_LWDCLIENTMGR_FLAGRECVPENDING) != 0)
-		return (ISC_R_SUCCESS);
+	if ((cm->flags & NS_LWDCLIENTMGR_FLAGRECVPENDING) != 0) {
+		result = ISC_R_SUCCESS;
+		goto unlock;
+	}
 
 	/*
 	 * If we have no idle slots, just return success.
 	 */
 	client = ISC_LIST_HEAD(cm->idle);
-	if (client == NULL)
-		return (ISC_R_SUCCESS);
+	if (client == NULL) {
+		result = ISC_R_SUCCESS;
+		goto unlock;
+	}
+
 	INSIST(NS_LWDCLIENT_ISIDLE(client));
+
+	/*
+	 * Set the flag to say there is a recv pending.  If isc_socket_recv
+	 * fails we will clear the flag otherwise it will be cleared by
+	 * ns_lwdclient_recv.
+	 */
+	cm->flags |= NS_LWDCLIENTMGR_FLAGRECVPENDING;
 
 	/*
 	 * Issue the recv.  If it fails, return that it did.
@@ -290,13 +328,10 @@ ns_lwdclient_startrecv(ns_lwdclientmgr_t *cm) {
 	r.length = LWRES_RECVLENGTH;
 	result = isc_socket_recv(cm->sock, &r, 0, cm->task, ns_lwdclient_recv,
 				 client);
-	if (result != ISC_R_SUCCESS)
-		return (result);
-
-	/*
-	 * Set the flag to say we've issued a recv() call.
-	 */
-	cm->flags |= NS_LWDCLIENTMGR_FLAGRECVPENDING;
+	if (result != ISC_R_SUCCESS) {
+		cm->flags &= ~NS_LWDCLIENTMGR_FLAGRECVPENDING;
+		goto unlock;
+	}
 
 	/*
 	 * Remove the client from the idle list, and put it on the running
@@ -306,7 +341,13 @@ ns_lwdclient_startrecv(ns_lwdclientmgr_t *cm) {
 	ISC_LIST_UNLINK(cm->idle, client, link);
 	ISC_LIST_APPEND(cm->running, client, link);
 
-	return (ISC_R_SUCCESS);
+ unlock:
+	UNLOCK(&cm->lock);
+
+	if (destroy)
+		lwdclientmgr_destroy(cm);
+
+	return (result);
 }
 
 static void
@@ -324,14 +365,16 @@ lwdclientmgr_shutdown_callback(isc_task_t *task, isc_event_t *ev) {
 	 * clients do not have a recv running nor do they have any finds
 	 * or similar running.
 	 */
+	LOCK(&cm->lock);
 	client = ISC_LIST_HEAD(cm->idle);
 	while (client != NULL) {
 		ns_lwdclient_log(50, "destroying client %p, manager %p",
 				 client, cm);
 		ISC_LIST_UNLINK(cm->idle, client, link);
-		isc_mem_put(cm->mctx, client, sizeof (*client));
+		isc_mem_put(cm->mctx, client, sizeof(*client));
 		client = ISC_LIST_HEAD(cm->idle);
 	}
+	UNLOCK(&cm->lock);
 
 	/*
 	 * Cancel any pending I/O.
@@ -342,6 +385,7 @@ lwdclientmgr_shutdown_callback(isc_task_t *task, isc_event_t *ev) {
 	 * Run through the running client list and kill off any finds
 	 * in progress.
 	 */
+	LOCK(&cm->lock);
 	client = ISC_LIST_HEAD(cm->running);
 	while (client != NULL) {
 		if (client->find != client->v4find
@@ -356,6 +400,8 @@ lwdclientmgr_shutdown_callback(isc_task_t *task, isc_event_t *ev) {
 
 	cm->flags |= NS_LWDCLIENTMGR_FLAGSHUTTINGDOWN;
 
+	UNLOCK(&cm->lock);
+
 	isc_event_free(&ev);
 }
 
@@ -366,6 +412,7 @@ lwdclientmgr_shutdown_callback(isc_task_t *task, isc_event_t *ev) {
 void
 ns_lwdclient_stateidle(ns_lwdclient_t *client) {
 	ns_lwdclientmgr_t *cm;
+	isc_result_t result;
 
 	cm = client->clientmgr;
 
@@ -375,12 +422,20 @@ ns_lwdclient_stateidle(ns_lwdclient_t *client) {
 	INSIST(client->v4find == NULL);
 	INSIST(client->v6find == NULL);
 
+	LOCK(&cm->lock);
 	ISC_LIST_UNLINK(cm->running, client, link);
 	ISC_LIST_PREPEND(cm->idle, client, link);
+	UNLOCK(&cm->lock);
 
 	NS_LWDCLIENT_SETIDLE(client);
 
-	ns_lwdclient_startrecv(cm);
+	result = ns_lwdclient_startrecv(cm);
+	if (result != ISC_R_SUCCESS)
+		isc_log_write(ns_g_lctx, NS_LOGCATEGORY_GENERAL,
+			      NS_LOGMODULE_LWRESD, ISC_LOG_ERROR,
+			      "could not start lwres "
+			      "client handler: %s",
+			      isc_result_totext(result));
 }
 
 void
@@ -446,5 +501,7 @@ ns_lwdclient_initialize(ns_lwdclient_t *client, ns_lwdclientmgr_t *cmgr) {
 
 	client->pktinfo_valid = ISC_FALSE;
 
+	LOCK(&cmgr->lock);
 	ISC_LIST_APPEND(cmgr->idle, client, link);
+	UNLOCK(&cmgr->lock);
 }

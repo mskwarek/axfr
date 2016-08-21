@@ -1,21 +1,10 @@
 #!/bin/sh
 #
-# Copyright (C) 2000, 2001, 2003  Internet Software Consortium.
+# Copyright (C) 2000-2016  Internet Systems Consortium, Inc. ("ISC")
 #
-# Permission to use, copy, modify, and distribute this software for any
-# purpose with or without fee is hereby granted, provided that the above
-# copyright notice and this permission notice appear in all copies.
-#
-# THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
-# DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
-# INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
-# INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
-# FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
-# NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
-# WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-
-# $Id: conf.sh.in,v 1.23.2.2 2003/05/19 05:46:24 marka Exp $
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 #
 # Common configuration data for system tests, to be sourced into
@@ -33,24 +22,101 @@ NAMED=$TOP/bin/named/named
 # if the program is libtoolized.
 LWRESD="$TOP/bin/named/named -l"
 DIG=$TOP/bin/dig/dig
+DELV=$TOP/bin/delv/delv
 RNDC=$TOP/bin/rndc/rndc
 NSUPDATE=$TOP/bin/nsupdate/nsupdate
+DDNSCONFGEN=$TOP/bin/confgen/ddns-confgen
+TSIGKEYGEN=$TOP/bin/confgen/tsig-keygen
+RNDCCONFGEN=$TOP/bin/confgen/rndc-confgen
 KEYGEN=$TOP/bin/dnssec/dnssec-keygen
+KEYFRLAB=$TOP/bin/dnssec/dnssec-keyfromlabel
 SIGNER=$TOP/bin/dnssec/dnssec-signzone
-KEYSIGNER=$TOP/bin/dnssec/dnssec-signkey
-KEYSETTOOL=$TOP/bin/dnssec/dnssec-makekeyset
+REVOKE=$TOP/bin/dnssec/dnssec-revoke
+SETTIME=$TOP/bin/dnssec/dnssec-settime
+DSFROMKEY=$TOP/bin/dnssec/dnssec-dsfromkey
+IMPORTKEY=$TOP/bin/dnssec/dnssec-importkey
+CHECKDS=$TOP/bin/python/dnssec-checkds
+COVERAGE=$TOP/bin/python/dnssec-coverage
+KEYMGR=$TOP/bin/python/dnssec-keymgr
+CHECKZONE=$TOP/bin/check/named-checkzone
+CHECKCONF=$TOP/bin/check/named-checkconf
+PK11GEN="$TOP/bin/pkcs11/pkcs11-keygen -q -s ${SLOT:-0} -p ${HSMPIN:-1234}"
+PK11LIST="$TOP/bin/pkcs11/pkcs11-list -s ${SLOT:-0} -p ${HSMPIN:-1234}"
+PK11DEL="$TOP/bin/pkcs11/pkcs11-destroy -s ${SLOT:-0} -p ${HSMPIN:-1234} -w 0"
+JOURNALPRINT=$TOP/bin/tools/named-journalprint
+VERIFY=$TOP/bin/dnssec/dnssec-verify
+ARPANAME=$TOP/bin/tools/arpaname
+RESOLVE=$TOP/lib/samples/resolve
+RRCHECKER=$TOP/bin/tools/named-rrchecker
+GENRANDOM=$TOP/bin/tools/genrandom
+NSLOOKUP=$TOP/bin/dig/nslookup
+DNSTAPREAD="$TOP/bin/tools/dnstap-read"
+MDIG="$TOP/bin/tools/mdig"
+NZD2NZF="$TOP/bin/tools/named-nzd2nzf"
+
+RANDFILE=$TOP/bin/tests/system/random.data
 
 # The "stress" test is not run by default since it creates enough
 # load on the machine to make it unusable to other users.
-#
-# dnssec is missing from SUBDIRS as RFC 2535 support is disabled
-# 
-SUBDIRS="cacheclean forward glue ixfr limits lwresd \
-    masterfile notify nsupdate resolver sortlist stub tkey \
-    unknown upforwd v6synth views xfer xferquota"
+# v6synth
+SUBDIRS="acl additional addzone allow_query autosign builtin cacheclean case
+	 catz checkconf  checknames checkzone cookie 
+	 database digdelv dlv dlvauto dlz dlzexternal dname dns64 dnssec
+	  dscp dsdigest dyndb ecdsa ednscompliance emptyzones
+	 fetchlimit filter-aaaa formerr forward geoip glue gost inline ixfr
+	  legacy limits logfileconfig lwresd masterfile masterformat
+	 metadata mkeys names notify nslookup nsupdate nzd2nzf pending
+	 pipelined  reclimit redirect resolver rndc rpz
+	 rpzrecurse rrchecker rrl rrsetorder rsabigexponent runtime sfcache
+	 smartsign sortlist spf staticstub statistics statschannel stub tcp
+	 tkey tsig tsiggss unknown upforwd verify views wildcard xfer
+	 xferquota zero zonechecks"
+
+# Use the CONFIG_SHELL detected by configure for tests
+SHELL=/bin/bash
+
+# CURL will be empty if no program was found by configure
+CURL=/usr/bin/curl
+
+# XMLLINT will be empty if no program was found by configure
+XMLLINT=xmllint
 
 # PERL will be an empty string if no perl interpreter was found.
 PERL=/usr/bin/perl
+if test -n "$PERL"
+then
+	if $PERL -e "use IO::Socket::INET6;" 2> /dev/null
+	then
+		TESTSOCK6="$PERL $TOP/bin/tests/system/testsock6.pl"
+	else
+		TESTSOCK6=false
+	fi
+else
+	TESTSOCK6=false
+fi
 
-export NAMED LWRESD DIG NSUPDATE KEYGEN SIGNER KEYSIGNER KEYSETTOOL PERL \
-    SUBDIRS RNDC
+if grep "^#define WANT_IPV6 1" $TOP/config.h > /dev/null 2>&1 ; then
+        TESTSOCK6="$TESTSOCK6"
+else
+        TESTSOCK6=false
+fi
+
+
+PYTHON=
+
+#
+# Determine if we support various optional features.
+#
+CHECK_DSA=0
+XMLSTATS=1
+JSONSTATS=
+ZLIB=1
+NZD=
+
+. ${TOP}/version
+
+export NAMED LWRESD DIG NSUPDATE KEYGEN KEYFRLAB SIGNER KEYSIGNER KEYSETTOOL \
+       PERL SUBDIRS RNDC CHECKZONE PK11GEN PK11LIST PK11DEL TESTSOCK6 \
+       JOURNALPRINT ARPANAME RESOLVE RRCHECKER NSLOOKUP DESCRIPTION PYTHON \
+       MDIG
+

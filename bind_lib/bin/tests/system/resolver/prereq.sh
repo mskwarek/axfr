@@ -1,26 +1,26 @@
 #!/bin/sh
 #
-# Copyright (C) 2000, 2001  Internet Software Consortium.
+# Copyright (C) 2000, 2001, 2004, 2007, 2012, 2014, 2016  Internet Systems Consortium, Inc. ("ISC")
 #
-# Permission to use, copy, modify, and distribute this software for any
-# purpose with or without fee is hereby granted, provided that the above
-# copyright notice and this permission notice appear in all copies.
-#
-# THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
-# DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
-# INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
-# INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
-# FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
-# NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
-# WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# $Id: prereq.sh,v 1.4 2001/01/09 21:44:29 bwelling Exp $
+SYSTEMTESTTOP=..
+. $SYSTEMTESTTOP/conf.sh
 
 if $PERL -e 'use Net::DNS;' 2>/dev/null
 then
-    :
+    if $PERL -e 'use Net::DNS; die if ($Net::DNS::VERSION eq "0.76" || $Net::DNS::VERSION eq "0.77");' 2>/dev/null
+    then
+	:
+    else
+	echo "I:Net::DNS version 0.76 and 0.77 have a bug that causes this test to fail: please update." >&2
+	exit 1
+    fi
 else
     echo "I:This test requires the Net::DNS library." >&2
     exit 1
 fi
+
+exec $SHELL ../testcrypto.sh

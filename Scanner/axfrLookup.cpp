@@ -7,11 +7,13 @@
 #include <iterator>
 #include <sstream>
 #include <algorithm>
+extern "C"
+{
+#include "../digUtils/digQuery.h"
+}
+#include <dig_parser.h>
 
 #include "axfrLookup.h"
-
-static void save_data(response_t* res, std::vector<std::string> tokens);
-static void print_data(response_t* res, std::vector<std::string> tokens);
 
 axfrLookup::axfrLookup()
 {
@@ -29,35 +31,38 @@ void axfrLookup::int_parse(response_t* res)
     save_data_xml(res);
 }
 
-static void save_data(response_t* res, std::vector<std::string> tokens)
+void axfrLookup::int_parse(char* res)
 {
+    this->response = std::string(res);
+    std::istringstream iss(this->response);
+    std::string line;
+    std::vector<std::string> lines;
+    while(std::getline(iss, line))
+    {
+        lines.push_back(line);
+    }
 
+    for(auto a : lines)
+    {
+        std::cout<<"linia"<<std::endl;
+        std::cout<<a<<std::endl;
+    }
 }
+
+void axfrLookup::print()
+{
+    std::cout<<this->response<<std::endl;
+}
+
 void axfrLookup::save_data_xml(response_t* res)
 {
     this->database->addToLocalDb(res);
 }
 
-static void print_data(response_t* res, std::vector<std::string> tokens)
-{
-    for (auto const &n : tokens)
-    {
-        if(!(res->cls == "SOA"))
-            std::cout << ' ' << n << ' ' << res->cls << ' ' << res->type;
-    }
-    std::cout<<std::endl;
-}
-
 void axfrLookup::performLookup(const char* domain, const char* asked_ns)
 {
-    try
-    {
-      int_parse(tryLookup(domain, asked_ns));
-    }
-    catch(...)
-    {
-
-    }
+    const char *args[4] = {"dupa", domain, asked_ns, "ns"};
+    int_parse(tryLookup(4, (char**) args));
 }
 
 std::vector<ScanningResult*>* axfrLookup::get_domains()

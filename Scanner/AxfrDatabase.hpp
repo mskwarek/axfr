@@ -45,19 +45,19 @@ public:
     {
         if(this->data.empty())
             return;
-	boost::property_tree::ptree tree;
+	    boost::property_tree::ptree tree;
         for(auto i : this->data) {
-	  boost::property_tree::ptree& book = tree.add("axfrlookup.domain", "");
-	  book.add("type", i->get_type());
-	  book.add("www_address", i->get_name());
-	  book.add("rdata", i->get_rdata());
+	        boost::property_tree::ptree& book = tree.add("axfrlookup.domain", "");
+	        book.add("type", i->get_type());
+	        book.add("www_address", i->get_name());
+	        book.add("rdata", i->get_rdata());
         }
-        if(!this->data.empty()) {
-	  std::cout<<this->data.back()->get_name() + ".xml"<<std::endl;
-	  boost::property_tree::write_xml(std::string(this->data.back()->get_name()) + ".xml", tree,
-					  std::locale(),
-					  boost::property_tree::xml_writer_make_settings<std::string>(' ', 1));
-	}
+//        if(!this->data.empty()) {
+//            std::cout<<this->data.back()->get_name() + ".xml"<<std::endl;
+//	        boost::property_tree::write_xml(std::string(this->data.back()->get_name()) + ".xml", tree,
+//					  std::locale(),
+//					  boost::property_tree::xml_writer_make_settings<std::string>(' ', 1));
+//	    }
     }
 
     AxfrDatabase(const AxfrDatabase&) = delete;

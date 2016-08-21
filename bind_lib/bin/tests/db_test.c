@@ -1,23 +1,15 @@
 /*
- * Copyright (C) 1999-2001  Internet Software Consortium.
+ * Copyright (C) 1999-2001, 2004, 2005, 2007-2009, 2011-2013, 2015, 2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: db_test.c,v 1.56 2001/01/09 21:40:57 bwelling Exp $ */
+/* $Id: db_test.c,v 1.70 2011/08/29 23:46:44 tbox Exp $ */
 
-/*
+/*! \file
+ * \author
  * Principal Author: Bob Halley
  */
 
@@ -28,6 +20,7 @@
 #include <isc/commandline.h>
 #include <isc/log.h>
 #include <isc/mem.h>
+#include <isc/print.h>
 #include <isc/time.h>
 #include <isc/string.h>
 #include <isc/util.h>
@@ -69,15 +62,11 @@ static isc_boolean_t		ascending = ISC_TRUE;
 
 static void
 print_result(const char *message, isc_result_t result) {
-	size_t len;
 
-	if (message == NULL) {
-		len = 0;
+	if (message == NULL)
 		message = "";
-	}
-	len = strlen(message);
-	printf("%s%sresult %08x: %s\n", message, (len == 0) ? "" : " ", result,
-	       isc_result_totext(result));
+	printf("%s%sresult %08x: %s\n", message, (*message == '\0') ? "" : " ",
+	       result, isc_result_totext(result));
 }
 
 static void
@@ -133,8 +122,7 @@ select_db(char *origintext) {
 	isc_buffer_add(&source, len);
 	dns_fixedname_init(&forigin);
 	origin = dns_fixedname_name(&forigin);
-	result = dns_name_fromtext(origin, &source, dns_rootname, ISC_FALSE,
-				   NULL);
+	result = dns_name_fromtext(origin, &source, dns_rootname, 0, NULL);
 	if (result != ISC_R_SUCCESS) {
 		print_result("bad name", result);
 		return (NULL);
@@ -176,8 +164,7 @@ list(dbinfo *dbi, char *seektext) {
 				dns_db_currentversion(dbi->db, &dbi->iversion);
 		}
 
-		result = dns_db_createiterator(dbi->db, ISC_FALSE,
-					       &dbi->dbiterator);
+		result = dns_db_createiterator(dbi->db, 0, &dbi->dbiterator);
 		if (result == ISC_R_SUCCESS) {
 			if (seektext != NULL) {
 				len = strlen(seektext);
@@ -188,8 +175,7 @@ list(dbinfo *dbi, char *seektext) {
 				result = dns_name_fromtext(seekname, &source,
 							   dns_db_origin(
 								 dbi->db),
-							   ISC_FALSE,
-							   NULL);
+							   0, NULL);
 				if (result == ISC_R_SUCCESS)
 					result = dns_dbiterator_seek(
 							     dbi->dbiterator,
@@ -248,7 +234,7 @@ load(const char *filename, const char *origintext, isc_boolean_t cache) {
 	dbinfo *dbi;
 	unsigned int i;
 
-	dbi = isc_mem_get(mctx, sizeof *dbi);
+	dbi = isc_mem_get(mctx, sizeof(*dbi));
 	if (dbi == NULL)
 		return (ISC_R_NOMEMORY);
 
@@ -267,21 +253,22 @@ load(const char *filename, const char *origintext, isc_boolean_t cache) {
 	ISC_LINK_INIT(dbi, link);
 
 	len = strlen(origintext);
-	isc_buffer_init(&source, origintext, len);
+	isc_buffer_constinit(&source, origintext, len);
 	isc_buffer_add(&source, len);
 	dns_fixedname_init(&forigin);
 	origin = dns_fixedname_name(&forigin);
-	result = dns_name_fromtext(origin, &source, dns_rootname, ISC_FALSE,
-				   NULL);
-	if (result != ISC_R_SUCCESS)
+	result = dns_name_fromtext(origin, &source, dns_rootname, 0, NULL);
+	if (result != ISC_R_SUCCESS) {
+		isc_mem_put(mctx, dbi, sizeof(*dbi));
 		return (result);
+	}
 
 	result = dns_db_create(mctx, dbtype, origin,
 			       cache ? dns_dbtype_cache : dns_dbtype_zone,
 			       dns_rdataclass_in,
 			       0, NULL, &dbi->db);
 	if (result != ISC_R_SUCCESS) {
-		isc_mem_put(mctx, dbi, sizeof *dbi);
+		isc_mem_put(mctx, dbi, sizeof(*dbi));
 		return (result);
 	}
 
@@ -289,7 +276,7 @@ load(const char *filename, const char *origintext, isc_boolean_t cache) {
 	result = dns_db_load(dbi->db, filename);
 	if (result != ISC_R_SUCCESS && result != DNS_R_SEENINCLUDE) {
 		dns_db_detach(&dbi->db);
-		isc_mem_put(mctx, dbi, sizeof *dbi);
+		isc_mem_put(mctx, dbi, sizeof(*dbi));
 		return (result);
 	}
 	printf("loaded\n");
@@ -299,9 +286,10 @@ load(const char *filename, const char *origintext, isc_boolean_t cache) {
 		dns_dbtable_adddefault(dbtable, dbi->db);
 		cache_dbi = dbi;
 	} else {
-		if (dns_dbtable_add(dbtable, dbi->db) != ISC_R_SUCCESS) {
+		result = dns_dbtable_add(dbtable, dbi->db);
+		if (result != ISC_R_SUCCESS) {
 			dns_db_detach(&dbi->db);
-			isc_mem_put(mctx, dbi, sizeof *dbi);
+			isc_mem_put(mctx, dbi, sizeof(*dbi));
 			return (result);
 		}
 	}
@@ -325,7 +313,7 @@ unload_all(void) {
 		}
 		dns_db_detach(&dbi->db);
 		ISC_LIST_UNLINK(dbs, dbi, link);
-		isc_mem_put(mctx, dbi, sizeof *dbi);
+		isc_mem_put(mctx, dbi, sizeof(*dbi));
 	}
 }
 
@@ -370,7 +358,7 @@ main(int argc, char *argv[]) {
 	dns_name_t *fname;
 	unsigned int options = 0, zcoptions;
 	isc_time_t start, finish;
-	char *origintext;
+	const char *origintext;
 	dbinfo *dbi;
 	dns_dbversion_t *version;
 	dns_name_t *origin;
@@ -378,6 +366,7 @@ main(int argc, char *argv[]) {
 	dns_trust_t trust = 0;
 	unsigned int addopts;
 	isc_log_t *lctx = NULL;
+	size_t n;
 
 	dns_result_register();
 
@@ -385,7 +374,7 @@ main(int argc, char *argv[]) {
 	RUNTIME_CHECK(dns_dbtable_create(mctx, dns_rdataclass_in, &dbtable) ==
 		      ISC_R_SUCCESS);
 
-	
+
 
 	strcpy(dbtype, "rbt");
 	while ((ch = isc_commandline_parse(argc, argv, "c:d:t:z:P:Q:glpqvT"))
@@ -399,12 +388,18 @@ main(int argc, char *argv[]) {
 				       isc_result_totext(result));
 			break;
 		case 'd':
-			strcpy(dbtype, isc_commandline_argument);
+			n = strlcpy(dbtype, isc_commandline_argument,
+				    sizeof(dbtype));
+			if (n >= sizeof(dbtype)) {
+				fprintf(stderr, "bad db type '%s'\n",
+					isc_commandline_argument);
+				exit(1);
+			}
 			break;
 		case 'g':
 			options |= (DNS_DBFIND_GLUEOK|DNS_DBFIND_VALIDATEGLUE);
 			break;
-        	case 'l':
+		case 'l':
 			RUNTIME_CHECK(isc_log_create(mctx, &lctx,
 						     NULL) == ISC_R_SUCCESS);
 			isc_log_setcontext(lctx);
@@ -452,6 +447,7 @@ main(int argc, char *argv[]) {
 
 	argc -= isc_commandline_index;
 	argv += isc_commandline_index;
+	POST(argv);
 
 	if (argc != 0)
 		printf("ignoring trailing arguments\n");
@@ -466,18 +462,18 @@ main(int argc, char *argv[]) {
 	version = NULL;
 
 	if (time_lookups) {
-		(void)isc_time_now(&start);
+		TIME_NOW(&start);
 	}
 
 	while (!done) {
 		if (!quiet)
 			printf("\n");
-		if (fgets(s, sizeof s, stdin) == NULL) {
+		if (fgets(s, sizeof(s), stdin) == NULL) {
 			done = ISC_TRUE;
 			continue;
 		}
 		len = strlen(s);
-		if (len > 0 && s[len - 1] == '\n') {
+		if (len > 0U && s[len - 1] == '\n') {
 			s[len - 1] = '\0';
 			len--;
 		}
@@ -609,10 +605,11 @@ main(int argc, char *argv[]) {
 		} else if (strstr(s, "!V") == s) {
 			DBI_CHECK(dbi);
 			v = atoi(&s[2]);
-			if (v >= dbi->rcount) {
+			if (v >= dbi->rcount || v < 0) {
 				printf("unknown open version %d\n", v);
 				continue;
-			} else if (dbi->rversions[v] == NULL) {
+			}
+			if (dbi->rversions[v] == NULL) {
 				printf("version %d is not open\n", v);
 				continue;
 			}
@@ -736,8 +733,7 @@ main(int argc, char *argv[]) {
 		isc_buffer_init(&source, s, len);
 		isc_buffer_add(&source, len);
 		isc_buffer_init(&target, b, sizeof(b));
-		result = dns_name_fromtext(&name, &source, origin,
-					   ISC_FALSE, &target);
+		result = dns_name_fromtext(&name, &source, origin, 0, &target);
 		if (result != ISC_R_SUCCESS) {
 			print_result("bad name: ", result);
 			continue;
@@ -923,7 +919,7 @@ main(int argc, char *argv[]) {
 	if (time_lookups) {
 		isc_uint64_t usec;
 
-		(void)isc_time_now(&finish);
+		TIME_NOW(&finish);
 
 		usec = isc_time_microdiff(&finish, &start);
 

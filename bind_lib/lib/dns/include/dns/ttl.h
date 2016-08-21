@@ -1,24 +1,17 @@
 /*
- * Copyright (C) 1999-2001  Internet Software Consortium.
+ * Copyright (C) 1999-2001, 2004-2007, 2014, 2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: ttl.h,v 1.12 2001/01/09 21:53:37 bwelling Exp $ */
+/* $Id: ttl.h,v 1.19 2007/06/19 23:47:17 tbox Exp $ */
 
 #ifndef DNS_TTL_H
 #define DNS_TTL_H 1
+
+/*! \file dns/ttl.h */
 
 /***
  ***	Imports
@@ -36,7 +29,10 @@ ISC_LANG_BEGINDECLS
 isc_result_t
 dns_ttl_totext(isc_uint32_t src, isc_boolean_t verbose,
 	       isc_buffer_t *target);
-/*
+isc_result_t
+dns_ttl_totext2(isc_uint32_t src, isc_boolean_t verbose,
+		isc_boolean_t upcase, isc_buffer_t *target);
+/*%<
  * Output a TTL or other time interval in a human-readable form.
  * The time interval is given as a count of seconds in 'src'.
  * The text representation is appended to 'target'.
@@ -46,29 +42,35 @@ dns_ttl_totext(isc_uint32_t src, isc_boolean_t verbose,
  * If 'verbose' is ISC_TRUE, use a verbose style like the SOA comments
  * in "dig", like "1 week 2 days 3 hours 4 minutes 5 seconds".
  *
+ * If 'upcase' is ISC_TRUE, we conform to the BIND 8 style in which
+ * the unit letter is capitalized if there is only a single unit
+ * letter to print (for example, "1m30s", but "2M")
+ *
+ * If 'upcase' is ISC_FALSE, unit letters are always in lower case.
+ *
  * Returns:
- * 	ISC_R_SUCCESS
- * 	ISC_R_NOSPACE
+ * \li	ISC_R_SUCCESS
+ * \li	ISC_R_NOSPACE
  */
 
 isc_result_t
 dns_counter_fromtext(isc_textregion_t *source, isc_uint32_t *ttl);
-/*
+/*%<
  * Converts a counter from either a plain number or a BIND 8 style value.
  *
  * Returns:
- *	ISC_R_SUCCESS
- *	DNS_R_SYNTAX
+ *\li	ISC_R_SUCCESS
+ *\li	DNS_R_SYNTAX
  */
 
 isc_result_t
 dns_ttl_fromtext(isc_textregion_t *source, isc_uint32_t *ttl);
-/*
+/*%<
  * Converts a ttl from either a plain number or a BIND 8 style value.
  *
  * Returns:
- *	ISC_R_SUCCESS
- *	DNS_R_BADTTL
+ *\li	ISC_R_SUCCESS
+ *\li	DNS_R_BADTTL
  */
 
 ISC_LANG_ENDDECLS

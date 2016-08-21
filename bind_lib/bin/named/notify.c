@@ -1,29 +1,22 @@
 /*
- * Copyright (C) 1999-2001, 2003  Internet Software Consortium.
+ * Copyright (C) 1999-2007, 2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: notify.c,v 1.24.2.2 2003/07/22 04:03:34 marka Exp $ */
+/* $Id: notify.c,v 1.37 2007/06/19 23:46:59 tbox Exp $ */
 
 #include <config.h>
 
 #include <isc/log.h>
+#include <isc/print.h>
 
 #include <dns/message.h>
 #include <dns/rdataset.h>
 #include <dns/result.h>
+#include <dns/tsig.h>
 #include <dns/view.h>
 #include <dns/zone.h>
 #include <dns/zt.h>
@@ -31,16 +24,17 @@
 #include <named/log.h>
 #include <named/notify.h>
 
-/*
- * This module implements notify as in RFC 1996.
+/*! \file
+ * \brief
+ * This module implements notify as in RFC1996.
  */
 
 static void
-notify_log(int level, const char *fmt, ...) {
+notify_log(ns_client_t *client, int level, const char *fmt, ...) {
 	va_list ap;
 
 	va_start(ap, fmt);
-	isc_log_vwrite(ns_g_lctx, DNS_LOGCATEGORY_NOTIFY, NS_LOGMODULE_NOTIFY,
+	ns_client_logv(client, DNS_LOGCATEGORY_NOTIFY, NS_LOGMODULE_NOTIFY,
 		       level, fmt, ap);
 	va_end(ap);
 }
@@ -76,14 +70,17 @@ ns_notify_start(ns_client_t *client) {
 	dns_name_t *zonename;
 	dns_rdataset_t *zone_rdataset;
 	dns_zone_t *zone = NULL;
-	char str[DNS_NAME_FORMATSIZE];
+	char namebuf[DNS_NAME_FORMATSIZE];
+	char tsigbuf[DNS_NAME_FORMATSIZE + sizeof(": TSIG ''")];
+	dns_tsigkey_t *tsigkey;
 
 	/*
 	 * Interpret the question section.
 	 */
 	result = dns_message_firstname(request, DNS_SECTION_QUESTION);
 	if (result != ISC_R_SUCCESS) {
-		notify_log(ISC_LOG_INFO, "notify question section empty");
+		notify_log(client, ISC_LOG_NOTICE,
+			   "notify question section empty");
 		goto formerr;
 	}
 
@@ -94,7 +91,7 @@ ns_notify_start(ns_client_t *client) {
 	dns_message_currentname(request, DNS_SECTION_QUESTION, &zonename);
 	zone_rdataset = ISC_LIST_HEAD(zonename->list);
 	if (ISC_LIST_NEXT(zone_rdataset, link) != NULL) {
-		notify_log(ISC_LOG_INFO,
+		notify_log(client, ISC_LOG_NOTICE,
 			   "notify question section contains multiple RRs");
 		goto formerr;
 	}
@@ -102,29 +99,46 @@ ns_notify_start(ns_client_t *client) {
 	/* The zone section must have exactly one name. */
 	result = dns_message_nextname(request, DNS_SECTION_ZONE);
 	if (result != ISC_R_NOMORE) {
-		notify_log(ISC_LOG_INFO,
+		notify_log(client, ISC_LOG_NOTICE,
 			   "notify question section contains multiple RRs");
-		goto failure;
+		goto formerr;
 	}
 
 	/* The one rdataset must be an SOA. */
 	if (zone_rdataset->type != dns_rdatatype_soa) {
-		notify_log(ISC_LOG_INFO,
+		notify_log(client, ISC_LOG_NOTICE,
 			   "notify question section contains no SOA");
 		goto formerr;
 	}
 
-	dns_name_format(zonename, str, sizeof(str));
+	tsigkey = dns_message_gettsigkey(request);
+	if (tsigkey != NULL) {
+		dns_name_format(&tsigkey->name, namebuf, sizeof(namebuf));
+
+		if (tsigkey->generated) {
+			char cnamebuf[DNS_NAME_FORMATSIZE];
+			dns_name_format(tsigkey->creator, cnamebuf,
+					sizeof(cnamebuf));
+			snprintf(tsigbuf, sizeof(tsigbuf), ": TSIG '%s' (%s)",
+				 namebuf, cnamebuf);
+		} else {
+			snprintf(tsigbuf, sizeof(tsigbuf), ": TSIG '%s'",
+				 namebuf);
+		}
+	} else
+		tsigbuf[0] = '\0';
+	dns_name_format(zonename, namebuf, sizeof(namebuf));
 	result = dns_zt_find(client->view->zonetable, zonename, 0, NULL,
 			     &zone);
 	if (result != ISC_R_SUCCESS)
 		goto notauth;
 
-	switch(dns_zone_gettype(zone)) {
+	switch (dns_zone_gettype(zone)) {
 	case dns_zone_master:
 	case dns_zone_slave:
 	case dns_zone_stub:	/* Allow dialup passive to work. */
-		notify_log(ISC_LOG_INFO, "received notify for zone '%s'", str);
+		notify_log(client, ISC_LOG_INFO,
+			   "received notify for zone '%s'%s", namebuf, tsigbuf);
 		respond(client, dns_zone_notifyreceive(zone,
 			ns_client_getsockaddr(client), request));
 		break;
@@ -135,9 +149,9 @@ ns_notify_start(ns_client_t *client) {
 	return;
 
  notauth:
-	notify_log(ISC_LOG_INFO,
-		   "received notify for zone '%s': not authoritative",
-		   str);
+	notify_log(client, ISC_LOG_NOTICE,
+		   "received notify for zone '%s'%s: not authoritative",
+		   namebuf, tsigbuf);
 	result = DNS_R_NOTAUTH;
 	goto failure;
 

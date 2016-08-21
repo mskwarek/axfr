@@ -1,26 +1,22 @@
 #!/usr/bin/perl
 #
-# Copyright (C) 2000, 2001  Internet Software Consortium.
+# Copyright (C) 2000, 2001, 2004, 2007, 2012, 2013, 2016  Internet Systems Consortium, Inc. ("ISC")
 #
-# Permission to use, copy, modify, and distribute this software for any
-# purpose with or without fee is hereby granted, provided that the above
-# copyright notice and this permission notice appear in all copies.
-#
-# THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
-# DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
-# INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
-# INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
-# FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
-# NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
-# WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# $Id: digcomp.pl,v 1.11 2001/01/09 21:42:19 bwelling Exp $
+# $Id: digcomp.pl,v 1.14 2007/06/19 23:47:00 tbox Exp $
 
 # Compare two files, each with the output from dig, for differences.
 # Ignore "unimportant" differences, like ordering of NS lines, TTL's,
 # etc...
 
+$lc = 0;
+if ($ARGV[0] eq "--lc") {
+	$lc = 1;
+	shift;
+}
 $file1 = $ARGV[0];
 $file2 = $ARGV[1];
 
@@ -42,6 +38,10 @@ while (<FILE1>) {
 		$class = $2;
 		$type = $3;
 		$value = $4;
+		if ($lc) {
+			$name = lc($name);
+			$value = lc($value);
+		}
 		if ($type eq "SOA") {
 			$firstname = $name if ($firstname eq "");
 			if ($name eq $firstname) {
@@ -73,6 +73,10 @@ while (<FILE2>) {
 		$class = $2;
 		$type = $3;
 		$value = $4;
+		if ($lc) {
+			$name = lc($name);
+			$value = lc($value);
+		}
 		if (($name eq $firstname) && ($type eq "SOA")) {
 			$count--;
 			$name = "$name$count";

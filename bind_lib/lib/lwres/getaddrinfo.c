@@ -1,41 +1,157 @@
 /*
- * Copyright (C) 1999-2001  Internet Software Consortium.
+ * Copyright (C) 1999-2001, 2004-2008, 2012, 2014, 2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * This code is derived from software contributed to Internet Software
- * Consortium by Berkeley Software Design, Inc.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
- * Permission to use, copy, modify, and distribute this software for any
+ * This code is derived from software contributed to ISC by
+ * Berkeley Software Design, Inc.
+ *
+ * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
  *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM AND
- * BERKELEY SOFTWARE DESIGN, INC DISCLAIM ALL WARRANTIES WITH REGARD TO
- * THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND
- * FITNESS. IN NO EVENT SHALL INTERNET SOFTWARE CONSORTIUM OR BERKELEY
- * SOFTWARE DESIGN, INC BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
- * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
- * OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
- * PERFORMANCE OF THIS SOFTWARE.
+ * THE SOFTWARE IS PROVIDED "AS IS" AND ISC AND BERKELEY SOFTWARE DESIGN, INC.
+ * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS.  IN NO EVENT SHALL ISC BE LIABLE
+ * FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
+ * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-/* $Id: getaddrinfo.c,v 1.41 2001/07/18 02:37:07 mayer Exp $ */
+/* $Id: getaddrinfo.c,v 1.54 2008/11/25 23:47:23 tbox Exp $ */
+
+/*! \file */
+
+/**
+ *    lwres_getaddrinfo() is used to get a list of IP addresses and port
+ *    numbers for host hostname and service servname. The function is the
+ *    lightweight resolver's implementation of getaddrinfo() as defined in
+ *    RFC2133. hostname and servname are pointers to null-terminated strings
+ *    or NULL. hostname is either a host name or a numeric host address
+ *    string: a dotted decimal IPv4 address or an IPv6 address. servname is
+ *    either a decimal port number or a service name as listed in
+ *    /etc/services.
+ *
+ *    If the operating system does not provide a struct addrinfo, the
+ *    following structure is used:
+ *
+ * \code
+ * struct  addrinfo {
+ *         int             ai_flags;       // AI_PASSIVE, AI_CANONNAME
+ *         int             ai_family;      // PF_xxx
+ *         int             ai_socktype;    // SOCK_xxx
+ *         int             ai_protocol;    // 0 or IPPROTO_xxx for IPv4 and IPv6
+ *         size_t          ai_addrlen;     // length of ai_addr
+ *         char            *ai_canonname;  // canonical name for hostname
+ *         struct sockaddr *ai_addr;       // binary address
+ *         struct addrinfo *ai_next;       // next structure in linked list
+ * };
+ * \endcode
+ *
+ *
+ *    hints is an optional pointer to a struct addrinfo. This structure can
+ *    be used to provide hints concerning the type of socket that the caller
+ *    supports or wishes to use. The caller can supply the following
+ *    structure elements in *hints:
+ *
+ * <ul>
+ *    <li>ai_family:
+ *           The protocol family that should be used. When ai_family is set
+ *           to PF_UNSPEC, it means the caller will accept any protocol
+ *           family supported by the operating system.</li>
+ *
+ *    <li>ai_socktype:
+ *           denotes the type of socket -- SOCK_STREAM, SOCK_DGRAM or
+ *           SOCK_RAW -- that is wanted. When ai_socktype is zero the caller
+ *           will accept any socket type.</li>
+ *
+ *    <li>ai_protocol:
+ *           indicates which transport protocol is wanted: IPPROTO_UDP or
+ *           IPPROTO_TCP. If ai_protocol is zero the caller will accept any
+ *           protocol.</li>
+ *
+ *    <li>ai_flags:
+ *           Flag bits. If the AI_CANONNAME bit is set, a successful call to
+ *           lwres_getaddrinfo() will return a null-terminated string
+ *           containing the canonical name of the specified hostname in
+ *           ai_canonname of the first addrinfo structure returned. Setting
+ *           the AI_PASSIVE bit indicates that the returned socket address
+ *           structure is intended for used in a call to bind(2). In this
+ *           case, if the hostname argument is a NULL pointer, then the IP
+ *           address portion of the socket address structure will be set to
+ *           INADDR_ANY for an IPv4 address or IN6ADDR_ANY_INIT for an IPv6
+ *           address.<br /><br />
+ *
+ *           When ai_flags does not set the AI_PASSIVE bit, the returned
+ *           socket address structure will be ready for use in a call to
+ *           connect(2) for a connection-oriented protocol or connect(2),
+ *           sendto(2), or sendmsg(2) if a connectionless protocol was
+ *           chosen. The IP address portion of the socket address structure
+ *           will be set to the loopback address if hostname is a NULL
+ *           pointer and AI_PASSIVE is not set in ai_flags.<br /><br />
+ *
+ *           If ai_flags is set to AI_NUMERICHOST it indicates that hostname
+ *           should be treated as a numeric string defining an IPv4 or IPv6
+ *           address and no name resolution should be attempted.
+ * </li></ul>
+ *
+ *    All other elements of the struct addrinfo passed via hints must be
+ *    zero.
+ *
+ *    A hints of NULL is treated as if the caller provided a struct addrinfo
+ *    initialized to zero with ai_familyset to PF_UNSPEC.
+ *
+ *    After a successful call to lwres_getaddrinfo(), *res is a pointer to a
+ *    linked list of one or more addrinfo structures. Each struct addrinfo
+ *    in this list cn be processed by following the ai_next pointer, until a
+ *    NULL pointer is encountered. The three members ai_family, ai_socktype,
+ *    and ai_protocol in each returned addrinfo structure contain the
+ *    corresponding arguments for a call to socket(2). For each addrinfo
+ *    structure in the list, the ai_addr member points to a filled-in socket
+ *    address structure of length ai_addrlen.
+ *
+ *    All of the information returned by lwres_getaddrinfo() is dynamically
+ *    allocated: the addrinfo structures, and the socket address structures
+ *    and canonical host name strings pointed to by the addrinfostructures.
+ *    Memory allocated for the dynamically allocated structures created by a
+ *    successful call to lwres_getaddrinfo() is released by
+ *    lwres_freeaddrinfo(). ai is a pointer to a struct addrinfo created by
+ *    a call to lwres_getaddrinfo().
+ *
+ * \section lwresreturn RETURN VALUES
+ *
+ *    lwres_getaddrinfo() returns zero on success or one of the error codes
+ *    listed in gai_strerror() if an error occurs. If both hostname and
+ *    servname are NULL lwres_getaddrinfo() returns #EAI_NONAME.
+ *
+ * \section lwressee SEE ALSO
+ *
+ *    lwres(3), lwres_getaddrinfo(), lwres_freeaddrinfo(),
+ *    lwres_gai_strerror(), RFC2133, getservbyname(3), connect(2),
+ *    sendto(2), sendmsg(2), socket(2).
+ */
 
 #include <config.h>
 
-#include <string.h>
 #include <errno.h>
-#include <stdlib.h>
+#include <string.h>
 
 #include <lwres/lwres.h>
 #include <lwres/net.h>
 #include <lwres/netdb.h>
+#include <lwres/stdlib.h>
+#include <lwres/string.h>
 
 #define SA(addr)	((struct sockaddr *)(addr))
 #define SIN(addr)	((struct sockaddr_in *)(addr))
 #define SIN6(addr)	((struct sockaddr_in6 *)(addr))
-#define SUN(addr)	((struct sockaddr_un *)(addr))
+#define SLOCAL(addr)	((struct sockaddr_un *)(addr))
 
+/*! \struct addrinfo
+ */
 static struct addrinfo
 	*ai_reverse(struct addrinfo *oai),
 	*ai_clone(struct addrinfo *oai, int family),
@@ -49,14 +165,14 @@ static int add_ipv4(const char *hostname, int flags, struct addrinfo **aip,
 static int add_ipv6(const char *hostname, int flags, struct addrinfo **aip,
     int socktype, int port);
 static void set_order(int, int (**)(const char *, int, struct addrinfo **,
-         int, int));
+	 int, int));
 
 #define FOUND_IPV4	0x1
 #define FOUND_IPV6	0x2
 #define FOUND_MAX	2
 
 #define ISC_AI_MASK (AI_PASSIVE|AI_CANONNAME|AI_NUMERICHOST)
-
+/*% Get a list of IP addresses and port numbers for host hostname and service servname. */
 int
 lwres_getaddrinfo(const char *hostname, const char *servname,
 	const struct addrinfo *hints, struct addrinfo **res)
@@ -138,7 +254,7 @@ lwres_getaddrinfo(const char *hostname, const char *servname,
 	}
 
 #ifdef	AF_LOCAL
-	/*
+	/*!
 	 * First, deal with AF_LOCAL.  If the family was not set,
 	 * then assume AF_LOCAL if the first character of the
 	 * hostname/servname is '/'.
@@ -271,7 +387,7 @@ lwres_getaddrinfo(const char *hostname, const char *servname,
 			scopeid = 0;
 #endif
 
-               if (lwres_net_pton(AF_INET, hostname, (struct in_addr *)abuf)
+	       if (lwres_net_pton(AF_INET, hostname, (struct in_addr *)abuf)
 		   == 1)
 	       {
 			if (family == AF_INET6) {
@@ -279,13 +395,13 @@ lwres_getaddrinfo(const char *hostname, const char *servname,
 				 * Convert to a V4 mapped address.
 				 */
 				struct in6_addr *a6 = (struct in6_addr *)abuf;
-				memcpy(&a6->s6_addr[12], &a6->s6_addr[0], 4);
+				memmove(&a6->s6_addr[12], &a6->s6_addr[0], 4);
 				memset(&a6->s6_addr[10], 0xff, 2);
 				memset(&a6->s6_addr[0], 0, 10);
 				goto inet6_addr;
 			}
 			addrsize = sizeof(struct in_addr);
-			addroff = (char *)(&SIN(0)->sin_addr) - (char *)0;
+			addroff = offsetof(struct sockaddr_in, sin_addr);
 			family = AF_INET;
 			goto common;
 #ifdef LWRES_HAVE_SIN6_SCOPE_ID
@@ -295,7 +411,7 @@ lwres_getaddrinfo(const char *hostname, const char *servname,
 			if (family && family != AF_INET6)
 				return (EAI_NONAME);
 			addrsize = sizeof(struct in6_addr);
-			addroff = (char *)(&SIN6(0)->sin6_addr) - (char *)0;
+			addroff = offsetof(struct sockaddr_in6, sin6_addr);
 			family = AF_INET6;
 			goto common;
 #endif
@@ -304,7 +420,7 @@ lwres_getaddrinfo(const char *hostname, const char *servname,
 				return (EAI_NONAME);
 		inet6_addr:
 			addrsize = sizeof(struct in6_addr);
-			addroff = (char *)(&SIN6(0)->sin6_addr) - (char *)0;
+			addroff = offsetof(struct sockaddr_in6, sin6_addr);
 			family = AF_INET6;
 
 		common:
@@ -314,7 +430,7 @@ lwres_getaddrinfo(const char *hostname, const char *servname,
 			ai_list = ai;
 			ai->ai_socktype = socktype;
 			SIN(ai->ai_addr)->sin_port = port;
-			memcpy((char *)ai->ai_addr + addroff, abuf, addrsize);
+			memmove((char *)ai->ai_addr + addroff, abuf, addrsize);
 			if (flags & AI_CANONNAME) {
 #if defined(LWRES_HAVE_SIN6_SCOPE_ID)
 				if (ai->ai_family == AF_INET6)
@@ -326,8 +442,10 @@ lwres_getaddrinfo(const char *hostname, const char *servname,
 						      NULL, 0,
 						      NI_NUMERICHOST) == 0) {
 					ai->ai_canonname = strdup(nbuf);
-					if (ai->ai_canonname == NULL)
+					if (ai->ai_canonname == NULL) {
+						lwres_freeaddrinfo(ai_list);
 						return (EAI_MEMORY);
+					}
 				} else {
 					/* XXX raise error? */
 					ai->ai_canonname = NULL;
@@ -436,7 +554,7 @@ static char v4_loop[4] = { 127, 0, 0, 1 };
  * The test against 0 is there to keep the Solaris compiler
  * from complaining about "end-of-loop code not reached".
  */
-#define ERR(code) \
+#define SETERROR(code) \
 	do { result = (code);			\
 		if (result != 0) goto cleanup;	\
 	} while (0)
@@ -454,19 +572,17 @@ add_ipv4(const char *hostname, int flags, struct addrinfo **aip,
 
 	lwres = lwres_context_create(&lwrctx, NULL, NULL, NULL, 0);
 	if (lwres != LWRES_R_SUCCESS)
-		ERR(EAI_FAIL);
+		SETERROR(EAI_FAIL);
 	(void) lwres_conf_parse(lwrctx, lwres_resolv_conf);
 	if (hostname == NULL && (flags & AI_PASSIVE) == 0) {
 		ai = ai_clone(*aip, AF_INET);
-		if (ai == NULL) {
-			lwres_freeaddrinfo(*aip);
-			ERR(EAI_MEMORY);
-		}
+		if (ai == NULL)
+			SETERROR(EAI_MEMORY);
 
 		*aip = ai;
 		ai->ai_socktype = socktype;
 		SIN(ai->ai_addr)->sin_port = port;
-		memcpy(&SIN(ai->ai_addr)->sin_addr, v4_loop, 4);
+		memmove(&SIN(ai->ai_addr)->sin_addr, v4_loop, 4);
 	} else {
 		lwres = lwres_getaddrsbyname(lwrctx, hostname,
 					     LWRES_ADDRTYPE_V4, &by);
@@ -474,24 +590,22 @@ add_ipv4(const char *hostname, int flags, struct addrinfo **aip,
 			if (lwres == LWRES_R_NOTFOUND)
 				goto cleanup;
 			else
-				ERR(EAI_FAIL);
+				SETERROR(EAI_FAIL);
 		}
 		addr = LWRES_LIST_HEAD(by->addrs);
 		while (addr != NULL) {
 			ai = ai_clone(*aip, AF_INET);
-			if (ai == NULL) {
-				lwres_freeaddrinfo(*aip);
-				ERR(EAI_MEMORY);
-			}
+			if (ai == NULL)
+				SETERROR(EAI_MEMORY);
 			*aip = ai;
 			ai->ai_socktype = socktype;
 			SIN(ai->ai_addr)->sin_port = port;
-			memcpy(&SIN(ai->ai_addr)->sin_addr,
-			       addr->address, 4);
+			memmove(&SIN(ai->ai_addr)->sin_addr,
+				addr->address, 4);
 			if (flags & AI_CANONNAME) {
 				ai->ai_canonname = strdup(by->realname);
 				if (ai->ai_canonname == NULL)
-					ERR(EAI_MEMORY);
+					SETERROR(EAI_MEMORY);
 			}
 			addr = LWRES_LIST_NEXT(addr, link);
 		}
@@ -521,20 +635,18 @@ add_ipv6(const char *hostname, int flags, struct addrinfo **aip,
 
 	lwres = lwres_context_create(&lwrctx, NULL, NULL, NULL, 0);
 	if (lwres != LWRES_R_SUCCESS)
-		ERR(EAI_FAIL);
+		SETERROR(EAI_FAIL);
 	(void) lwres_conf_parse(lwrctx, lwres_resolv_conf);
 
 	if (hostname == NULL && (flags & AI_PASSIVE) == 0) {
 		ai = ai_clone(*aip, AF_INET6);
-		if (ai == NULL) {
-			lwres_freeaddrinfo(*aip);
-			ERR(EAI_MEMORY);
-		}
+		if (ai == NULL)
+			SETERROR(EAI_MEMORY);
 
 		*aip = ai;
 		ai->ai_socktype = socktype;
 		SIN6(ai->ai_addr)->sin6_port = port;
-		memcpy(&SIN6(ai->ai_addr)->sin6_addr, v6_loop, 16);
+		memmove(&SIN6(ai->ai_addr)->sin6_addr, v6_loop, 16);
 	} else {
 		lwres = lwres_getaddrsbyname(lwrctx, hostname,
 					     LWRES_ADDRTYPE_V6, &by);
@@ -542,24 +654,22 @@ add_ipv6(const char *hostname, int flags, struct addrinfo **aip,
 			if (lwres == LWRES_R_NOTFOUND)
 				goto cleanup;
 			else
-				ERR(EAI_FAIL);
+				SETERROR(EAI_FAIL);
 		}
 		addr = LWRES_LIST_HEAD(by->addrs);
 		while (addr != NULL) {
 			ai = ai_clone(*aip, AF_INET6);
-			if (ai == NULL) {
-				lwres_freeaddrinfo(*aip);
-				ERR(EAI_MEMORY);
-			}
+			if (ai == NULL)
+				SETERROR(EAI_MEMORY);
 			*aip = ai;
 			ai->ai_socktype = socktype;
 			SIN6(ai->ai_addr)->sin6_port = port;
-			memcpy(&SIN6(ai->ai_addr)->sin6_addr,
-			       addr->address, 16);
+			memmove(&SIN6(ai->ai_addr)->sin6_addr,
+				addr->address, 16);
 			if (flags & AI_CANONNAME) {
 				ai->ai_canonname = strdup(by->realname);
 				if (ai->ai_canonname == NULL)
-					ERR(EAI_MEMORY);
+					SETERROR(EAI_MEMORY);
 			}
 			addr = LWRES_LIST_NEXT(addr, link);
 		}
@@ -574,6 +684,7 @@ add_ipv6(const char *hostname, int flags, struct addrinfo **aip,
 	return (result);
 }
 
+/*% Free address info. */
 void
 lwres_freeaddrinfo(struct addrinfo *ai) {
 	struct addrinfo *ai_next;
@@ -593,17 +704,21 @@ lwres_freeaddrinfo(struct addrinfo *ai) {
 static int
 get_local(const char *name, int socktype, struct addrinfo **res) {
 	struct addrinfo *ai;
-	struct sockaddr_un *sun;
+	struct sockaddr_un *slocal;
 
 	if (socktype == 0)
 		return (EAI_SOCKTYPE);
 
-	ai = ai_alloc(AF_LOCAL, sizeof(*sun));
+	if (strlen(name) >= sizeof(slocal->sun_path))
+		return (EAI_OVERFLOW);
+
+	ai = ai_alloc(AF_LOCAL, sizeof(*slocal));
 	if (ai == NULL)
 		return (EAI_MEMORY);
 
-	sun = SUN(ai->ai_addr);
-	strncpy(sun->sun_path, name, sizeof(sun->sun_path));
+	slocal = SLOCAL(ai->ai_addr);
+	strncpy(slocal->sun_path, name, sizeof(slocal->sun_path));
+	slocal->sun_path[sizeof(slocal->sun_path) - 1] = '\0';
 
 	ai->ai_socktype = socktype;
 	/*
@@ -616,7 +731,7 @@ get_local(const char *name, int socktype, struct addrinfo **res) {
 }
 #endif
 
-/*
+/*!
  * Allocate an addrinfo structure, and a sockaddr structure
  * of the specificed length.  We initialize:
  *	ai_addrlen

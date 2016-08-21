@@ -1,29 +1,33 @@
 /*
- * Copyright (C) 1999-2002  Internet Software Consortium.
+ * Copyright (C) 1999-2002, 2004, 2005, 2007, 2009, 2013, 2015, 2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-
-/* $Id: main.h,v 1.8.2.2 2002/08/05 06:57:03 marka Exp $ */
 
 #ifndef NAMED_MAIN_H
 #define NAMED_MAIN_H 1
 
-void
-ns_main_earlyfatal(const char *format, ...) ISC_FORMAT_PRINTF(1, 2);
+/*! \file */
+
+#ifdef ISC_MAIN_HOOK
+#define main(argc, argv) bindmain(argc, argv)
+#endif
+
+/*
+ * Commandline arguments for named; also referenced in win32/ntservice.c
+ */
+#define NS_MAIN_ARGS "46A:c:C:d:D:E:fFgi:lL:M:m:n:N:p:P:sS:t:T:U:u:vVx:X:"
+
+ISC_PLATFORM_NORETURN_PRE void
+ns_main_earlyfatal(const char *format, ...)
+ISC_FORMAT_PRINTF(1, 2) ISC_PLATFORM_NORETURN_POST;
 
 void
 ns_main_earlywarning(const char *format, ...) ISC_FORMAT_PRINTF(1, 2);
+
+void
+ns_main_setmemstats(const char *);
 
 #endif /* NAMED_MAIN_H */

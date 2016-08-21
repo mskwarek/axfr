@@ -3,6 +3,16 @@
 //      are changed infrequently
 //
 
+/*
+ * Minimum version is Windows XP SP1
+ */
+#define _WIN32_WINNT 0x0501
+#define NTDDI_VERSION 0x05010100
+
+#ifndef _CRT_SECURE_NO_DEPRECATE
+#define _CRT_SECURE_NO_DEPRECATE 1
+#endif
+
 #if !defined(AFX_STDAFX_H__61537819_39FC_11D3_A97A_00105A12BD65__INCLUDED_)
 #define AFX_STDAFX_H__61537819_39FC_11D3_A97A_00105A12BD65__INCLUDED_
 

@@ -1,21 +1,12 @@
 /*
- * Copyright (C) 2000, 2001  Internet Software Consortium.
+ * Copyright (C) 2000, 2001, 2003, 2004, 2007-2012, 2014-2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: dnssectool.h,v 1.15 2001/08/08 22:54:16 gson Exp $ */
+/* $Id: dnssectool.h,v 1.33 2011/10/20 23:46:51 tbox Exp $ */
 
 #ifndef DNSSECTOOL_H
 #define DNSSECTOOL_H 1
@@ -25,10 +16,16 @@
 #include <dns/rdatastruct.h>
 #include <dst/dst.h>
 
+#define check_dns_dbiterator_current(result) \
+	check_result((result == DNS_R_NEWORIGIN) ? ISC_R_SUCCESS : result, \
+		     "dns_dbiterator_current()")
+
+
 typedef void (fatalcallback_t)(void);
 
-void
-fatal(const char *format, ...) ISC_FORMAT_PRINTF(1, 2);
+ISC_PLATFORM_NORETURN_PRE void
+fatal(const char *format, ...)
+ISC_FORMAT_PRINTF(1, 2) ISC_PLATFORM_NORETURN_POST;
 
 void
 setfatalcallback(fatalcallback_t *callback);
@@ -40,23 +37,18 @@ void
 vbprintf(int level, const char *fmt, ...) ISC_FORMAT_PRINTF(2, 3);
 
 void
+version(const char *program);
+
+void
 type_format(const dns_rdatatype_t type, char *cp, unsigned int size);
-#define TYPE_FORMATSIZE 10
+#define TYPE_FORMATSIZE 20
 
 void
-alg_format(const dns_secalg_t alg, char *cp, unsigned int size);
-#define ALG_FORMATSIZE 10
+sig_format(dns_rdata_rrsig_t *sig, char *cp, unsigned int size);
+#define SIG_FORMATSIZE (DNS_NAME_FORMATSIZE + DNS_SECALG_FORMATSIZE + sizeof("65535"))
 
 void
-sig_format(dns_rdata_sig_t *sig, char *cp, unsigned int size);
-#define SIG_FORMATSIZE (DNS_NAME_FORMATSIZE + ALG_FORMATSIZE + sizeof("65535"))
-
-void
-key_format(const dst_key_t *key, char *cp, unsigned int size);
-#define KEY_FORMATSIZE (DNS_NAME_FORMATSIZE + ALG_FORMATSIZE + sizeof("65535"))
-
-void
-setup_logging(int verbose, isc_mem_t *mctx, isc_log_t **logp);
+setup_logging(isc_mem_t *mctx, isc_log_t **logp);
 
 void
 cleanup_logging(isc_log_t **logp);
@@ -67,7 +59,38 @@ setup_entropy(isc_mem_t *mctx, const char *randomfile, isc_entropy_t **ectx);
 void
 cleanup_entropy(isc_entropy_t **ectx);
 
+dns_ttl_t strtottl(const char *str);
+
 isc_stdtime_t
-strtotime(char *str, isc_int64_t now, isc_int64_t base);
+strtotime(const char *str, isc_int64_t now, isc_int64_t base,
+	  isc_boolean_t *setp);
+
+dns_rdataclass_t
+strtoclass(const char *str);
+
+isc_result_t
+try_dir(const char *dirname);
+
+void
+check_keyversion(dst_key_t *key, char *keystr);
+
+void
+set_keyversion(dst_key_t *key);
+
+isc_boolean_t
+key_collision(dst_key_t *key, dns_name_t *name, const char *dir,
+	      isc_mem_t *mctx, isc_boolean_t *exact);
+
+isc_boolean_t
+is_delegation(dns_db_t *db, dns_dbversion_t *ver, dns_name_t *origin,
+		      dns_name_t *name, dns_dbnode_t *node, isc_uint32_t *ttlp);
+
+void
+verifyzone(dns_db_t *db, dns_dbversion_t *ver,
+		   dns_name_t *origin, isc_mem_t *mctx,
+		   isc_boolean_t ignore_kskflag, isc_boolean_t keyset_kskonly);
+
+isc_boolean_t
+isoptarg(const char *arg, char **argv, void (*usage)(void));
 
 #endif /* DNSSEC_DNSSECTOOL_H */

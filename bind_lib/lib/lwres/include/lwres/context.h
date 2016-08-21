@@ -1,24 +1,17 @@
 /*
- * Copyright (C) 2000, 2001  Internet Software Consortium.
+ * Copyright (C) 2000, 2001, 2004-2008, 2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: context.h,v 1.14 2001/01/09 21:59:39 bwelling Exp $ */
+/* $Id: context.h,v 1.23 2008/12/17 23:47:58 tbox Exp $ */
 
 #ifndef LWRES_CONTEXT_H
 #define LWRES_CONTEXT_H 1
+
+/*! \file lwres/context.h */
 
 #include <stddef.h>
 
@@ -26,7 +19,7 @@
 #include <lwres/int.h>
 #include <lwres/result.h>
 
-/*
+/*!
  * Used to set various options such as timeout, authentication, etc
  */
 typedef struct lwres_context lwres_context_t;
@@ -51,19 +44,26 @@ typedef void (*lwres_free_t)(void *arg, void *mem, size_t length);
  * Share /etc/resolv.conf data between contexts.
  */
 
-/*
+/*!
  * _SERVERMODE
  *	Don't allocate and connect a socket to the server, since the
  *	caller _is_ a server.
+ *
+ * _USEIPV4, _USEIPV6
+ *	Use IPv4 and IPv6 transactions with remote servers, respectively.
+ *	For backward compatibility, regard both flags as being set when both
+ *	are cleared.
  */
 #define LWRES_CONTEXT_SERVERMODE	0x00000001U
+#define LWRES_CONTEXT_USEIPV4		0x00000002U
+#define LWRES_CONTEXT_USEIPV6		0x00000004U
 
 lwres_result_t
 lwres_context_create(lwres_context_t **contextp, void *arg,
 		     lwres_malloc_t malloc_function,
 		     lwres_free_t free_function,
 		     unsigned int flags);
-/*
+/**<
  * Allocate a lwres context.  This is used in all lwres calls.
  *
  * Memory management can be replaced here by passing in two functions.
@@ -75,28 +75,22 @@ lwres_context_create(lwres_context_t **contextp, void *arg,
  *
  * If they are NULL, the standard malloc() and free() will be used.
  *
- * Requires:
+ *\pre	contextp != NULL && contextp == NULL.
  *
- *	contextp != NULL && contextp == NULL.
- *
- * Returns:
- *
- *	Returns 0 on success, non-zero on failure.
+ *\return	Returns 0 on success, non-zero on failure.
  */
 
 void
 lwres_context_destroy(lwres_context_t **contextp);
-/*
+/**<
  * Frees all memory associated with a lwres context.
  *
- * Requires:
- *
- *	contextp != NULL && contextp == NULL.
+ *\pre	contextp != NULL && contextp == NULL.
  */
 
 lwres_uint32_t
 lwres_context_nextserial(lwres_context_t *ctx);
-/*
+/**<
  * XXXMLG Document
  */
 

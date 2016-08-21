@@ -1,21 +1,14 @@
 /*
- * Copyright (C) 2000, 2001  Internet Software Consortium.
+ * Copyright (C) 2000, 2001, 2004, 2005, 2007, 2013, 2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: listenlist.c,v 1.9 2001/01/09 21:39:43 bwelling Exp $ */
+/* $Id: listenlist.c,v 1.14 2007/06/19 23:46:59 tbox Exp $ */
+
+/*! \file */
 
 #include <config.h>
 
@@ -30,7 +23,7 @@ static void
 destroy(ns_listenlist_t *list);
 
 isc_result_t
-ns_listenelt_create(isc_mem_t *mctx, in_port_t port,
+ns_listenelt_create(isc_mem_t *mctx, in_port_t port, isc_dscp_t dscp,
 		    dns_acl_t *acl, ns_listenelt_t **target)
 {
 	ns_listenelt_t *elt = NULL;
@@ -41,6 +34,7 @@ ns_listenelt_create(isc_mem_t *mctx, in_port_t port,
 	elt->mctx = mctx;
 	ISC_LINK_INIT(elt, link);
 	elt->port = port;
+	elt->dscp = dscp;
 	elt->acl = acl;
 	*target = elt;
 	return (ISC_R_SUCCESS);
@@ -98,7 +92,7 @@ ns_listenlist_detach(ns_listenlist_t **listp) {
 }
 
 isc_result_t
-ns_listenlist_default(isc_mem_t *mctx, in_port_t port,
+ns_listenlist_default(isc_mem_t *mctx, in_port_t port, isc_dscp_t dscp,
 		      isc_boolean_t enabled, ns_listenlist_t **target)
 {
 	isc_result_t result;
@@ -114,7 +108,7 @@ ns_listenlist_default(isc_mem_t *mctx, in_port_t port,
 	if (result != ISC_R_SUCCESS)
 		goto cleanup;
 
-	result = ns_listenelt_create(mctx, port, acl, &elt);
+	result = ns_listenelt_create(mctx, port, dscp, acl, &elt);
 	if (result != ISC_R_SUCCESS)
 		goto cleanup_acl;
 

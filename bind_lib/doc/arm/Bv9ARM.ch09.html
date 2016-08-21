@@ -1,1908 +1,839 @@
-<HTML
-><HEAD
-><TITLE
->Appendices</TITLE
-><META
-NAME="GENERATOR"
-CONTENT="Modular DocBook HTML Stylesheet Version 1.73
-"><LINK
-REL="HOME"
-TITLE="BIND 9 Administrator Reference Manual"
-HREF="Bv9ARM.html"><LINK
-REL="PREVIOUS"
-TITLE="Troubleshooting"
-HREF="Bv9ARM.ch08.html"></HEAD
-><BODY
-CLASS="appendix"
-BGCOLOR="#FFFFFF"
-TEXT="#000000"
-LINK="#0000FF"
-VLINK="#840084"
-ALINK="#0000FF"
-><DIV
-CLASS="NAVHEADER"
-><TABLE
-SUMMARY="Header navigation table"
-WIDTH="100%"
-BORDER="0"
-CELLPADDING="0"
-CELLSPACING="0"
-><TR
-><TH
-COLSPAN="3"
-ALIGN="center"
->BIND 9 Administrator Reference Manual</TH
-></TR
-><TR
-><TD
-WIDTH="10%"
-ALIGN="left"
-VALIGN="bottom"
-><A
-HREF="Bv9ARM.ch08.html"
-ACCESSKEY="P"
->Prev</A
-></TD
-><TD
-WIDTH="80%"
-ALIGN="center"
-VALIGN="bottom"
-></TD
-><TD
-WIDTH="10%"
-ALIGN="right"
-VALIGN="bottom"
->&nbsp;</TD
-></TR
-></TABLE
-><HR
-ALIGN="LEFT"
-WIDTH="100%"></DIV
-><DIV
-CLASS="appendix"
-><H1
-><A
-NAME="ch09"
->Appendix A. Appendices</A
-></H1
-><DIV
-CLASS="TOC"
-><DL
-><DT
-><B
->Table of Contents</B
-></DT
-><DT
->A.1. <A
-HREF="Bv9ARM.ch09.html#AEN4301"
->Acknowledgements</A
-></DT
-><DT
->A.2. <A
-HREF="Bv9ARM.ch09.html#historical_dns_information"
->Historical <SPAN
-CLASS="acronym"
->DNS</SPAN
-> Information</A
-></DT
-><DT
->A.3. <A
-HREF="Bv9ARM.ch09.html#AEN4342"
->General <SPAN
-CLASS="acronym"
->DNS</SPAN
-> Reference Information</A
-></DT
-><DT
->A.4. <A
-HREF="Bv9ARM.ch09.html#bibliography"
->Bibliography (and Suggested Reading)</A
-></DT
-></DL
-></DIV
-><DIV
-CLASS="sect1"
-><H1
-CLASS="sect1"
-><A
-NAME="AEN4301"
->A.1. Acknowledgements</A
-></H1
-><DIV
-CLASS="sect2"
-><H2
-CLASS="sect2"
-><A
-NAME="AEN4303"
->A.1.1. A Brief History of the <SPAN
-CLASS="acronym"
->DNS</SPAN
-> and <SPAN
-CLASS="acronym"
->BIND</SPAN
-></A
-></H2
-><P
->Although the "official" beginning of the Domain Name
-      System occurred in 1984 with the publication of RFC 920, the
-      core of the new system was described in 1983 in RFCs 882 and
-      883. From 1984 to 1987, the ARPAnet (the precursor to today's
-      Internet) became a testbed of experimentation for developing the
-      new naming/addressing scheme in an rapidly expanding,
-      operational network environment.  New RFCs were written and
-      published in 1987 that modified the original documents to
-      incorporate improvements based on the working model. RFC 1034,
-      "Domain Names-Concepts and Facilities," and RFC 1035, "Domain
-      Names-Implementation and Specification" were published and
-      became the standards upon which all <SPAN
-CLASS="acronym"
->DNS</SPAN
-> implementations are
-      built.
-</P
-><P
->The first working domain name server, called "Jeeves," was
-written in 1983-84 by Paul Mockapetris for operation on DEC Tops-20
-machines located at the University of Southern California's Information
-Sciences Institute (USC-ISI) and SRI International's Network Information
-Center (SRI-NIC). A <SPAN
-CLASS="acronym"
->DNS</SPAN
-> server for Unix machines, the Berkeley Internet
-Name Domain (<SPAN
-CLASS="acronym"
->BIND</SPAN
->) package, was written soon after by a group of
-graduate students at the University of California at Berkeley under
-a grant from the US Defense Advanced Research Projects Administration
-(DARPA). Versions of <SPAN
-CLASS="acronym"
->BIND</SPAN
-> through 4.8.3 were maintained by the Computer
-Systems Research Group (CSRG) at UC Berkeley. Douglas Terry, Mark
-Painter, David Riggle and Songnian Zhou made up the initial <SPAN
-CLASS="acronym"
->BIND</SPAN
->
-project team. After that, additional work on the software package
-was done by Ralph Campbell. Kevin Dunlap, a Digital Equipment Corporation
-employee on loan to the CSRG, worked on <SPAN
-CLASS="acronym"
->BIND</SPAN
-> for 2 years, from 1985
-to 1987. Many other people also contributed to <SPAN
-CLASS="acronym"
->BIND</SPAN
-> development
-during that time: Doug Kingston, Craig Partridge, Smoot Carl-Mitchell,
-Mike Muuss, Jim Bloom and Mike Schwartz. <SPAN
-CLASS="acronym"
->BIND</SPAN
-> maintenance was subsequently
-handled by Mike Karels and O. Kure.</P
-><P
-><SPAN
-CLASS="acronym"
->BIND</SPAN
-> versions 4.9 and 4.9.1 were released by Digital Equipment
-Corporation (now Compaq Computer Corporation). Paul Vixie, then
-a DEC employee, became <SPAN
-CLASS="acronym"
->BIND</SPAN
->'s primary caretaker. Paul was assisted
-by Phil Almquist, Robert Elz, Alan Barrett, Paul Albitz, Bryan Beecher, Andrew
-Partan, Andy Cherenson, Tom Limoncelli, Berthold Paffrath, Fuat
-Baran, Anant Kumar, Art Harkin, Win Treese, Don Lewis, Christophe
-Wolfhugel, and others.</P
-><P
-><SPAN
-CLASS="acronym"
->BIND</SPAN
-> Version 4.9.2 was sponsored by Vixie Enterprises. Paul
-Vixie became <SPAN
-CLASS="acronym"
->BIND</SPAN
->'s principal architect/programmer.</P
-><P
-><SPAN
-CLASS="acronym"
->BIND</SPAN
-> versions from 4.9.3 onward have been developed and maintained
-by the Internet Software Consortium with support being provided
-by ISC's sponsors. As co-architects/programmers, Bob Halley and
-Paul Vixie released the first production-ready version of <SPAN
-CLASS="acronym"
->BIND</SPAN
-> version
-8 in May 1997.</P
-><P
-><SPAN
-CLASS="acronym"
->BIND</SPAN
-> development work is made possible today by the sponsorship
-of several corporations, and by the tireless work efforts of numerous
-individuals.</P
-></DIV
-></DIV
-><DIV
-CLASS="sect1"
-><H1
-CLASS="sect1"
-><A
-NAME="historical_dns_information"
->A.2. Historical <SPAN
-CLASS="acronym"
->DNS</SPAN
-> Information</A
-></H1
-><DIV
-CLASS="sect2"
-><H2
-CLASS="sect2"
-><A
-NAME="classes_of_resource_records"
->A.2.1. Classes of Resource Records</A
-></H2
-><DIV
-CLASS="sect3"
-><H3
-CLASS="sect3"
-><A
-NAME="AEN4333"
->A.2.1.1. HS = hesiod</A
-></H3
-><P
->The [<SPAN
-CLASS="optional"
->hesiod</SPAN
->] class is an information service
-developed by MIT's Project Athena. It is used to share information
-about various systems databases, such as users, groups, printers
-and so on. The keyword <B
-CLASS="command"
->hs</B
-> is a synonym for
-hesiod.</P
-></DIV
-><DIV
-CLASS="sect3"
-><H3
-CLASS="sect3"
-><A
-NAME="AEN4338"
->A.2.1.2. CH = chaos</A
-></H3
-><P
->The <B
-CLASS="command"
->chaos</B
-> class is used to specify zone
-data for the MIT-developed CHAOSnet, a LAN protocol created in the
-mid-1970s.</P
-></DIV
-></DIV
-></DIV
-><DIV
-CLASS="sect1"
-><H1
-CLASS="sect1"
-><A
-NAME="AEN4342"
->A.3. General <SPAN
-CLASS="acronym"
->DNS</SPAN
-> Reference Information</A
-></H1
-><DIV
-CLASS="sect2"
-><H2
-CLASS="sect2"
-><A
-NAME="ipv6addresses"
->A.3.1. IPv6 addresses (A6)</A
-></H2
-><P
->IPv6 addresses are 128-bit identifiers for interfaces and
-sets of interfaces which were introduced in the <SPAN
-CLASS="acronym"
->DNS</SPAN
-> to facilitate
-scalable Internet routing. There are three types of addresses: <SPAN
-CLASS="emphasis"
-><I
-CLASS="emphasis"
->Unicast</I
-></SPAN
->,
-an identifier for a single interface; <SPAN
-CLASS="emphasis"
-><I
-CLASS="emphasis"
->Anycast</I
-></SPAN
->,
-an identifier for a set of interfaces; and <SPAN
-CLASS="emphasis"
-><I
-CLASS="emphasis"
->Multicast</I
-></SPAN
->,
-an identifier for a set of interfaces. Here we describe the global
-Unicast address scheme. For more information, see RFC 2374.</P
-><P
->The aggregatable global Unicast address format is as follows:</P
-><DIV
-CLASS="informaltable"
-><A
-NAME="AEN4353"
-></A
-><P
-></P
-><TABLE
-CELLPADDING="3"
-BORDER="1"
-CLASS="CALSTABLE"
-><TBODY
-><TR
-><TD
-WIDTH="46"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
->3</P
-></TD
-><TD
-WIDTH="48"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
->13</P
-></TD
-><TD
-WIDTH="50"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
->8</P
-></TD
-><TD
-WIDTH="70"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
->24</P
-></TD
-><TD
-WIDTH="129"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
->16</P
-></TD
-><TD
-WIDTH="243"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
->64 bits</P
-></TD
-></TR
-><TR
-><TD
-WIDTH="46"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
->FP</P
-></TD
-><TD
-WIDTH="48"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
->TLA ID</P
-></TD
-><TD
-WIDTH="50"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
->RES</P
-></TD
-><TD
-WIDTH="70"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
->NLA ID</P
-></TD
-><TD
-WIDTH="129"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
->SLA ID</P
-></TD
-><TD
-WIDTH="243"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
->Interface ID</P
-></TD
-></TR
-><TR
-><TD
-COLSPAN="4"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
->&#60;------ Public Topology
-------&#62;</P
-></TD
-><TD
-WIDTH="129"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
-></P
-></TD
-><TD
-WIDTH="243"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
-></P
-></TD
-></TR
-><TR
-><TD
-WIDTH="46"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
-></P
-></TD
-><TD
-WIDTH="48"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
-></P
-></TD
-><TD
-WIDTH="50"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
-></P
-></TD
-><TD
-WIDTH="70"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
-></P
-></TD
-><TD
-WIDTH="129"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
->&#60;-Site Topology-&#62;</P
-></TD
-><TD
-WIDTH="243"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
-></P
-></TD
-></TR
-><TR
-><TD
-WIDTH="46"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
-></P
-></TD
-><TD
-WIDTH="48"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
-></P
-></TD
-><TD
-WIDTH="50"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
-></P
-></TD
-><TD
-WIDTH="70"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
-></P
-></TD
-><TD
-WIDTH="129"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
-></P
-></TD
-><TD
-WIDTH="243"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
->&#60;------ Interface Identifier ------&#62;</P
-></TD
-></TR
-></TBODY
-></TABLE
-><P
-></P
-></DIV
-><P
->Where
-<DIV
-CLASS="informaltable"
-><A
-NAME="AEN4422"
-></A
-><P
-></P
-><TABLE
-CELLPADDING="3"
-BORDER="1"
-CLASS="CALSTABLE"
-><TBODY
-><TR
-><TD
-WIDTH="132"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
->FP</P
-></TD
-><TD
-WIDTH="24"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
->=</P
-></TD
-><TD
-WIDTH="336"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
->Format Prefix (001)</P
-></TD
-></TR
-><TR
-><TD
-WIDTH="132"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
->TLA ID</P
-></TD
-><TD
-WIDTH="24"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
->=</P
-></TD
-><TD
-WIDTH="336"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
->Top-Level Aggregation Identifier</P
-></TD
-></TR
-><TR
-><TD
-WIDTH="132"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
->RES</P
-></TD
-><TD
-WIDTH="24"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
->=</P
-></TD
-><TD
-WIDTH="336"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
->Reserved for future use</P
-></TD
-></TR
-><TR
-><TD
-WIDTH="132"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
->NLA ID</P
-></TD
-><TD
-WIDTH="24"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
->=</P
-></TD
-><TD
-WIDTH="336"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
->Next-Level Aggregation Identifier</P
-></TD
-></TR
-><TR
-><TD
-WIDTH="132"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
->SLA ID</P
-></TD
-><TD
-WIDTH="24"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
->=</P
-></TD
-><TD
-WIDTH="336"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
->Site-Level Aggregation Identifier</P
-></TD
-></TR
-><TR
-><TD
-WIDTH="132"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
->INTERFACE ID</P
-></TD
-><TD
-WIDTH="24"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
->=</P
-></TD
-><TD
-WIDTH="336"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
->Interface Identifier</P
-></TD
-></TR
-></TBODY
-></TABLE
-><P
-></P
-></DIV
-></P
-><P
->The <SPAN
-CLASS="emphasis"
-><I
-CLASS="emphasis"
->Public Topology</I
-></SPAN
-> is provided by the
-upstream provider or ISP, and (roughly) corresponds to the IPv4 <SPAN
-CLASS="emphasis"
-><I
-CLASS="emphasis"
->network</I
-></SPAN
-> section
-of the address range. The <SPAN
-CLASS="emphasis"
-><I
-CLASS="emphasis"
->Site Topology</I
-></SPAN
-> is
-where you can subnet this space, much the same as subnetting an
-IPv4 /16 network into /24 subnets. The <SPAN
-CLASS="emphasis"
-><I
-CLASS="emphasis"
->Interface Identifier</I
-></SPAN
-> is
-the address of an individual interface on a given network. (With
-IPv6, addresses belong to interfaces rather than machines.)</P
-><P
->The subnetting capability of IPv6 is much more flexible than
-that of IPv4: subnetting can now be carried out on bit boundaries,
-in much the same way as Classless InterDomain Routing (CIDR).</P
-><P
->The internal structure of the Public Topology for an A6 global
-unicast address consists of:</P
-><DIV
-CLASS="informaltable"
-><A
-NAME="AEN4477"
-></A
-><P
-></P
-><TABLE
-CELLPADDING="3"
-BORDER="1"
-CLASS="CALSTABLE"
-><TBODY
-><TR
-><TD
-WIDTH="49"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
->3</P
-></TD
-><TD
-WIDTH="64"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
->13</P
-></TD
-><TD
-WIDTH="53"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
->8</P
-></TD
-><TD
-WIDTH="79"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
->24</P
-></TD
-></TR
-><TR
-><TD
-WIDTH="49"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
->FP</P
-></TD
-><TD
-WIDTH="64"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
->TLA ID</P
-></TD
-><TD
-WIDTH="53"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
->RES</P
-></TD
-><TD
-WIDTH="79"
-ALIGN="LEFT"
-VALIGN="MIDDLE"
-><P
->NLA ID</P
-></TD
-></TR
-></TBODY
-></TABLE
-><P
-></P
-></DIV
-><P
->A 3 bit FP (Format Prefix) of 001 indicates this is a global
-Unicast address. FP lengths for other types of addresses may vary.</P
-><P
->13 TLA (Top Level Aggregator) bits give the prefix of your
-top-level IP backbone carrier.</P
-><P
->8 Reserved bits</P
-><P
->24 bits for Next Level Aggregators. This allows organizations
-with a TLA to hand out portions of their IP space to client organizations,
-so that the client can then split up the network further by filling
-in more NLA bits, and hand out IPv6 prefixes to their clients, and
-so forth.</P
-><P
->There is no particular structure for the Site topology section.
-Organizations can allocate these bits in any way they desire.</P
-><P
->The Interface Identifier must be unique on that network. On
-ethernet networks, one way to ensure this is to set the address
-to the first three bytes of the hardware address, "FFFE", then the
-last three bytes of the hardware address. The lowest significant
-bit of the first byte should then be complemented. Addresses are
-written as 32-bit blocks separated with a colon, and leading zeros
-of a block may be omitted, for example:</P
-><P
-><B
-CLASS="command"
->3ffe:8050:201:9:a00:20ff:fe81:2b32</B
-></P
-><P
->IPv6 address specifications are likely to contain long strings
-of zeros, so the architects have included a shorthand for specifying
-them. The double colon (`::') indicates the longest possible string
-of zeros that can fit, and can be used only once in an address.</P
-></DIV
-></DIV
-><DIV
-CLASS="sect1"
-><H1
-CLASS="sect1"
-><A
-NAME="bibliography"
->A.4. Bibliography (and Suggested Reading)</A
-></H1
-><DIV
-CLASS="sect2"
-><H2
-CLASS="sect2"
-><A
-NAME="rfcs"
->A.4.1. Request for Comments (RFCs)</A
-></H2
-><P
->Specification documents for the Internet protocol suite, including
-the <SPAN
-CLASS="acronym"
->DNS</SPAN
->, are published as part of the Request for Comments (RFCs)
-series of technical notes. The standards themselves are defined
-by the Internet Engineering Task Force (IETF) and the Internet Engineering
-Steering Group (IESG). RFCs can be obtained online via FTP at 
-<A
-HREF="ftp://www.isi.edu/in-notes/"
-TARGET="_top"
->ftp://www.isi.edu/in-notes/RFC<TT
-CLASS="replaceable"
-><I
->xxx</I
-></TT
->.txt</A
-> (where <TT
-CLASS="replaceable"
-><I
->xxx</I
-></TT
-> is
-the number of the RFC). RFCs are also available via the Web at
-<A
-HREF="http://www.ietf.org/rfc/"
-TARGET="_top"
->http://www.ietf.org/rfc/</A
->.
-</P
-><H3
-><A
-NAME="AEN4521"
->Bibliography</A
-></H3
-><H2
-CLASS="bibliodiv"
-><A
-NAME="AEN4522"
->Standards</A
-></H2
-><DIV
-CLASS="biblioentry"
-><A
-NAME="AEN4524"
-></A
-><P
->[RFC974]&nbsp;<SPAN
-CLASS="AUTHOR"
->C. Partridge</SPAN
->, <I
->Mail Routing and the Domain System</I
->, January 1986.</P
-><DIV
-CLASS="BIBLIOENTRYBLOCK"
-STYLE="margin-left=0.5in"
-></DIV
-></DIV
-><DIV
-CLASS="biblioentry"
-><A
-NAME="AEN4531"
-></A
-><P
->[RFC1034]&nbsp;<SPAN
-CLASS="AUTHOR"
->P.V. Mockapetris</SPAN
->, <I
->Domain Names &#8212; Concepts and Facilities</I
->, November 1987.</P
-><DIV
-CLASS="BIBLIOENTRYBLOCK"
-STYLE="margin-left=0.5in"
-></DIV
-></DIV
-><DIV
-CLASS="biblioentry"
-><A
-NAME="AEN4538"
-></A
-><P
->[RFC1035]&nbsp;<SPAN
-CLASS="AUTHOR"
->P. V. Mockapetris</SPAN
->, <I
->Domain Names &#8212; Implementation and
-Specification</I
->, November 1987.</P
-><DIV
-CLASS="BIBLIOENTRYBLOCK"
-STYLE="margin-left=0.5in"
-></DIV
-></DIV
-><H2
-CLASS="bibliodiv"
-><A
-NAME="proposed_standards"
->Proposed Standards</A
-></H2
-><DIV
-CLASS="biblioentry"
-><A
-NAME="AEN4547"
-></A
-><P
->[RFC2181]&nbsp;<SPAN
-CLASS="AUTHOR"
->R., R. Bush Elz</SPAN
->, <I
->Clarifications to the <SPAN
-CLASS="acronym"
->DNS</SPAN
-> Specification</I
->, July 1997.</P
-><DIV
-CLASS="BIBLIOENTRYBLOCK"
-STYLE="margin-left=0.5in"
-></DIV
-></DIV
-><DIV
-CLASS="biblioentry"
-><A
-NAME="AEN4555"
-></A
-><P
->[RFC2308]&nbsp;<SPAN
-CLASS="AUTHOR"
->M. Andrews</SPAN
->, <I
->Negative Caching of <SPAN
-CLASS="acronym"
->DNS</SPAN
-> Queries</I
->, March 1998.</P
-><DIV
-CLASS="BIBLIOENTRYBLOCK"
-STYLE="margin-left=0.5in"
-></DIV
-></DIV
-><DIV
-CLASS="biblioentry"
-><A
-NAME="AEN4563"
-></A
-><P
->[RFC1995]&nbsp;<SPAN
-CLASS="AUTHOR"
->M. Ohta</SPAN
->, <I
->Incremental Zone Transfer in <SPAN
-CLASS="acronym"
->DNS</SPAN
-></I
->, August 1996.</P
-><DIV
-CLASS="BIBLIOENTRYBLOCK"
-STYLE="margin-left=0.5in"
-></DIV
-></DIV
-><DIV
-CLASS="biblioentry"
-><A
-NAME="AEN4571"
-></A
-><P
->[RFC1996]&nbsp;<SPAN
-CLASS="AUTHOR"
->P. Vixie</SPAN
->, <I
->A Mechanism for Prompt Notification of Zone Changes</I
->, August 1996.</P
-><DIV
-CLASS="BIBLIOENTRYBLOCK"
-STYLE="margin-left=0.5in"
-></DIV
-></DIV
-><DIV
-CLASS="biblioentry"
-><A
-NAME="AEN4578"
-></A
-><P
->[RFC2136]&nbsp;<SPAN
-CLASS="AUTHOR"
->P. Vixie, </SPAN
-><SPAN
-CLASS="AUTHOR"
->S. Thomson, </SPAN
-><SPAN
-CLASS="AUTHOR"
->Y. Rekhter, </SPAN
-><SPAN
-CLASS="AUTHOR"
->and J. Bound</SPAN
->, <I
->Dynamic Updates in the Domain Name System</I
->, April 1997.</P
-><DIV
-CLASS="BIBLIOENTRYBLOCK"
-STYLE="margin-left=0.5in"
-></DIV
-></DIV
-><DIV
-CLASS="biblioentry"
-><A
-NAME="AEN4595"
-></A
-><P
->[RFC2845]&nbsp;<SPAN
-CLASS="AUTHOR"
->P. Vixie, </SPAN
-><SPAN
-CLASS="AUTHOR"
->O. Gudmundsson, </SPAN
-><SPAN
-CLASS="AUTHOR"
->D. Eastlake, 3rd, </SPAN
-><SPAN
-CLASS="AUTHOR"
->and B. Wellington</SPAN
->, <I
->Secret Key Transaction Authentication for <SPAN
-CLASS="acronym"
->DNS</SPAN
-> (TSIG)</I
->, May 2000.</P
-><DIV
-CLASS="BIBLIOENTRYBLOCK"
-STYLE="margin-left=0.5in"
-></DIV
-></DIV
-><H2
-CLASS="bibliodiv"
-><A
-NAME="AEN4614"
->Proposed Standards Still Under Development</A
-></H2
-><DIV
-CLASS="biblioentry"
-><A
-NAME="AEN4619"
-></A
-><P
->[RFC1886]&nbsp;<SPAN
-CLASS="AUTHOR"
->S. Thomson </SPAN
-><SPAN
-CLASS="AUTHOR"
->and C. Huitema</SPAN
->, <I
-><SPAN
-CLASS="acronym"
->DNS</SPAN
-> Extensions to support IP version 6</I
->, December 1995.</P
-><DIV
-CLASS="BIBLIOENTRYBLOCK"
-STYLE="margin-left=0.5in"
-></DIV
-></DIV
-><DIV
-CLASS="biblioentry"
-><A
-NAME="AEN4631"
-></A
-><P
->[RFC2065]&nbsp;<SPAN
-CLASS="AUTHOR"
->D. Eastlake, 3rd </SPAN
-><SPAN
-CLASS="AUTHOR"
->and C. Kaufman</SPAN
->, <I
->Domain Name System Security Extensions</I
->, January 1997.</P
-><DIV
-CLASS="BIBLIOENTRYBLOCK"
-STYLE="margin-left=0.5in"
-></DIV
-></DIV
-><DIV
-CLASS="biblioentry"
-><A
-NAME="AEN4643"
-></A
-><P
->[RFC2137]&nbsp;<SPAN
-CLASS="AUTHOR"
->D. Eastlake, 3rd</SPAN
->, <I
->Secure Domain Name System Dynamic Update</I
->, April 1997.</P
-><DIV
-CLASS="BIBLIOENTRYBLOCK"
-STYLE="margin-left=0.5in"
-></DIV
-></DIV
-><H2
-CLASS="bibliodiv"
-><A
-NAME="AEN4651"
->Other Important RFCs About <SPAN
-CLASS="acronym"
->DNS</SPAN
-> Implementation</A
-></H2
-><DIV
-CLASS="biblioentry"
-><A
-NAME="AEN4654"
-></A
-><P
->[RFC1535]&nbsp;<SPAN
-CLASS="AUTHOR"
->E. Gavron</SPAN
->, <I
->A Security Problem and Proposed Correction With Widely Deployed <SPAN
-CLASS="acronym"
->DNS</SPAN
-> Software.</I
->, October 1993.</P
-><DIV
-CLASS="BIBLIOENTRYBLOCK"
-STYLE="margin-left=0.5in"
-></DIV
-></DIV
-><DIV
-CLASS="biblioentry"
-><A
-NAME="AEN4662"
-></A
-><P
->[RFC1536]&nbsp;<SPAN
-CLASS="AUTHOR"
->A. Kumar, </SPAN
-><SPAN
-CLASS="AUTHOR"
->J. Postel, </SPAN
-><SPAN
-CLASS="AUTHOR"
->C. Neuman, </SPAN
-><SPAN
-CLASS="AUTHOR"
->P. Danzig, </SPAN
-><SPAN
-CLASS="AUTHOR"
->and S. Miller</SPAN
->, <I
->Common <SPAN
-CLASS="acronym"
->DNS</SPAN
-> Implementation Errors and Suggested Fixes</I
->, October 1993.</P
-><DIV
-CLASS="BIBLIOENTRYBLOCK"
-STYLE="margin-left=0.5in"
-></DIV
-></DIV
-><DIV
-CLASS="biblioentry"
-><A
-NAME="AEN4683"
-></A
-><P
->[RFC1982]&nbsp;<SPAN
-CLASS="AUTHOR"
->R. Elz </SPAN
-><SPAN
-CLASS="AUTHOR"
->and R. Bush</SPAN
->, <I
->Serial Number Arithmetic</I
->, August 1996.</P
-><DIV
-CLASS="BIBLIOENTRYBLOCK"
-STYLE="margin-left=0.5in"
-></DIV
-></DIV
-><H2
-CLASS="bibliodiv"
-><A
-NAME="AEN4694"
->Resource Record Types</A
-></H2
-><DIV
-CLASS="biblioentry"
-><A
-NAME="AEN4696"
-></A
-><P
->[RFC1183]&nbsp;<SPAN
-CLASS="AUTHOR"
->C.F. Everhart, </SPAN
-><SPAN
-CLASS="AUTHOR"
->L. A. Mamakos, </SPAN
-><SPAN
-CLASS="AUTHOR"
->R. Ullmann, </SPAN
-><SPAN
-CLASS="AUTHOR"
->and P. Mockapetris</SPAN
->, <I
->New <SPAN
-CLASS="acronym"
->DNS</SPAN
-> RR Definitions</I
->, October 1990.</P
-><DIV
-CLASS="BIBLIOENTRYBLOCK"
-STYLE="margin-left=0.5in"
-></DIV
-></DIV
-><DIV
-CLASS="biblioentry"
-><A
-NAME="AEN4714"
-></A
-><P
->[RFC1706]&nbsp;<SPAN
-CLASS="AUTHOR"
->B. Manning </SPAN
-><SPAN
-CLASS="AUTHOR"
->and R. Colella</SPAN
->, <I
-><SPAN
-CLASS="acronym"
->DNS</SPAN
-> NSAP Resource Records</I
->, October 1994.</P
-><DIV
-CLASS="BIBLIOENTRYBLOCK"
-STYLE="margin-left=0.5in"
-></DIV
-></DIV
-><DIV
-CLASS="biblioentry"
-><A
-NAME="AEN4726"
-></A
-><P
->[RFC2168]&nbsp;<SPAN
-CLASS="AUTHOR"
->R. Daniel </SPAN
-><SPAN
-CLASS="AUTHOR"
->and M. Mealling</SPAN
->, <I
->Resolution of Uniform Resource Identifiers using
-the Domain Name System</I
->, June 1997.</P
-><DIV
-CLASS="BIBLIOENTRYBLOCK"
-STYLE="margin-left=0.5in"
-></DIV
-></DIV
-><DIV
-CLASS="biblioentry"
-><A
-NAME="AEN4737"
-></A
-><P
->[RFC1876]&nbsp;<SPAN
-CLASS="AUTHOR"
->C. Davis, </SPAN
-><SPAN
-CLASS="AUTHOR"
->P. Vixie, </SPAN
-><SPAN
-CLASS="AUTHOR"
->T., </SPAN
-><SPAN
-CLASS="AUTHOR"
->and I. Dickinson</SPAN
->, <I
->A Means for Expressing Location Information in the Domain
-Name System</I
->, January 1996.</P
-><DIV
-CLASS="BIBLIOENTRYBLOCK"
-STYLE="margin-left=0.5in"
-></DIV
-></DIV
-><DIV
-CLASS="biblioentry"
-><A
-NAME="AEN4754"
-></A
-><P
->[RFC2052]&nbsp;<SPAN
-CLASS="AUTHOR"
->A. Gulbrandsen </SPAN
-><SPAN
-CLASS="AUTHOR"
->and P. Vixie</SPAN
->, <I
->A <SPAN
-CLASS="acronym"
->DNS</SPAN
-> RR for Specifying the Location of
-Services.</I
->, October 1996.</P
-><DIV
-CLASS="BIBLIOENTRYBLOCK"
-STYLE="margin-left=0.5in"
-></DIV
-></DIV
-><DIV
-CLASS="biblioentry"
-><A
-NAME="AEN4766"
-></A
-><P
->[RFC2163]&nbsp;<SPAN
-CLASS="AUTHOR"
->A. Allocchio</SPAN
->, <I
->Using the Internet <SPAN
-CLASS="acronym"
->DNS</SPAN
-> to Distribute MIXER
-Conformant Global Address Mapping</I
->, January 1998.</P
-><DIV
-CLASS="BIBLIOENTRYBLOCK"
-STYLE="margin-left=0.5in"
-></DIV
-></DIV
-><DIV
-CLASS="biblioentry"
-><A
-NAME="AEN4774"
-></A
-><P
->[RFC2230]&nbsp;<SPAN
-CLASS="AUTHOR"
->R. Atkinson</SPAN
->, <I
->Key Exchange Delegation Record for the <SPAN
-CLASS="acronym"
->DNS</SPAN
-></I
->, October 1997.</P
-><DIV
-CLASS="BIBLIOENTRYBLOCK"
-STYLE="margin-left=0.5in"
-></DIV
-></DIV
-><H2
-CLASS="bibliodiv"
-><A
-NAME="AEN4782"
-><SPAN
-CLASS="acronym"
->DNS</SPAN
-> and the Internet</A
-></H2
-><DIV
-CLASS="biblioentry"
-><A
-NAME="AEN4785"
-></A
-><P
->[RFC1101]&nbsp;<SPAN
-CLASS="AUTHOR"
->P. V. Mockapetris</SPAN
->, <I
-><SPAN
-CLASS="acronym"
->DNS</SPAN
-> Encoding of Network Names and Other Types</I
->, April 1989.</P
-><DIV
-CLASS="BIBLIOENTRYBLOCK"
-STYLE="margin-left=0.5in"
-></DIV
-></DIV
-><DIV
-CLASS="biblioentry"
-><A
-NAME="AEN4793"
-></A
-><P
->[RFC1123]&nbsp;<SPAN
-CLASS="AUTHOR"
->Braden</SPAN
->, <I
->Requirements for Internet Hosts - Application and Support</I
->, October 1989.</P
-><DIV
-CLASS="BIBLIOENTRYBLOCK"
-STYLE="margin-left=0.5in"
-></DIV
-></DIV
-><DIV
-CLASS="biblioentry"
-><A
-NAME="AEN4800"
-></A
-><P
->[RFC1591]&nbsp;<SPAN
-CLASS="AUTHOR"
->J. Postel</SPAN
->, <I
->Domain Name System Structure and Delegation</I
->, March 1994.</P
-><DIV
-CLASS="BIBLIOENTRYBLOCK"
-STYLE="margin-left=0.5in"
-></DIV
-></DIV
-><DIV
-CLASS="biblioentry"
-><A
-NAME="AEN4807"
-></A
-><P
->[RFC2317]&nbsp;<SPAN
-CLASS="AUTHOR"
->H. Eidnes, </SPAN
-><SPAN
-CLASS="AUTHOR"
->G. de Groot, </SPAN
-><SPAN
-CLASS="AUTHOR"
->and P. Vixie</SPAN
->, <I
->Classless IN-ADDR.ARPA Delegation</I
->, March 1998.</P
-><DIV
-CLASS="BIBLIOENTRYBLOCK"
-STYLE="margin-left=0.5in"
-></DIV
-></DIV
-><H2
-CLASS="bibliodiv"
-><A
-NAME="AEN4821"
-><SPAN
-CLASS="acronym"
->DNS</SPAN
-> Operations</A
-></H2
-><DIV
-CLASS="biblioentry"
-><A
-NAME="AEN4824"
-></A
-><P
->[RFC1537]&nbsp;<SPAN
-CLASS="AUTHOR"
->P. Beertema</SPAN
->, <I
->Common <SPAN
-CLASS="acronym"
->DNS</SPAN
-> Data File Configuration Errors</I
->, October 1993.</P
-><DIV
-CLASS="BIBLIOENTRYBLOCK"
-STYLE="margin-left=0.5in"
-></DIV
-></DIV
-><DIV
-CLASS="biblioentry"
-><A
-NAME="AEN4832"
-></A
-><P
->[RFC1912]&nbsp;<SPAN
-CLASS="AUTHOR"
->D. Barr</SPAN
->, <I
->Common <SPAN
-CLASS="acronym"
->DNS</SPAN
-> Operational and Configuration Errors</I
->, February 1996.</P
-><DIV
-CLASS="BIBLIOENTRYBLOCK"
-STYLE="margin-left=0.5in"
-></DIV
-></DIV
-><DIV
-CLASS="biblioentry"
-><A
-NAME="AEN4840"
-></A
-><P
->[RFC1912]&nbsp;<SPAN
-CLASS="AUTHOR"
->D. Barr</SPAN
->, <I
->Common <SPAN
-CLASS="acronym"
->DNS</SPAN
-> Operational and Configuration Errors</I
->, February 1996.</P
-><DIV
-CLASS="BIBLIOENTRYBLOCK"
-STYLE="margin-left=0.5in"
-></DIV
-></DIV
-><DIV
-CLASS="biblioentry"
-><A
-NAME="AEN4848"
-></A
-><P
->[RFC2010]&nbsp;<SPAN
-CLASS="AUTHOR"
->B. Manning </SPAN
-><SPAN
-CLASS="AUTHOR"
->and P. Vixie</SPAN
->, <I
->Operational Criteria for Root Name Servers.</I
->, October 1996.</P
-><DIV
-CLASS="BIBLIOENTRYBLOCK"
-STYLE="margin-left=0.5in"
-></DIV
-></DIV
-><DIV
-CLASS="biblioentry"
-><A
-NAME="AEN4859"
-></A
-><P
->[RFC2219]&nbsp;<SPAN
-CLASS="AUTHOR"
->M. Hamilton </SPAN
-><SPAN
-CLASS="AUTHOR"
->and R. Wright</SPAN
->, <I
->Use of <SPAN
-CLASS="acronym"
->DNS</SPAN
-> Aliases for Network Services.</I
->, October 1997.</P
-><DIV
-CLASS="BIBLIOENTRYBLOCK"
-STYLE="margin-left=0.5in"
-></DIV
-></DIV
-><H2
-CLASS="bibliodiv"
-><A
-NAME="AEN4871"
->Other <SPAN
-CLASS="acronym"
->DNS</SPAN
->-related RFCs</A
-></H2
-><DIV
-CLASS="biblioentry"
-><A
-NAME="AEN4877"
-></A
-><P
->[RFC1464]&nbsp;<SPAN
-CLASS="AUTHOR"
->R. Rosenbaum</SPAN
->, <I
->Using the Domain Name System To Store Arbitrary String Attributes</I
->, May 1993.</P
-><DIV
-CLASS="BIBLIOENTRYBLOCK"
-STYLE="margin-left=0.5in"
-></DIV
-></DIV
-><DIV
-CLASS="biblioentry"
-><A
-NAME="AEN4884"
-></A
-><P
->[RFC1713]&nbsp;<SPAN
-CLASS="AUTHOR"
->A. Romao</SPAN
->, <I
->Tools for <SPAN
-CLASS="acronym"
->DNS</SPAN
-> Debugging</I
->, November 1994.</P
-><DIV
-CLASS="BIBLIOENTRYBLOCK"
-STYLE="margin-left=0.5in"
-></DIV
-></DIV
-><DIV
-CLASS="biblioentry"
-><A
-NAME="AEN4892"
-></A
-><P
->[RFC1794]&nbsp;<SPAN
-CLASS="AUTHOR"
->T. Brisco</SPAN
->, <I
-><SPAN
-CLASS="acronym"
->DNS</SPAN
-> Support for Load Balancing</I
->, April 1995.</P
-><DIV
-CLASS="BIBLIOENTRYBLOCK"
-STYLE="margin-left=0.5in"
-></DIV
-></DIV
-><DIV
-CLASS="biblioentry"
-><A
-NAME="AEN4900"
-></A
-><P
->[RFC2240]&nbsp;<SPAN
-CLASS="AUTHOR"
->O. Vaughan</SPAN
->, <I
->A Legal Basis for Domain Name Allocation</I
->, November 1997.</P
-><DIV
-CLASS="BIBLIOENTRYBLOCK"
-STYLE="margin-left=0.5in"
-></DIV
-></DIV
-><DIV
-CLASS="biblioentry"
-><A
-NAME="AEN4907"
-></A
-><P
->[RFC2345]&nbsp;<SPAN
-CLASS="AUTHOR"
->J. Klensin, </SPAN
-><SPAN
-CLASS="AUTHOR"
->T. Wolf, </SPAN
-><SPAN
-CLASS="AUTHOR"
->and G. Oglesby</SPAN
->, <I
->Domain Names and Company Name Retrieval</I
->, May 1998.</P
-><DIV
-CLASS="BIBLIOENTRYBLOCK"
-STYLE="margin-left=0.5in"
-></DIV
-></DIV
-><DIV
-CLASS="biblioentry"
-><A
-NAME="AEN4921"
-></A
-><P
->[RFC2352]&nbsp;<SPAN
-CLASS="AUTHOR"
->O. Vaughan</SPAN
->, <I
->A Convention For Using Legal Names as Domain Names</I
->, May 1998.</P
-><DIV
-CLASS="BIBLIOENTRYBLOCK"
-STYLE="margin-left=0.5in"
-></DIV
-></DIV
-><H2
-CLASS="bibliodiv"
-><A
-NAME="AEN4928"
->Obsolete and Unimplemented Experimental RRs</A
-></H2
-><DIV
-CLASS="biblioentry"
-><A
-NAME="AEN4930"
-></A
-><P
->[RFC1712]&nbsp;<SPAN
-CLASS="AUTHOR"
->C. Farrell, </SPAN
-><SPAN
-CLASS="AUTHOR"
->M. Schulze, </SPAN
-><SPAN
-CLASS="AUTHOR"
->S. Pleitner, </SPAN
-><SPAN
-CLASS="AUTHOR"
->and D. Baldoni</SPAN
->, <I
-><SPAN
-CLASS="acronym"
->DNS</SPAN
-> Encoding of Geographical
-Location</I
->, November 1994.</P
-><DIV
-CLASS="BIBLIOENTRYBLOCK"
-STYLE="margin-left=0.5in"
-></DIV
-></DIV
-></DIV
-><DIV
-CLASS="sect2"
-><H2
-CLASS="sect2"
-><A
-NAME="internet_drafts"
->A.4.2. Internet Drafts</A
-></H2
-><P
->Internet Drafts (IDs) are rough-draft working documents of
-the Internet Engineering Task Force. They are, in essence, RFCs
-in the preliminary stages of development. Implementors are cautioned not
-to regard IDs as archival, and they should not be quoted or cited
-in any formal documents unless accompanied by the disclaimer that
-they are "works in progress." IDs have a lifespan of six months
-after which they are deleted unless updated by their authors.
-</P
-></DIV
-><DIV
-CLASS="sect2"
-><H2
-CLASS="sect2"
-><A
-NAME="AEN4951"
->A.4.3. Other Documents About <SPAN
-CLASS="acronym"
->BIND</SPAN
-></A
-></H2
-><P
-></P
-><H3
-><A
-NAME="AEN4955"
->Bibliography</A
-></H3
-><DIV
-CLASS="biblioentry"
-><A
-NAME="AEN4956"
-></A
-><P
-><SPAN
-CLASS="AUTHOR"
->Paul Albitz </SPAN
-><SPAN
-CLASS="AUTHOR"
->and Cricket Liu</SPAN
->, <I
-><SPAN
-CLASS="acronym"
->DNS</SPAN
-> and <SPAN
-CLASS="acronym"
->BIND</SPAN
-></I
->, 1998.</P
-><DIV
-CLASS="BIBLIOENTRYBLOCK"
-STYLE="margin-left=0.5in"
-></DIV
-></DIV
-></DIV
-></DIV
-></DIV
-><DIV
-CLASS="NAVFOOTER"
-><HR
-ALIGN="LEFT"
-WIDTH="100%"><TABLE
-SUMMARY="Footer navigation table"
-WIDTH="100%"
-BORDER="0"
-CELLPADDING="0"
-CELLSPACING="0"
-><TR
-><TD
-WIDTH="33%"
-ALIGN="left"
-VALIGN="top"
-><A
-HREF="Bv9ARM.ch08.html"
-ACCESSKEY="P"
->Prev</A
-></TD
-><TD
-WIDTH="34%"
-ALIGN="center"
-VALIGN="top"
-><A
-HREF="Bv9ARM.html"
-ACCESSKEY="H"
->Home</A
-></TD
-><TD
-WIDTH="33%"
-ALIGN="right"
-VALIGN="top"
->&nbsp;</TD
-></TR
-><TR
-><TD
-WIDTH="33%"
-ALIGN="left"
-VALIGN="top"
->Troubleshooting</TD
-><TD
-WIDTH="34%"
-ALIGN="center"
-VALIGN="top"
->&nbsp;</TD
-><TD
-WIDTH="33%"
-ALIGN="right"
-VALIGN="top"
->&nbsp;</TD
-></TR
-></TABLE
-></DIV
-></BODY
-></HTML
->
+<!--
+ - Copyright (C) 2000-2015 Internet Systems Consortium, Inc. ("ISC")
+ - 
+ - This Source Code Form is subject to the terms of the Mozilla Public
+ - License, v. 2.0. If a copy of the MPL was not distributed with this
+ - file, You can obtain one at http://mozilla.org/MPL/2.0/.
+-->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Appendix A. Release Notes</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="Bv9ARM.html" title="BIND 9 Administrator Reference Manual">
+<link rel="up" href="Bv9ARM.html" title="BIND 9 Administrator Reference Manual">
+<link rel="prev" href="Bv9ARM.ch08.html" title="Chapter 8. Troubleshooting">
+<link rel="next" href="Bv9ARM.ch10.html" title="Appendix B. A Brief History of the DNS and BIND">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<div class="navheader">
+<table width="100%" summary="Navigation header">
+<tr><th colspan="3" align="center">Appendix A. Release Notes</th></tr>
+<tr>
+<td width="20%" align="left">
+<a accesskey="p" href="Bv9ARM.ch08.html">Prev</a> </td>
+<th width="60%" align="center"> </th>
+<td width="20%" align="right"> <a accesskey="n" href="Bv9ARM.ch10.html">Next</a>
+</td>
+</tr>
+</table>
+<hr>
+</div>
+<div class="appendix">
+<div class="titlepage"><div><div><h1 class="title">
+<a name="Bv9ARM.ch09"></a>Release Notes</h1></div></div></div>
+<div class="toc">
+<p><b>Table of Contents</b></p>
+<dl class="toc">
+<dt><span class="section"><a href="Bv9ARM.ch09.html#id-1.10.2">Release Notes for BIND Version 9.11.0b3</a></span></dt>
+<dd><dl>
+<dt><span class="section"><a href="Bv9ARM.ch09.html#relnotes_intro">Introduction</a></span></dt>
+<dt><span class="section"><a href="Bv9ARM.ch09.html#relnotes_download">Download</a></span></dt>
+<dt><span class="section"><a href="Bv9ARM.ch09.html#relnotes_license">License Change</a></span></dt>
+<dt><span class="section"><a href="Bv9ARM.ch09.html#relnotes_security">Security Fixes</a></span></dt>
+<dt><span class="section"><a href="Bv9ARM.ch09.html#relnotes_features">New Features</a></span></dt>
+<dt><span class="section"><a href="Bv9ARM.ch09.html#relnotes_changes">Feature Changes</a></span></dt>
+<dt><span class="section"><a href="Bv9ARM.ch09.html#relnotes_port">Porting Changes</a></span></dt>
+<dt><span class="section"><a href="Bv9ARM.ch09.html#relnotes_bugs">Bug Fixes</a></span></dt>
+<dt><span class="section"><a href="Bv9ARM.ch09.html#end_of_life">End of Life</a></span></dt>
+<dt><span class="section"><a href="Bv9ARM.ch09.html#relnotes_thanks">Thank You</a></span></dt>
+</dl></dd>
+</dl>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h2 class="title" style="clear: both">
+<a name="id-1.10.2"></a>Release Notes for BIND Version 9.11.0b3</h2></div></div></div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="relnotes_intro"></a>Introduction</h3></div></div></div>
+<p>
+      BIND 9.11.0 is a new feature release of BIND, still under development.
+      This document summarizes new features and functional changes that
+      have been introduced on this branch.  With each development
+      release leading up to the final BIND 9.11.0 release, this document
+      will be updated with additional features added and bugs fixed.
+    </p>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="relnotes_download"></a>Download</h3></div></div></div>
+<p>
+      The latest versions of BIND 9 software can always be found at
+      <a class="link" href="http://www.isc.org/downloads/" target="_top">http://www.isc.org/downloads/</a>.
+      There you will find additional information about each release,
+      source code, and pre-compiled versions for Microsoft Windows
+      operating systems.
+    </p>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="relnotes_license"></a>License Change</h3></div></div></div>
+<p>
+      With the release of BIND 9.11.0, ISC is changing the open
+      source license for BIND from the ISC license to the Mozilla
+      Public License (MPL 2.0).  This change is effective from BIND
+      9.11.0b1 onwards.
+    </p>
+<p>
+      The MPL-2.0 license requires that if you make changes to
+      licensed software (e.g. BIND) and distribute them outside
+      your organization, that you publish those changes under that
+      same license. It does not require that you publish or disclose
+      anything other than the changes you made to our software.
+    </p>
+<p>
+      This new requirement will not affect anyone who is using BIND
+      without redistributing it, nor anyone redistributing it without
+      changes, therefore this change will be without consequence
+      for most individuals and organizations who are using BIND.
+    </p>
+<p>
+      Those unsure whether or not the license change affects their
+      use of BIND, or who wish to discuss how to comply with the
+      license may contact ISC at <a class="link" href="https://www.isc.org/mission/contact/" target="_top">
+      https://www.isc.org/mission/contact/</a>.
+    </p>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="relnotes_security"></a>Security Fixes</h3></div></div></div>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>
+	 getrrsetbyname with a non absolute name could trigger an
+	 infinite recursion bug in lwresd and named with lwres
+	 configured if when combined with a search list entry the
+	 resulting name is too long.  This flaw is disclosed in
+	 CVE-2016-2775. [RT #42694]
+	</p></li></ul></div>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="relnotes_features"></a>New Features</h3></div></div></div>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem">
+<p>
+	  A new method of provisioning secondary servers called
+	  "Catalog Zones" has been added. This is an implementation of
+	  <a class="link" href="https://datatracker.ietf.org/doc/draft-muks-dnsop-dns-catalog-zones/" target="_top">
+	    draft-muks-dnsop-dns-catalog-zones/
+	  </a>.
+	</p>
+<p>
+	  A catalog zone is a regular DNS zone which contains a list
+	  of "member zones", along with the configuration options for
+	  each of those zones.  When a server is configured to use a
+	  catalog zone, all the zones listed in the catalog zone are
+	  added to the local server as slave zones.  When the catalog
+	  zone is updated (e.g., by adding or removing zones, or
+	  changing configuration options for existing zones) those
+	  changes will be put into effect.  Since the catalog zone is
+	  itself a DNS zone, this means configuration changes can be
+	  propagated to slaves using the standard AXFR/IXFR update
+	  mechanism.
+	</p>
+<p>
+	  This feature should be considered experimental. It currently
+	  supports only basic features; more advanced features such as
+	  ACLs and TSIG keys are not yet supported. Example catalog
+	  zone configurations can be found in the Chapter 9 of the
+	  BIND Administrator Reference Manual.
+	</p>
+<p>
+	  Support for master entries with TSIG keys has been added to catalog
+	  zones, as well as support for allow-query and allow-transfer.
+	</p>
+</li>
+<li class="listitem"><p>
+	  Added an <span class="command"><strong>isc.rndc</strong></span> Python module, which allows
+	  <span class="command"><strong>rndc</strong></span> commands to be sent from Python programs.
+	</p></li>
+<li class="listitem">
+<p>
+	  Added support for DynDB, a new interface for loading zone data
+	  from an external database, developed by Red Hat for the FreeIPA
+	  project.  (Thanks in particular to Adam Tkac and Petr
+	  Spacek of Red Hat for the contribution.)
+	</p>
+<p>
+	  Unlike the existing DLZ and SDB interfaces, which provide a
+	  limited subset of database functionality within BIND &#8212;
+	  translating DNS queries into real-time database lookups with
+	  relatively poor performance and with no ability to handle
+	  DNSSEC-signed data &#8212; DynDB is able to fully implement
+	  and extend the database API used natively by BIND.
+	</p>
+<p>
+	  A DynDB module could pre-load data from an external data
+	  source, then serve it with the same performance and
+	  functionality as conventional BIND zones, and with the
+	  ability to take advantage of database features not
+	  available in BIND, such as multi-master replication.
+	</p>
+</li>
+<li class="listitem">
+<p>
+	  New quotas have been added to limit the queries that are
+	  sent by recursive resolvers to authoritative servers
+	  experiencing denial-of-service attacks. When configured,
+	  these options can both reduce the harm done to authoritative
+	  servers and also avoid the resource exhaustion that can be
+	  experienced by recursive servers when they are being used as a
+	  vehicle for such an attack.
+	</p>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; ">
+<li class="listitem"><p>
+	      <code class="option">fetches-per-server</code> limits the number of
+	      simultaneous queries that can be sent to any single
+	      authoritative server.  The configured value is a starting
+	      point; it is automatically adjusted downward if the server is
+	      partially or completely non-responsive. The algorithm used to
+	      adjust the quota can be configured via the
+	      <code class="option">fetch-quota-params</code> option.
+	    </p></li>
+<li class="listitem"><p>
+	      <code class="option">fetches-per-zone</code> limits the number of
+	      simultaneous queries that can be sent for names within a
+	      single domain.  (Note: Unlike "fetches-per-server", this
+	      value is not self-tuning.)
+	    </p></li>
+</ul></div>
+<p>
+	  Statistics counters have also been added to track the number
+	  of queries affected by these quotas.
+	</p>
+</li>
+<li class="listitem">
+<p>
+	  Added support for <span class="command"><strong>dnstap</strong></span>, a fast,
+	  flexible method for capturing and logging DNS traffic,
+	  developed by Robert Edmonds at Farsight Security, Inc.,
+	  whose assistance is gratefully acknowledged.
+	</p>
+<p>
+	  To enable <span class="command"><strong>dnstap</strong></span> at compile time,
+	  the <span class="command"><strong>fstrm</strong></span> and <span class="command"><strong>protobuf-c</strong></span>
+	  libraries must be available, and BIND must be configured with
+	  <code class="option">--enable-dnstap</code>.
+	</p>
+<p>
+	  A new utility <span class="command"><strong>dnstap-read</strong></span> has been added
+	  to allow <span class="command"><strong>dnstap</strong></span> data to be presented in
+	  a human-readable format.
+	</p>
+<p>
+	  <span class="command"><strong>rndc dnstap -roll</strong></span> causes <span class="command"><strong>dnstap</strong></span>
+	  output files to be rolled like log files -- the most recent output
+	  file is renamed with a <code class="filename">.0</code> suffix, the next
+	  most recent with <code class="filename">.1</code>, etc. (Note that this
+	  only works when <span class="command"><strong>dnstap</strong></span> output is being written
+	  to a file, not to a UNIX domain socket.) An optional numerical
+	  argument specifies how many backup log files to retain; if not
+	  specified or set to 0, there is no limit.
+	</p>
+<p>
+	  <span class="command"><strong>rndc dnstap -reopen</strong></span> simply closes and reopens
+	  the <span class="command"><strong>dnstap</strong></span> output channel without renaming
+	  the output file.
+	</p>
+<p>
+	  For more information on <span class="command"><strong>dnstap</strong></span>, see
+	  <a class="link" href="http://dnstap.info" target="_top">http://dnstap.info</a>.
+	</p>
+</li>
+<li class="listitem">
+<p>
+	  New statistics counters have been added to track traffic
+	  sizes, as specified in RSSAC002.  Query and response
+	  message sizes are broken up into ranges of histogram buckets:
+	  TCP and UDP queries of size 0-15, 16-31, ..., 272-288, and 288+,
+	  and TCP and UDP responses of size 0-15, 16-31, ..., 4080-4095,
+	  and 4096+.  These values can be accessed via the XML and JSON
+	  statistics channels at, for example,
+	  <a class="link" href="http://localhost:8888/xml/v3/traffic" target="_top">http://localhost:8888/xml/v3/traffic</a>
+	  or
+	  <a class="link" href="http://localhost:8888/json/v1/traffic" target="_top">http://localhost:8888/json/v1/traffic</a>.
+	</p>
+<p>
+		Statistics for RSSAC02v3 traffic-volume, traffic-sizes and
+		rcode-volume reporting are now collected.
+	</p>
+</li>
+<li class="listitem">
+<p>
+	  A new DNSSEC key management utility,
+	  <span class="command"><strong>dnssec-keymgr</strong></span>, has been added. This tool
+	  is meant to run unattended (e.g., under <span class="command"><strong>cron</strong></span>).
+	  It reads a policy definition file
+	  (default: <code class="filename">/etc/dnssec.policy</code>)
+	  and creates or updates DNSSEC keys as necessary to ensure that a
+	  zone's keys match the defined policy for that zone.  New keys are
+	  created whenever necessary to ensure rollovers occur correctly.
+	  Existing keys' timing metadata is adjusted as needed to set the
+	  correct rollover period, prepublication interval, etc.  If
+	  the configured policy changes, keys are corrected automatically.
+	  See the <span class="command"><strong>dnssec-keymgr</strong></span> man page for full details.
+	</p>
+<p>
+	  Note: <span class="command"><strong>dnssec-keymgr</strong></span> depends on Python and on
+	  the Python lex/yacc module, PLY. The other Python-based tools,
+	  <span class="command"><strong>dnssec-coverage</strong></span> and
+	  <span class="command"><strong>dnssec-checkds</strong></span>, have been
+	  refactored and updated as part of this work.
+	</p>
+<p>
+	  <span class="command"><strong>dnssec-keymgr</strong></span> now takes a -r
+	  <em class="replaceable"><code>randomfile</code></em> option.
+	</p>
+<p>
+	  (Many thanks to Sebastián
+	  Castro for his assistance in developing this tool at the IETF
+	  95 Hackathon in Buenos Aires, April 2016.)
+	</p>
+</li>
+<li class="listitem"><p>
+	  The serial number of a dynamically updatable zone can
+	  now be set using
+	  <span class="command"><strong>rndc signing -serial <em class="replaceable"><code>number</code></em> <em class="replaceable"><code>zonename</code></em></strong></span>.
+	  This is particularly useful with <code class="option">inline-signing</code>
+	  zones that have been reset.  Setting the serial number to a value
+	  larger than that on the slaves will trigger an AXFR-style
+	  transfer.
+	</p></li>
+<li class="listitem"><p>
+	  When answering recursive queries, SERVFAIL responses can now be
+	  cached by the server for a limited time; subsequent queries for
+	  the same query name and type will return another SERVFAIL until
+	  the cache times out.  This reduces the frequency of retries
+	  when a query is persistently failing, which can be a burden
+	  on recursive servers.  The SERVFAIL cache timeout is controlled
+	  by <code class="option">servfail-ttl</code>, which defaults to 1 second
+	  and has an upper limit of 30.
+	</p></li>
+<li class="listitem"><p>
+	  The new <span class="command"><strong>rndc nta</strong></span> command can now be used to
+	  set a "negative trust anchor" (NTA), disabling DNSSEC validation for
+	  a specific domain; this can be used when responses from a domain
+	  are known to be failing validation due to administrative error
+	  rather than because of a spoofing attack. NTAs are strictly
+	  temporary; by default they expire after one hour, but can be
+	  configured to last up to one week.  The default NTA lifetime
+	  can be changed by setting the <code class="option">nta-lifetime</code> in
+	  <code class="filename">named.conf</code>. When added, NTAs are stored in a
+	  file (<code class="filename"><em class="replaceable"><code>viewname</code></em>.nta</code>)
+	  in order to persist across restarts of the <span class="command"><strong>named</strong></span> server.
+	</p></li>
+<li class="listitem"><p>
+	  The EDNS Client Subnet (ECS) option is now supported for
+	  authoritative servers; if a query contains an ECS option then
+	  ACLs containing <code class="option">geoip</code> or <code class="option">ecs</code>
+	  elements can match against the address encoded in the option.
+	  This can be used to select a view for a query, so that different
+	  answers can be provided depending on the client network.
+	</p></li>
+<li class="listitem"><p>
+	  The EDNS EXPIRE option has been implemented on the client
+	  side, allowing a slave server to set the expiration timer
+	  correctly when transferring zone data from another slave
+	  server.
+	</p></li>
+<li class="listitem"><p>
+	  A new <code class="option">masterfile-style</code> zone option controls
+	  the formatting of text zone files:  When set to
+	  <code class="literal">full</code>, the zone file will dumped in
+	  single-line-per-record format.
+	</p></li>
+<li class="listitem"><p>
+	  <span class="command"><strong>dig +ednsopt</strong></span> can now be used to set
+	  arbitrary EDNS options in DNS requests.
+	</p></li>
+<li class="listitem"><p>
+	  <span class="command"><strong>dig +ednsflags</strong></span> can now be used to set
+	  yet-to-be-defined EDNS flags in DNS requests.
+	</p></li>
+<li class="listitem"><p>
+	  <span class="command"><strong>dig +[no]ednsnegotiation</strong></span> can now be used enable /
+	  disable EDNS version negotiation.
+	</p></li>
+<li class="listitem"><p>
+	  <span class="command"><strong>dig +header-only</strong></span> can now be used to send
+	  queries without a question section.
+	</p></li>
+<li class="listitem"><p>
+	  <span class="command"><strong>dig +ttlunits</strong></span> causes <span class="command"><strong>dig</strong></span>
+	  to print TTL values with time-unit suffixes: w, d, h, m, s for
+	  weeks, days, hours, minutes, and seconds.
+	</p></li>
+<li class="listitem"><p>
+	  <span class="command"><strong>dig +zflag</strong></span> can be used to set the last
+	  unassigned DNS header flag bit.  This bit is normally zero.
+	</p></li>
+<li class="listitem"><p>
+	  <span class="command"><strong>dig +dscp=<em class="replaceable"><code>value</code></em></strong></span>
+	  can now be used to set the DSCP code point in outgoing query
+	  packets.
+	</p></li>
+<li class="listitem"><p>
+	  <span class="command"><strong>dig +mapped</strong></span> can now be used to determine
+	  if mapped IPv4 addresses can be used.
+	</p></li>
+<li class="listitem"><p>
+	  <span class="command"><strong>nslookup</strong></span> will now look up IPv6 as well
+	  as IPv4 addresses by default. [RT #40420]
+	</p></li>
+<li class="listitem"><p>
+	  <code class="option">serial-update-method</code> can now be set to
+	  <code class="literal">date</code>. On update, the serial number will
+	  be set to the current date in YYYYMMDDNN format.
+	</p></li>
+<li class="listitem"><p>
+	  <span class="command"><strong>dnssec-signzone -N date</strong></span> also sets the serial
+	  number to YYYYMMDDNN.
+	</p></li>
+<li class="listitem"><p>
+	  <span class="command"><strong>named -L <em class="replaceable"><code>filename</code></em></strong></span>
+	  causes <span class="command"><strong>named</strong></span> to send log messages to the
+	  specified file by default instead of to the system log.
+	</p></li>
+<li class="listitem"><p>
+	  The rate limiter configured by the
+	  <code class="option">serial-query-rate</code> option no longer covers
+	  NOTIFY messages; those are now separately controlled by
+	  <code class="option">notify-rate</code> and
+	  <code class="option">startup-notify-rate</code> (the latter of which
+	  controls the rate of NOTIFY messages sent when the server
+	  is first started up or reconfigured).
+	</p></li>
+<li class="listitem"><p>
+	  The default number of tasks and client objects available
+	  for serving lightweight resolver queries have been increased,
+	  and are now configurable via the new <code class="option">lwres-tasks</code>
+	  and <code class="option">lwres-clients</code> options in
+	  <code class="filename">named.conf</code>. [RT #35857]
+	</p></li>
+<li class="listitem"><p>
+	  Log output to files can now be buffered by specifying
+	  <span class="command"><strong>buffered yes;</strong></span> when creating a channel.
+	</p></li>
+<li class="listitem"><p>
+	  <span class="command"><strong>delv +tcp</strong></span> will exclusively use TCP when
+	  sending queries.
+	</p></li>
+<li class="listitem"><p>
+	  <span class="command"><strong>named</strong></span> will now check to see whether
+	  other name server processes are running before starting up.
+	  This is implemented in two ways: 1) by refusing to start
+	  if the configured network interfaces all return "address
+	  in use", and 2) by attempting to acquire a lock on a file
+	  specified by the <code class="option">lock-file</code> option or
+	  the <span class="command"><strong>-X</strong></span> command line option.  The
+	  default lock file is
+	  <code class="filename">/var/run/named/named.lock</code>.
+	  Specifying <code class="literal">none</code> will disable the lock
+	  file check.
+	</p></li>
+<li class="listitem"><p>
+	  <span class="command"><strong>rndc delzone</strong></span> can now be applied to zones
+	  which were configured in <code class="filename">named.conf</code>;
+	  it is no longer restricted to zones which were added by
+	  <span class="command"><strong>rndc addzone</strong></span>.  (Note, however, that
+	  this does not edit <code class="filename">named.conf</code>; the zone
+	  must be removed from the configuration or it will return
+	  when <span class="command"><strong>named</strong></span> is restarted or reloaded.)
+	</p></li>
+<li class="listitem"><p>
+	  <span class="command"><strong>rndc modzone</strong></span> can be used to reconfigure
+	  a zone, using similar syntax to <span class="command"><strong>rndc addzone</strong></span>.
+	</p></li>
+<li class="listitem"><p>
+	  <span class="command"><strong>rndc showzone</strong></span> displays the current
+	  configuration for a specified zone.
+	</p></li>
+<li class="listitem">
+<p>
+	  When BIND is built with the <span class="command"><strong>lmdb</strong></span> library
+	  (Lightning Memory-Mapped Database), <span class="command"><strong>named</strong></span>
+	  will store the configuration information for zones
+	  that are added via <span class="command"><strong>rndc addzone</strong></span>
+	  in a database, rather than in a flat "NZF" file.  This
+	  dramatically improves performance for
+	  <span class="command"><strong>rndc delzone</strong></span> and
+	  <span class="command"><strong>rndc modzone</strong></span>: deleting or changing
+	  the contents of a database is much faster than rewriting
+	  a text file.
+	</p>
+<p>
+	  On startup, if <span class="command"><strong>named</strong></span> finds an existing
+	  NZF file, it will automatically convert it to the new NZD
+	  database format.
+	</p>
+<p>
+	  To view the contents of an NZD, or to convert an
+	  NZD back to an NZF file (for example, to revert back
+	  to an earlier version of BIND which did not support the
+	  NZD format), use the new command <span class="command"><strong>named-nzd2nzf</strong></span>
+	  [RT #39837]
+	</p>
+</li>
+<li class="listitem">
+<p>
+	  Added server-side support for pipelined TCP queries.  Clients
+	  may continue sending queries via TCP while previous queries are
+	  processed in parallel.  Responses are sent when they are
+	  ready, not necessarily in the order in which the queries were
+	  received.
+	</p>
+<p>
+	  To revert to the former behavior for a particular
+	  client address or range of addresses, specify the address prefix
+	  in the "keep-response-order" option.  To revert to the former
+	  behavior for all clients, use "keep-response-order { any; };".
+	</p>
+</li>
+<li class="listitem"><p>
+	  The new <span class="command"><strong>mdig</strong></span> command is a version of
+	  <span class="command"><strong>dig</strong></span> that sends multiple pipelined
+	  queries and then waits for responses, instead of sending one
+	  query and waiting the response before sending the next. [RT #38261]
+	</p></li>
+<li class="listitem"><p>
+	  To enable better monitoring and troubleshooting of RFC 5011
+	  trust anchor management, the new <span class="command"><strong>rndc managed-keys</strong></span>
+	  can be used to check status of trust anchors or to force keys
+	  to be refreshed.  Also, the managed-keys data file now has
+	  easier-to-read comments. [RT #38458]
+	</p></li>
+<li class="listitem"><p>
+	  An <span class="command"><strong>--enable-querytrace</strong></span> configure switch is
+	  now available to enable very verbose query trace logging. This
+	  option can only be set at compile time. This option has a
+	  negative performance impact and should be used only for
+	  debugging. [RT #37520]
+	</p></li>
+<li class="listitem"><p>
+	  A new <span class="command"><strong>tcp-only</strong></span> option can be specified
+	  in <span class="command"><strong>server</strong></span> statements to force
+	  <span class="command"><strong>named</strong></span> to connect to the specified
+	  server via TCP. [RT #37800]
+	</p></li>
+<li class="listitem"><p>
+	  The <span class="command"><strong>nxdomain-redirect</strong></span> option specifies
+	  a DNS namespace to use for NXDOMAIN redirection. When a
+	  recursive lookup returns NXDOMAIN, a second lookup is
+	  initiated with the specified name appended to the query
+	  name. This allows NXDOMAIN redirection data to be supplied
+	  by multiple zones configured on the server or by recursive
+	  queries to other servers. (The older method, using
+	  a single <span class="command"><strong>type redirect</strong></span> zone, has
+	  better average performance but is less flexible.) [RT #37989]
+	</p></li>
+<li class="listitem"><p>
+	  The following types have been implemented: CSYNC, NINFO, RKEY,
+	  SINK, TA, TALINK.
+	</p></li>
+<li class="listitem"><p>
+	  A new <span class="command"><strong>message-compression</strong></span> option can be
+	  used to specify whether or not to use name compression when
+	  answering queries. Setting this to <strong class="userinput"><code>no</code></strong>
+	  results in larger responses, but reduces CPU consumption and
+	  may improve throughput.  The default is <strong class="userinput"><code>yes</code></strong>.
+	</p></li>
+<li class="listitem"><p>
+	  A <span class="command"><strong>read-only</strong></span> option is now available in the
+	  <span class="command"><strong>controls</strong></span> statement to grant non-destructive
+	  control channel access. In such cases, a restricted set of
+	  <span class="command"><strong>rndc</strong></span> commands are allowed, which can
+	  report information from <span class="command"><strong>named</strong></span>, but cannot
+	  reconfigure or stop the server. By default, the control channel
+	  access is <span class="emphasis"><em>not</em></span> restricted to these
+	  read-only operations. [RT #40498]
+	</p></li>
+<li class="listitem"><p>
+	  When loading a signed zone, <span class="command"><strong>named</strong></span> will
+	  now check whether an RRSIG's inception time is in the future,
+	  and if so, it will regenerate the RRSIG immediately. This helps
+	  when a system's clock needs to be reset backwards.
+	</p></li>
+<li class="listitem"><p>
+	  The new <span class="command"><strong>minimal-any</strong></span> option reduces the size
+	  of answers to UDP queries for type ANY by implementing one of
+	  the strategies in "draft-ietf-dnsop-refuse-any": returning
+	  a single arbitrarily-selected RRset that matches the query
+	  name rather than returning all of the matching RRsets.
+	  Thanks to Tony Finch for the contribution. [RT #41615]
+	</p></li>
+<li class="listitem"><p>
+	  <span class="command"><strong>named</strong></span> now provides feedback to the
+	  owners of zones which have trust anchors configured
+	  (<span class="command"><strong>trusted-keys</strong></span>,
+	  <span class="command"><strong>managed-keys</strong></span>, <span class="command"><strong>dnssec-validation
+	  auto;</strong></span> and <span class="command"><strong>dnssec-lookaside auto;</strong></span>)
+	  by sending a daily query which encodes the keyids of the
+	  configured trust anchors for the zone.  This is controlled
+	  by <span class="command"><strong>trust-anchor-telemetry</strong></span> and defaults
+	  to yes.
+	</p></li>
+</ul></div>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="relnotes_changes"></a>Feature Changes</h3></div></div></div>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem"><p>
+	  The ISC DNSSEC Lookaside Validation (DLV) service is scheduled
+	  to be disabled in 2017.  A warning is now logged when
+	  <span class="command"><strong>named</strong></span> is configured to use this service,
+	  either explicitly or via <code class="option">dnssec-lookaside auto;</code>.
+	  [RT #42207]
+	</p></li>
+<li class="listitem"><p>
+	  The timers returned by the statistics channel (indicating current
+	  time, server boot time, and most recent reconfiguration time) are
+	  now reported with millisecond accuracy. [RT #40082]
+	</p></li>
+<li class="listitem"><p>
+	  Updated the compiled-in addresses for H.ROOT-SERVERS.NET
+	  and L.ROOT-SERVERS.NET.
+	</p></li>
+<li class="listitem"><p>
+	  ACLs containing <span class="command"><strong>geoip asnum</strong></span> elements were
+	  not correctly matched unless the full organization name was
+	  specified in the ACL (as in
+	  <span class="command"><strong>geoip asnum "AS1234 Example, Inc.";</strong></span>).
+	  They can now match against the AS number alone (as in
+	  <span class="command"><strong>geoip asnum "AS1234";</strong></span>).
+	</p></li>
+<li class="listitem"><p>
+	  When using native PKCS#11 cryptography (i.e.,
+	  <span class="command"><strong>configure --enable-native-pkcs11</strong></span>) HSM PINs
+	  of up to 256 characters can now be used.
+	</p></li>
+<li class="listitem"><p>
+	  NXDOMAIN responses to queries of type DS are now cached separately
+	  from those for other types. This helps when using "grafted" zones
+	  of type forward, for which the parent zone does not contain a
+	  delegation, such as local top-level domains.  Previously a query
+	  of type DS for such a zone could cause the zone apex to be cached
+	  as NXDOMAIN, blocking all subsequent queries.  (Note: This
+	  change is only helpful when DNSSEC validation is not enabled.
+	  "Grafted" zones without a delegation in the parent are not a
+	  recommended configuration.)
+	</p></li>
+<li class="listitem"><p>
+	  Update forwarding performance has been improved by allowing
+	  a single TCP connection to be shared between multiple updates.
+	</p></li>
+<li class="listitem"><p>
+	  By default, <span class="command"><strong>nsupdate</strong></span> will now check
+	  the correctness of hostnames when adding records of type
+	  A, AAAA, MX, SOA, NS, SRV or PTR.  This behavior can be
+	  disabled with <span class="command"><strong>check-names no</strong></span>.
+	</p></li>
+<li class="listitem"><p>
+	  Added support for OPENPGPKEY type.
+	</p></li>
+<li class="listitem"><p>
+	  The names of the files used to store managed keys and added
+	  zones for each view are no longer based on the SHA256 hash
+	  of the view name, except when this is necessary because the
+	  view name contains characters that would be incompatible with use
+	  as a file name.  For views whose names do not contain forward
+	  slashes ('/'), backslashes ('\'), or capital letters - which
+	  could potentially cause namespace collision problems on
+	  case-insensitive filesystems - files will now be named
+	  after the view (for example, <code class="filename">internal.mkeys</code>
+	  or <code class="filename">external.nzf</code>).  However, to ensure
+	  consistent behavior when upgrading, if a file using the old
+	  name format is found to exist, it will continue to be used.
+	</p></li>
+<li class="listitem"><p>
+	  "rndc" can now return text output of arbitrary size to
+	  the caller. (Prior to this, certain commands such as
+	  "rndc tsig-list" and "rndc zonestatus" could return
+	  truncated output.)
+	</p></li>
+<li class="listitem"><p>
+	  Errors reported when running <span class="command"><strong>rndc addzone</strong></span>
+	  (e.g., when a zone file cannot be loaded) have been clarified
+	  to make it easier to diagnose problems.
+	</p></li>
+<li class="listitem"><p>
+	  When encountering an authoritative name server whose name is
+	  an alias pointing to another name, the resolver treats
+	  this as an error and skips to the next server. Previously
+	  this happened silently; now the error will be logged to
+	  the newly-created "cname" log category.
+	</p></li>
+<li class="listitem"><p>
+	  If <span class="command"><strong>named</strong></span> is not configured to validate
+	  answers, then allow fallback to plain DNS on timeout even when
+	  we know the server supports EDNS.  This will allow the server to
+	  potentially resolve signed queries when TCP is being
+	  blocked.
+	</p></li>
+<li class="listitem"><p>
+	  Large inline-signing changes should be less disruptive.
+	  Signature generation is now done incrementally; the number
+	  of signatures to be generated in each quantum is controlled
+	  by "sig-signing-signatures <em class="replaceable"><code>number</code></em>;".
+	  [RT #37927]
+	</p></li>
+<li class="listitem">
+<p>
+	  The experimental SIT option (code point 65001) of BIND
+	  9.10.0 through BIND 9.10.2 has been replaced with the COOKIE
+	  option (code point 10). It is no longer experimental, and
+	  is sent by default, by both <span class="command"><strong>named</strong></span> and
+	  <span class="command"><strong>dig</strong></span>.
+	</p>
+<p>
+	  The SIT-related named.conf options have been marked as
+	  obsolete, and are otherwise ignored.
+	</p>
+</li>
+<li class="listitem"><p>
+	  When <span class="command"><strong>dig</strong></span> receives a truncated (TC=1)
+	  response or a BADCOOKIE response code from a server, it
+	  will automatically retry the query using the server COOKIE
+	  that was returned by the server in its initial response.
+	  [RT #39047]
+	</p></li>
+<li class="listitem"><p>
+	  A alternative NXDOMAIN redirect method (nxdomain-redirect)
+	  which allows the redirect information to be looked up from
+	  a namespace on the Internet rather than requiring a zone
+	  to be configured on the server is now available.
+	</p></li>
+<li class="listitem"><p>
+	  Retrieving the local port range from net.ipv4.ip_local_port_range
+	  on Linux is now supported.
+	</p></li>
+<li class="listitem"><p>
+	  A new <code class="option">nsip-wait-recurse</code> directive has been
+	  added to RPZ, specifying whether to look up unknown name server
+	  IP addresses and wait for a response before applying RPZ-NSIP rules.
+	  The default is <strong class="userinput"><code>yes</code></strong>. If set to
+	  <strong class="userinput"><code>no</code></strong>, <span class="command"><strong>named</strong></span> will only
+	  apply RPZ-NSIP rules to servers whose addresses are already cached.
+	  The addresses will be looked up in the background so the rule can
+	  be applied on subsequent queries. This improves performance when
+	  the cache is cold, at the cost of temporary imprecision in applying
+	  policy directives. [RT #35009]
+	</p></li>
+<li class="listitem"><p>
+	  Within the <code class="option">response-policy</code> option, it is now
+	  possible to configure RPZ rewrite logging on a per-zone basis
+	  using the <code class="option">log</code> clause.
+	</p></li>
+<li class="listitem"><p>
+	  The default preferred glue is now the address type of the
+	   transport the query was received over.
+	</p></li>
+<li class="listitem"><p>
+	  On machines with 2 or more processors (CPU), the default value
+	  for the number of UDP listeners has been changed to the number
+	  of detected processors minus one.
+	</p></li>
+<li class="listitem"><p>
+	  Zone transfers now use smaller message sizes to improve
+	  message compression. This results in reduced network usage.
+	</p></li>
+<li class="listitem">
+<p>
+	  Added support for the AVC resource record type (Application
+	  Visibility and Control).
+	</p>
+<p>
+	  Changed <span class="command"><strong>rndc reconfig</strong></span> behavior so that newly
+	  added zones are loaded asynchronously and the loading does not
+	  block the server.
+	</p>
+</li>
+<li class="listitem"><p>
+	  <span class="command"><strong>minimal-responses</strong></span> now takes two new
+	  arguments: <code class="option">no-auth</code> suppresses
+	  populating the authority section but not the additional
+	  section; <code class="option">no-auth-recursive</code>
+	  does the same but only when answering recursive queries.
+	</p></li>
+</ul></div>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="relnotes_port"></a>Porting Changes</h3></div></div></div>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>
+	  None.
+	</p></li></ul></div>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="relnotes_bugs"></a>Bug Fixes</h3></div></div></div>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem"><p>
+	  Fixed a crash when calling <span class="command"><strong>rndc stats</strong></span> on some
+	  Windows builds: some Visual Studio compilers generate code that
+	  crashes when the "%z" printf() format specifier is used. [RT #42380]
+	</p></li>
+<li class="listitem"><p>
+	  Windows installs were failing due to triggering UAC without
+	  the installation binary being signed.
+	</p></li>
+<li class="listitem"><p>
+	  A change in the internal binary representation of the RBT database
+	  node structure enabled a race condition to occur (especially when
+	  BIND was built with certain compilers or optimizer settings),
+	  leading to inconsistent database state which caused random
+	  assertion failures. [RT #42380]
+	</p></li>
+</ul></div>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="end_of_life"></a>End of Life</h3></div></div></div>
+<p>
+      The end of life for BIND 9.11 is yet to be determined but
+      will not be before BIND 9.13.0 has been released for 6 months.
+      <a class="link" href="https://www.isc.org/downloads/software-support-policy/" target="_top">https://www.isc.org/downloads/software-support-policy/</a>
+    </p>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="relnotes_thanks"></a>Thank You</h3></div></div></div>
+<p>
+      Thank you to everyone who assisted us in making this release possible.
+      If you would like to contribute to ISC to assist us in continuing to
+      make quality open source software, please visit our donations page at
+      <a class="link" href="http://www.isc.org/donate/" target="_top">http://www.isc.org/donate/</a>.
+    </p>
+</div>
+</div>
+</div>
+<div class="navfooter">
+<hr>
+<table width="100%" summary="Navigation footer">
+<tr>
+<td width="40%" align="left">
+<a accesskey="p" href="Bv9ARM.ch08.html">Prev</a> </td>
+<td width="20%" align="center"> </td>
+<td width="40%" align="right"> <a accesskey="n" href="Bv9ARM.ch10.html">Next</a>
+</td>
+</tr>
+<tr>
+<td width="40%" align="left" valign="top">Chapter 8. Troubleshooting </td>
+<td width="20%" align="center"><a accesskey="h" href="Bv9ARM.html">Home</a></td>
+<td width="40%" align="right" valign="top"> Appendix B. A Brief History of the <acronym class="acronym">DNS</acronym> and <acronym class="acronym">BIND</acronym>
+</td>
+</tr>
+</table>
+</div>
+<p xmlns:db="http://docbook.org/ns/docbook" style="text-align: center;">BIND 9.11.0b3</p>
+</body>
+</html>

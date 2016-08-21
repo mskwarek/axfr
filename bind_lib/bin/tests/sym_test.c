@@ -1,21 +1,12 @@
 /*
- * Copyright (C) 1998-2001  Internet Software Consortium.
+ * Copyright (C) 1998-2001, 2004, 2005, 2007, 2015, 2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: sym_test.c,v 1.22 2001/01/09 21:41:42 bwelling Exp $ */
+/* $Id: sym_test.c,v 1.28 2007/06/19 23:46:59 tbox Exp $ */
 
 #include <config.h>
 
@@ -23,6 +14,7 @@
 
 #include <isc/commandline.h>
 #include <isc/mem.h>
+#include <isc/print.h>
 #include <isc/symtab.h>
 #include <isc/util.h>
 
@@ -71,9 +63,9 @@ main(int argc, char *argv[]) {
 	RUNTIME_CHECK(isc_symtab_create(mctx, 691, undefine_action, NULL,
 					case_sensitive, &st) == ISC_R_SUCCESS);
 
-	while (fgets(s, sizeof s, stdin) != NULL) {
+	while (fgets(s, sizeof(s), stdin) != NULL) {
 		len = strlen(s);
-		if (len > 0 && s[len - 1] == '\n') {
+		if (len > 0U && s[len - 1] == '\n') {
 			s[len - 1] = '\0';
 			len--;
 		}

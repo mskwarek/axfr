@@ -1,32 +1,24 @@
 /*
- * Copyright (C) 2000, 2001, 2003  Internet Software Consortium.
+ * Copyright (C) 2000, 2001, 2004, 2006, 2007, 2009, 2013, 2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: netdb.h,v 1.2.2.2 2003/07/22 04:03:50 marka Exp $ */
+/* $Id: netdb.h,v 1.9 2009/01/18 23:48:14 tbox Exp $ */
 
 #ifndef NETDB_H
 #define NETDB_H 1
 
-#include <stddef.h>	
+#include <stddef.h>
 #include <winsock2.h>
 
 /*
  * Define if <netdb.h> does not declare struct addrinfo.
  */
-#if _MSC_VER < 1300
+
+#if _MSC_VER < 1600
 struct addrinfo {
 	int		ai_flags;      /* AI_PASSIVE, AI_CANONNAME */
 	int		ai_family;     /* PF_xxx */
@@ -39,8 +31,9 @@ struct addrinfo {
 };
 #endif
 
+
 /*
- * Undefine all #defines we are interested in as <netdb.h> may or may not have
+ * Undefine all \#defines we are interested in as <netdb.h> may or may not have
  * defined them.
  */
 
@@ -60,7 +53,7 @@ struct addrinfo {
 #define	NETDB_INTERNAL	-1	/* see errno */
 #define	NETDB_SUCCESS	0	/* no problem */
 #define	HOST_NOT_FOUND	1 /* Authoritative Answer Host not found */
-#define	TRY_AGAIN	2 /* Non-Authoritive Host not found, or SERVERFAIL */
+#define	TRY_AGAIN	2 /* Non-Authoritative Host not found, or SERVERFAIL */
 #define	NO_RECOVERY	3 /* Non recoverable errors, FORMERR, REFUSED, NOTIMP */
 #define	NO_DATA		4 /* Valid name, no data record of requested type */
 #define	NO_ADDRESS	NO_DATA		/* no address, look for MX record */

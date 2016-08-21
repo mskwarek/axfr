@@ -1,21 +1,12 @@
 /*
- * Copyright (C) 2000-2002  Internet Software Consortium.
+ * Copyright (C) 2000, 2001, 2004, 2007, 2011, 2014, 2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: pgsqldb.c,v 1.12.4.2 2002/08/05 06:57:07 marka Exp $ */
+/* $Id: pgsqldb.c,v 1.17 2011/10/11 23:46:45 tbox Exp $ */
 
 #include <config.h>
 
@@ -43,7 +34,7 @@
  * connection to the database per zone, which is inefficient.  It also may
  * not handle quoting correctly.
  *
- * The table must contain the fields "name", "rdtype", and "rdata", and 
+ * The table must contain the fields "name", "rdtype", and "rdata", and
  * is expected to contain a properly constructed zone.  The program "zonetodb"
  * creates such a table.
  */
@@ -111,9 +102,16 @@ maybe_reconnect(struct dbinfo *dbi) {
  * Queries are converted into SQL queries and issued synchronously.  Errors
  * are handled really badly.
  */
+#ifdef DNS_CLIENTINFO_VERSION
+static isc_result_t
+pgsqldb_lookup(const char *zone, const char *name, void *dbdata,
+	       dns_sdblookup_t *lookup, dns_clientinfomethods_t *methods,
+	       dns_clientinfo_t *clientinfo)
+#else
 static isc_result_t
 pgsqldb_lookup(const char *zone, const char *name, void *dbdata,
 	       dns_sdblookup_t *lookup)
+#endif /* DNS_CLIENTINFO_VERSION */
 {
 	isc_result_t result;
 	struct dbinfo *dbi = dbdata;
@@ -123,6 +121,10 @@ pgsqldb_lookup(const char *zone, const char *name, void *dbdata,
 	int i;
 
 	UNUSED(zone);
+#ifdef DNS_CLIENTINFO_VERSION
+	UNUSED(methods);
+	UNUSED(clientinfo);
+#endif /* DNS_CLIENTINFO_VERSION */
 
 	canonname = isc_mem_get(ns_g_mctx, strlen(name) * 2 + 1);
 	if (canonname == NULL)
@@ -324,7 +326,8 @@ static dns_sdbmethods_t pgsqldb_methods = {
 	NULL, /* authority */
 	pgsqldb_allnodes,
 	pgsqldb_create,
-	pgsqldb_destroy
+	pgsqldb_destroy,
+	NULL /* lookup2 */
 };
 
 /*

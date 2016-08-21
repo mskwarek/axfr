@@ -1,21 +1,12 @@
 /*
- * Copyright (C) 1999-2001  Internet Software Consortium.
+ * Copyright (C) 1999-2005, 2007, 2008, 2012, 2013, 2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: net.h,v 1.15 2001/07/16 03:52:13 mayer Exp $ */
+/* $Id$ */
 
 #ifndef ISC_NET_H
 #define ISC_NET_H 1
@@ -72,7 +63,7 @@
  *
  * Standards:
  *	BSD Socket API
- *	RFC 2553
+ *	RFC2553
  */
 
 /***
@@ -104,7 +95,24 @@
  * This is here because named client, interfacemgr.c, etc. use the name as
  * a variable
  */
-#undef interface 
+#undef interface
+
+#ifndef INADDR_LOOPBACK
+#define INADDR_LOOPBACK 0x7f000001UL
+#endif
+
+#ifndef ISC_PLATFORM_HAVEIN6PKTINFO
+struct in6_pktinfo {
+	struct in6_addr ipi6_addr;    /* src/dst IPv6 address */
+	unsigned int    ipi6_ifindex; /* send/recv interface index */
+};
+#endif
+
+#if _MSC_VER < 1300
+#define in6addr_any isc_in6addr_any
+#define in6addr_loopback isc_in6addr_loopback
+#endif
+
 /*
  * Ensure type in_port_t is defined.
  */
@@ -127,22 +135,26 @@ typedef isc_uint16_t in_port_t;
 		(((isc_uint32_t)(i) & ISC__IPADDR(0xf0000000)) \
 		 == ISC__IPADDR(0xe0000000))
 
+#define ISC_IPADDR_ISEXPERIMENTAL(i) \
+		(((isc_uint32_t)(i) & ISC__IPADDR(0xf0000000)) \
+		 == ISC__IPADDR(0xf0000000))
+
 /*
  * Fix the FD_SET and FD_CLR Macros to properly cast
  */
 #undef FD_CLR
 #define FD_CLR(fd, set) do { \
     u_int __i; \
-    for (__i = 0; __i < ((fd_set FAR *)(set))->fd_count ; __i++) { \
-        if (((fd_set FAR *)(set))->fd_array[__i] == (SOCKET) fd) { \
-            while (__i < ((fd_set FAR *)(set))->fd_count-1) { \
-                ((fd_set FAR *)(set))->fd_array[__i] = \
-                    ((fd_set FAR *)(set))->fd_array[__i+1]; \
-                __i++; \
-            } \
-            ((fd_set FAR *)(set))->fd_count--; \
-            break; \
-        } \
+    for (__i = 0; __i < ((fd_set FAR *)(set))->fd_count; __i++) { \
+	if (((fd_set FAR *)(set))->fd_array[__i] == (SOCKET) fd) { \
+	    while (__i < ((fd_set FAR *)(set))->fd_count-1) { \
+		((fd_set FAR *)(set))->fd_array[__i] = \
+		    ((fd_set FAR *)(set))->fd_array[__i+1]; \
+		__i++; \
+	    } \
+	    ((fd_set FAR *)(set))->fd_count--; \
+	    break; \
+	} \
     } \
 } while (0)
 
@@ -150,15 +162,15 @@ typedef isc_uint16_t in_port_t;
 #define FD_SET(fd, set) do { \
     u_int __i; \
     for (__i = 0; __i < ((fd_set FAR *)(set))->fd_count; __i++) { \
-        if (((fd_set FAR *)(set))->fd_array[__i] == (SOCKET)(fd)) { \
-            break; \
-        } \
+	if (((fd_set FAR *)(set))->fd_array[__i] == (SOCKET)(fd)) { \
+	    break; \
+	} \
     } \
     if (__i == ((fd_set FAR *)(set))->fd_count) { \
-        if (((fd_set FAR *)(set))->fd_count < FD_SETSIZE) { \
-            ((fd_set FAR *)(set))->fd_array[__i] = (SOCKET)(fd); \
-            ((fd_set FAR *)(set))->fd_count++; \
-        } \
+	if (((fd_set FAR *)(set))->fd_count < FD_SETSIZE) { \
+	    ((fd_set FAR *)(set))->fd_array[__i] = (SOCKET)(fd); \
+	    ((fd_set FAR *)(set))->fd_count++; \
+	} \
     } \
 } while (0)
 
@@ -168,41 +180,113 @@ typedef isc_uint16_t in_port_t;
  * Use the WSA constants instead.
  */
 
+#include <errno.h>
+
+#ifndef EWOULDBLOCK
 #define EWOULDBLOCK             WSAEWOULDBLOCK
+#endif
+#ifndef EINPROGRESS
 #define EINPROGRESS             WSAEINPROGRESS
+#endif
+#ifndef EALREADY
 #define EALREADY                WSAEALREADY
+#endif
+#ifndef ENOTSOCK
 #define ENOTSOCK                WSAENOTSOCK
+#endif
+#ifndef EDESTADDRREQ
 #define EDESTADDRREQ            WSAEDESTADDRREQ
+#endif
+#ifndef EMSGSIZE
 #define EMSGSIZE                WSAEMSGSIZE
+#endif
+#ifndef EPROTOTYPE
 #define EPROTOTYPE              WSAEPROTOTYPE
+#endif
+#ifndef ENOPROTOOPT
 #define ENOPROTOOPT             WSAENOPROTOOPT
+#endif
+#ifndef EPROTONOSUPPORT
 #define EPROTONOSUPPORT         WSAEPROTONOSUPPORT
+#endif
+#ifndef ESOCKTNOSUPPORT
 #define ESOCKTNOSUPPORT         WSAESOCKTNOSUPPORT
+#endif
+#ifndef EOPNOTSUPP
 #define EOPNOTSUPP              WSAEOPNOTSUPP
+#endif
+#ifndef EPFNOSUPPORT
 #define EPFNOSUPPORT            WSAEPFNOSUPPORT
+#endif
+#ifndef EAFNOSUPPORT
 #define EAFNOSUPPORT            WSAEAFNOSUPPORT
+#endif
+#ifndef EADDRINUSE
 #define EADDRINUSE              WSAEADDRINUSE
+#endif
+#ifndef EADDRNOTAVAIL
 #define EADDRNOTAVAIL           WSAEADDRNOTAVAIL
+#endif
+#ifndef ENETDOWN
 #define ENETDOWN                WSAENETDOWN
+#endif
+#ifndef ENETUNREACH
 #define ENETUNREACH             WSAENETUNREACH
+#endif
+#ifndef ENETRESET
 #define ENETRESET               WSAENETRESET
+#endif
+#ifndef ECONNABORTED
 #define ECONNABORTED            WSAECONNABORTED
+#endif
+#ifndef ECONNRESET
 #define ECONNRESET              WSAECONNRESET
+#endif
+#ifndef ENOBUFS
 #define ENOBUFS                 WSAENOBUFS
+#endif
+#ifndef EISCONN
 #define EISCONN                 WSAEISCONN
+#endif
+#ifndef ENOTCONN
 #define ENOTCONN                WSAENOTCONN
+#endif
+#ifndef ESHUTDOWN
 #define ESHUTDOWN               WSAESHUTDOWN
+#endif
+#ifndef ETOOMANYREFS
 #define ETOOMANYREFS            WSAETOOMANYREFS
+#endif
+#ifndef ETIMEDOUT
 #define ETIMEDOUT               WSAETIMEDOUT
+#endif
+#ifndef ECONNREFUSED
 #define ECONNREFUSED            WSAECONNREFUSED
+#endif
+#ifndef ELOOP
 #define ELOOP                   WSAELOOP
+#endif
+#ifndef EHOSTDOWN
 #define EHOSTDOWN               WSAEHOSTDOWN
+#endif
+#ifndef EHOSTUNREACH
 #define EHOSTUNREACH            WSAEHOSTUNREACH
+#endif
+#ifndef EPROCLIM
 #define EPROCLIM                WSAEPROCLIM
+#endif
+#ifndef EUSERS
 #define EUSERS                  WSAEUSERS
+#endif
+#ifndef EDQUOT
 #define EDQUOT                  WSAEDQUOT
+#endif
+#ifndef ESTALE
 #define ESTALE                  WSAESTALE
+#endif
+#ifndef EREMOTE
 #define EREMOTE                 WSAEREMOTE
+#endif
 
 
 /***
@@ -220,6 +304,7 @@ isc_net_probeipv4(void);
  *
  *	ISC_R_SUCCESS		IPv4 is supported.
  *	ISC_R_NOTFOUND		IPv4 is not supported.
+ *	ISC_R_DISABLED		IPv4 is disabled.
  *	ISC_R_UNEXPECTED
  */
 
@@ -232,7 +317,87 @@ isc_net_probeipv6(void);
  *
  *	ISC_R_SUCCESS		IPv6 is supported.
  *	ISC_R_NOTFOUND		IPv6 is not supported.
+ *	ISC_R_DISABLED		IPv6 is disabled.
  *	ISC_R_UNEXPECTED
+ */
+
+isc_result_t
+isc_net_probeunix(void);
+/*
+ * Check if UNIX domain sockets are supported.
+ *
+ * Returns:
+ *
+ *	ISC_R_SUCCESS
+ *	ISC_R_NOTFOUND
+ */
+
+#define ISC_NET_DSCPRECVV4      0x01    /* Can receive sent DSCP value IPv4 */
+#define ISC_NET_DSCPRECVV6      0x02    /* Can receive sent DSCP value IPv6 */
+#define ISC_NET_DSCPSETV4       0x04    /* Can set DSCP on socket IPv4 */
+#define ISC_NET_DSCPSETV6       0x08    /* Can set DSCP on socket IPv6 */
+#define ISC_NET_DSCPPKTV4       0x10    /* Can set DSCP on per packet IPv4 */
+#define ISC_NET_DSCPPKTV6       0x20    /* Can set DSCP on per packet IPv6 */
+#define ISC_NET_DSCPALL         0x3f    /* All valid flags */
+
+unsigned int
+isc_net_probedscp(void);
+/*%<
+ * Probe the level of DSCP support.
+ */
+
+isc_result_t
+isc_net_probe_ipv6only(void);
+/*
+ * Check if the system's kernel supports the IPV6_V6ONLY socket option.
+ *
+ * Returns:
+ *
+ *	ISC_R_SUCCESS		the option is supported for both TCP and UDP.
+ *	ISC_R_NOTFOUND		IPv6 itself or the option is not supported.
+ *	ISC_R_UNEXPECTED
+ */
+
+isc_result_t
+isc_net_probe_ipv6pktinfo(void);
+/*
+ * Check if the system's kernel supports the IPV6_(RECV)PKTINFO socket option
+ * for UDP sockets.
+ *
+ * Returns:
+ *
+ *	ISC_R_SUCCESS		the option is supported.
+ *	ISC_R_NOTFOUND		IPv6 itself or the option is not supported.
+ *	ISC_R_UNEXPECTED
+ */
+
+void
+isc_net_disableipv4(void);
+
+void
+isc_net_disableipv6(void);
+
+void
+isc_net_enableipv4(void);
+
+void
+isc_net_enableipv6(void);
+
+isc_result_t
+isc_net_getudpportrange(int af, in_port_t *low, in_port_t *high);
+/*%<
+ * Returns system's default range of ephemeral UDP ports, if defined.
+ * If the range is not available or unknown, ISC_NET_PORTRANGELOW and
+ * ISC_NET_PORTRANGEHIGH will be returned.
+ *
+ * Requires:
+ *
+ *\li	'low' and 'high' must be non NULL.
+ *
+ * Returns:
+ *
+ *\li	*low and *high will be the ports specifying the low and high ends of
+ *	the range.
  */
 
 #ifdef ISC_PLATFORM_NEEDNTOP
@@ -247,11 +412,9 @@ isc_net_pton(int af, const char *src, void *dst);
 #define inet_pton isc_net_pton
 #endif
 
-#ifdef ISC_PLATFORM_NEEDATON
 int
 isc_net_aton(const char *cp, struct in_addr *addr);
 #define inet_aton isc_net_aton
-#endif
 
 ISC_LANG_ENDDECLS
 

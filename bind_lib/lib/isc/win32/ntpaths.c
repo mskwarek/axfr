@@ -1,21 +1,12 @@
 /*
- * Copyright (C) 2001  Internet Software Consortium.
+ * Copyright (C) 2001, 2004, 2007, 2009, 2014-2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: ntpaths.c,v 1.6.2.2 2001/09/04 19:36:31 gson Exp $ */
+/* $Id: ntpaths.c,v 1.15 2009/07/14 22:54:57 each Exp $ */
 
 /*
  * This module fetches the required path information that is specific
@@ -41,15 +32,17 @@ static char lwresd_resolvconfFile[MAX_PATH];
 static char rndc_confFile[MAX_PATH];
 static char ns_defaultpidfile[MAX_PATH];
 static char lwresd_defaultpidfile[MAX_PATH];
+static char ns_lockfile[MAX_PATH];
 static char local_state_dir[MAX_PATH];
 static char sys_conf_dir[MAX_PATH];
 static char rndc_keyFile[MAX_PATH];
+static char session_keyFile[MAX_PATH];
 
 static DWORD baseLen = MAX_PATH;
 static BOOL Initialized = FALSE;
 
 void
-isc_ntpaths_init() {
+isc_ntpaths_init(void) {
 	HKEY hKey;
 	BOOL keyFound = TRUE;
 
@@ -57,15 +50,14 @@ isc_ntpaths_init() {
 	if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, BIND_SUBKEY, 0, KEY_READ, &hKey)
 		!= ERROR_SUCCESS)
 		keyFound = FALSE;
-	
+
 	if (keyFound == TRUE) {
 		/* Get the named directory */
 		if (RegQueryValueEx(hKey, "InstallDir", NULL, NULL,
 			(LPBYTE)namedBase, &baseLen) != ERROR_SUCCESS)
 			keyFound = FALSE;
+		RegCloseKey(hKey);
 	}
-	
-	RegCloseKey(hKey);
 
 	GetSystemDirectory(systemDir, MAX_PATH);
 
@@ -85,6 +77,9 @@ isc_ntpaths_init() {
 	strcpy(rndc_keyFile, namedBase);
 	strcat(rndc_keyFile, "\\etc\\rndc.key");
 
+	strcpy(session_keyFile, namedBase);
+	strcat(session_keyFile, "\\etc\\session.key");
+
 	strcpy(rndc_confFile, namedBase);
 	strcat(rndc_confFile, "\\etc\\rndc.conf");
 	strcpy(ns_defaultpidfile, namedBase);
@@ -93,12 +88,15 @@ isc_ntpaths_init() {
 	strcpy(lwresd_defaultpidfile, namedBase);
 	strcat(lwresd_defaultpidfile, "\\etc\\lwresd.pid");
 
+	strcpy(ns_lockfile, namedBase);
+	strcat(ns_lockfile, "\\etc\\named.lock");
+
 	strcpy(local_state_dir, namedBase);
 	strcat(local_state_dir, "\\bin");
 
 	strcpy(sys_conf_dir, namedBase);
 	strcat(sys_conf_dir, "\\etc");
-	
+
 	Initialized = TRUE;
 }
 
@@ -126,6 +124,9 @@ isc_ntpaths_get(int ind) {
 	case LWRESD_PID_PATH:
 		return (lwresd_defaultpidfile);
 		break;
+	case NAMED_LOCK_PATH:
+		return (ns_lockfile);
+		break;
 	case LOCAL_STATE_DIR:
 		return (local_state_dir);
 		break;
@@ -134,6 +135,9 @@ isc_ntpaths_get(int ind) {
 		break;
 	case RNDC_KEY_PATH:
 		return (rndc_keyFile);
+		break;
+	case SESSION_KEY_PATH:
+		return (session_keyFile);
 		break;
 	default:
 		return (NULL);

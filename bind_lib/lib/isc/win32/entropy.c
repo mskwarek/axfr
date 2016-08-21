@@ -1,24 +1,15 @@
 /*
- * Copyright (C) 2000, 2001  Internet Software Consortium.
+ * Copyright (C) 2000-2002, 2004, 2007, 2009, 2013, 2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: entropy.c,v 1.3 2001/07/08 05:08:57 mayer Exp $ */
+/* $Id: entropy.c,v 1.10 2009/01/18 23:48:14 tbox Exp $ */
 
 /*
- * This is the system depenedent part of the ISC entropy API.
+ * This is the system dependent part of the ISC entropy API.
  */
 
 #include <config.h>
@@ -39,6 +30,10 @@
  */
 #define FILESOURCE_HANDLE_TYPE	HCRYPTPROV
 
+typedef struct {
+	int dummy;
+} isc_entropyusocketsource_t;
+
 #include "../entropy.c"
 
 static unsigned int
@@ -57,15 +52,17 @@ get_from_filesource(isc_entropysource_t *source, isc_uint32_t desired) {
 	added = 0;
 	while (desired > 0) {
 		ndesired = ISC_MIN(desired, sizeof(buf));
-		if (!CryptGenRandom(hcryptprov, ndesired, buf)) {
+		if (!CryptGenRandom(hcryptprov, (DWORD)ndesired, buf)) {
 			CryptReleaseContext(hcryptprov, 0);
 			source->bad = ISC_TRUE;
 			goto out;
 		}
 
-		entropypool_adddata(ent, buf, ndesired, ndesired * 8);
-		added += ndesired * 8;
-		desired -= ndesired;
+		entropypool_adddata(ent, buf,
+				    (unsigned int)ndesired,
+				    (unsigned int)ndesired * 8);
+		added += (unsigned int)ndesired * 8;
+		desired -= (isc_uint32_t)ndesired;
 	}
 
  out:
@@ -157,7 +154,7 @@ fillpool(isc_entropy_t *ent, unsigned int desired, isc_boolean_t blocking) {
 	 */
 	firstsource = source;
  again_file:
-	for (nsource = 0 ; nsource < ent->nsources ; nsource++) {
+	for (nsource = 0; nsource < ent->nsources; nsource++) {
 		unsigned int got;
 
 		if (remaining == 0)
@@ -227,13 +224,17 @@ destroyfilesource(isc_entropyfilesource_t *source) {
 	CryptReleaseContext(source->handle, 0);
 }
 
+static void
+destroyusocketsource(isc_entropyusocketsource_t *source) {
+	UNUSED(source);
+}
+
 
 isc_result_t
 isc_entropy_createfilesource(isc_entropy_t *ent, const char *fname) {
 	isc_result_t ret;
 	isc_entropysource_t *source;
 	HCRYPTPROV hcryptprov;
-	DWORD errval;
 	BOOL err;
 
 	REQUIRE(VALID_ENTROPY(ent));
@@ -249,7 +250,7 @@ isc_entropy_createfilesource(isc_entropy_t *ent, const char *fname) {
 	err = CryptAcquireContext(&hcryptprov, NULL, NULL, PROV_RSA_FULL,
 				  CRYPT_VERIFYCONTEXT);
 	if (!err){
-		errval = GetLastError();
+		(void)GetLastError();
 		ret = ISC_R_IOERROR;
 		goto errout;
 	}

@@ -1,25 +1,18 @@
 #!/bin/sh
 #
-# Copyright (C) 2000, 2001  Internet Software Consortium.
+# Copyright (C) 2000, 2001, 2003, 2004, 2007, 2012, 2013, 2015, 2016  Internet Systems Consortium, Inc. ("ISC")
 #
-# Permission to use, copy, modify, and distribute this software for any
-# purpose with or without fee is hereby granted, provided that the above
-# copyright notice and this permission notice appear in all copies.
-#
-# THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
-# DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
-# INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
-# INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
-# FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
-# NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
-# WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# $Id: isc-config.sh.in,v 1.10 2001/04/16 22:29:55 bwelling Exp $
+# $Id: isc-config.sh.in,v 1.17 2007/06/19 23:46:59 tbox Exp $
 
 prefix=/usr/local
 exec_prefix=${prefix}
 exec_prefix_set=
+includedir=${prefix}/include
+libdir=${exec_prefix}/lib
 
 usage()
 {
@@ -37,6 +30,8 @@ Libraries:
 	isccfg
 	dns
 	lwres
+	bind9
+	irs
 EOF
 	exit $1
 }
@@ -56,6 +51,7 @@ while test $# -gt 0; do
 		prefix=$optarg
 		if test "x$exec_prefix_set" = x ; then
 			exec_prefix=$prefix
+			exec_prefix_set=true
 		fi
 		;;
 	--prefix)
@@ -63,12 +59,13 @@ while test $# -gt 0; do
 		;;
 	--exec-prefix=*)
 		exec_prefix=$optarg
+		exec_prefix_set=true
 		;;
 	--exec-prefix)
 		echo_exec_prefix=true
 		;;
 	--version)
-		echo VERSION=9.2.3
+		echo VERSION=9.11.0b3
 		exit 0
 		;;
 	--cflags)
@@ -77,7 +74,13 @@ while test $# -gt 0; do
 	--libs)
 		echo_libs=true;
 		;;
-	isc)
+	irs)
+		libirs=true;
+		libdns=true;
+		libisccfg=true;
+		libisc=true;
+		;;
+	isc) 
 		libisc=true;
 		;;
 	isccc)
@@ -95,6 +98,12 @@ while test $# -gt 0; do
 	lwres)
 		liblwres=true;
 		;;
+	bind9)
+		libdns=true;
+		libisc=true;
+		libisccfg=true;
+		libbind9=true;
+		;;
 	*)
 		usage 1 1>&2
 	esac
@@ -108,19 +117,33 @@ if test x"$echo_exec_prefix" = x"true" ; then
 	echo $exec_prefix
 fi
 if test x"$echo_cflags" = x"true"; then
-	includes="-I${exec_prefix}/include"
+	if test x"${exec_prefix_set}" = x"true"; then
+		includes="-I${exec_prefix}/include"
+	else
+		includes="-I${includedir}"
+	fi
 	if test x"$libisc" = x"true"; then
-		includes="$includes    "
+		includes="$includes -D_REENTRANT   -D_GNU_SOURCE "
 	fi
 	echo $includes
 fi
 if test x"$echo_libs" = x"true"; then
-	libs=-L${exec_prefix}/lib
+	if test x"${exec_prefix_set}" = x"true"; then
+		libs="-L${exec_prefix}/lib"
+	else
+		libs="-L${libdir}"
+	fi
+	if test x"$libirs" = x"true" ; then
+		libs="$libs -lirs"
+	fi
 	if test x"$liblwres" = x"true" ; then
 		libs="$libs -llwres"
 	fi
+	if test x"$libbind9" = x"true" ; then
+		libs="$libs -lbind9"
+	fi
 	if test x"$libdns" = x"true" ; then
-		libs="$libs -ldns "
+		libs="$libs -ldns  -lgssapi_krb5 -lkrb5 -lk5crypto -lcom_err -lcrypto"
 	fi
 	if test x"$libisccfg" = x"true" ; then
 		libs="$libs -lisccfg"
@@ -133,7 +156,7 @@ if test x"$echo_libs" = x"true"; then
 		needothers=true
 	fi
 	if test x"$needothers" = x"true" ; then
-		libs="$libs  -lnsl "
+		libs="$libs  -ldl -lz -lpthread  -lxml2"
 	fi
 	echo $libs
 fi

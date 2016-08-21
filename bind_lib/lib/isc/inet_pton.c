@@ -1,23 +1,16 @@
 /*
- * Copyright (C) 1996-2003  Internet Software Consortium.
+ * Copyright (C) 1996-2005, 2007, 2013, 2014, 2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
+/*! \file */
 
 #if defined(LIBC_SCCS) && !defined(lint)
 static char rcsid[] =
-	"$Id: inet_pton.c,v 1.10.2.4 2003/07/22 04:03:47 marka Exp $";
+	"$Id: inet_pton.c,v 1.19 2007/06/19 23:47:17 tbox Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #include <config.h>
@@ -27,8 +20,11 @@ static char rcsid[] =
 
 #include <isc/net.h>
 
+/*% INT16 Size */
 #define NS_INT16SZ	 2
+/*% IPv4 Address Size */
 #define NS_INADDRSZ	 4
+/*% IPv6 Address Size */
 #define NS_IN6ADDRSZ	16
 
 /*
@@ -39,15 +35,14 @@ static char rcsid[] =
 static int inet_pton4(const char *src, unsigned char *dst);
 static int inet_pton6(const char *src, unsigned char *dst);
 
-/* int
- * isc_net_pton(af, src, dst)
+/*%
  *	convert from presentation format (which usually means ASCII printable)
  *	to network format (which is usually some kind of binary format).
- * return:
+ * \return
  *	1 if the address was valid for the specified address family
  *	0 if the address wasn't valid (`dst' is untouched in this case)
  *	-1 if some other error occurred (`dst' is untouched in this case, too)
- * author:
+ * \author
  *	Paul Vixie, 1996.
  */
 int
@@ -64,14 +59,14 @@ isc_net_pton(int af, const char *src, void *dst) {
 	/* NOTREACHED */
 }
 
-/* int
- * inet_pton4(src, dst)
+/*!\fn static int inet_pton4(const char *src, unsigned char *dst)
+ * \brief
  *	like inet_aton() but without all the hexadecimal and shorthand.
- * return:
+ * \return
  *	1 if `src' is a valid dotted quad, else 0.
- * notice:
+ * \note
  *	does not touch `dst' unless it's returning 1.
- * author:
+ * \author
  *	Paul Vixie, 1996.
  */
 static int
@@ -87,8 +82,9 @@ inet_pton4(const char *src, unsigned char *dst) {
 		const char *pch;
 
 		if ((pch = strchr(digits, ch)) != NULL) {
-			unsigned int new = *tp * 10 + (pch - digits);
+			unsigned int new = *tp * 10;
 
+			new += (int)(pch - digits);
 			if (saw_digit && *tp == 0)
 				return (0);
 			if (new > 255)
@@ -109,21 +105,21 @@ inet_pton4(const char *src, unsigned char *dst) {
 	}
 	if (octets < 4)
 		return (0);
-	memcpy(dst, tmp, NS_INADDRSZ);
+	memmove(dst, tmp, NS_INADDRSZ);
 	return (1);
 }
 
-/* int
- * inet_pton6(src, dst)
+/*%
  *	convert presentation level address to network order binary form.
- * return:
+ * \return
  *	1 if `src' is a valid [RFC1884 2.2] address, else 0.
- * notice:
+ * \note
  *	(1) does not touch `dst' unless it's returning 1.
+ * \note
  *	(2) :: in a full address is silently ignored.
- * credit:
+ * \author
  *	inspired by Mark Andrews.
- * author:
+ * \author
  *	Paul Vixie, 1996.
  */
 static int
@@ -132,7 +128,7 @@ inet_pton6(const char *src, unsigned char *dst) {
 			  xdigits_u[] = "0123456789ABCDEF";
 	unsigned char tmp[NS_IN6ADDRSZ], *tp, *endp, *colonp;
 	const char *xdigits, *curtok;
-	int ch, saw_xdigit;
+	int ch, seen_xdigits;
 	unsigned int val;
 
 	memset((tp = tmp), '\0', NS_IN6ADDRSZ);
@@ -143,7 +139,7 @@ inet_pton6(const char *src, unsigned char *dst) {
 		if (*++src != ':')
 			return (0);
 	curtok = src;
-	saw_xdigit = 0;
+	seen_xdigits = 0;
 	val = 0;
 	while ((ch = *src++) != '\0') {
 		const char *pch;
@@ -153,14 +149,13 @@ inet_pton6(const char *src, unsigned char *dst) {
 		if (pch != NULL) {
 			val <<= 4;
 			val |= (pch - xdigits);
-			if (val > 0xffff)
+			if (++seen_xdigits > 4)
 				return (0);
-			saw_xdigit = 1;
 			continue;
 		}
 		if (ch == ':') {
 			curtok = src;
-			if (!saw_xdigit) {
+			if (!seen_xdigits) {
 				if (colonp)
 					return (0);
 				colonp = tp;
@@ -170,19 +165,19 @@ inet_pton6(const char *src, unsigned char *dst) {
 				return (0);
 			*tp++ = (unsigned char) (val >> 8) & 0xff;
 			*tp++ = (unsigned char) val & 0xff;
-			saw_xdigit = 0;
+			seen_xdigits = 0;
 			val = 0;
 			continue;
 		}
 		if (ch == '.' && ((tp + NS_INADDRSZ) <= endp) &&
 		    inet_pton4(curtok, tp) > 0) {
 			tp += NS_INADDRSZ;
-			saw_xdigit = 0;
+			seen_xdigits = 0;
 			break;	/* '\0' was seen by inet_pton4(). */
 		}
 		return (0);
 	}
-	if (saw_xdigit) {
+	if (seen_xdigits) {
 		if (tp + NS_INT16SZ > endp)
 			return (0);
 		*tp++ = (unsigned char) (val >> 8) & 0xff;
@@ -193,7 +188,7 @@ inet_pton6(const char *src, unsigned char *dst) {
 		 * Since some memmove()'s erroneously fail to handle
 		 * overlapping regions, we'll do the shift by hand.
 		 */
-		const int n = tp - colonp;
+		const int n = (int)(tp - colonp);
 		int i;
 
 		if (tp == endp)
@@ -206,6 +201,6 @@ inet_pton6(const char *src, unsigned char *dst) {
 	}
 	if (tp != endp)
 		return (0);
-	memcpy(dst, tmp, NS_IN6ADDRSZ);
+	memmove(dst, tmp, NS_IN6ADDRSZ);
 	return (1);
 }

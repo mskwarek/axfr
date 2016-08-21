@@ -1,28 +1,14 @@
 /*
- * Copyright (C) 1999-2001  Internet Software Consortium.
+ * Copyright (C) 1999-2001, 2004, 2007-2009, 2011-2013, 2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: dir.c,v 1.10 2001/07/06 21:47:15 gson Exp $ */
+/* $Id$ */
 
 /* Principal Authors: DCL */
-
-/*
- * isc_dir_chroot is currently stubbed out for Win32
- * This will need to be revisited
- */
 
 #include <config.h>
 
@@ -90,7 +76,7 @@ isc_dir_open(isc_dir_t *dir, const char *dirname) {
 	if (dir->dirname < p && *(p - 1) != '\\' && *(p - 1) != ':')
 		*p++ = '\\';
 	*p++ = '*';
-	*p++ = '\0';
+	*p = '\0';
 
 	/*
 	 * Open stream.
@@ -123,7 +109,7 @@ isc_dir_read(isc_dir_t *dir) {
 				 &dir->entry.find_data) == FALSE)
 			/*
 			 * Either the last file has been processed or
-			 * an error has occured.  The former is not
+			 * an error has occurred.  The former is not
 			 * really an error, but the latter is.
 			 */
 			if (GetLastError() == ERROR_NO_MORE_FILES)
@@ -242,35 +228,7 @@ isc_dir_chdir(const char *dirname) {
 
 isc_result_t
 isc_dir_chroot(const char *dirname) {
-	return (ISC_R_SUCCESS);
-}
-
-isc_result_t
-isc_dir_current(char *dirname, size_t length, isc_boolean_t end_sep) {
-	char *cwd;
-	isc_result_t result = ISC_R_SUCCESS;
-
-	/*
-	 * XXXDCL Could automatically allocate memory if dirname == NULL.
-	 */
-	REQUIRE(dirname != NULL);
-	REQUIRE(length > 0);
-
-	cwd = getcwd(dirname, length);
-
-	if (cwd == NULL) {
-		if (errno == ERANGE)
-			result = ISC_R_NOSPACE;
-		else
-			result = isc__errno2result(errno);
-	} else if (end_sep) {
-		if (strlen(dirname) + 1 == length)
-			result = ISC_R_NOSPACE;
-		else if (dirname[1] != '\0')
-			strcat(dirname, "/");
-	}
-
-	return (result);
+	return (ISC_R_NOTIMPLEMENTED);
 }
 
 isc_result_t
@@ -300,7 +258,8 @@ isc_dir_createunique(char *templet) {
 
 	do {
 		i = mkdir(templet);
-		i = chmod(templet, 0700);
+		if (i == 0)
+			i = chmod(templet, 0700);
 
 		if (i == 0 || errno != EEXIST)
 			break;

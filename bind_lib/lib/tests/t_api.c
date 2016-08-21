@@ -1,21 +1,14 @@
 /*
- * Copyright (C) 1999-2001, 2003  Internet Software Consortium.
+ * Copyright (C) 1999-2005, 2007-2010, 2013, 2014, 2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: t_api.c,v 1.48.2.2 2003/10/09 07:32:57 marka Exp $ */
+/* $Id: t_api.c,v 1.68 2010/12/21 04:20:23 marka Exp $ */
+
+/*! \file */
 
 #include <config.h>
 
@@ -29,11 +22,17 @@
 #include <time.h>
 #include <unistd.h>
 
+#ifndef WIN32
 #include <sys/wait.h>
+#else
+#include <direct.h>
+#endif
 
 #include <isc/boolean.h>
 #include <isc/commandline.h>
+#include <isc/print.h>
 #include <isc/string.h>
+#include <isc/mem.h>
 
 #include <dns/compress.h>
 #include <dns/result.h>
@@ -51,7 +50,7 @@ static const char *Usage =
 		"\t-t <test_number> : run specified test number\n"
 		"\t-x               : don't execute tests in a subproc\n"
 		"\t-q <timeout>     : use 'timeout' as the timeout value\n";
-/*
+/*!<
  *		-a		-->	run all tests
  *		-b dir		-->	chdir to dir before running tests
  *		-c config	-->	use config file 'config'
@@ -64,7 +63,7 @@ static const char *Usage =
  *		-q timeout	-->	use 'timeout' as the timeout value
  */
 
-#define	T_MAXTESTS		256	/* must be 0 mod 8 */
+#define	T_MAXTESTS		256	/*% must be 0 mod 8 */
 #define	T_MAXENV		256
 #define	T_DEFAULT_CONFIG	"t_config"
 #define	T_BUFSIZ		256
@@ -80,6 +79,9 @@ static char		T_tvec[T_MAXTESTS / 8];
 static char *		T_env[T_MAXENV + 1];
 static char		T_buf[T_BIGBUF];
 static char *		T_dir;
+#ifdef WIN32
+static testspec_t	T_testlist[T_MAXTESTS];
+#endif
 
 static int
 t_initconf(const char *path);
@@ -107,25 +109,37 @@ t_sighandler(int sig) {
 }
 
 int
-main(int argc, char **argv) {
+#ifndef WIN32
+main(int argc, char **argv)
+#else
+t_main(int argc, char **argv)
+#endif
+{
 	int			c;
 	int			tnum;
+#ifndef WIN32
 	int			subprocs;
 	pid_t			deadpid;
 	int			status;
+#endif
 	int			len;
 	isc_boolean_t		first;
 	testspec_t		*pts;
+#ifndef WIN32
 	struct sigaction	sa;
+#endif
 
+	isc_mem_debugging = ISC_MEM_DEBUGRECORD;
 	first = ISC_TRUE;
+#ifndef WIN32
 	subprocs = 1;
+#endif
 	T_timeout = T_TCTOUT;
 
 	/*
 	 * -a option is now default.
 	 */
-	memset(T_tvec, 0xffff, sizeof(T_tvec));
+	memset(T_tvec, 0xff, sizeof(T_tvec));
 
 	/*
 	 * Parse args.
@@ -136,7 +150,7 @@ main(int argc, char **argv) {
 			/*
 			 * Flag all tests to be run.
 			 */
-			memset(T_tvec, 0xffff, sizeof(T_tvec));
+			memset(T_tvec, 0xff, sizeof(T_tvec));
 		}
 		else if (c == 'b') {
 			T_dir = isc_commandline_argument;
@@ -198,7 +212,9 @@ main(int argc, char **argv) {
 			exit(0);
 		}
 		else if (c == 'x') {
+#ifndef WIN32
 			subprocs = 0;
+#endif
 		}
 		else if (c == 'q') {
 			T_timeout = atoi(isc_commandline_argument);
@@ -219,8 +235,10 @@ main(int argc, char **argv) {
 	 * Set cwd.
 	 */
 
-	if (T_dir != NULL)
-		(void) chdir(T_dir);
+	if (T_dir != NULL && chdir(T_dir) != 0) {
+		fprintf(stderr, "chdir %s failed\n", T_dir);
+		exit(1);
+	}
 
 	/*
 	 * We don't want buffered output.
@@ -233,27 +251,20 @@ main(int argc, char **argv) {
 	 * Setup signals.
 	 */
 
+#ifndef WIN32
 	sa.sa_flags = 0;
 	sigfillset(&sa.sa_mask);
-
-#ifdef SIGCHLD
-	/*
-	 * This is mostly here for NetBSD's pthread implementation, until
-	 * people catch up to the latest unproven-pthread package.
-	 */
-	sa.sa_handler = SIG_DFL;
-	(void)sigaction(SIGCHLD, &sa, NULL);
-#endif
 
 	sa.sa_handler = t_sighandler;
 	(void)sigaction(SIGINT,  &sa, NULL);
 	(void)sigaction(SIGALRM, &sa, NULL);
+#endif
 
 	/*
 	 * Output start stanza to journal.
 	 */
 
-	sprintf(T_buf, "%s:", argv[0]);
+	snprintf(T_buf, sizeof(T_buf), "%s:", argv[0]);
 	len = strlen(T_buf);
 	(void) t_getdate(T_buf + len, T_BIGBUF - len);
 	t_putinfo("S", T_buf);
@@ -275,8 +286,9 @@ main(int argc, char **argv) {
 
 	tnum = 0;
 	pts = &T_testlist[0];
-	while (*pts->pfv != NULL) {
+	while (pts->pfv != NULL) {
 		if (T_tvec[tnum / 8] & (0x01 << (tnum % 8))) {
+#ifndef WIN32
 			if (subprocs) {
 				T_pid = fork();
 				if (T_pid == 0) {
@@ -301,8 +313,8 @@ main(int argc, char **argv) {
 						  "the test case timed out\n");
 							else
 								t_info(
-				         "the test case caused exception %d\n",
-					 		     WTERMSIG(status));
+					 "the test case caused exception %d\n",
+							     WTERMSIG(status));
 							t_result(T_UNRESOLVED);
 						    }
 					    } else if ((deadpid == -1) &&
@@ -329,12 +341,15 @@ main(int argc, char **argv) {
 			else {
 				(*pts->pfv)();
 			}
+#else
+			(*pts->pfv)();
+#endif
 		}
 		++pts;
 		++tnum;
 	}
 
-	sprintf(T_buf, "%s:", argv[0]);
+	snprintf(T_buf, sizeof(T_buf), "%s:", argv[0]);
 	len = strlen(T_buf);
 	(void) t_getdate(T_buf + len, T_BIGBUF - len);
 	t_putinfo("E", T_buf);
@@ -345,6 +360,7 @@ main(int argc, char **argv) {
 void
 t_assert(const char *component, int anum, int class, const char *what, ...) {
 	va_list	args;
+	char buf[T_BIGBUF];
 
 	(void)printf("T:%s:%d:%s\n", component, anum, class == T_REQUIRED ?
 		     "A" : "C");
@@ -353,21 +369,22 @@ t_assert(const char *component, int anum, int class, const char *what, ...) {
 	 * Format text to a buffer.
 	 */
 	va_start(args, what);
-	(void)vsprintf(T_buf, what, args);
+	(void)vsnprintf(buf, sizeof(buf), what, args);
 	va_end(args);
 
-	(void)t_putinfo("A", T_buf);
+	(void)t_putinfo("A", buf);
 	(void)printf("\n");
 }
 
 void
 t_info(const char *format, ...) {
 	va_list	args;
+	char buf[T_BIGBUF];
 
 	va_start(args, format);
-	(void) vsprintf(T_buf, format, args);
+	(void) vsnprintf(buf, sizeof(buf), format, args);
 	va_end(args);
-	(void) t_putinfo("I", T_buf);
+	(void) t_putinfo("I", buf);
 }
 
 void
@@ -384,11 +401,17 @@ t_result(int result) {
 		case T_UNRESOLVED:
 			p = "UNRESOLVED";
 			break;
-		case T_UNSUPPORTED:
-			p = "UNSUPPORTED";
+		case T_SKIPPED:
+			p = "SKIPPED";
 			break;
 		case T_UNTESTED:
 			p = "UNTESTED";
+			break;
+		case T_THREADONLY:
+			p = "THREADONLY";
+			break;
+		case T_PKCS11ONLY:
+			p = "PKCS11ONLY";
 			break;
 		default:
 			p = "UNKNOWN";
@@ -508,18 +531,18 @@ t_fgetbs(FILE *fp) {
 	int	c;
 	size_t	n;
 	size_t	size;
-	char	*buf;
+	char	*buf, *old;
 	char	*p;
 
-	n	= 0;
-	size	= T_BUFSIZ;
-	buf	= (char *) malloc(T_BUFSIZ * sizeof(char));
+	n = 0;
+	size = T_BUFSIZ;
+	old = buf = (char *) malloc(T_BUFSIZ * sizeof(char));
 
 	if (buf != NULL) {
 		p = buf;
 		while ((c = fgetc(fp)) != EOF) {
 
-			if (c == '\n')
+			if ((c == '\r') || (c == '\n'))
 				break;
 
 			*p++ = c;
@@ -529,14 +552,22 @@ t_fgetbs(FILE *fp) {
 				buf = (char *)realloc(buf,
 						      size * sizeof(char));
 				if (buf == NULL)
-					break;
+					goto err;
+				old = buf;
 				p = buf + n;
 			}
 		}
 		*p = '\0';
-		return(((c == EOF) && (n == 0U)) ? NULL : buf);
+		if (c == EOF && n == 0U) {
+			free(buf);
+			return (NULL);
+		}
+		return (buf);
 	} else {
-		fprintf(stderr, "malloc failed %d", errno);
+ err:
+		if (old != NULL)
+			free(old);
+		fprintf(stderr, "malloc/realloc failed %d", errno);
 		return(NULL);
 	}
 }
@@ -588,8 +619,8 @@ struct dns_errormap {
 	{ ISC_R_RANGE,			"ISC_R_RANGE"		},
 	{ DNS_R_LABELTOOLONG,		"DNS_R_LABELTOOLONG"	},
 	{ DNS_R_BADESCAPE,		"DNS_R_BADESCAPE"	},
-	{ DNS_R_BADBITSTRING,		"DNS_R_BADBITSTRING"	},
-	{ DNS_R_BITSTRINGTOOLONG,	"DNS_R_BITSTRINGTOOLONG"},
+	/* { DNS_R_BADBITSTRING,	"DNS_R_BADBITSTRING"	}, */
+	/* { DNS_R_BITSTRINGTOOLONG,	"DNS_R_BITSTRINGTOOLONG"}, */
 	{ DNS_R_EMPTYLABEL,		"DNS_R_EMPTYLABEL"	},
 	{ DNS_R_BADDOTTEDQUAD,		"DNS_R_BADDOTTEDQUAD"	},
 	{ DNS_R_UNKNOWN,		"DNS_R_UNKNOWN"		},
@@ -722,11 +753,13 @@ t_eval(const char *filename, int (*func)(char **), int nargs) {
 	int		line;
 	int		cnt;
 	int		result;
+	int		tresult;
 	int		nfails;
 	int		nprobs;
 	int		npass;
 	char		*tokens[T_MAXTOKS + 1];
 
+	tresult = T_UNTESTED;
 	npass = 0;
 	nfails = 0;
 	nprobs = 0;
@@ -741,19 +774,22 @@ t_eval(const char *filename, int (*func)(char **), int nargs) {
 			/*
 			 * Skip comment lines.
 			 */
-			if ((isspace((unsigned char)*p)) || (*p == '#'))
+			if ((isspace((unsigned char)*p)) || (*p == '#')) {
+				(void)free(p);
 				continue;
+			}
 
 			cnt = t_bustline(p, tokens);
 			if (cnt == nargs) {
-				result = func(tokens);
-				switch (result) {
+				tresult = func(tokens);
+				switch (tresult) {
 				case T_PASS:
 					++npass;
 					break;
 				case T_FAIL:
 					++nfails;
 					break;
+				case T_SKIPPED:
 				case T_UNTESTED:
 					break;
 				default:
@@ -781,7 +817,24 @@ t_eval(const char *filename, int (*func)(char **), int nargs) {
 	else if (nfails > 0)
 		result = T_FAIL;
 	else if (npass == 0)
-		result = T_UNTESTED;
+		result = tresult;
 
 	return (result);
 }
+
+#ifdef WIN32
+void
+t_settests(const testspec_t list[]) {
+	int			tnum;
+	const testspec_t	*pts;
+
+	memset(T_testlist, 0, sizeof(T_testlist));
+
+	pts = &list[0];
+	for (tnum = 0; tnum < T_MAXTESTS - 1; pts++, tnum++) {
+		if (pts->pfv == NULL)
+			break;
+		T_testlist[tnum] = *pts;
+	}
+}
+#endif

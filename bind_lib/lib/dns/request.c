@@ -1,21 +1,14 @@
 /*
- * Copyright (C) 2000, 2001  Internet Software Consortium.
+ * Copyright (C) 2000-2002, 2004-2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: request.c,v 1.64.2.1 2001/08/31 02:07:11 marka Exp $ */
+/* $Id$ */
+
+/*! \file */
 
 #include <config.h>
 
@@ -85,14 +78,17 @@ struct dns_request {
 	dns_tsigkey_t		       *tsigkey;
 	isc_event_t			ctlevent;
 	isc_boolean_t			canceling; /* ctlevent outstanding */
+	isc_sockaddr_t			destaddr;
+	unsigned int			udpcount;
+	isc_dscp_t			dscp;
 };
 
 #define DNS_REQUEST_F_CONNECTING 0x0001
 #define DNS_REQUEST_F_SENDING 0x0002
-#define DNS_REQUEST_F_CANCELED 0x0004	/* ctlevent received, or otherwise
+#define DNS_REQUEST_F_CANCELED 0x0004	/*%< ctlevent received, or otherwise
 					   synchronously canceled */
-#define DNS_REQUEST_F_TIMEDOUT 0x0008	/* cancelled due to a timeout */
-#define DNS_REQUEST_F_TCP 0x0010	/* This request used TCP */
+#define DNS_REQUEST_F_TIMEDOUT 0x0008	/*%< canceled due to a timeout */
+#define DNS_REQUEST_F_TCP 0x0010	/*%< This request used TCP */
 #define DNS_REQUEST_CANCELED(r) \
 	(((r)->flags & DNS_REQUEST_F_CANCELED) != 0)
 #define DNS_REQUEST_CONNECTING(r) \
@@ -117,6 +113,7 @@ static isc_result_t req_render(dns_message_t *message, isc_buffer_t **buffer,
 static void req_senddone(isc_task_t *task, isc_event_t *event);
 static void req_response(isc_task_t *task, isc_event_t *event);
 static void req_timeout(isc_task_t *task, isc_event_t *event);
+static isc_socket_t * req_getsocket(dns_request_t *request);
 static void req_connected(isc_task_t *task, isc_event_t *event);
 static void req_sendevent(dns_request_t *request, isc_result_t result);
 static void req_cancel(dns_request_t *request);
@@ -139,9 +136,10 @@ dns_requestmgr_create(isc_mem_t *mctx,
 		      dns_requestmgr_t **requestmgrp)
 {
 	dns_requestmgr_t *requestmgr;
-	isc_socket_t *socket;
+	isc_socket_t *sock;
 	isc_result_t result;
 	int i;
+	unsigned int dispattr;
 
 	req_log(ISC_LOG_DEBUG(3), "dns_requestmgr_create");
 
@@ -150,13 +148,14 @@ dns_requestmgr_create(isc_mem_t *mctx,
 	REQUIRE(socketmgr != NULL);
 	REQUIRE(taskmgr != NULL);
 	REQUIRE(dispatchmgr != NULL);
+	UNUSED(sock);
 	if (dispatchv4 != NULL) {
-		socket = dns_dispatch_getsocket(dispatchv4);
-		REQUIRE(isc_socket_gettype(socket) == isc_sockettype_udp);
+		dispattr = dns_dispatch_getattributes(dispatchv4);
+		REQUIRE((dispattr & DNS_DISPATCHATTR_UDP) != 0);
 	}
 	if (dispatchv6 != NULL) {
-		socket = dns_dispatch_getsocket(dispatchv6);
-		REQUIRE(isc_socket_gettype(socket) == isc_sockettype_udp);
+		dispattr = dns_dispatch_getattributes(dispatchv6);
+		REQUIRE((dispattr & DNS_DISPATCHATTR_UDP) != 0);
 	}
 
 	requestmgr = isc_mem_get(mctx, sizeof(*requestmgr));
@@ -190,7 +189,7 @@ dns_requestmgr_create(isc_mem_t *mctx,
 		dns_dispatch_attach(dispatchv6, &requestmgr->dispatchv6);
 	requestmgr->mctx = NULL;
 	isc_mem_attach(mctx, &requestmgr->mctx);
-	requestmgr->eref = 1;	/* implict attach */
+	requestmgr->eref = 1;	/* implicit attach */
 	requestmgr->iref = 0;
 	ISC_LIST_INIT(requestmgr->whenshutdown);
 	ISC_LIST_INIT(requestmgr->requests);
@@ -208,7 +207,7 @@ void
 dns_requestmgr_whenshutdown(dns_requestmgr_t *requestmgr, isc_task_t *task,
 			    isc_event_t **eventp)
 {
-	isc_task_t *clone;
+	isc_task_t *tclone;
 	isc_event_t *event;
 
 	req_log(ISC_LOG_DEBUG(3), "dns_requestmgr_whenshutdown");
@@ -228,9 +227,9 @@ dns_requestmgr_whenshutdown(dns_requestmgr_t *requestmgr, isc_task_t *task,
 		event->ev_sender = requestmgr;
 		isc_task_send(task, &event);
 	} else {
-		clone = NULL;
-		isc_task_attach(task, &clone);
-		event->ev_sender = clone;
+		tclone = NULL;
+		isc_task_attach(task, &tclone);
+		event->ev_sender = tclone;
 		ISC_LIST_APPEND(requestmgr->whenshutdown, event, ev_link);
 	}
 	UNLOCK(&requestmgr->lock);
@@ -402,7 +401,7 @@ mgr_destroy(dns_requestmgr_t *requestmgr) {
 		dns_dispatch_detach(&requestmgr->dispatchv6);
 	requestmgr->magic = 0;
 	mctx = requestmgr->mctx;
-	isc_mem_put(mctx, requestmgr, sizeof *requestmgr);
+	isc_mem_put(mctx, requestmgr, sizeof(*requestmgr));
 	isc_mem_detach(&mctx);
 }
 
@@ -419,23 +418,43 @@ mgr_gethash(dns_requestmgr_t *requestmgr) {
 static inline isc_result_t
 req_send(dns_request_t *request, isc_task_t *task, isc_sockaddr_t *address) {
 	isc_region_t r;
-	isc_socket_t *socket;
+	isc_socket_t *sock;
+	isc_socketevent_t *sendevent;
 	isc_result_t result;
 
 	req_log(ISC_LOG_DEBUG(3), "req_send: request %p", request);
 
 	REQUIRE(VALID_REQUEST(request));
-	socket = dns_dispatch_getsocket(request->dispatch);
+	sock = req_getsocket(request);
 	isc_buffer_usedregion(request->query, &r);
-	result = isc_socket_sendto(socket, &r, task, req_senddone,
-				  request, address, NULL);
+	/*
+	 * We could connect the socket when we are using an exclusive dispatch
+	 * as we do in resolver.c, but we prefer implementation simplicity
+	 * at this moment.
+	 */
+	sendevent = isc_socket_socketevent(request->mctx, sock,
+					   ISC_SOCKEVENT_SENDDONE,
+					   req_senddone, request);
+	if (sendevent == NULL)
+		return (ISC_R_NOMEMORY);
+	if (request->dscp == -1) {
+		sendevent->attributes &= ~ISC_SOCKEVENTATTR_DSCP;
+		sendevent->dscp = 0;
+	} else {
+		sendevent->attributes |= ISC_SOCKEVENTATTR_DSCP;
+		sendevent->dscp = request->dscp;
+	}
+
+	result = isc_socket_sendto2(sock, &r, task, address, NULL,
+				    sendevent, 0);
 	if (result == ISC_R_SUCCESS)
 		request->flags |= DNS_REQUEST_F_SENDING;
 	return (result);
 }
 
 static isc_result_t
-new_request(isc_mem_t *mctx, dns_request_t **requestp) {
+new_request(isc_mem_t *mctx, dns_request_t **requestp)
+{
 	dns_request_t *request;
 
 	request = isc_mem_get(mctx, sizeof(*request));
@@ -458,10 +477,12 @@ new_request(isc_mem_t *mctx, dns_request_t **requestp) {
 	request->requestmgr = NULL;
 	request->tsig = NULL;
 	request->tsigkey = NULL;
+	request->dscp = -1;
 	ISC_EVENT_INIT(&request->ctlevent, sizeof(request->ctlevent), 0, NULL,
 		       DNS_EVENT_REQUESTCONTROL, do_cancel, request, NULL,
 		       NULL, NULL);
 	request->canceling = ISC_FALSE;
+	request->udpcount = 0;
 
 	isc_mem_attach(mctx, &request->mctx);
 
@@ -495,45 +516,80 @@ isblackholed(dns_dispatchmgr_t *dispatchmgr, isc_sockaddr_t *destaddr) {
 }
 
 static isc_result_t
-create_tcp_dispatch(dns_requestmgr_t *requestmgr, isc_sockaddr_t *srcaddr,
-		    isc_sockaddr_t *destaddr, dns_dispatch_t **dispatchp)
+create_tcp_dispatch(isc_boolean_t newtcp, isc_boolean_t share,
+		    dns_requestmgr_t *requestmgr,
+		    isc_sockaddr_t *srcaddr,
+		    isc_sockaddr_t *destaddr, isc_dscp_t dscp,
+		    isc_boolean_t *connected, dns_dispatch_t **dispatchp)
 {
 	isc_result_t result;
-	isc_socket_t *socket = NULL;
+	isc_socket_t *sock = NULL;
 	isc_sockaddr_t src;
 	unsigned int attrs;
 	isc_sockaddr_t bind_any;
 
+	if (!newtcp && share) {
+		result = dns_dispatch_gettcp2(requestmgr->dispatchmgr,
+					      destaddr, srcaddr,
+					      connected, dispatchp);
+		if (result == ISC_R_SUCCESS) {
+			char peer[ISC_SOCKADDR_FORMATSIZE];
+
+			isc_sockaddr_format(destaddr, peer, sizeof(peer));
+			req_log(ISC_LOG_DEBUG(1), "attached to %s TCP "
+				"connection to %s",
+				*connected ? "existing" : "pending", peer);
+			return (result);
+		}
+	} else if (!newtcp) {
+		result = dns_dispatch_gettcp(requestmgr->dispatchmgr, destaddr,
+					     srcaddr, dispatchp);
+		if (result == ISC_R_SUCCESS) {
+			char peer[ISC_SOCKADDR_FORMATSIZE];
+
+			*connected = ISC_TRUE;
+			isc_sockaddr_format(destaddr, peer, sizeof(peer));
+			req_log(ISC_LOG_DEBUG(1), "attached to existing TCP "
+				"connection to %s", peer);
+			return (result);
+		}
+	}
+
 	result = isc_socket_create(requestmgr->socketmgr,
 				   isc_sockaddr_pf(destaddr),
-				   isc_sockettype_tcp, &socket);
+				   isc_sockettype_tcp, &sock);
 	if (result != ISC_R_SUCCESS)
 		return (result);
+#ifndef BROKEN_TCP_BIND_BEFORE_CONNECT
 	if (srcaddr == NULL) {
 		isc_sockaddr_anyofpf(&bind_any,
 				     isc_sockaddr_pf(destaddr));
-		result = isc_socket_bind(socket, &bind_any);
+		result = isc_socket_bind(sock, &bind_any, 0);
 	} else {
 		src = *srcaddr;
 		isc_sockaddr_setport(&src, 0);
-		result = isc_socket_bind(socket, &src);
+		result = isc_socket_bind(sock, &src, 0);
 	}
 	if (result != ISC_R_SUCCESS)
 		goto cleanup;
+#endif
+
 	attrs = 0;
 	attrs |= DNS_DISPATCHATTR_TCP;
-	attrs |= DNS_DISPATCHATTR_PRIVATE;
 	if (isc_sockaddr_pf(destaddr) == AF_INET)
 		attrs |= DNS_DISPATCHATTR_IPV4;
 	else
 		attrs |= DNS_DISPATCHATTR_IPV6;
 	attrs |= DNS_DISPATCHATTR_MAKEQUERY;
-	result = dns_dispatch_createtcp(requestmgr->dispatchmgr,
-					socket, requestmgr->taskmgr,
-					4096, 2, 1, 1, 3, attrs,
-					dispatchp);
+
+	isc_socket_dscp(sock, dscp);
+	result = dns_dispatch_createtcp2(requestmgr->dispatchmgr,
+					 sock, requestmgr->taskmgr,
+					 srcaddr, destaddr,
+					 4096, 32768, 32768, 16411, 16433,
+					 attrs, dispatchp);
 cleanup:
-	isc_socket_detach(&socket);
+	isc_socket_detach(&sock);
 	return (result);
 }
 
@@ -585,20 +641,24 @@ find_udp_dispatch(dns_requestmgr_t *requestmgr, isc_sockaddr_t *srcaddr,
 				    requestmgr->socketmgr,
 				    requestmgr->taskmgr,
 				    srcaddr, 4096,
-				    1000, 32768, 16411, 16433,
+				    32768, 32768, 16411, 16433,
 				    attrs, attrmask,
 				    dispatchp));
 }
 
 static isc_result_t
-get_dispatch(isc_boolean_t tcp, dns_requestmgr_t *requestmgr,
+get_dispatch(isc_boolean_t tcp, isc_boolean_t newtcp, isc_boolean_t share,
+	     dns_requestmgr_t *requestmgr,
 	     isc_sockaddr_t *srcaddr, isc_sockaddr_t *destaddr,
+	     isc_dscp_t dscp, isc_boolean_t *connected,
 	     dns_dispatch_t **dispatchp)
 {
 	isc_result_t result;
+
 	if (tcp)
-		result = create_tcp_dispatch(requestmgr, srcaddr,
-					     destaddr, dispatchp);
+		result = create_tcp_dispatch(newtcp, share, requestmgr,
+					     srcaddr, destaddr, dscp,
+					     connected, dispatchp);
 	else
 		result = find_udp_dispatch(requestmgr, srcaddr,
 					   destaddr, dispatchp);
@@ -606,17 +666,20 @@ get_dispatch(isc_boolean_t tcp, dns_requestmgr_t *requestmgr,
 }
 
 static isc_result_t
-set_timer(isc_timer_t *timer, unsigned int timeout) {
+set_timer(isc_timer_t *timer, unsigned int timeout, unsigned int udpresend) {
 	isc_time_t expires;
 	isc_interval_t interval;
 	isc_result_t result;
+	isc_timertype_t timertype;
 
 	isc_interval_set(&interval, timeout, 0);
 	result = isc_time_nowplusinterval(&expires, &interval);
+	isc_interval_set(&interval, udpresend, 0);
 
+	timertype = udpresend != 0 ? isc_timertype_limited : isc_timertype_once;
 	if (result == ISC_R_SUCCESS)
-		result = isc_timer_reset(timer, isc_timertype_once, &expires,
-					 NULL, ISC_FALSE);
+		result = isc_timer_reset(timer, timertype, &expires,
+					 &interval, ISC_FALSE);
 	return (result);
 }
 
@@ -627,14 +690,65 @@ dns_request_createraw(dns_requestmgr_t *requestmgr, isc_buffer_t *msgbuf,
 		      isc_task_t *task, isc_taskaction_t action, void *arg,
 		      dns_request_t **requestp)
 {
+	return(dns_request_createraw4(requestmgr, msgbuf, srcaddr, destaddr,
+				      -1, options, timeout, 0, 0, task, action,
+				      arg, requestp));
+}
+
+isc_result_t
+dns_request_createraw2(dns_requestmgr_t *requestmgr, isc_buffer_t *msgbuf,
+		       isc_sockaddr_t *srcaddr, isc_sockaddr_t *destaddr,
+		       unsigned int options, unsigned int timeout,
+		       unsigned int udptimeout, isc_task_t *task,
+		       isc_taskaction_t action, void *arg,
+		       dns_request_t **requestp)
+{
+	unsigned int udpretries = 0;
+
+	if (udptimeout != 0)
+		udpretries = timeout / udptimeout;
+
+	return (dns_request_createraw4(requestmgr, msgbuf, srcaddr, destaddr,
+				       -1, options, timeout, udptimeout,
+				       udpretries, task, action, arg,
+				       requestp));
+}
+
+isc_result_t
+dns_request_createraw3(dns_requestmgr_t *requestmgr, isc_buffer_t *msgbuf,
+		       isc_sockaddr_t *srcaddr, isc_sockaddr_t *destaddr,
+		       unsigned int options, unsigned int timeout,
+		       unsigned int udptimeout, unsigned int udpretries,
+		       isc_task_t *task, isc_taskaction_t action, void *arg,
+		       dns_request_t **requestp)
+{
+	return (dns_request_createraw4(requestmgr, msgbuf, srcaddr, destaddr,
+				       -1, options, timeout, udptimeout,
+				       udpretries, task, action, arg,
+				       requestp));
+}
+
+isc_result_t
+dns_request_createraw4(dns_requestmgr_t *requestmgr, isc_buffer_t *msgbuf,
+		       isc_sockaddr_t *srcaddr, isc_sockaddr_t *destaddr,
+		       isc_dscp_t dscp, unsigned int options,
+		       unsigned int timeout, unsigned int udptimeout,
+		       unsigned int udpretries, isc_task_t *task,
+		       isc_taskaction_t action, void *arg,
+		       dns_request_t **requestp)
+{
 	dns_request_t *request = NULL;
 	isc_task_t *tclone = NULL;
-	isc_socket_t *socket = NULL;
+	isc_socket_t *sock = NULL;
 	isc_result_t result;
 	isc_mem_t *mctx;
 	dns_messageid_t	id;
 	isc_boolean_t tcp = ISC_FALSE;
+	isc_boolean_t newtcp = ISC_FALSE;
+	isc_boolean_t share = ISC_FALSE;
 	isc_region_t r;
+	isc_boolean_t connected = ISC_FALSE;
+	unsigned int dispopt = 0;
 
 	REQUIRE(VALID_REQUESTMGR(requestmgr));
 	REQUIRE(msgbuf != NULL);
@@ -643,7 +757,7 @@ dns_request_createraw(dns_requestmgr_t *requestmgr, isc_buffer_t *msgbuf,
 	REQUIRE(action != NULL);
 	REQUIRE(requestp != NULL && *requestp == NULL);
 	REQUIRE(timeout > 0);
-	if (srcaddr != NULL) 
+	if (srcaddr != NULL)
 		REQUIRE(isc_sockaddr_pf(srcaddr) == isc_sockaddr_pf(destaddr));
 
 	mctx = requestmgr->mctx;
@@ -658,6 +772,14 @@ dns_request_createraw(dns_requestmgr_t *requestmgr, isc_buffer_t *msgbuf,
 	if (result != ISC_R_SUCCESS)
 		return (result);
 
+	if (udptimeout == 0 && udpretries != 0) {
+		udptimeout = timeout / (udpretries + 1);
+		if (udptimeout == 0)
+			udptimeout = 1;
+	}
+	request->udpcount = udpretries;
+	request->dscp = dscp;
+
 	/*
 	 * Create timer now.  We will set it below once.
 	 */
@@ -669,7 +791,7 @@ dns_request_createraw(dns_requestmgr_t *requestmgr, isc_buffer_t *msgbuf,
 
 	request->event = (dns_requestevent_t *)
 		isc_event_allocate(mctx, task, DNS_EVENT_REQUESTDONE,
-				   action, arg, sizeof (dns_requestevent_t));
+				   action, arg, sizeof(dns_requestevent_t));
 	if (request->event == NULL) {
 		result = ISC_R_NOMEMORY;
 		goto cleanup;
@@ -684,22 +806,39 @@ dns_request_createraw(dns_requestmgr_t *requestmgr, isc_buffer_t *msgbuf,
 		result = DNS_R_FORMERR;
 		goto cleanup;
 	}
-		
+
 	if ((options & DNS_REQUESTOPT_TCP) != 0 || r.length > 512)
 		tcp = ISC_TRUE;
+	share = ISC_TF((options & DNS_REQUESTOPT_SHARE) != 0);
 
-	result = get_dispatch(tcp, requestmgr, srcaddr, destaddr,
-			      &request->dispatch);
+ again:
+	result = get_dispatch(tcp, newtcp, share, requestmgr,
+			      srcaddr, destaddr, dscp,
+			      &connected, &request->dispatch);
 	if (result != ISC_R_SUCCESS)
 		goto cleanup;
 
-	socket = dns_dispatch_getsocket(request->dispatch);
-	INSIST(socket != NULL);
-	result = dns_dispatch_addresponse(request->dispatch, destaddr, task,
-					  req_response, request, &id,
-					  &request->dispentry);
-	if (result != ISC_R_SUCCESS)
+	if ((options & DNS_REQUESTOPT_FIXEDID) != 0) {
+		id = (r.base[0] << 8) | r.base[1];
+		dispopt |= DNS_DISPATCHOPT_FIXEDID;
+	}
+
+	result = dns_dispatch_addresponse3(request->dispatch, dispopt,
+					   destaddr, task, req_response,
+					   request, &id, &request->dispentry,
+					   requestmgr->socketmgr);
+	if (result != ISC_R_SUCCESS) {
+		if ((options & DNS_REQUESTOPT_FIXEDID) != 0 && !newtcp) {
+			newtcp = ISC_TRUE;
+			connected = ISC_FALSE;
+			dns_dispatch_detach(&request->dispatch);
+			goto again;
+		}
 		goto cleanup;
+	}
+
+	sock = req_getsocket(request);
+	INSIST(sock != NULL);
 
 	result = isc_buffer_allocate(mctx, &request->query,
 				     r.length + (tcp ? 2 : 0));
@@ -729,18 +868,19 @@ dns_request_createraw(dns_requestmgr_t *requestmgr, isc_buffer_t *msgbuf,
 	ISC_LIST_APPEND(requestmgr->requests, request, link);
 	UNLOCK(&requestmgr->lock);
 
-	result = set_timer(request->timer, timeout);
+	result = set_timer(request->timer, timeout, tcp ? 0 : udptimeout);
 	if (result != ISC_R_SUCCESS)
 		goto unlink;
 
-	if ((options & DNS_REQUESTOPT_TCP) != 0) {
-		result = isc_socket_connect(socket, destaddr, task,
+	request->destaddr = *destaddr;
+	if (tcp && !connected) {
+		result = isc_socket_connect(sock, destaddr, task,
 					    req_connected, request);
 		if (result != ISC_R_SUCCESS)
 			goto unlink;
 		request->flags |= DNS_REQUEST_F_CONNECTING|DNS_REQUEST_F_TCP;
 	} else {
-		result = req_send(request, task, destaddr);
+		result = req_send(request, task, connected ? NULL : destaddr);
 		if (result != ISC_R_SUCCESS)
 			goto unlink;
 	}
@@ -772,9 +912,9 @@ dns_request_create(dns_requestmgr_t *requestmgr, dns_message_t *message,
 		   isc_taskaction_t action, void *arg,
 		   dns_request_t **requestp)
 {
-	return (dns_request_createvia(requestmgr, message, NULL, address,
-				      options, key, timeout, task, action,
-				      arg, requestp));
+	return (dns_request_createvia4(requestmgr, message, NULL, address,
+				       -1, options, key, timeout, 0, 0, task,
+				       action, arg, requestp));
 }
 
 isc_result_t
@@ -785,14 +925,63 @@ dns_request_createvia(dns_requestmgr_t *requestmgr, dns_message_t *message,
 		      isc_taskaction_t action, void *arg,
 		      dns_request_t **requestp)
 {
+	return(dns_request_createvia4(requestmgr, message, srcaddr, destaddr,
+				      -1, options, key, timeout, 0, 0, task,
+				      action, arg, requestp));
+}
+
+isc_result_t
+dns_request_createvia2(dns_requestmgr_t *requestmgr, dns_message_t *message,
+		       isc_sockaddr_t *srcaddr, isc_sockaddr_t *destaddr,
+		       unsigned int options, dns_tsigkey_t *key,
+		       unsigned int timeout, unsigned int udptimeout,
+		       isc_task_t *task, isc_taskaction_t action, void *arg,
+		       dns_request_t **requestp)
+{
+	unsigned int udpretries = 0;
+
+	if (udptimeout != 0)
+		udpretries = timeout / udptimeout;
+	return (dns_request_createvia4(requestmgr, message, srcaddr, destaddr,
+				       -1, options, key, timeout, udptimeout,
+				       udpretries, task, action, arg,
+				       requestp));
+}
+
+isc_result_t
+dns_request_createvia3(dns_requestmgr_t *requestmgr, dns_message_t *message,
+		       isc_sockaddr_t *srcaddr, isc_sockaddr_t *destaddr,
+		       unsigned int options, dns_tsigkey_t *key,
+		       unsigned int timeout, unsigned int udptimeout,
+		       unsigned int udpretries, isc_task_t *task,
+		       isc_taskaction_t action, void *arg,
+		       dns_request_t **requestp)
+{
+	return (dns_request_createvia4(requestmgr, message, srcaddr, destaddr,
+				       -1, options, key, timeout, udptimeout,
+				       udpretries, task, action, arg,
+				       requestp));
+}
+
+isc_result_t
+dns_request_createvia4(dns_requestmgr_t *requestmgr, dns_message_t *message,
+		       isc_sockaddr_t *srcaddr, isc_sockaddr_t *destaddr,
+		       isc_dscp_t dscp, unsigned int options,
+		       dns_tsigkey_t *key, unsigned int timeout,
+		       unsigned int udptimeout, unsigned int udpretries,
+		       isc_task_t *task, isc_taskaction_t action, void *arg,
+		       dns_request_t **requestp)
+{
 	dns_request_t *request = NULL;
 	isc_task_t *tclone = NULL;
-	isc_socket_t *socket = NULL;
+	isc_socket_t *sock = NULL;
 	isc_result_t result;
 	isc_mem_t *mctx;
 	dns_messageid_t	id;
 	isc_boolean_t tcp;
-	isc_boolean_t setkey = ISC_TRUE;
+	isc_boolean_t share;
+	isc_boolean_t settsigkey = ISC_TRUE;
+	isc_boolean_t connected = ISC_FALSE;
 
 	REQUIRE(VALID_REQUESTMGR(requestmgr));
 	REQUIRE(message != NULL);
@@ -801,12 +990,14 @@ dns_request_createvia(dns_requestmgr_t *requestmgr, dns_message_t *message,
 	REQUIRE(action != NULL);
 	REQUIRE(requestp != NULL && *requestp == NULL);
 	REQUIRE(timeout > 0);
-	if (srcaddr != NULL) 
-		REQUIRE(isc_sockaddr_pf(srcaddr) == isc_sockaddr_pf(destaddr));
 
 	mctx = requestmgr->mctx;
 
 	req_log(ISC_LOG_DEBUG(3), "dns_request_createvia");
+
+	if (srcaddr != NULL &&
+	    isc_sockaddr_pf(srcaddr) != isc_sockaddr_pf(destaddr))
+		return (ISC_R_FAMILYMISMATCH);
 
 	if (isblackholed(requestmgr->dispatchmgr, destaddr))
 		return (DNS_R_BLACKHOLED);
@@ -815,6 +1006,14 @@ dns_request_createvia(dns_requestmgr_t *requestmgr, dns_message_t *message,
 	result = new_request(mctx, &request);
 	if (result != ISC_R_SUCCESS)
 		return (result);
+
+	if (udptimeout == 0 && udpretries != 0) {
+		udptimeout = timeout / (udpretries + 1);
+		if (udptimeout == 0)
+			udptimeout = 1;
+	}
+	request->udpcount = udpretries;
+	request->dscp = dscp;
 
 	/*
 	 * Create timer now.  We will set it below once.
@@ -827,7 +1026,7 @@ dns_request_createvia(dns_requestmgr_t *requestmgr, dns_message_t *message,
 
 	request->event = (dns_requestevent_t *)
 		isc_event_allocate(mctx, task, DNS_EVENT_REQUESTDONE,
-				   action, arg, sizeof (dns_requestevent_t));
+				   action, arg, sizeof(dns_requestevent_t));
 	if (request->event == NULL) {
 		result = ISC_R_NOMEMORY;
 		goto cleanup;
@@ -841,22 +1040,28 @@ dns_request_createvia(dns_requestmgr_t *requestmgr, dns_message_t *message,
 
  use_tcp:
 	tcp = ISC_TF((options & DNS_REQUESTOPT_TCP) != 0);
-	result = get_dispatch(tcp, requestmgr, srcaddr, destaddr,
-			      &request->dispatch);
+	share = ISC_TF((options & DNS_REQUESTOPT_SHARE) != 0);
+	result = get_dispatch(tcp, ISC_FALSE, share,
+			      requestmgr, srcaddr, destaddr,
+			      dscp, &connected, &request->dispatch);
 	if (result != ISC_R_SUCCESS)
 		goto cleanup;
 
-	socket = dns_dispatch_getsocket(request->dispatch);
-	INSIST(socket != NULL);
-	result = dns_dispatch_addresponse(request->dispatch, destaddr, task,
-					  req_response, request, &id,
-					  &request->dispentry);
+	result = dns_dispatch_addresponse2(request->dispatch, destaddr, task,
+					   req_response, request, &id,
+					   &request->dispentry,
+					   requestmgr->socketmgr);
 	if (result != ISC_R_SUCCESS)
 		goto cleanup;
+	sock = req_getsocket(request);
+	INSIST(sock != NULL);
 
 	message->id = id;
-	if (setkey)
-		dns_message_settsigkey(message, request->tsigkey);
+	if (settsigkey) {
+		result = dns_message_settsigkey(message, request->tsigkey);
+		if (result != ISC_R_SUCCESS)
+			goto cleanup;
+	}
 	result = req_render(message, &request->query, options, mctx);
 	if (result == DNS_R_USETCP &&
 	    (options & DNS_REQUESTOPT_TCP) == 0) {
@@ -866,9 +1071,9 @@ dns_request_createvia(dns_requestmgr_t *requestmgr, dns_message_t *message,
 		dns_message_renderreset(message);
 		dns_dispatch_removeresponse(&request->dispentry, NULL);
 		dns_dispatch_detach(&request->dispatch);
-		socket = NULL;
+		sock = NULL;
 		options |= DNS_REQUESTOPT_TCP;
-		setkey = ISC_FALSE;
+		settsigkey = ISC_FALSE;
 		goto use_tcp;
 	}
 	if (result != ISC_R_SUCCESS)
@@ -889,18 +1094,19 @@ dns_request_createvia(dns_requestmgr_t *requestmgr, dns_message_t *message,
 	ISC_LIST_APPEND(requestmgr->requests, request, link);
 	UNLOCK(&requestmgr->lock);
 
-	result = set_timer(request->timer, timeout);
+	result = set_timer(request->timer, timeout, tcp ? 0 : udptimeout);
 	if (result != ISC_R_SUCCESS)
 		goto unlink;
 
-	if ((options & DNS_REQUESTOPT_TCP) != 0) {
-		result = isc_socket_connect(socket, destaddr, task,
+	request->destaddr = *destaddr;
+	if (tcp && !connected) {
+		result = isc_socket_connect(sock, destaddr, task,
 					    req_connected, request);
 		if (result != ISC_R_SUCCESS)
 			goto unlink;
 		request->flags |= DNS_REQUEST_F_CONNECTING|DNS_REQUEST_F_TCP;
 	} else {
-		result = req_send(request, task, destaddr);
+		result = req_send(request, task, connected ? NULL : destaddr);
 		if (result != ISC_R_SUCCESS)
 			goto unlink;
 	}
@@ -951,6 +1157,9 @@ req_render(dns_message_t *message, isc_buffer_t **bufferp,
 	if (result != ISC_R_SUCCESS)
 		return (result);
 	cleanup_cctx = ISC_TRUE;
+
+	if ((options & DNS_REQUESTOPT_CASE) != 0)
+		dns_compress_setsensitive(&cctx, ISC_TRUE);
 
 	/*
 	 * Render message.
@@ -1025,9 +1234,7 @@ req_render(dns_message_t *message, isc_buffer_t **bufferp,
  */
 static void
 send_if_done(dns_request_t *request, isc_result_t result) {
-	if (!DNS_REQUEST_CONNECTING(request) &&
-	    !DNS_REQUEST_SENDING(request) &&
-	    !request->canceling)
+	if (request->event != NULL && !request->canceling)
 		req_sendevent(request, result);
 }
 
@@ -1044,10 +1251,10 @@ do_cancel(isc_task_t *task, isc_event_t *event) {
 	if (!DNS_REQUEST_CANCELED(request))
 		req_cancel(request);
 	send_if_done(request, ISC_R_CANCELED);
-	UNLOCK(&request->requestmgr->locks[request->hash]);	
+	UNLOCK(&request->requestmgr->locks[request->hash]);
 }
 
-isc_result_t
+void
 dns_request_cancel(dns_request_t *request) {
 	REQUIRE(VALID_REQUEST(request));
 
@@ -1062,7 +1269,6 @@ dns_request_cancel(dns_request_t *request) {
 		request->canceling = ISC_TRUE;
 	}
 	UNLOCK(&request->requestmgr->locks[request->hash]);
-	return (ISC_R_SUCCESS);
 }
 
 isc_result_t
@@ -1077,8 +1283,12 @@ dns_request_getresponse(dns_request_t *request, dns_message_t *message,
 	req_log(ISC_LOG_DEBUG(3), "dns_request_getresponse: request %p",
 		request);
 
-	dns_message_setquerytsig(message, request->tsig);
-	dns_message_settsigkey(message, request->tsigkey);
+	result = dns_message_setquerytsig(message, request->tsig);
+	if (result != ISC_R_SUCCESS)
+		return (result);
+	result = dns_message_settsigkey(message, request->tsigkey);
+	if (result != ISC_R_SUCCESS)
+		return (result);
 	result = dns_message_parse(message, request->answer, options);
 	if (result != ISC_R_SUCCESS)
 		return (result);
@@ -1129,6 +1339,21 @@ dns_request_destroy(dns_request_t **requestp) {
 /***
  *** Private: request.
  ***/
+
+static isc_socket_t *
+req_getsocket(dns_request_t *request) {
+	unsigned int dispattr;
+	isc_socket_t *sock;
+
+	dispattr = dns_dispatch_getattributes(request->dispatch);
+	if ((dispattr & DNS_DISPATCHATTR_EXCLUSIVE) != 0) {
+		INSIST(request->dispentry != NULL);
+		sock = dns_dispatch_getentrysocket(request->dispentry);
+	} else
+		sock = dns_dispatch_getsocket(request->dispatch);
+
+	return (sock);
+}
 
 static void
 req_connected(isc_task_t *task, isc_event_t *event) {
@@ -1193,8 +1418,8 @@ req_senddone(isc_task_t *task, isc_event_t *event) {
 		else
 			send_if_done(request, ISC_R_CANCELED);
 	} else if (sevent->result != ISC_R_SUCCESS) {
-			req_cancel(request);
-			send_if_done(request, ISC_R_CANCELED);
+		req_cancel(request);
+		send_if_done(request, ISC_R_CANCELED);
 	}
 	UNLOCK(&request->requestmgr->locks[request->hash]);
 
@@ -1248,6 +1473,7 @@ req_response(isc_task_t *task, isc_event_t *event) {
 static void
 req_timeout(isc_task_t *task, isc_event_t *event) {
 	dns_request_t *request = event->ev_arg;
+	isc_result_t result;
 
 	REQUIRE(VALID_REQUEST(request));
 
@@ -1255,9 +1481,20 @@ req_timeout(isc_task_t *task, isc_event_t *event) {
 
 	UNUSED(task);
 	LOCK(&request->requestmgr->locks[request->hash]);
-	request->flags |= DNS_REQUEST_F_TIMEDOUT;
-	req_cancel(request);
-	send_if_done(request, ISC_R_TIMEDOUT);
+	if (event->ev_type == ISC_TIMEREVENT_TICK &&
+	    request->udpcount-- != 0) {
+		if (! DNS_REQUEST_SENDING(request)) {
+			result = req_send(request, task, &request->destaddr);
+			if (result != ISC_R_SUCCESS) {
+				req_cancel(request);
+				send_if_done(request, result);
+			}
+		}
+	} else {
+		request->flags |= DNS_REQUEST_F_TIMEDOUT;
+		req_cancel(request);
+		send_if_done(request, ISC_R_TIMEDOUT);
+	}
 	UNLOCK(&request->requestmgr->locks[request->hash]);
 	isc_event_free(&event);
 }
@@ -1316,7 +1553,8 @@ req_destroy(dns_request_t *request) {
  */
 static void
 req_cancel(dns_request_t *request) {
-	isc_socket_t *socket;
+	isc_socket_t *sock;
+	unsigned int dispattr;
 
 	REQUIRE(VALID_REQUEST(request));
 
@@ -1329,16 +1567,23 @@ req_cancel(dns_request_t *request) {
 
 	if (request->timer != NULL)
 		isc_timer_detach(&request->timer);
+	dispattr = dns_dispatch_getattributes(request->dispatch);
+	sock = NULL;
+	if (DNS_REQUEST_CONNECTING(request) || DNS_REQUEST_SENDING(request)) {
+		if ((dispattr & DNS_DISPATCHATTR_EXCLUSIVE) != 0) {
+			if (request->dispentry != NULL) {
+				sock = dns_dispatch_getentrysocket(
+					request->dispentry);
+			}
+		} else
+			sock = dns_dispatch_getsocket(request->dispatch);
+		if (DNS_REQUEST_CONNECTING(request) && sock != NULL)
+			isc_socket_cancel(sock, NULL, ISC_SOCKCANCEL_CONNECT);
+		if (DNS_REQUEST_SENDING(request) && sock != NULL)
+			isc_socket_cancel(sock, NULL, ISC_SOCKCANCEL_SEND);
+	}
 	if (request->dispentry != NULL)
 		dns_dispatch_removeresponse(&request->dispentry, NULL);
-	if (DNS_REQUEST_CONNECTING(request)) {
-		socket = dns_dispatch_getsocket(request->dispatch);
-		isc_socket_cancel(socket, NULL, ISC_SOCKCANCEL_CONNECT);
-	}
-	if (DNS_REQUEST_SENDING(request)) {
-		socket = dns_dispatch_getsocket(request->dispatch);
-		isc_socket_cancel(socket, NULL, ISC_SOCKCANCEL_SEND);
-	}
 	dns_dispatch_detach(&request->dispatch);
 }
 

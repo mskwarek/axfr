@@ -1,21 +1,12 @@
 /*
- * Copyright (C) 2000, 2001  Internet Software Consortium.
+ * Copyright (C) 2000, 2001, 2004, 2007, 2009, 2015, 2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: ntpaths.h,v 1.12.2.1 2001/09/04 19:36:33 gson Exp $ */
+/* $Id: ntpaths.h,v 1.20 2009/07/14 22:54:57 each Exp $ */
 
 /*
  * Windows-specific path definitions
@@ -38,9 +29,11 @@ enum NtPaths {
 	RNDC_CONF_PATH,
 	NAMED_PID_PATH,
 	LWRESD_PID_PATH,
+	NAMED_LOCK_PATH,
 	LOCAL_STATE_DIR,
 	SYS_CONF_DIR,
-	RNDC_KEY_PATH
+	RNDC_KEY_PATH,
+	SESSION_KEY_PATH
 };
 
 /*
@@ -49,8 +42,8 @@ enum NtPaths {
 #define NAMED_CONFFILE isc_ntpaths_get(NAMED_CONF_PATH)
 #define RNDC_CONFFILE isc_ntpaths_get(RNDC_CONF_PATH)
 #define RNDC_KEYFILE isc_ntpaths_get(RNDC_KEY_PATH)
+#define SESSION_KEYFILE isc_ntpaths_get(SESSION_KEY_PATH)
 #define RESOLV_CONF isc_ntpaths_get(RESOLV_CONF_PATH)
-
 
 /*
  * Information about where the files are on disk

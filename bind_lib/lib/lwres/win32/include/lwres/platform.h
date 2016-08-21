@@ -1,21 +1,12 @@
 /*
- * Copyright (C) 2000, 2001  Internet Software Consortium.
+ * Copyright (C) 2000, 2001, 2004, 2007, 2014, 2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: platform.h,v 1.4 2001/07/26 03:15:16 mayer Exp $ */
+/* $Id: platform.h,v 1.7 2007/06/18 23:47:52 tbox Exp $ */
 
 #ifndef LWRES_PLATFORM_H
 #define LWRES_PLATFORM_H 1
@@ -67,6 +58,9 @@
  */
 /*@LWRES_PLATFORM_NEEDSYSSELECTH@ */
 
+/* VS2005 does not provide strlcpy() */
+#define LWRES_PLATFORM_NEEDSTRLCPY
+
 /*
  * Define some Macros
  */
@@ -91,5 +85,12 @@ do { \
  */
 #undef  close
 #define close closesocket
+
+/*
+ * Internal to liblwres.
+ */
+void InitSockets(void);
+
+void DestroySockets(void);
 
 #endif /* LWRES_PLATFORM_H */

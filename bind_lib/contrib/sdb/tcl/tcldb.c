@@ -1,21 +1,12 @@
 /*
- * Copyright (C) 2002  Internet Software Consortium.
+ * Copyright (C) 2000, 2001, 2004, 2007, 2011, 2014, 2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: tcldb.c,v 1.7.4.2 2002/08/05 06:57:08 marka Exp $ */
+/* $Id: tcldb.c,v 1.12 2011/10/11 23:46:45 tbox Exp $ */
 
 /*
  * A simple database driver that calls a Tcl procedure to define
@@ -85,7 +76,7 @@ tcldb_driver_create(isc_mem_t *mctx, tcldb_driver_t **driverp) {
  cleanup:
 	isc_mem_put(mctx, driver, sizeof(tcldb_driver_t));
 	return (result);
-	
+
 }
 
 static void
@@ -98,9 +89,16 @@ tcldb_driver_destroy(tcldb_driver_t **driverp) {
 /*
  * Perform a lookup, by invoking the Tcl procedure "lookup".
  */
+#ifdef DNS_CLIENTINFO_VERSION
+static isc_result_t
+tcldb_lookup(const char *zone, const char *name, void *dbdata,
+	      dns_sdblookup_t *lookup, dns_clientinfomethods_t *methods,
+	      dns_clientinfo_t *clientinfo)
+#else
 static isc_result_t
 tcldb_lookup(const char *zone, const char *name, void *dbdata,
 	      dns_sdblookup_t *lookup)
+#endif /* DNS_CLIENTINFO_VERSION */
 {
 	isc_result_t result = ISC_R_SUCCESS;
 	int tclres;
@@ -109,6 +107,11 @@ tcldb_lookup(const char *zone, const char *name, void *dbdata,
 	int i;
 	char *cmdv[3];
 	char *cmd;
+
+#ifdef DNS_CLIENTINFO_VERSION
+	UNUSED(methods);
+	UNUSED(clientinfo);
+#endif /* DNS_CLIENTINFO_VERSION */
 
 	tcldb_driver_t *driver = (tcldb_driver_t *) dbdata;
 
@@ -183,13 +186,13 @@ tcldb_create(const char *zone, int argc, char **argv,
 	tcldb_driver_t *driver = (tcldb_driver_t *) driverdata;
 
 	char *list = Tcl_Merge(argc, argv);
-	
+
 	Tcl_SetVar2(driver->interp, (char *) "dbargs", (char *) zone, list, 0);
 
 	Tcl_Free(list);
 
 	*dbdata = driverdata;
-	
+
 	return (ISC_R_SUCCESS);
 }
 
@@ -201,7 +204,8 @@ static dns_sdbmethods_t tcldb_methods = {
 	NULL, /* authority */
 	NULL, /* allnodes */
 	tcldb_create,
-	NULL /* destroy */
+	NULL, /* destroy */
+	NULL /* lookup2 */
 };
 
 /*
@@ -211,11 +215,11 @@ isc_result_t
 tcldb_init(void) {
 	isc_result_t result;
 	int flags = DNS_SDBFLAG_RELATIVEOWNER | DNS_SDBFLAG_RELATIVERDATA;
-	
+
 	result = tcldb_driver_create(ns_g_mctx, &the_driver);
 	if (result != ISC_R_SUCCESS)
 		return (result);
-	
+
 	return (dns_sdb_register("tcl", &tcldb_methods, the_driver, flags,
 				 ns_g_mctx, &tcldb));
 }

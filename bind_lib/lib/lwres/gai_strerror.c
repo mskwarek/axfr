@@ -1,24 +1,45 @@
 /*
- * Copyright (C) 2000, 2001  Internet Software Consortium.
+ * Copyright (C) 2000, 2001, 2004-2007, 2014, 2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: gai_strerror.c,v 1.14.2.1 2001/11/02 01:32:53 gson Exp $ */
+/* $Id: gai_strerror.c,v 1.22 2007/06/19 23:47:22 tbox Exp $ */
+
+/*! \file gai_strerror.c
+ * lwres_gai_strerror() returns an error message corresponding to an
+ * error code returned by getaddrinfo(). The following error codes and
+ * their meaning are defined in \link netdb.h include/lwres/netdb.h.\endlink
+ *
+ * \li #EAI_ADDRFAMILY address family for hostname not supported
+ * \li #EAI_AGAIN temporary failure in name resolution
+ * \li #EAI_BADFLAGS invalid value for #ai_flags
+ * \li #EAI_FAIL non-recoverable failure in name resolution
+ * \li #EAI_FAMILY ai_family not supported
+ * \li #EAI_MEMORY memory allocation failure
+ * \li #EAI_NODATA no address associated with hostname
+ * \li #EAI_NONAME hostname or servname not provided, or not known
+ * \li #EAI_SERVICE servname not supported for ai_socktype
+ * \li #EAI_SOCKTYPE ai_socktype not supported
+ * \li #EAI_SYSTEM system error returned in errno
+ *
+ * The message invalid error code is returned if ecode is out of range.
+ *
+ * ai_flags, ai_family and ai_socktype are elements of the struct
+ * addrinfo used by lwres_getaddrinfo().
+ *
+ * \section gai_strerror_see See Also
+ *
+ * strerror, lwres_getaddrinfo(), getaddrinfo(), RFC2133.
+ */
+
+#include <config.h>
 
 #include <lwres/netdb.h>
 
+/*% Text of error messages. */
 static const char *gai_messages[] = {
 	"no error",
 	"address family for hostname not supported",
@@ -33,9 +54,11 @@ static const char *gai_messages[] = {
 	"ai_socktype not supported",
 	"system error returned in errno",
 	"bad hints",
-	"bad protocol"
+	"bad protocol",
+	"overflow"
 };
 
+/*% Returns an error message corresponding to an error code returned by getaddrinfo() */
 char *
 lwres_gai_strerror(int ecode) {
 	union {

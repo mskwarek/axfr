@@ -1,18 +1,9 @@
 /*
- * Copyright (C) 1998-2016 Internet Software Consortium.
+ * Copyright (C) 1998-2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
 /***************
@@ -21,6 +12,8 @@
  ***************   DO NOT EDIT!
  ***************
  ***************/
+
+/*! \file */
 
 #ifndef DNS_ENUMTYPE_H
 #define DNS_ENUMTYPE_H 1
@@ -63,10 +56,44 @@ enum {
 	dns_rdatatype_cert = 37,
 	dns_rdatatype_a6 = 38,
 	dns_rdatatype_dname = 39,
+	dns_rdatatype_sink = 40,
 	dns_rdatatype_opt = 41,
+	dns_rdatatype_apl = 42,
+	dns_rdatatype_ds = 43,
+	dns_rdatatype_sshfp = 44,
+	dns_rdatatype_ipseckey = 45,
+	dns_rdatatype_rrsig = 46,
+	dns_rdatatype_nsec = 47,
+	dns_rdatatype_dnskey = 48,
+	dns_rdatatype_dhcid = 49,
+	dns_rdatatype_nsec3 = 50,
+	dns_rdatatype_nsec3param = 51,
+	dns_rdatatype_tlsa = 52,
+	dns_rdatatype_smimea = 53,
+	dns_rdatatype_hip = 55,
+	dns_rdatatype_ninfo = 56,
+	dns_rdatatype_rkey = 57,
+	dns_rdatatype_talink = 58,
+	dns_rdatatype_cds = 59,
+	dns_rdatatype_cdnskey = 60,
+	dns_rdatatype_openpgpkey = 61,
+	dns_rdatatype_csync = 62,
+	dns_rdatatype_spf = 99,
 	dns_rdatatype_unspec = 103,
+	dns_rdatatype_nid = 104,
+	dns_rdatatype_l32 = 105,
+	dns_rdatatype_l64 = 106,
+	dns_rdatatype_lp = 107,
+	dns_rdatatype_eui48 = 108,
+	dns_rdatatype_eui64 = 109,
 	dns_rdatatype_tkey = 249,
 	dns_rdatatype_tsig = 250,
+	dns_rdatatype_uri = 256,
+	dns_rdatatype_caa = 257,
+	dns_rdatatype_avc = 258,
+	dns_rdatatype_ta = 32768,
+	dns_rdatatype_dlv = 32769,
+	dns_rdatatype_keydata = 65533,
 	dns_rdatatype_ixfr = 251,
 	dns_rdatatype_axfr = 252,
 	dns_rdatatype_mailb = 253,
@@ -111,10 +138,44 @@ enum {
 #define dns_rdatatype_cert	((dns_rdatatype_t)dns_rdatatype_cert)
 #define dns_rdatatype_a6	((dns_rdatatype_t)dns_rdatatype_a6)
 #define dns_rdatatype_dname	((dns_rdatatype_t)dns_rdatatype_dname)
+#define dns_rdatatype_sink	((dns_rdatatype_t)dns_rdatatype_sink)
 #define dns_rdatatype_opt	((dns_rdatatype_t)dns_rdatatype_opt)
+#define dns_rdatatype_apl	((dns_rdatatype_t)dns_rdatatype_apl)
+#define dns_rdatatype_ds	((dns_rdatatype_t)dns_rdatatype_ds)
+#define dns_rdatatype_sshfp	((dns_rdatatype_t)dns_rdatatype_sshfp)
+#define dns_rdatatype_ipseckey	((dns_rdatatype_t)dns_rdatatype_ipseckey)
+#define dns_rdatatype_rrsig	((dns_rdatatype_t)dns_rdatatype_rrsig)
+#define dns_rdatatype_nsec	((dns_rdatatype_t)dns_rdatatype_nsec)
+#define dns_rdatatype_dnskey	((dns_rdatatype_t)dns_rdatatype_dnskey)
+#define dns_rdatatype_dhcid	((dns_rdatatype_t)dns_rdatatype_dhcid)
+#define dns_rdatatype_nsec3	((dns_rdatatype_t)dns_rdatatype_nsec3)
+#define dns_rdatatype_nsec3param	((dns_rdatatype_t)dns_rdatatype_nsec3param)
+#define dns_rdatatype_tlsa	((dns_rdatatype_t)dns_rdatatype_tlsa)
+#define dns_rdatatype_smimea	((dns_rdatatype_t)dns_rdatatype_smimea)
+#define dns_rdatatype_hip	((dns_rdatatype_t)dns_rdatatype_hip)
+#define dns_rdatatype_ninfo	((dns_rdatatype_t)dns_rdatatype_ninfo)
+#define dns_rdatatype_rkey	((dns_rdatatype_t)dns_rdatatype_rkey)
+#define dns_rdatatype_talink	((dns_rdatatype_t)dns_rdatatype_talink)
+#define dns_rdatatype_cds	((dns_rdatatype_t)dns_rdatatype_cds)
+#define dns_rdatatype_cdnskey	((dns_rdatatype_t)dns_rdatatype_cdnskey)
+#define dns_rdatatype_openpgpkey	((dns_rdatatype_t)dns_rdatatype_openpgpkey)
+#define dns_rdatatype_csync	((dns_rdatatype_t)dns_rdatatype_csync)
+#define dns_rdatatype_spf	((dns_rdatatype_t)dns_rdatatype_spf)
 #define dns_rdatatype_unspec	((dns_rdatatype_t)dns_rdatatype_unspec)
+#define dns_rdatatype_nid	((dns_rdatatype_t)dns_rdatatype_nid)
+#define dns_rdatatype_l32	((dns_rdatatype_t)dns_rdatatype_l32)
+#define dns_rdatatype_l64	((dns_rdatatype_t)dns_rdatatype_l64)
+#define dns_rdatatype_lp	((dns_rdatatype_t)dns_rdatatype_lp)
+#define dns_rdatatype_eui48	((dns_rdatatype_t)dns_rdatatype_eui48)
+#define dns_rdatatype_eui64	((dns_rdatatype_t)dns_rdatatype_eui64)
 #define dns_rdatatype_tkey	((dns_rdatatype_t)dns_rdatatype_tkey)
 #define dns_rdatatype_tsig	((dns_rdatatype_t)dns_rdatatype_tsig)
+#define dns_rdatatype_uri	((dns_rdatatype_t)dns_rdatatype_uri)
+#define dns_rdatatype_caa	((dns_rdatatype_t)dns_rdatatype_caa)
+#define dns_rdatatype_avc	((dns_rdatatype_t)dns_rdatatype_avc)
+#define dns_rdatatype_ta	((dns_rdatatype_t)dns_rdatatype_ta)
+#define dns_rdatatype_dlv	((dns_rdatatype_t)dns_rdatatype_dlv)
+#define dns_rdatatype_keydata	((dns_rdatatype_t)dns_rdatatype_keydata)
 #define dns_rdatatype_ixfr	((dns_rdatatype_t)dns_rdatatype_ixfr)
 #define dns_rdatatype_axfr	((dns_rdatatype_t)dns_rdatatype_axfr)
 #define dns_rdatatype_mailb	((dns_rdatatype_t)dns_rdatatype_mailb)

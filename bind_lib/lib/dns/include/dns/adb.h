@@ -1,21 +1,12 @@
 /*
- * Copyright (C) 1999-2003  Internet Software Consortium.
+ * Copyright (C) 1999-2008, 2011, 2013-2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: adb.h,v 1.66.2.5 2003/07/22 04:03:45 marka Exp $ */
+/* $Id: adb.h,v 1.88 2011/12/05 17:10:51 each Exp $ */
 
 #ifndef DNS_ADB_H
 #define DNS_ADB_H 1
@@ -24,7 +15,8 @@
  ***** Module Info
  *****/
 
-/*
+/*! \file dns/adb.h
+ *\brief
  * DNS Address Database
  *
  * This module implements an address database (ADB) for mapping a name
@@ -47,25 +39,23 @@
  * sent instead.
  *
  * Records are stored internally until a timer expires. The timer is the
- * smaller of the TTL or signature validity period. For A6 records, the timer
- * is the smallest of all the TTL or signature validity periods in the A6
- * chain.
+ * smaller of the TTL or signature validity period.
  *
- * Lameness is stored per-zone, and this data hangs off each address field.
- * When an address is marked lame for a given zone the address will not
- * be returned to a caller.
+ * Lameness is stored per <qname,qtype> tuple, and this data hangs off each
+ * address field.  When an address is marked lame for a given tuple the address
+ * will not be returned to a caller.
  *
  *
  * MP:
  *
- *	The ADB takes care of all necessary locking.
+ *\li	The ADB takes care of all necessary locking.
  *
- *	Only the task which initiated the name lookup can cancel the lookup.
+ *\li	Only the task which initiated the name lookup can cancel the lookup.
  *
  *
  * Security:
  *
- *	None, since all data stored is required to be pre-filtered.
+ *\li	None, since all data stored is required to be pre-filtered.
  *	(Cache needs to be sane, fetches return bounds-checked and sanity-
  *       checked data, caller passes a good dns_name_t for the zone, etc)
  */
@@ -100,8 +90,8 @@ ISC_LANG_BEGINDECLS
 
 typedef struct dns_adbname		dns_adbname_t;
 
-/* dns_adbfind_t
- *
+/*!
+ *\brief
  * Represents a lookup for a single name.
  *
  * On return, the client can safely use "list", and can reorder the list.
@@ -110,14 +100,14 @@ typedef struct dns_adbname		dns_adbname_t;
  */
 struct dns_adbfind {
 	/* Public */
-	unsigned int			magic;		/* RO: magic */
-	dns_adbaddrinfolist_t		list;		/* RO: list of addrs */
-	unsigned int			query_pending;	/* RO: partial list */
-	unsigned int			partial_result;	/* RO: addrs missing */
-	unsigned int			options;	/* RO: options */
-	isc_result_t			result_v4;	/* RO: v4 result */
-	isc_result_t			result_v6;	/* RO: v6 result */
-	ISC_LINK(dns_adbfind_t)		publink;	/* RW: client use */
+	unsigned int			magic;		/*%< RO: magic */
+	dns_adbaddrinfolist_t		list;		/*%< RO: list of addrs */
+	unsigned int			query_pending;	/*%< RO: partial list */
+	unsigned int			partial_result;	/*%< RO: addrs missing */
+	unsigned int			options;	/*%< RO: options */
+	isc_result_t			result_v4;	/*%< RO: v4 result */
+	isc_result_t			result_v6;	/*%< RO: v6 result */
+	ISC_LINK(dns_adbfind_t)		publink;	/*%< RW: client use */
 
 	/* Private */
 	isc_mutex_t			lock;		/* locks all below */
@@ -163,34 +153,72 @@ struct dns_adbfind {
  *	At least one address was omitted from the list because it was lame.
  *	This bit will NEVER be set if _RETURNLAME is set in the createfind().
  */
+/*% Return addresses of type INET. */
 #define DNS_ADBFIND_INET		0x00000001
+/*% Return addresses of type INET6. */
 #define DNS_ADBFIND_INET6		0x00000002
 #define DNS_ADBFIND_ADDRESSMASK		0x00000003
-
+/*%
+ *      Only schedule an event if no addresses are known.
+ *      Must set _WANTEVENT for this to be meaningful.
+ */
 #define DNS_ADBFIND_EMPTYEVENT		0x00000004
+/*%
+ *	An event is desired.  Check this bit in the returned find to see
+ *	if one will actually be generated.
+ */
 #define DNS_ADBFIND_WANTEVENT		0x00000008
+/*%
+ *	If set, fetches will not be generated unless no addresses are
+ *	available in any of the address families requested.
+ */
 #define DNS_ADBFIND_AVOIDFETCHES	0x00000010
+/*%
+ *	Fetches will start using the closest zone data or use the root servers.
+ *	This is useful for reestablishing glue that has expired.
+ */
 #define DNS_ADBFIND_STARTATZONE		0x00000020
+/*%
+ *	Glue or hints are ok.  These are used when matching names already
+ *	in the adb, and when dns databases are searched.
+ */
 #define DNS_ADBFIND_GLUEOK		0x00000040
+/*%
+ *	Glue or hints are ok.  These are used when matching names already
+ *	in the adb, and when dns databases are searched.
+ */
 #define DNS_ADBFIND_HINTOK		0x00000080
+/*%
+ *	Return lame servers in a find, so that all addresses are returned.
+ */
 #define DNS_ADBFIND_RETURNLAME		0x00000100
+/*%
+ *      Only schedule an event if no addresses are known.
+ *      Must set _WANTEVENT for this to be meaningful.
+ */
 #define DNS_ADBFIND_LAMEPRUNED		0x00000200
+/*%
+ *      The server's fetch quota is exceeded; it will be treated as
+ *      lame for this query.
+ */
+#define DNS_ADBFIND_OVERQUOTA		0x00000400
 
-/* dns_adbaddrinfo_t
- *
+/*%
  * The answers to queries come back as a list of these.
  */
 struct dns_adbaddrinfo {
-	unsigned int			magic;		/* private */
+	unsigned int			magic;		/*%< private */
 
-	isc_sockaddr_t			sockaddr;	/* [rw] */
-	unsigned int			srtt;		/* [rw] microseconds */
-	unsigned int			flags;		/* [rw] */
-	dns_adbentry_t		       *entry;		/* private */
+	isc_sockaddr_t			sockaddr;	/*%< [rw] */
+	unsigned int			srtt;		/*%< [rw] microsecs */
+	isc_dscp_t			dscp;
+
+	unsigned int			flags;		/*%< [rw] */
+	dns_adbentry_t		       *entry;		/*%< private */
 	ISC_LINK(dns_adbaddrinfo_t)	publink;
 };
 
-/*
+/*!<
  * The event sent to the caller task is just a plain old isc_event_t.  It
  * contains no data other than a simple status, passed in the "type" field
  * to indicate that another address resolved, or all partially resolved
@@ -200,13 +228,13 @@ struct dns_adbaddrinfo {
  *
  * This is simply a standard event, with the "type" set to:
  *
- *	DNS_EVENT_ADBMOREADDRESSES   -- another address resolved.
- *	DNS_EVENT_ADBNOMOREADDRESSES -- all pending addresses failed,
+ *\li	#DNS_EVENT_ADBMOREADDRESSES   -- another address resolved.
+ *\li	#DNS_EVENT_ADBNOMOREADDRESSES -- all pending addresses failed,
  *					were canceled, or otherwise will
  *					not be usable.
- *	DNS_EVENT_ADBCANCELED	     -- The request was canceled by a
+ *\li	#DNS_EVENT_ADBCANCELED	     -- The request was canceled by a
  *					3rd party.
- *	DNS_EVENT_ADBNAMEDELETED     -- The name was deleted, so this request
+ *\li	#DNS_EVENT_ADBNAMEDELETED     -- The name was deleted, so this request
  *					was canceled.
  *
  * In each of these cases, the addresses returned by the initial call
@@ -221,89 +249,97 @@ struct dns_adbaddrinfo {
 isc_result_t
 dns_adb_create(isc_mem_t *mem, dns_view_t *view, isc_timermgr_t *tmgr,
 	       isc_taskmgr_t *taskmgr, dns_adb_t **newadb);
-/*
+/*%<
  * Create a new ADB.
  *
  * Notes:
  *
- *	Generally, applications should not create an ADB directly, but
+ *\li	Generally, applications should not create an ADB directly, but
  *	should instead call dns_view_createresolver().
  *
  * Requires:
  *
- *	'mem' must be a valid memory context.
+ *\li	'mem' must be a valid memory context.
  *
- *	'view' be a pointer to a valid view.
+ *\li	'view' be a pointer to a valid view.
  *
- *	'tmgr' be a pointer to a valid timer manager.
+ *\li	'tmgr' be a pointer to a valid timer manager.
  *
- *	'taskmgr' be a pointer to a valid task manager.
+ *\li	'taskmgr' be a pointer to a valid task manager.
  *
- *	'newadb' != NULL && '*newadb' == NULL.
+ *\li	'newadb' != NULL && '*newadb' == NULL.
  *
  * Returns:
  *
- *	ISC_R_SUCCESS	after happiness.
- *	ISC_R_NOMEMORY	after resource allocation failure.
+ *\li	#ISC_R_SUCCESS	after happiness.
+ *\li	#ISC_R_NOMEMORY	after resource allocation failure.
  */
 
 void
 dns_adb_attach(dns_adb_t *adb, dns_adb_t **adbp);
-/*
+/*%
  * Attach to an 'adb' to 'adbp'.
  *
  * Requires:
- *	'adb' to be a valid dns_adb_t, created via dns_adb_create().
- *	'adbp' to be a valid pointer to a *dns_adb_t which is initialized
- *		to NULL.
+ *\li	'adb' to be a valid dns_adb_t, created via dns_adb_create().
+ *\li	'adbp' to be a valid pointer to a *dns_adb_t which is initialized
+ *	to NULL.
  */
 
 void
 dns_adb_detach(dns_adb_t **adb);
-/*
+/*%
  * Delete the ADB. Sets *ADB to NULL. Cancels any outstanding requests.
  *
  * Requires:
  *
- *	'adb' be non-NULL and '*adb' be a valid dns_adb_t, created via
+ *\li	'adb' be non-NULL and '*adb' be a valid dns_adb_t, created via
  *	dns_adb_create().
  */
 
 void
 dns_adb_whenshutdown(dns_adb_t *adb, isc_task_t *task, isc_event_t **eventp);
-/*
+/*%
  * Send '*eventp' to 'task' when 'adb' has shutdown.
  *
  * Requires:
  *
- *	'*adb' is a valid dns_adb_t.
+ *\li	'*adb' is a valid dns_adb_t.
  *
- *	eventp != NULL && *eventp is a valid event.
+ *\li	eventp != NULL && *eventp is a valid event.
  *
  * Ensures:
  *
- *	*eventp == NULL
+ *\li	*eventp == NULL
  *
- *	The event's sender field is set to the value of adb when the event
+ *\li	The event's sender field is set to the value of adb when the event
  *	is sent.
  */
 
 void
 dns_adb_shutdown(dns_adb_t *adb);
-/*
+/*%<
  * Shutdown 'adb'.
  *
  * Requires:
  *
- * 	'*adb' is a valid dns_adb_t.
+ * \li	'*adb' is a valid dns_adb_t.
  */
 
 isc_result_t
 dns_adb_createfind(dns_adb_t *adb, isc_task_t *task, isc_taskaction_t action,
-		   void *arg, dns_name_t *name, dns_name_t *zone,
-		   unsigned int options, isc_stdtime_t now, dns_name_t *target,
+		   void *arg, dns_name_t *name, dns_name_t *qname,
+		   dns_rdatatype_t qtype, unsigned int options,
+		   isc_stdtime_t now, dns_name_t *target,
 		   in_port_t port, dns_adbfind_t **find);
-/*
+isc_result_t
+dns_adb_createfind2(dns_adb_t *adb, isc_task_t *task, isc_taskaction_t action,
+		    void *arg, dns_name_t *name, dns_name_t *qname,
+		    dns_rdatatype_t qtype, unsigned int options,
+		    isc_stdtime_t now, dns_name_t *target, in_port_t port,
+		    unsigned int depth, isc_counter_t *qc,
+		    dns_adbfind_t **find);
+/*%<
  * Main interface for clients. The adb will look up the name given in
  * "name" and will build up a list of found addresses, and perhaps start
  * internal fetches to resolve names that are unknown currently.
@@ -313,9 +349,9 @@ dns_adb_createfind(dns_adb_t *adb, isc_task_t *task, isc_taskaction_t action,
  * set to a pointer to the dns_adbfind_t returned by this function.
  *
  * If no events will be generated, the *find->result_v4 and/or result_v6
- * members may be examined for address lookup status.  The usual ISC_R_SUCCESS,
- * ISC_R_FAILURE, and DNS_R_NX{DOMAIN,RRSET} are returned, along with
- * ISC_R_NOTFOUND meaning the ADB has not _yet_ found the values.  In this
+ * members may be examined for address lookup status.  The usual #ISC_R_SUCCESS,
+ * #ISC_R_FAILURE, #DNS_R_NXDOMAIN, and #DNS_R_NXRRSET are returned, along with
+ * #ISC_R_NOTFOUND meaning the ADB has not _yet_ found the values.  In this
  * latter case, retrying may produce more addresses.
  *
  * If events will be returned, the result_v[46] members are only valid
@@ -348,42 +384,42 @@ dns_adb_createfind(dns_adb_t *adb, isc_task_t *task, isc_taskaction_t action,
  *
  * Requires:
  *
- *	*adb be a valid isc_adb_t object.
+ *\li	*adb be a valid isc_adb_t object.
  *
- *	If events are to be sent, *task be a valid task,
+ *\li	If events are to be sent, *task be a valid task,
  *	and isc_taskaction_t != NULL.
  *
- *	*name is a valid dns_name_t.
+ *\li	*name is a valid dns_name_t.
  *
- *	zone != NULL and *zone be a valid dns_name_t.
+ *\li	qname != NULL and *qname be a valid dns_name_t.
  *
- *	target == NULL or target is a valid name with a buffer.
+ *\li	target == NULL or target is a valid name with a buffer.
  *
- *	find != NULL && *find == NULL.
+ *\li	find != NULL && *find == NULL.
  *
  * Returns:
  *
- *	ISC_R_SUCCESS	Addresses might have been returned, and events will be
+ *\li	#ISC_R_SUCCESS	Addresses might have been returned, and events will be
  *			delivered for unresolved addresses.
- *	ISC_R_NOMORE	Addresses might have been returned, but no events
+ *\li	#ISC_R_NOMORE	Addresses might have been returned, but no events
  *			will ever be posted for this context.  This is only
  *			returned if task != NULL.
- *	ISC_R_NOMEMORY	insufficient resources
- *	DNS_R_ALIAS	'name' is an alias for another name.
+ *\li	#ISC_R_NOMEMORY	insufficient resources
+ *\li	#DNS_R_ALIAS	'name' is an alias for another name.
  *
  * Calls, and returns error codes from:
  *
- *	isc_stdtime_get()
+ *\li	isc_stdtime_get()
  *
  * Notes:
  *
- *	No internal reference to "name" exists after this function
+ *\li	No internal reference to "name" exists after this function
  *	returns.
  */
 
 void
 dns_adb_cancelfind(dns_adbfind_t *find);
-/*
+/*%<
  * Cancels the find, and sends the event off to the caller.
  *
  * It is an error to call dns_adb_cancelfind() on a find where
@@ -391,7 +427,7 @@ dns_adb_cancelfind(dns_adbfind_t *find);
  *
  * Note:
  *
- *	It is possible that the real completion event was posted just
+ *\li	It is possible that the real completion event was posted just
  *	before the dns_adb_cancelfind() call was made.  In this case,
  *	dns_adb_cancelfind() will do nothing.  The event callback needs
  *	to be prepared to find this situation (i.e. result is valid but
@@ -399,174 +435,400 @@ dns_adb_cancelfind(dns_adbfind_t *find);
  *
  * Requires:
  *
- *	'find' be a valid dns_adbfind_t pointer.
+ *\li	'find' be a valid dns_adbfind_t pointer.
  *
- *	events would have been posted to the task.  This can be checked
+ *\li	events would have been posted to the task.  This can be checked
  *	with (find->options & DNS_ADBFIND_WANTEVENT).
  *
  * Ensures:
  *
- *	The event was posted to the task.
+ *\li	The event was posted to the task.
  */
 
 void
 dns_adb_destroyfind(dns_adbfind_t **find);
-/*
+/*%<
  * Destroys the find reference.
  *
  * Note:
  *
- *	This can only be called after the event was delivered for a
+ *\li	This can only be called after the event was delivered for a
  *	find.  Additionally, the event MUST have been freed via
  *	isc_event_free() BEFORE this function is called.
  *
  * Requires:
  *
- *	'find' != NULL and *find be valid dns_adbfind_t pointer.
+ *\li	'find' != NULL and *find be valid dns_adbfind_t pointer.
  *
  * Ensures:
  *
- *	No "address found" events will be posted to the originating task
+ *\li	No "address found" events will be posted to the originating task
  *	after this function returns.
  */
 
 void
 dns_adb_dump(dns_adb_t *adb, FILE *f);
-/*
+/*%<
  * This function is only used for debugging.  It will dump as much of the
  * state of the running system as possible.
  *
  * Requires:
  *
- *	adb be valid.
+ *\li	adb be valid.
  *
- *	f != NULL, and is a file open for writing.
+ *\li	f != NULL, and is a file open for writing.
  */
 
 void
 dns_adb_dumpfind(dns_adbfind_t *find, FILE *f);
-/*
+/*%<
  * This function is only used for debugging.  Dump the data associated
  * with a find.
  *
  * Requires:
  *
- *	find is valid.
+ *\li	find is valid.
  *
- * 	f != NULL, and is a file open for writing.
+ * \li	f != NULL, and is a file open for writing.
  */
 
 isc_result_t
-dns_adb_marklame(dns_adb_t *adb, dns_adbaddrinfo_t *addr, dns_name_t *zone,
-		 isc_stdtime_t expire_time);
-/*
- * Mark the given address as lame for the zone "zone".  expire_time should
+dns_adb_marklame(dns_adb_t *adb, dns_adbaddrinfo_t *addr, dns_name_t *qname,
+		 dns_rdatatype_t type, isc_stdtime_t expire_time);
+/*%<
+ * Mark the given address as lame for the <qname,qtype>.  expire_time should
  * be set to the time when the entry should expire.  That is, if it is to
  * expire 10 minutes in the future, it should set it to (now + 10 * 60).
  *
  * Requires:
  *
- *	adb be valid.
+ *\li	adb be valid.
  *
- *	addr be valid.
+ *\li	addr be valid.
  *
- *	zone be the zone used in the dns_adb_createfind() call.
+ *\li	qname be the qname used in the dns_adb_createfind() call.
  *
  * Returns:
  *
- *	ISC_R_SUCCESS		-- all is well.
- *	ISC_R_NOMEMORY		-- could not mark address as lame.
+ *\li	#ISC_R_SUCCESS		-- all is well.
+ *\li	#ISC_R_NOMEMORY		-- could not mark address as lame.
  */
 
 /*
- * A reasonable default for RTT adjustments
+ * Reasonable defaults for RTT adjustments
+ *
+ * (Note: these values function both as scaling factors and as
+ * indicators of the type of RTT adjustment operation taking place.
+ * Adjusting the scaling factors is fine, as long as they all remain
+ * unique values.)
  */
-#define DNS_ADB_RTTADJDEFAULT		7	/* default scale */
-#define DNS_ADB_RTTADJREPLACE		0	/* replace with our rtt */
-#define DNS_ADB_RTTADJAGE		10	/* age this rtt */
+#define DNS_ADB_RTTADJDEFAULT		7	/*%< default scale */
+#define DNS_ADB_RTTADJREPLACE		0	/*%< replace with our rtt */
+#define DNS_ADB_RTTADJAGE		10	/*%< age this rtt */
 
 void
 dns_adb_adjustsrtt(dns_adb_t *adb, dns_adbaddrinfo_t *addr,
 		   unsigned int rtt, unsigned int factor);
-/*
- * Mix the round trip time into the existing smoothed rtt.  The formula used
- * (where srtt is the existing rtt value, and rtt and factor are arguments to
- * this function):
- *
- *	new_srtt = (old_srtt / 10 * factor) + (rtt / 10 * (10 - factor));
- *
- * XXXRTH  Do we want to publish the formula?  What if we want to change how
- *         this works later on?  Recommend/require that the units are
- *	   microseconds?
+/*%<
+ * Mix the round trip time into the existing smoothed rtt.
  *
  * Requires:
  *
- *	adb be valid.
+ *\li	adb be valid.
  *
- *	addr be valid.
+ *\li	addr be valid.
  *
- *	0 <= factor <= 10
+ *\li	0 <= factor <= 10
  *
  * Note:
  *
- *	The srtt in addr will be updated to reflect the new global
+ *\li	The srtt in addr will be updated to reflect the new global
+ *	srtt value.  This may include changes made by others.
+ */
+
+void
+dns_adb_agesrtt(dns_adb_t *adb, dns_adbaddrinfo_t *addr, isc_stdtime_t now);
+/*
+ * dns_adb_agesrtt is equivalent to dns_adb_adjustsrtt with factor
+ * equal to DNS_ADB_RTTADJAGE and the current time passed in.
+ *
+ * Requires:
+ *
+ *\li	adb be valid.
+ *
+ *\li	addr be valid.
+ *
+ * Note:
+ *
+ *\li	The srtt in addr will be updated to reflect the new global
  *	srtt value.  This may include changes made by others.
  */
 
 void
 dns_adb_changeflags(dns_adb_t *adb, dns_adbaddrinfo_t *addr,
 		    unsigned int bits, unsigned int mask);
-/*
+/*%
+ * Change Flags.
+ *
  * Set the flags as given by:
  *
- *	newflags = (oldflags & ~mask) | (bits & mask);
+ *\li	newflags = (oldflags & ~mask) | (bits & mask);
  *
  * Requires:
  *
- *	adb be valid.
+ *\li	adb be valid.
  *
- *	addr be valid.
+ *\li	addr be valid.
  */
+
+void
+dns_adb_setudpsize(dns_adb_t *adb, dns_adbaddrinfo_t *addr, unsigned int size);
+/*%
+ * Update seen UDP response size.  The largest seen will be returned by
+ * dns_adb_getudpsize().
+ *
+ * Requires:
+ *
+ *\li	adb be valid.
+ *
+ *\li	addr be valid.
+ */
+
+unsigned int
+dns_adb_getudpsize(dns_adb_t *adb, dns_adbaddrinfo_t *addr);
+/*%
+ * Return the largest seen UDP response size.
+ *
+ * Requires:
+ *
+ *\li	adb be valid.
+ *
+ *\li	addr be valid.
+ */
+
+unsigned int
+dns_adb_probesize(dns_adb_t *adb, dns_adbaddrinfo_t *addr);
+unsigned int
+dns_adb_probesize2(dns_adb_t *adb, dns_adbaddrinfo_t *addr, int lookups);
+/*%
+ * Return suggested EDNS UDP size based on observed responses / failures.
+ * 'lookups' is the number of times the current lookup has been attempted.
+ *
+ * Requires:
+ *
+ *\li	adb be valid.
+ *
+ *\li	addr be valid.
+ */
+
+void
+dns_adb_plainresponse(dns_adb_t *adb, dns_adbaddrinfo_t *addr);
+/*%
+ * Record a successful plain DNS response.
+ *
+ * Requires:
+ *
+ *\li	adb be valid.
+ *
+ *\li	addr be valid.
+ */
+
+void
+dns_adb_timeout(dns_adb_t *adb, dns_adbaddrinfo_t *addr);
+/*%
+ * Record a plain DNS UDP query failed.
+ *
+ * Requires:
+ *
+ *\li	adb be valid.
+ *
+ *\li	addr be valid.
+ */
+
+void
+dns_adb_ednsto(dns_adb_t *adb, dns_adbaddrinfo_t *addr, unsigned int size);
+/*%
+ * Record a failed EDNS UDP response and the advertised EDNS UDP buffer size
+ * used.
+ *
+ * Requires:
+ *
+ *\li	adb be valid.
+ *
+ *\li	addr be valid.
+ */
+
+isc_boolean_t
+dns_adb_noedns(dns_adb_t *adb, dns_adbaddrinfo_t *addr);
+/*%
+ * Return whether EDNS should be disabled for this server.
+ *
+ * Requires:
+ *
+ *\li	adb be valid.
+ *
+ *\li	addr be valid.
+ */
+
 
 isc_result_t
 dns_adb_findaddrinfo(dns_adb_t *adb, isc_sockaddr_t *sa,
 		     dns_adbaddrinfo_t **addrp, isc_stdtime_t now);
-/*
+/*%<
  * Return a dns_adbaddrinfo_t that is associated with address 'sa'.
  *
  * Requires:
  *
- *	adb is valid.
+ *\li	adb is valid.
  *
- *	sa is valid.
+ *\li	sa is valid.
  *
- *	addrp != NULL && *addrp == NULL
+ *\li	addrp != NULL && *addrp == NULL
  *
  * Returns:
- *	ISC_R_SUCCESS
- *	ISC_R_NOMEMORY
- *	ISC_R_SHUTTINGDOWN
+ *\li	#ISC_R_SUCCESS
+ *\li	#ISC_R_NOMEMORY
+ *\li	#ISC_R_SHUTTINGDOWN
  */
 
 void
 dns_adb_freeaddrinfo(dns_adb_t *adb, dns_adbaddrinfo_t **addrp);
-/*
+/*%<
  * Free a dns_adbaddrinfo_t allocated by dns_adb_findaddrinfo().
  *
  * Requires:
  *
- *	adb is valid.
+ *\li	adb is valid.
  *
- *	*addrp is a valid dns_adbaddrinfo_t *.
+ *\li	*addrp is a valid dns_adbaddrinfo_t *.
  */
 
 void
 dns_adb_flush(dns_adb_t *adb);
-/*
+/*%<
  * Flushes all cached data from the adb.
  *
  * Requires:
- * 	adb is valid.
+ *\li 	adb is valid.
+ */
+
+void
+dns_adb_setadbsize(dns_adb_t *adb, size_t size);
+/*%<
+ * Set a target memory size.  If memory usage exceeds the target
+ * size entries will be removed before they would have expired on
+ * a random basis.
+ *
+ * If 'size' is 0 then memory usage is unlimited.
+ *
+ * Requires:
+ *\li	'adb' is valid.
+ */
+
+void
+dns_adb_flushname(dns_adb_t *adb, dns_name_t *name);
+/*%<
+ * Flush 'name' from the adb cache.
+ *
+ * Requires:
+ *\li	'adb' is valid.
+ *\li	'name' is valid.
+ */
+
+void
+dns_adb_flushnames(dns_adb_t *adb, dns_name_t *name);
+/*%<
+ * Flush 'name' and all subdomains from the adb cache.
+ *
+ * Requires:
+ *\li	'adb' is valid.
+ *\li	'name' is valid.
+ */
+
+void
+dns_adb_setcookie(dns_adb_t *adb, dns_adbaddrinfo_t *addr,
+		  const unsigned char *cookie, size_t len);
+/*%<
+ * Record the COOKIE associated with this addresss.  If
+ * cookie is NULL or len is zero the recorded COOKIE is cleared.
+ *
+ * Requires:
+ *\li	'adb' is valid.
+ *\li	'addr' is valid.
+ */
+
+size_t
+dns_adb_getcookie(dns_adb_t *adb, dns_adbaddrinfo_t *addr,
+		  unsigned char *cookie, size_t len);
+/*
+ * Retieve the saved COOKIE value and store it in 'cookie' which has
+ * size 'len'.
+ *
+ * Requires:
+ *\li	'adb' is valid.
+ *\li	'addr' is valid.
+ *
+ * Returns:
+ *	The size of the cookie or zero if it doesn't fit in the buffer
+ *	or it doesn't exist.
+ */
+
+void
+dns_adb_setquota(dns_adb_t *adb, isc_uint32_t quota, isc_uint32_t freq,
+		 double low, double high, double discount);
+/*%<
+ * Set the baseline ADB quota, and configure parameters for the
+ * quota adjustment algorithm.
+ *
+ * If the number of fetches currently waiting for responses from this
+ * address exceeds the current quota, then additional fetches are spilled.
+ *
+ * 'quota' is the highest permissible quota; it will adjust itself
+ * downward in response to detected congestion.
+ *
+ * After every 'freq' fetches have either completed or timed out, an
+ * exponentially weighted moving average of the ratio of timeouts
+ * to responses is calculated.  If the EWMA goes above a 'high'
+ * threshold, then the quota is adjusted down one step; if it drops
+ * below a 'low' threshold, then the quota is adjusted back up one
+ * step.
+ *
+ * The quota adjustment is based on the function (1 / 1 + (n/10)^(3/2)),
+ * for values of n from 0 to 99.  It starts at 100% of the baseline
+ * quota, and descends after 100 steps to 2%.
+ *
+ * 'discount' represents the discount rate of the moving average. Higher
+ * values cause older values to be discounted sooner, providing a faster
+ * response to changes in the timeout ratio.
+ *
+ * Requires:
+ *\li	'adb' is valid.
+ */
+
+isc_boolean_t
+dns_adbentry_overquota(dns_adbentry_t *entry);
+/*%<
+ * Returns true if the specified ADB has too many active fetches.
+ *
+ * Requires:
+ *\li	'entry' is valid.
+ */
+
+void
+dns_adb_beginudpfetch(dns_adb_t *adb, dns_adbaddrinfo_t *addr);
+void
+dns_adb_endudpfetch(dns_adb_t *adb, dns_adbaddrinfo_t *addr);
+/*%
+ * Begin/end a UDP fetch on a particular address.
+ *
+ * These functions increment or decrement the fetch counter for
+ * the ADB entry so that the fetch quota can be enforced.
+ *
+ * Requires:
+ *
+ *\li	adb be valid.
+ *
+ *\li	addr be valid.
  */
 
 ISC_LANG_ENDDECLS

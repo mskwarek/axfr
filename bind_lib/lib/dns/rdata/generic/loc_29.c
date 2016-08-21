@@ -1,25 +1,16 @@
 /*
- * Copyright (C) 1999-2003  Internet Software Consortium.
+ * Copyright (C) 1999-2005, 2007, 2009, 2015, 2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: loc_29.c,v 1.30.2.4 2003/10/09 07:32:42 marka Exp $ */
+/* $Id: loc_29.c,v 1.50 2009/12/04 21:09:33 marka Exp $ */
 
 /* Reviewed: Wed Mar 15 18:13:09 PST 2000 by explorer */
 
-/* RFC 1876 */
+/* RFC1876 */
 
 #ifndef RDATA_GENERIC_LOC_29_C
 #define RDATA_GENERIC_LOC_29_C
@@ -50,13 +41,12 @@ fromtext_loc(ARGS_FROMTEXT) {
 	unsigned long longitude;
 	unsigned long altitude;
 
-	REQUIRE(type == 29);
+	REQUIRE(type == dns_rdatatype_loc);
 
 	UNUSED(type);
 	UNUSED(rdclass);
 	UNUSED(origin);
-	UNUSED(downcase);
-	UNUSED(callbacks);
+	UNUSED(options);
 
 	/*
 	 * Defaults.
@@ -81,11 +71,11 @@ fromtext_loc(ARGS_FROMTEXT) {
 	 */
 	RETERR(isc_lex_getmastertoken(lexer, &token, isc_tokentype_string,
 				      ISC_FALSE));
-	if (strcasecmp(token.value.as_pointer, "N") == 0)
+	if (strcasecmp(DNS_AS_STR(token), "N") == 0)
 		north = ISC_TRUE;
-	if (north || strcasecmp(token.value.as_pointer, "S") == 0)
+	if (north || strcasecmp(DNS_AS_STR(token), "S") == 0)
 		goto getlong;
-	m1 = strtol(token.value.as_pointer, &e, 10);
+	m1 = strtol(DNS_AS_STR(token), &e, 10);
 	if (*e != 0)
 		RETTOK(DNS_R_SYNTAX);
 	if (m1 < 0 || m1 > 59)
@@ -98,18 +88,19 @@ fromtext_loc(ARGS_FROMTEXT) {
 	 */
 	RETERR(isc_lex_getmastertoken(lexer, &token, isc_tokentype_string,
 				      ISC_FALSE));
-	if (strcasecmp(token.value.as_pointer, "N") == 0)
+	if (strcasecmp(DNS_AS_STR(token), "N") == 0)
 		north = ISC_TRUE;
-	if (north || strcasecmp(token.value.as_pointer, "S") == 0)
+	if (north || strcasecmp(DNS_AS_STR(token), "S") == 0)
 		goto getlong;
-	s1 = strtol(token.value.as_pointer, &e, 10);
+	s1 = strtol(DNS_AS_STR(token), &e, 10);
 	if (*e != 0 && *e != '.')
 		RETTOK(DNS_R_SYNTAX);
 	if (s1 < 0 || s1 > 59)
 		RETTOK(ISC_R_RANGE);
 	if (*e == '.') {
+		const char *l;
 		e++;
-		for (i = 0; i < 3 ; i++) {
+		for (i = 0; i < 3; i++) {
 			if (*e == 0)
 				break;
 			if ((tmp = decvalue(*e++)) < 0)
@@ -117,10 +108,24 @@ fromtext_loc(ARGS_FROMTEXT) {
 			s1 *= 10;
 			s1 += tmp;
 		}
-		for ( ; i < 3 ; i++)
+		for (; i < 3; i++)
 			s1 *= 10;
-		if (*e != 0)
-			RETTOK(DNS_R_SYNTAX);
+		l = e;
+		while (*e != 0) {
+			if (decvalue(*e++) < 0)
+				RETTOK(DNS_R_SYNTAX);
+		}
+		if (*l != '\0' && callbacks != NULL) {
+			const char *file = isc_lex_getsourcename(lexer);
+			unsigned long line = isc_lex_getsourceline(lexer);
+
+			if (file == NULL)
+				file = "UNKNOWN";
+			(*callbacks->warn)(callbacks, "%s: %s:%u: '%s' extra "
+					   "precision digits ignored",
+					   "dns_rdata_fromtext", file, line,
+					   DNS_AS_STR(token));
+		}
 	} else
 		s1 *= 1000;
 	if (d1 == 90 && s1 != 0)
@@ -131,9 +136,9 @@ fromtext_loc(ARGS_FROMTEXT) {
 	 */
 	RETERR(isc_lex_getmastertoken(lexer, &token, isc_tokentype_string,
 				      ISC_FALSE));
-	if (strcasecmp(token.value.as_pointer, "N") == 0)
+	if (strcasecmp(DNS_AS_STR(token), "N") == 0)
 		north = ISC_TRUE;
-	if (!north && strcasecmp(token.value.as_pointer, "S") != 0)
+	if (!north && strcasecmp(DNS_AS_STR(token), "S") != 0)
 		RETTOK(DNS_R_SYNTAX);
 
  getlong:
@@ -151,11 +156,11 @@ fromtext_loc(ARGS_FROMTEXT) {
 	 */
 	RETERR(isc_lex_getmastertoken(lexer, &token, isc_tokentype_string,
 				      ISC_FALSE));
-	if (strcasecmp(token.value.as_pointer, "E") == 0)
+	if (strcasecmp(DNS_AS_STR(token), "E") == 0)
 		east = ISC_TRUE;
-	if (east || strcasecmp(token.value.as_pointer, "W") == 0)
+	if (east || strcasecmp(DNS_AS_STR(token), "W") == 0)
 		goto getalt;
-	m2 = strtol(token.value.as_pointer, &e, 10);
+	m2 = strtol(DNS_AS_STR(token), &e, 10);
 	if (*e != 0)
 		RETTOK(DNS_R_SYNTAX);
 	if (m2 < 0 || m2 > 59)
@@ -168,18 +173,19 @@ fromtext_loc(ARGS_FROMTEXT) {
 	 */
 	RETERR(isc_lex_getmastertoken(lexer, &token, isc_tokentype_string,
 				      ISC_FALSE));
-	if (strcasecmp(token.value.as_pointer, "E") == 0)
+	if (strcasecmp(DNS_AS_STR(token), "E") == 0)
 		east = ISC_TRUE;
-	if (east || strcasecmp(token.value.as_pointer, "W") == 0)
+	if (east || strcasecmp(DNS_AS_STR(token), "W") == 0)
 		goto getalt;
-	s2 = strtol(token.value.as_pointer, &e, 10);
+	s2 = strtol(DNS_AS_STR(token), &e, 10);
 	if (*e != 0 && *e != '.')
 		RETTOK(DNS_R_SYNTAX);
 	if (s2 < 0 || s2 > 59)
 		RETTOK(ISC_R_RANGE);
 	if (*e == '.') {
+		const char *l;
 		e++;
-		for (i = 0; i < 3 ; i++) {
+		for (i = 0; i < 3; i++) {
 			if (*e == 0)
 				break;
 			if ((tmp = decvalue(*e++)) < 0)
@@ -187,10 +193,24 @@ fromtext_loc(ARGS_FROMTEXT) {
 			s2 *= 10;
 			s2 += tmp;
 		}
-		for ( ; i < 3 ; i++)
+		for (; i < 3; i++)
 			s2 *= 10;
-		if (*e != 0)
-			RETTOK(DNS_R_SYNTAX);
+		l = e;
+		while (*e != 0) {
+			if (decvalue(*e++) < 0)
+				RETTOK(DNS_R_SYNTAX);
+		}
+		if (*l != '\0' && callbacks != NULL) {
+			const char *file = isc_lex_getsourcename(lexer);
+			unsigned long line = isc_lex_getsourceline(lexer);
+
+			if (file == NULL)
+				file = "UNKNOWN";
+			(*callbacks->warn)(callbacks, "%s: %s:%u: '%s' extra "
+					   "precision digits ignored",
+					   "dns_rdata_fromtext",
+					   file, line, DNS_AS_STR(token));
+		}
 	} else
 		s2 *= 1000;
 	if (d2 == 180 && s2 != 0)
@@ -201,9 +221,9 @@ fromtext_loc(ARGS_FROMTEXT) {
 	 */
 	RETERR(isc_lex_getmastertoken(lexer, &token, isc_tokentype_string,
 				      ISC_FALSE));
-	if (strcasecmp(token.value.as_pointer, "E") == 0)
+	if (strcasecmp(DNS_AS_STR(token), "E") == 0)
 		east = ISC_TRUE;
-	if (!east && strcasecmp(token.value.as_pointer, "W") != 0)
+	if (!east && strcasecmp(DNS_AS_STR(token), "W") != 0)
 		RETTOK(DNS_R_SYNTAX);
 
  getalt:
@@ -212,7 +232,7 @@ fromtext_loc(ARGS_FROMTEXT) {
 	 */
 	RETERR(isc_lex_getmastertoken(lexer, &token, isc_tokentype_string,
 				      ISC_FALSE));
-	m = strtol(token.value.as_pointer, &e, 10);
+	m = strtol(DNS_AS_STR(token), &e, 10);
 	if (*e != 0 && *e != '.' && *e != 'm')
 		RETTOK(DNS_R_SYNTAX);
 	if (m < -100000 || m > 42849672)
@@ -220,7 +240,7 @@ fromtext_loc(ARGS_FROMTEXT) {
 	cm = 0;
 	if (*e == '.') {
 		e++;
-		for (i = 0; i < 2 ; i++) {
+		for (i = 0; i < 2; i++) {
 			if (*e == 0 || *e == 'm')
 				break;
 			if ((tmp = decvalue(*e++)) < 0)
@@ -231,7 +251,7 @@ fromtext_loc(ARGS_FROMTEXT) {
 			else
 				cm += tmp;
 		}
-		for ( ; i < 2 ; i++)
+		for (; i < 2; i++)
 			cm *= 10;
 	}
 	if (*e == 'm')
@@ -259,7 +279,7 @@ fromtext_loc(ARGS_FROMTEXT) {
 		isc_lex_ungettoken(lexer, &token);
 		goto encode;
 	}
-	m = strtol(token.value.as_pointer, &e, 10);
+	m = strtol(DNS_AS_STR(token), &e, 10);
 	if (*e != 0 && *e != '.' && *e != 'm')
 		RETTOK(DNS_R_SYNTAX);
 	if (m < 0 || m > 90000000)
@@ -267,7 +287,7 @@ fromtext_loc(ARGS_FROMTEXT) {
 	cm = 0;
 	if (*e == '.') {
 		e++;
-		for (i = 0; i < 2 ; i++) {
+		for (i = 0; i < 2; i++) {
 			if (*e == 0 || *e == 'm')
 				break;
 			if ((tmp = decvalue(*e++)) < 0)
@@ -275,7 +295,7 @@ fromtext_loc(ARGS_FROMTEXT) {
 			cm *= 10;
 			cm += tmp;
 		}
-		for ( ; i < 2 ; i++)
+		for (; i < 2; i++)
 			cm *= 10;
 	}
 	if (*e == 'm')
@@ -286,7 +306,7 @@ fromtext_loc(ARGS_FROMTEXT) {
 	 * We don't just multiply out as we will overflow.
 	 */
 	if (m > 0) {
-		for (exp = 0 ; exp < 7 ; exp++)
+		for (exp = 0; exp < 7; exp++)
 			if (m < poweroften[exp+1])
 				break;
 		man = m / poweroften[exp];
@@ -312,7 +332,7 @@ fromtext_loc(ARGS_FROMTEXT) {
 		isc_lex_ungettoken(lexer, &token);
 		goto encode;
 	}
-	m = strtol(token.value.as_pointer, &e, 10);
+	m = strtol(DNS_AS_STR(token), &e, 10);
 	if (*e != 0 && *e != '.' && *e != 'm')
 		RETTOK(DNS_R_SYNTAX);
 	if (m < 0 || m > 90000000)
@@ -320,7 +340,7 @@ fromtext_loc(ARGS_FROMTEXT) {
 	cm = 0;
 	if (*e == '.') {
 		e++;
-		for (i = 0; i < 2 ; i++) {
+		for (i = 0; i < 2; i++) {
 			if (*e == 0 || *e == 'm')
 				break;
 			if ((tmp = decvalue(*e++)) < 0)
@@ -328,7 +348,7 @@ fromtext_loc(ARGS_FROMTEXT) {
 			cm *= 10;
 			cm += tmp;
 		}
-		for ( ; i < 2 ; i++)
+		for (; i < 2; i++)
 			cm *= 10;
 	}
 	if (*e == 'm')
@@ -339,7 +359,7 @@ fromtext_loc(ARGS_FROMTEXT) {
 	 * We don't just multiply out as we will overflow.
 	 */
 	if (m > 0) {
-		for (exp = 0 ; exp < 7 ; exp++)
+		for (exp = 0; exp < 7; exp++)
 			if (m < poweroften[exp+1])
 				break;
 		man = m / poweroften[exp];
@@ -363,7 +383,7 @@ fromtext_loc(ARGS_FROMTEXT) {
 		isc_lex_ungettoken(lexer, &token);
 		goto encode;
 	}
-	m = strtol(token.value.as_pointer, &e, 10);
+	m = strtol(DNS_AS_STR(token), &e, 10);
 	if (*e != 0 && *e != '.' && *e != 'm')
 		RETTOK(DNS_R_SYNTAX);
 	if (m < 0 || m > 90000000)
@@ -371,7 +391,7 @@ fromtext_loc(ARGS_FROMTEXT) {
 	cm = 0;
 	if (*e == '.') {
 		e++;
-		for (i = 0; i < 2 ; i++) {
+		for (i = 0; i < 2; i++) {
 			if (*e == 0 || *e == 'm')
 				break;
 			if ((tmp = decvalue(*e++)) < 0)
@@ -379,7 +399,7 @@ fromtext_loc(ARGS_FROMTEXT) {
 			cm *= 10;
 			cm += tmp;
 		}
-		for ( ; i < 2 ; i++)
+		for (; i < 2; i++)
 			cm *= 10;
 	}
 	if (*e == 'm')
@@ -390,7 +410,7 @@ fromtext_loc(ARGS_FROMTEXT) {
 	 * We don't just multiply out as we will overflow.
 	 */
 	if (m > 0) {
-		for (exp = 0 ; exp < 7 ; exp++)
+		for (exp = 0; exp < 7; exp++)
 			if (m < poweroften[exp+1])
 				break;
 		man = m / poweroften[exp];
@@ -446,23 +466,30 @@ totext_loc(ARGS_TOTEXT) {
 
 	UNUSED(tctx);
 
-	REQUIRE(rdata->type == 29);
+	REQUIRE(rdata->type == dns_rdatatype_loc);
 	REQUIRE(rdata->length != 0);
 
 	dns_rdata_toregion(rdata, &sr);
 
-	/* version = sr.base[0]; */
+	if (sr.base[0] != 0)
+		return (ISC_R_NOTIMPLEMENTED);
+
+	REQUIRE(rdata->length == 16);
+
 	size = sr.base[1];
+	INSIST((size&0x0f) < 10 && (size>>4) < 10);
 	if ((size&0x0f)> 1)
 		sprintf(sbuf, "%lum", (size>>4) * poweroften[(size&0x0f)-2]);
 	else
 		sprintf(sbuf, "0.%02lum", (size>>4) * poweroften[(size&0x0f)]);
 	hp = sr.base[2];
+	INSIST((hp&0x0f) < 10 && (hp>>4) < 10);
 	if ((hp&0x0f)> 1)
 		sprintf(hbuf, "%lum", (hp>>4) * poweroften[(hp&0x0f)-2]);
 	else
 		sprintf(hbuf, "0.%02lum", (hp>>4) * poweroften[(hp&0x0f)]);
 	vp = sr.base[3];
+	INSIST((vp&0x0f) < 10 && (vp>>4) < 10);
 	if ((vp&0x0f)> 1)
 		sprintf(vbuf, "%lum", (vp>>4) * poweroften[(vp&0x0f)-2]);
 	else
@@ -485,6 +512,7 @@ totext_loc(ARGS_TOTEXT) {
 	m1 = (int)(latitude % 60);
 	latitude /= 60;
 	d1 = (int)latitude;
+	INSIST(latitude <= 90U);
 
 	longitude = uint32_fromregion(&sr);
 	isc_region_consume(&sr, 4);
@@ -502,6 +530,7 @@ totext_loc(ARGS_TOTEXT) {
 	m2 = (int)(longitude % 60);
 	longitude /= 60;
 	d2 = (int)longitude;
+	INSIST(longitude <= 180U);
 
 	altitude = uint32_fromregion(&sr);
 	isc_region_consume(&sr, 4);
@@ -529,18 +558,21 @@ fromwire_loc(ARGS_FROMWIRE) {
 	unsigned long latitude;
 	unsigned long longitude;
 
-	REQUIRE(type == 29);
+	REQUIRE(type == dns_rdatatype_loc);
 
 	UNUSED(type);
 	UNUSED(rdclass);
 	UNUSED(dctx);
-	UNUSED(downcase);
+	UNUSED(options);
 
 	isc_buffer_activeregion(source, &sr);
 	if (sr.length < 1)
 		return (ISC_R_UNEXPECTEDEND);
-	if (sr.base[0] != 0)
-		return (ISC_R_NOTIMPLEMENTED);
+	if (sr.base[0] != 0) {
+		/* Treat as unknown. */
+		isc_buffer_forward(source, sr.length);
+		return (mem_tobuffer(target, sr.base, sr.length));
+	}
 	if (sr.length < 16)
 		return (ISC_R_UNEXPECTEDEND);
 
@@ -587,7 +619,7 @@ fromwire_loc(ARGS_FROMWIRE) {
 		return (ISC_R_RANGE);
 
 	/*
-	 * Altitiude.
+	 * Altitude.
 	 * All values possible.
 	 */
 
@@ -600,7 +632,7 @@ static inline isc_result_t
 towire_loc(ARGS_TOWIRE) {
 	UNUSED(cctx);
 
-	REQUIRE(rdata->type == 29);
+	REQUIRE(rdata->type == dns_rdatatype_loc);
 	REQUIRE(rdata->length != 0);
 
 	return (mem_tobuffer(target, rdata->data, rdata->length));
@@ -613,13 +645,13 @@ compare_loc(ARGS_COMPARE) {
 
 	REQUIRE(rdata1->type == rdata2->type);
 	REQUIRE(rdata1->rdclass == rdata2->rdclass);
-	REQUIRE(rdata1->type == 29);
+	REQUIRE(rdata1->type == dns_rdatatype_loc);
 	REQUIRE(rdata1->length != 0);
 	REQUIRE(rdata2->length != 0);
 
 	dns_rdata_toregion(rdata1, &r1);
 	dns_rdata_toregion(rdata2, &r2);
-	return (compare_region(&r1, &r2));
+	return (isc_region_compare(&r1, &r2));
 }
 
 static inline isc_result_t
@@ -627,7 +659,7 @@ fromstruct_loc(ARGS_FROMSTRUCT) {
 	dns_rdata_loc_t *loc = source;
 	isc_uint8_t c;
 
-	REQUIRE(type == 29);
+	REQUIRE(type == dns_rdatatype_loc);
 	REQUIRE(source != NULL);
 	REQUIRE(loc->common.rdtype == type);
 	REQUIRE(loc->common.rdclass == rdclass);
@@ -672,7 +704,7 @@ tostruct_loc(ARGS_TOSTRUCT) {
 	isc_region_t r;
 	isc_uint8_t version;
 
-	REQUIRE(rdata->type == 29);
+	REQUIRE(rdata->type == dns_rdatatype_loc);
 	REQUIRE(target != NULL);
 	REQUIRE(rdata->length != 0);
 
@@ -709,7 +741,7 @@ freestruct_loc(ARGS_FREESTRUCT) {
 	dns_rdata_loc_t *loc = source;
 
 	REQUIRE(source != NULL);
-	REQUIRE(loc->common.rdtype == 29);
+	REQUIRE(loc->common.rdtype == dns_rdatatype_loc);
 
 	UNUSED(source);
 	UNUSED(loc);
@@ -717,7 +749,7 @@ freestruct_loc(ARGS_FREESTRUCT) {
 
 static inline isc_result_t
 additionaldata_loc(ARGS_ADDLDATA) {
-	REQUIRE(rdata->type == 29);
+	REQUIRE(rdata->type == dns_rdatatype_loc);
 
 	UNUSED(rdata);
 	UNUSED(add);
@@ -730,11 +762,41 @@ static inline isc_result_t
 digest_loc(ARGS_DIGEST) {
 	isc_region_t r;
 
-	REQUIRE(rdata->type == 29);
+	REQUIRE(rdata->type == dns_rdatatype_loc);
 
 	dns_rdata_toregion(rdata, &r);
 
 	return ((digest)(arg, &r));
+}
+
+static inline isc_boolean_t
+checkowner_loc(ARGS_CHECKOWNER) {
+
+	REQUIRE(type == dns_rdatatype_loc);
+
+	UNUSED(name);
+	UNUSED(type);
+	UNUSED(rdclass);
+	UNUSED(wildcard);
+
+	return (ISC_TRUE);
+}
+
+static inline isc_boolean_t
+checknames_loc(ARGS_CHECKNAMES) {
+
+	REQUIRE(rdata->type == dns_rdatatype_loc);
+
+	UNUSED(rdata);
+	UNUSED(owner);
+	UNUSED(bad);
+
+	return (ISC_TRUE);
+}
+
+static inline int
+casecompare_loc(ARGS_COMPARE) {
+	return (compare_loc(rdata1, rdata2));
 }
 
 #endif	/* RDATA_GENERIC_LOC_29_C */

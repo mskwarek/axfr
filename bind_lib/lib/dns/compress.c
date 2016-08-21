@@ -1,21 +1,12 @@
 /*
- * Copyright (C) 1999-2001  Internet Software Consortium.
+ * Copyright (C) 1999-2001, 2004-2007, 2015, 2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: compress.c,v 1.50 2001/06/04 19:32:59 tale Exp $ */
+/*! \file */
 
 #define DNS_NAME_USEINLINE 1
 
@@ -36,23 +27,30 @@
 #define DCTX_MAGIC	ISC_MAGIC('D', 'C', 'T', 'X')
 #define VALID_DCTX(x)	ISC_MAGIC_VALID(x, DCTX_MAGIC)
 
+#define TABLE_READY							\
+	do {								\
+		unsigned int i;						\
+									\
+		if ((cctx->allowed & DNS_COMPRESS_READY) == 0) {	\
+			cctx->allowed |= DNS_COMPRESS_READY;		\
+			for (i = 0; i < DNS_COMPRESS_TABLESIZE; i++)	\
+				cctx->table[i] = NULL;			\
+		}							\
+	} while (0)
+
 /***
  ***	Compression
  ***/
 
 isc_result_t
 dns_compress_init(dns_compress_t *cctx, int edns, isc_mem_t *mctx) {
-	unsigned int i;
-
 	REQUIRE(cctx != NULL);
-	REQUIRE(mctx != NULL);
+	REQUIRE(mctx != NULL);	/* See: rdataset.c:towiresorted(). */
 
-	cctx->allowed = 0;
 	cctx->edns = edns;
-	for (i = 0; i < DNS_COMPRESS_TABLESIZE; i++)
-		cctx->table[i] = NULL;
 	cctx->mctx = mctx;
 	cctx->count = 0;
+	cctx->allowed = DNS_COMPRESS_ENABLED;
 	cctx->magic = CCTX_MAGIC;
 	return (ISC_R_SUCCESS);
 }
@@ -64,16 +62,21 @@ dns_compress_invalidate(dns_compress_t *cctx) {
 
 	REQUIRE(VALID_CCTX(cctx));
 
-	cctx->magic = 0;
-	for (i = 0; i < DNS_COMPRESS_TABLESIZE; i++) {
-		while (cctx->table[i] != NULL) {
-			node = cctx->table[i];
-			cctx->table[i] = cctx->table[i]->next;
-			if (node->count < DNS_COMPRESS_INITIALNODES)
-				continue;
-			isc_mem_put(cctx->mctx, node, sizeof(*node));
+	if ((cctx->allowed & DNS_COMPRESS_READY) != 0) {
+		for (i = 0; i < DNS_COMPRESS_TABLESIZE; i++) {
+			while (cctx->table[i] != NULL) {
+				node = cctx->table[i];
+				cctx->table[i] = cctx->table[i]->next;
+				if ((node->offset & 0x8000) != 0)
+					isc_mem_put(cctx->mctx, node->r.base,
+						    node->r.length);
+				if (node->count < DNS_COMPRESS_INITIALNODES)
+					continue;
+				isc_mem_put(cctx->mctx, node, sizeof(*node));
+			}
 		}
 	}
+	cctx->magic = 0;
 	cctx->allowed = 0;
 	cctx->edns = -1;
 }
@@ -82,13 +85,37 @@ void
 dns_compress_setmethods(dns_compress_t *cctx, unsigned int allowed) {
 	REQUIRE(VALID_CCTX(cctx));
 
-	cctx->allowed = allowed;
+	cctx->allowed &= ~DNS_COMPRESS_ALL;
+	cctx->allowed |= (allowed & DNS_COMPRESS_ALL);
 }
 
 unsigned int
 dns_compress_getmethods(dns_compress_t *cctx) {
 	REQUIRE(VALID_CCTX(cctx));
-	return (cctx->allowed);
+	return (cctx->allowed & DNS_COMPRESS_ALL);
+}
+
+void
+dns_compress_disable(dns_compress_t *cctx) {
+	REQUIRE(VALID_CCTX(cctx));
+	cctx->allowed &= ~DNS_COMPRESS_ENABLED;
+}
+
+void
+dns_compress_setsensitive(dns_compress_t *cctx, isc_boolean_t sensitive) {
+	REQUIRE(VALID_CCTX(cctx));
+
+	if (sensitive)
+		cctx->allowed |= DNS_COMPRESS_CASESENSITIVE;
+	else
+		cctx->allowed &= ~DNS_COMPRESS_CASESENSITIVE;
+}
+
+isc_boolean_t
+dns_compress_getsensitive(dns_compress_t *cctx) {
+	REQUIRE(VALID_CCTX(cctx));
+
+	return (ISC_TF((cctx->allowed & DNS_COMPRESS_CASESENSITIVE) != 0));
 }
 
 int
@@ -111,7 +138,7 @@ do { \
  * If no match is found return ISC_FALSE.
  */
 isc_boolean_t
-dns_compress_findglobal(dns_compress_t *cctx, dns_name_t *name,
+dns_compress_findglobal(dns_compress_t *cctx, const dns_name_t *name,
 			dns_name_t *prefix, isc_uint16_t *offset)
 {
 	dns_name_t tname, nname;
@@ -121,6 +148,11 @@ dns_compress_findglobal(dns_compress_t *cctx, dns_name_t *name,
 	REQUIRE(VALID_CCTX(cctx));
 	REQUIRE(dns_name_isabsolute(name) == ISC_TRUE);
 	REQUIRE(offset != NULL);
+
+	if ((cctx->allowed & DNS_COMPRESS_ENABLED) == 0)
+		return (ISC_FALSE);
+
+	TABLE_READY;
 
 	if (cctx->count == 0)
 		return (ISC_FALSE);
@@ -138,8 +170,13 @@ dns_compress_findglobal(dns_compress_t *cctx, dns_name_t *name,
 		for (node = cctx->table[hash]; node != NULL; node = node->next)
 		{
 			NODENAME(node, &nname);
-			if (dns_name_equal(&nname, &tname))
-				break;
+			if ((cctx->allowed & DNS_COMPRESS_CASESENSITIVE) != 0) {
+				if (dns_name_caseequal(&nname, &tname))
+					break;
+			} else {
+				if (dns_name_equal(&nname, &tname))
+					break;
+			}
 		}
 		if (node != NULL)
 			break;
@@ -156,22 +193,22 @@ dns_compress_findglobal(dns_compress_t *cctx, dns_name_t *name,
 	else
 		dns_name_getlabelsequence(name, 0, n, prefix);
 
-	*offset = node->offset;
+	*offset = (node->offset & 0x7fff);
 	return (ISC_TRUE);
 }
 
 static inline unsigned int
-name_length(dns_name_t *name) {
+name_length(const dns_name_t *name) {
 	isc_region_t r;
 	dns_name_toregion(name, &r);
 	return (r.length);
 }
 
 void
-dns_compress_add(dns_compress_t *cctx, dns_name_t *name, dns_name_t *prefix,
-		 isc_uint16_t offset)
+dns_compress_add(dns_compress_t *cctx, const dns_name_t *name,
+		 const dns_name_t *prefix, isc_uint16_t offset)
 {
-	dns_name_t tname;
+	dns_name_t tname, xname;
 	unsigned int start;
 	unsigned int n;
 	unsigned int count;
@@ -180,26 +217,49 @@ dns_compress_add(dns_compress_t *cctx, dns_name_t *name, dns_name_t *prefix,
 	unsigned int length;
 	unsigned int tlength;
 	isc_uint16_t toffset;
+	unsigned char *tmp;
+	isc_region_t r;
 
 	REQUIRE(VALID_CCTX(cctx));
 	REQUIRE(dns_name_isabsolute(name));
 
+	if ((cctx->allowed & DNS_COMPRESS_ENABLED) == 0)
+		return;
+
+	TABLE_READY;
+
+	if (offset >= 0x4000)
+		return;
 	dns_name_init(&tname, NULL);
+	dns_name_init(&xname, NULL);
 
 	n = dns_name_countlabels(name);
 	count = dns_name_countlabels(prefix);
 	if (dns_name_isabsolute(prefix))
 		count--;
+	if (count == 0)
+		return;
 	start = 0;
-	length = name_length(name);
+	dns_name_toregion(name, &r);
+	length = r.length;
+	tmp = isc_mem_get(cctx->mctx, length);
+	if (tmp == NULL)
+		return;
+	/*
+	 * Copy name data to 'tmp' and make 'r' use 'tmp'.
+	 */
+	memmove(tmp, r.base, r.length);
+	r.base = tmp;
+	dns_name_fromregion(&xname, &r);
+
 	while (count > 0) {
-		if (offset >= 0x4000)
-			break;
-		dns_name_getlabelsequence(name, start, n, &tname);
+		dns_name_getlabelsequence(&xname, start, n, &tname);
 		hash = dns_name_hash(&tname, ISC_FALSE) %
 		       DNS_COMPRESS_TABLESIZE;
 		tlength = name_length(&tname);
 		toffset = (isc_uint16_t)(offset + (length - tlength));
+		if (toffset >= 0x4000)
+			break;
 		/*
 		 * Create a new node and add it.
 		 */
@@ -209,9 +269,15 @@ dns_compress_add(dns_compress_t *cctx, dns_name_t *name, dns_name_t *prefix,
 			node = isc_mem_get(cctx->mctx,
 					   sizeof(dns_compressnode_t));
 			if (node == NULL)
-				return;
+				break;
 		}
 		node->count = cctx->count++;
+		/*
+		 * 'node->r.base' becomes 'tmp' when start == 0.
+		 * Record this by setting 0x8000 so it can be freed later.
+		 */
+		if (start == 0)
+			toffset |= 0x8000;
 		node->offset = toffset;
 		dns_name_toregion(&tname, &node->r);
 		node->labels = (isc_uint8_t)dns_name_countlabels(&tname);
@@ -221,6 +287,9 @@ dns_compress_add(dns_compress_t *cctx, dns_name_t *name, dns_name_t *prefix,
 		n--;
 		count--;
 	}
+
+	if (start == 0)
+		isc_mem_put(cctx->mctx, tmp, length);
 }
 
 void
@@ -230,16 +299,25 @@ dns_compress_rollback(dns_compress_t *cctx, isc_uint16_t offset) {
 
 	REQUIRE(VALID_CCTX(cctx));
 
+	if ((cctx->allowed & DNS_COMPRESS_ENABLED) == 0)
+		return;
+
+	if ((cctx->allowed & DNS_COMPRESS_READY) == 0)
+		return;
+
 	for (i = 0; i < DNS_COMPRESS_TABLESIZE; i++) {
 		node = cctx->table[i];
 		/*
 		 * This relies on nodes with greater offsets being
 		 * closer to the beginning of the list, and the
-		 * items with the greatest offsets being at the end 
+		 * items with the greatest offsets being at the end
 		 * of the initialnodes[] array.
 		 */
-		while (node != NULL && node->offset >= offset) {
+		while (node != NULL && (node->offset & 0x7fff) >= offset) {
 			cctx->table[i] = node->next;
+			if ((node->offset & 0x8000) != 0)
+				isc_mem_put(cctx->mctx, node->r.base,
+					    node->r.length);
 			if (node->count >= DNS_COMPRESS_INITIALNODES)
 				isc_mem_put(cctx->mctx, node, sizeof(*node));
 			cctx->count--;

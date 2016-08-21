@@ -1,21 +1,12 @@
 /*
- * Copyright (C) 2000-2002  Internet Software Consortium.
+ * Copyright (C) 2000, 2001, 2004, 2007, 2011, 2014, 2016  Internet Systems Consortium, Inc. ("ISC")
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM
- * DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- * INTERNET SOFTWARE CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
- * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* $Id: dirdb.c,v 1.9.4.2 2002/08/05 06:57:07 marka Exp $ */
+/* $Id: dirdb.c,v 1.14 2011/10/11 23:46:45 tbox Exp $ */
 
 /*
  * A simple database driver that returns basic information about
@@ -60,9 +51,16 @@ static dns_sdbimplementation_t *dirdb = NULL;
  * Any name will be interpreted as a pathname offset from the directory
  * specified in the configuration file.
  */
+#ifdef DNS_CLIENTINFO_VERSION
+static isc_result_t
+dirdb_lookup(const char *zone, const char *name, void *dbdata,
+	      dns_sdblookup_t *lookup, dns_clientinfomethods_t *methods,
+	      dns_clientinfo_t *clientinfo)
+#else
 static isc_result_t
 dirdb_lookup(const char *zone, const char *name, void *dbdata,
 	      dns_sdblookup_t *lookup)
+#endif /* DNS_CLIENTINFO_VERSION */
 {
 	char filename[255];
 	char filename2[255];
@@ -73,6 +71,10 @@ dirdb_lookup(const char *zone, const char *name, void *dbdata,
 
 	UNUSED(zone);
 	UNUSED(dbdata);
+#ifdef DNS_CLIENTINFO_VERSION
+	UNUSED(methods);
+	UNUSED(clientinfo);
+#endif /* DNS_CLIENTINFO_VERSION */
 
 	if (strcmp(name, "@") == 0)
 		snprintf(filename, sizeof(filename), "%s", (char *)dbdata);
@@ -80,7 +82,7 @@ dirdb_lookup(const char *zone, const char *name, void *dbdata,
 		snprintf(filename, sizeof(filename), "%s/%s",
 			 (char *)dbdata, name);
 	CHECKN(lstat(filename, &statbuf));
-	
+
 	if (S_ISDIR(statbuf.st_mode))
 		CHECK(dns_sdb_putrr(lookup, "txt", 3600, "dir"));
 	else if (S_ISCHR(statbuf.st_mode) || S_ISBLK(statbuf.st_mode)) {
@@ -168,7 +170,8 @@ static dns_sdbmethods_t dirdb_methods = {
 	dirdb_authority,
 	NULL, /* allnodes */
 	dirdb_create,
-	dirdb_destroy
+	dirdb_destroy,
+	NULL /* lookup2 */
 };
 
 /*
