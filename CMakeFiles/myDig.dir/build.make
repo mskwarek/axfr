@@ -231,6 +231,7 @@ build/myDig: CMakeFiles/myDig.dir/Scanner/InputReader.cpp.o
 build/myDig: CMakeFiles/myDig.dir/GeneralUtils/ms_response_list.c.o
 build/myDig: CMakeFiles/myDig.dir/main.cpp.o
 build/myDig: CMakeFiles/myDig.dir/build.make
+build/myDig: build/lib/libAxfrLib.so
 build/myDig: bind_lib/lib/dns/libdns.a
 build/myDig: bind_lib/lib/lwres/liblwres.a
 build/myDig: bind_lib/lib/bind9/libbind9.a

@@ -13,14 +13,11 @@ set(EXECUTABLE_OUTPUT_PATH ${dir})
 set(LIBRARY_OUTPUT_PATH ${dir}lib)
 set(CMAKE_CACHEFILE_DIR ${dir})
 
-
 SET(CMAKE_C_COMPILER gcc)
 SET(CMAKE_CXX_COMPILER g++)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O2 -Wall -fPIC -DVERSION=\"9.11.0b3\" -D_REENTRANT -D_GNU_SOURCE")
-
-
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O2 -Wall -Werror -fPIC -DVERSION=\"9.11.0b3\" -D_REENTRANT -D_GNU_SOURCE")
 
 include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}/digUtils
@@ -39,25 +36,6 @@ include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}/bind_lib/lib/lwres/unix/include
 	${CMAKE_CURRENT_SOURCE_DIR}/bind_lib/lib/lwres/include
 	${CMAKE_CURRENT_SOURCE_DIR}/bind_lib/lib/isccfg/include
-
-		-I/home/marcin/ClionProjects/myDig/bind_lib
-		bind_lib
-		-I/home/marcin/ClionProjects/myDig/bind_lib/lib/dns/include
-		bind_lib/lib/dns/include
-		-I/home/marcin/ClionProjects/myDig/bind_lib/lib/bind9/include
-		bind_lib/lib/bind9/include
-		-I/home/marcin/ClionProjects/myDig/bind_lib/lib/isc/include
-		bind_lib/lib/isc
-		bind_lib/lib/isc/include
-		bind_lib/lib/isc/unix/include
-		bind_lib/lib/isc/pthreads/include
-		bind_lib/lib/isc/x86_32/include
-		-I/home/marcin/ClionProjects/myDig/bind_lib/lib/lwres/include
-		bind_lib/lib/lwres/unix/include
-		bind_lib/lib/lwres/include
-		-I/home/marcin/ClionProjects/myDig/bind_lib/lib/isccfg/include
-		bind_lib/lib/isccfg/include
-		-I/usr/include/libxml2
 	)
 
 set(common_src digUtils/digQuery.c
@@ -88,11 +66,12 @@ target_link_libraries(AxfrLib
 add_executable(myDig ${common_src} main.cpp)
 
 target_link_libraries(myDig
-		${CMAKE_CURRENT_SOURCE_DIR}/bind_lib/lib/dns/libdns.a
-		gssapi_krb5 krb5 k5crypto com_err crypto
-		${CMAKE_CURRENT_SOURCE_DIR}/bind_lib/lib/lwres/liblwres.a
-		${CMAKE_CURRENT_SOURCE_DIR}/bind_lib/lib/bind9/libbind9.a
-		${CMAKE_CURRENT_SOURCE_DIR}/bind_lib/lib/isccfg/libisccfg.a
-		${CMAKE_CURRENT_SOURCE_DIR}/bind_lib/lib/isc/libisc.a
-		dl z pthread  xml2
+		AxfrLib
+#		${CMAKE_CURRENT_SOURCE_DIR}/bind_lib/lib/dns/libdns.a
+#		gssapi_krb5 krb5 k5crypto com_err crypto
+#		${CMAKE_CURRENT_SOURCE_DIR}/bind_lib/lib/lwres/liblwres.a
+#		${CMAKE_CURRENT_SOURCE_DIR}/bind_lib/lib/bind9/libbind9.a
+#		${CMAKE_CURRENT_SOURCE_DIR}/bind_lib/lib/isccfg/libisccfg.a
+#		${CMAKE_CURRENT_SOURCE_DIR}/bind_lib/lib/isc/libisc.a
+#		dl z pthread  xml2
 		)

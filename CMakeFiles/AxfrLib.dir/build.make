@@ -232,14 +232,10 @@ build/lib/libAxfrLib.so: CMakeFiles/AxfrLib.dir/GeneralUtils/ms_response_list.c.
 build/lib/libAxfrLib.so: CMakeFiles/AxfrLib.dir/axfrlib.cpp.o
 build/lib/libAxfrLib.so: CMakeFiles/AxfrLib.dir/build.make
 build/lib/libAxfrLib.so: bind_lib/lib/dns/libdns.a
-build/lib/libAxfrLib.so: bind_lib/lib/isc/libisc.a
-build/lib/libAxfrLib.so: bind_lib/lib/isc/libisc-nosymtbl.a
-build/lib/libAxfrLib.so: bind_lib/lib/irs/libirs.a
-build/lib/libAxfrLib.so: bind_lib/lib/isccc/libisccc.a
-build/lib/libAxfrLib.so: bind_lib/lib/isccfg/libisccfg.a
 build/lib/libAxfrLib.so: bind_lib/lib/lwres/liblwres.a
 build/lib/libAxfrLib.so: bind_lib/lib/bind9/libbind9.a
-build/lib/libAxfrLib.so: /usr/lib/x86_64-linux-gnu/libcrypto.so
+build/lib/libAxfrLib.so: bind_lib/lib/isccfg/libisccfg.a
+build/lib/libAxfrLib.so: bind_lib/lib/isc/libisc.a
 build/lib/libAxfrLib.so: CMakeFiles/AxfrLib.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --red --bold "Linking CXX shared library build/lib/libAxfrLib.so"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/AxfrLib.dir/link.txt --verbose=$(VERBOSE)

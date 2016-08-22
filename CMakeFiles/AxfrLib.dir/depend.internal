@@ -39,6 +39,7 @@ CMakeFiles/AxfrLib.dir/GeneralUtils/ms_response_list.c.o
  bind_lib/lib/isc/unix/include/isc/stdtime.h
  digUtils/dig_parser.h
 CMakeFiles/AxfrLib.dir/digUtils/digQuery.c.o
+ /home/marcin/ClionProjects/myDig/GeneralUtils/ms_response_list.h
  /home/marcin/ClionProjects/myDig/digUtils/digQuery.c
  bind_lib/bin/dig/include/dig/dig.h
  bind_lib/lib/dns/include/dns/byaddr.h
@@ -118,6 +119,8 @@ CMakeFiles/AxfrLib.dir/digUtils/digQuery.c.o
  bind_lib/lib/isc/unix/include/pkcs11/cryptoki.h
  bind_lib/lib/isc/x86_32/include/isc/atomic.h
  digUtils/config.h
+ digUtils/digQuery.h
+ digUtils/dig_parser.h
 CMakeFiles/AxfrLib.dir/digUtils/dig_parser.c.o
  /home/marcin/ClionProjects/myDig/digUtils/dig_parser.c
 CMakeFiles/AxfrLib.dir/digUtils/dighost.c.o
@@ -241,6 +244,7 @@ CMakeFiles/AxfrLib.dir/Scanner/axfrLookup.cpp.o
  /home/marcin/ClionProjects/myDig/Scanner/ScanningResult.hpp
  /home/marcin/ClionProjects/myDig/Scanner/axfrLookup.cpp
  /home/marcin/ClionProjects/myDig/Scanner/axfrLookup.h
+ /home/marcin/ClionProjects/myDig/digUtils/digQuery.h
  bind_lib/lib/dns/include/dns/compress.h
  bind_lib/lib/dns/include/dns/ds.h
  bind_lib/lib/dns/include/dns/dsdigest.h
@@ -274,7 +278,6 @@ CMakeFiles/AxfrLib.dir/Scanner/axfrLookup.cpp.o
  bind_lib/lib/isc/unix/include/isc/int.h
  bind_lib/lib/isc/unix/include/isc/offset.h
  bind_lib/lib/isc/unix/include/isc/stdtime.h
- digUtils/digQuery.h
  digUtils/dig_parser.h
 CMakeFiles/AxfrLib.dir/axfrlib.cpp.o
  /home/marcin/ClionProjects/myDig/Scanner/AxfrDatabase.hpp
@@ -283,6 +286,7 @@ CMakeFiles/AxfrLib.dir/axfrlib.cpp.o
  /home/marcin/ClionProjects/myDig/Scanner/ScanningResult.hpp
  /home/marcin/ClionProjects/myDig/Scanner/axfrLookup.h
  /home/marcin/ClionProjects/myDig/axfrlib.cpp
+ /home/marcin/ClionProjects/myDig/digUtils/digQuery.h
  /home/marcin/ClionProjects/myDig/digUtils/dig_parser.h
  bind_lib/lib/dns/include/dns/compress.h
  bind_lib/lib/dns/include/dns/ds.h
@@ -317,5 +321,4 @@ CMakeFiles/AxfrLib.dir/axfrlib.cpp.o
  bind_lib/lib/isc/unix/include/isc/int.h
  bind_lib/lib/isc/unix/include/isc/offset.h
  bind_lib/lib/isc/unix/include/isc/stdtime.h
- digUtils/digQuery.h
  digUtils/dig_parser.h

@@ -39,13 +39,6 @@ SET(CMAKE_C_TARGET_INCLUDE_PATH
   "bind_lib/lib/lwres/include"
   "bind_lib/lib/lwres/unix/include"
   "bind_lib/lib/isccfg/include"
-  "-I/home/marcin/ClionProjects/myDig/bind_lib"
-  "-I/home/marcin/ClionProjects/myDig/bind_lib/lib/dns/include"
-  "-I/home/marcin/ClionProjects/myDig/bind_lib/lib/bind9/include"
-  "-I/home/marcin/ClionProjects/myDig/bind_lib/lib/isc/include"
-  "-I/home/marcin/ClionProjects/myDig/bind_lib/lib/lwres/include"
-  "-I/home/marcin/ClionProjects/myDig/bind_lib/lib/isccfg/include"
-  "-I/usr/include/libxml2"
   )
 SET(CMAKE_CXX_TARGET_INCLUDE_PATH ${CMAKE_C_TARGET_INCLUDE_PATH})
 SET(CMAKE_Fortran_TARGET_INCLUDE_PATH ${CMAKE_C_TARGET_INCLUDE_PATH})

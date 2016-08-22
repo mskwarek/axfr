@@ -15,7 +15,7 @@
 ########################
 
 //Dependencies for the target
-AxfrLib_LIB_DEPENDS:STATIC=general;/home/marcin/ClionProjects/myDig/bind_lib/lib/dns/libdns.a;general;/home/marcin/ClionProjects/myDig/bind_lib/lib/isc/libisc.a;general;/home/marcin/ClionProjects/myDig/bind_lib/lib/isc/libisc-nosymtbl.a;general;/home/marcin/ClionProjects/myDig/bind_lib/lib/irs/libirs.a;general;/home/marcin/ClionProjects/myDig/bind_lib/lib/isccc/libisccc.a;general;/home/marcin/ClionProjects/myDig/bind_lib/lib/isccfg/libisccfg.a;general;/home/marcin/ClionProjects/myDig/bind_lib/lib/lwres/liblwres.a;general;/home/marcin/ClionProjects/myDig/bind_lib/lib/bind9/libbind9.a;general;/usr/lib/x86_64-linux-gnu/libcrypto.so;
+AxfrLib_LIB_DEPENDS:STATIC=general;/home/marcin/ClionProjects/myDig/bind_lib/lib/dns/libdns.a;general;gssapi_krb5;general;krb5;general;k5crypto;general;com_err;general;crypto;general;/home/marcin/ClionProjects/myDig/bind_lib/lib/lwres/liblwres.a;general;/home/marcin/ClionProjects/myDig/bind_lib/lib/bind9/libbind9.a;general;/home/marcin/ClionProjects/myDig/bind_lib/lib/isccfg/libisccfg.a;general;/home/marcin/ClionProjects/myDig/bind_lib/lib/isc/libisc.a;general;dl;general;z;general;pthread;general;xml2;
 
 //Choose the type of build, options are: None(CMAKE_CXX_FLAGS or
 // CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.

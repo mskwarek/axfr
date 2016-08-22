@@ -38,6 +38,7 @@ CMakeFiles/AxfrLib.dir/GeneralUtils/ms_response_list.c.o: bind_lib/lib/isc/unix/
 CMakeFiles/AxfrLib.dir/GeneralUtils/ms_response_list.c.o: bind_lib/lib/isc/unix/include/isc/stdtime.h
 CMakeFiles/AxfrLib.dir/GeneralUtils/ms_response_list.c.o: digUtils/dig_parser.h
 
+CMakeFiles/AxfrLib.dir/digUtils/digQuery.c.o: GeneralUtils/ms_response_list.h
 CMakeFiles/AxfrLib.dir/digUtils/digQuery.c.o: digUtils/digQuery.c
 CMakeFiles/AxfrLib.dir/digUtils/digQuery.c.o: bind_lib/bin/dig/include/dig/dig.h
 CMakeFiles/AxfrLib.dir/digUtils/digQuery.c.o: bind_lib/lib/dns/include/dns/byaddr.h
@@ -117,6 +118,8 @@ CMakeFiles/AxfrLib.dir/digUtils/digQuery.c.o: bind_lib/lib/isc/unix/include/isc/
 CMakeFiles/AxfrLib.dir/digUtils/digQuery.c.o: bind_lib/lib/isc/unix/include/pkcs11/cryptoki.h
 CMakeFiles/AxfrLib.dir/digUtils/digQuery.c.o: bind_lib/lib/isc/x86_32/include/isc/atomic.h
 CMakeFiles/AxfrLib.dir/digUtils/digQuery.c.o: digUtils/config.h
+CMakeFiles/AxfrLib.dir/digUtils/digQuery.c.o: digUtils/digQuery.h
+CMakeFiles/AxfrLib.dir/digUtils/digQuery.c.o: digUtils/dig_parser.h
 
 CMakeFiles/AxfrLib.dir/digUtils/dig_parser.c.o: digUtils/dig_parser.c
 
@@ -240,6 +243,7 @@ CMakeFiles/AxfrLib.dir/Scanner/axfrLookup.cpp.o: Scanner/AxfrDatabase.hpp
 CMakeFiles/AxfrLib.dir/Scanner/axfrLookup.cpp.o: Scanner/ScanningResult.hpp
 CMakeFiles/AxfrLib.dir/Scanner/axfrLookup.cpp.o: Scanner/axfrLookup.cpp
 CMakeFiles/AxfrLib.dir/Scanner/axfrLookup.cpp.o: Scanner/axfrLookup.h
+CMakeFiles/AxfrLib.dir/Scanner/axfrLookup.cpp.o: digUtils/digQuery.h
 CMakeFiles/AxfrLib.dir/Scanner/axfrLookup.cpp.o: bind_lib/lib/dns/include/dns/compress.h
 CMakeFiles/AxfrLib.dir/Scanner/axfrLookup.cpp.o: bind_lib/lib/dns/include/dns/ds.h
 CMakeFiles/AxfrLib.dir/Scanner/axfrLookup.cpp.o: bind_lib/lib/dns/include/dns/dsdigest.h
@@ -273,7 +277,6 @@ CMakeFiles/AxfrLib.dir/Scanner/axfrLookup.cpp.o: bind_lib/lib/isc/include/isc/ut
 CMakeFiles/AxfrLib.dir/Scanner/axfrLookup.cpp.o: bind_lib/lib/isc/unix/include/isc/int.h
 CMakeFiles/AxfrLib.dir/Scanner/axfrLookup.cpp.o: bind_lib/lib/isc/unix/include/isc/offset.h
 CMakeFiles/AxfrLib.dir/Scanner/axfrLookup.cpp.o: bind_lib/lib/isc/unix/include/isc/stdtime.h
-CMakeFiles/AxfrLib.dir/Scanner/axfrLookup.cpp.o: digUtils/digQuery.h
 CMakeFiles/AxfrLib.dir/Scanner/axfrLookup.cpp.o: digUtils/dig_parser.h
 
 CMakeFiles/AxfrLib.dir/axfrlib.cpp.o: Scanner/AxfrDatabase.hpp
@@ -282,6 +285,7 @@ CMakeFiles/AxfrLib.dir/axfrlib.cpp.o: Scanner/ScannedDomain.hpp
 CMakeFiles/AxfrLib.dir/axfrlib.cpp.o: Scanner/ScanningResult.hpp
 CMakeFiles/AxfrLib.dir/axfrlib.cpp.o: Scanner/axfrLookup.h
 CMakeFiles/AxfrLib.dir/axfrlib.cpp.o: axfrlib.cpp
+CMakeFiles/AxfrLib.dir/axfrlib.cpp.o: digUtils/digQuery.h
 CMakeFiles/AxfrLib.dir/axfrlib.cpp.o: digUtils/dig_parser.h
 CMakeFiles/AxfrLib.dir/axfrlib.cpp.o: bind_lib/lib/dns/include/dns/compress.h
 CMakeFiles/AxfrLib.dir/axfrlib.cpp.o: bind_lib/lib/dns/include/dns/ds.h
@@ -316,6 +320,5 @@ CMakeFiles/AxfrLib.dir/axfrlib.cpp.o: bind_lib/lib/isc/include/isc/util.h
 CMakeFiles/AxfrLib.dir/axfrlib.cpp.o: bind_lib/lib/isc/unix/include/isc/int.h
 CMakeFiles/AxfrLib.dir/axfrlib.cpp.o: bind_lib/lib/isc/unix/include/isc/offset.h
 CMakeFiles/AxfrLib.dir/axfrlib.cpp.o: bind_lib/lib/isc/unix/include/isc/stdtime.h
-CMakeFiles/AxfrLib.dir/axfrlib.cpp.o: digUtils/digQuery.h
 CMakeFiles/AxfrLib.dir/axfrlib.cpp.o: digUtils/dig_parser.h
 

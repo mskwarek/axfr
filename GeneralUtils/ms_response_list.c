@@ -52,7 +52,7 @@ void print_list(string_list_node * head)
 {
     string_list_node * current = head;
     while (current->next != NULL) {
-        printf(current->val);
+        printf("%s", current->val);
         current = current->next;
     }
 }

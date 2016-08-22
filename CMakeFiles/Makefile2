@@ -91,7 +91,7 @@ clean: CMakeFiles/AxfrLib.dir/clean
 # Target rules for target CMakeFiles/myDig.dir
 
 # All Build rule for target.
-CMakeFiles/myDig.dir/all:
+CMakeFiles/myDig.dir/all: CMakeFiles/AxfrLib.dir/all
 	$(MAKE) -f CMakeFiles/myDig.dir/build.make CMakeFiles/myDig.dir/depend
 	$(MAKE) -f CMakeFiles/myDig.dir/build.make CMakeFiles/myDig.dir/build
 	$(CMAKE_COMMAND) -E cmake_progress_report /home/marcin/ClionProjects/myDig/CMakeFiles  8 9 10 11 12 13 14
@@ -104,7 +104,7 @@ all: CMakeFiles/myDig.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/myDig.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/marcin/ClionProjects/myDig/CMakeFiles 7
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/marcin/ClionProjects/myDig/CMakeFiles 14
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/myDig.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/marcin/ClionProjects/myDig/CMakeFiles 0
 .PHONY : CMakeFiles/myDig.dir/rule

@@ -1,6 +1,6 @@
 from ctypes import cdll
 import time 
-lib = cdll.LoadLibrary('../build/lib/libAxfrLib.so')
+lib = cdll.LoadLibrary('/home/marcin/ClionProjects/myDig/build/lib/libAxfrLib.so')
 
 class axfrLookup(object):
     def __init__(self):
@@ -23,7 +23,7 @@ def perform_lookup(in_list):
     x.destroy()
     return 0
     
-processes = []    
+
 def start_new_process(domain, ns):
     p = Process(target=perform_lookup, args=(domain, ns))    
     p.start()
@@ -33,63 +33,18 @@ from multiprocessing import Process, Queue, Lock
 import multiprocessing
 import threading
 
-num_processes = 64
-my_list = [ 'XYZ', 'ABC', 'NYU' ]
+def log_result(result):
+    print "result", result
 
-threads = []
-
-
-def clean_up():
-    print "cleanup"
-    for thread in threads:
-        if not thread.isAlive():
-            threads.remove(thread)
-
-# run until all the threads are done, and there is no data left
-def process_lookup(my_list):
-    while threads or my_list:
-    
-        # if we aren't using all the processors AND there is still data left to
-        # compute, then spawn another thread
-        if (len(threads) < num_processes) and my_list:
-            item_to_process =  my_list.pop()
-            t = threading.Thread(target=perform_lookup, args=[item_to_process ])
-            t.setDaemon(True)
-            print item_to_process
-            try:
-                t.start()
-                threads.append(t)
-            except:
-                clean_up()
-            # in the case that we have the maximum number of threads check if any of them
-            # are done. (also do this when we run out of data, until all the threads are done)
-        else:
-            clean_up()
-                
-if __name__ == '__main__':
-    input_list = [line.rstrip('\n').split(' ') for line in open('inputData')]
-    process_lookup(input_list)
-
-
-'''
-
-    pool = multiprocessing.Pool(2)
-    results = []
-    r = pool.map_async(perform_lookup, input_list, callback=results.append)
-    r.wait()
-    print results
-
-
+def process_lookup(input_list):
+    pool = multiprocessing.Pool(None)
     for i in input_list:
-        print j, " of ", len(input_list), len(processes)
-        j+=1
-        while True:
-            try:
-                start_new_process(i[0], i[1])
-                break
-            except:
-                print "wait"
-                time.sleep(1)
-   '''     
-            #p.join()
-        #p.join() # this blocks until the process terminates
+        print i
+        pool.apply_async(perform_lookup, args = (i, ), callback = log_result)
+    pool.close()
+    pool.join()
+    print(result_list)
+
+if __name__ == '__main__':
+    input_list = [line.rstrip('\n').split(' ') for line in open('/home/marcin/ClionProjects/myDig/python_module/inputData')]
+    process_lookup(input_list)
