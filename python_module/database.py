@@ -7,6 +7,7 @@ import json
 class Psql(object):
     def __init__(self, cred_file_path):
         self.credentialsFile = cred_file_path
+
     def readCredentials(self):
         with open(self.credentialsFile) as credential_file:
            credentials = json.load(credential_file)
@@ -15,6 +16,18 @@ class Psql(object):
         self.user = credentials['user']
         self.password = credentials['password']
         print self.host, self.dbname, self.user, self.password
+
     def openConnection(self):
         self.conn = psycopg2.connect("host='"+self.host+"' dbname='"+dbname+"' user ='"+user+"' password='"+password+"'")
         self.cursor = self.conn.cursor()
+
+    def executeQuery(self, query):
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
+
+    def commitTransaction(self):
+        self.conn.commit()
+
+    def closeConnection(self):
+        self.cursor.close()
+        self.conn.close()
