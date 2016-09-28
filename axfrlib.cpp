@@ -32,6 +32,17 @@ extern "C"
       std::cout<<"costam "<<data->size()<<" "<<i<<std::endl;
   }
 
+  std::string* get_names(std::vector<ScanningResult*>* data)
+  {
+    if(data == NULL)
+      return NULL;
+    std::string* tmp = new std::string[data->size()];
+    for(int i = 0; i<data->size(); ++i)
+      tmp[i]=data->at(i)->get_name();
+
+    return tmp;
+  }
+  
   void axfrLookup_destroy(axfrLookup* lookup)
   {
     delete lookup;

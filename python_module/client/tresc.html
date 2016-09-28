@@ -1,0 +1,31 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+
+<html ng-app="Coder">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+        <title>Coder and decoder</title>
+		<script src="{{ STATIC_URL }}angular.min.js"></script>
+		<script type="text/javascript" src="{{ STATIC_URL }}my_modules.js" data-cover></script>
+		<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}styles.css" />
+
+    </head>
+
+    <body>
+
+	<div id="contenta" class="container" ng-controller="codeController">
+		<!-- view about -->
+		<div class="header"><b>Coder</b></div>
+		<div class="usage">Enter a code and use coder/decoder</div>
+			  Enter key (numbers): <input type="text" onchange="angular.element(this).scope().cd()" onkeyup="angular.element(this).scope().cd()" id="input_key"><div id="key_error" class="coded_error" style="display:none;"></div><br>
+			  Enter word to code: <input type="text" onchange="angular.element(this).scope().code()" onkeyup="angular.element(this).scope().code()" id="text_to_code"><div id="text_error" class="coded_error" style="display:none;"></div><br>
+			  Enter word to decode: <input type="text" onchange="angular.element(this).scope().decode()" onkeyup="angular.element(this).scope().decode()" id="text_to_decode">
+		  <div id="cpp_run_coder" class="coded">Coded: <em id="cpp_run_coder_val" class="coded_value"><span ng-bind="coder_result.coded"></span></em></div>
+		  <div id="cpp_run_decoder" class="coded">Decoded: <em id="cpp_run_decoder_val" class="coded_value"><span ng-bind="decoder_result.decoded"></span></em></div>
+
+
+	</div>
+
+    </body>
+</html>

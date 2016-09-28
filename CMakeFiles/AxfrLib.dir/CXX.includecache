@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/home/marcin/ClionProjects/myDig/Scanner/AxfrDatabase.hpp
+/home/mkoi/mgr/myDig/Scanner/AxfrDatabase.hpp
 dig_parser.h
 -
 vector
@@ -16,9 +16,9 @@ boost/property_tree/ptree.hpp
 boost/property_tree/xml_parser.hpp
 -
 ScanningResult.hpp
-/home/marcin/ClionProjects/myDig/Scanner/ScanningResult.hpp
+/home/mkoi/mgr/myDig/Scanner/ScanningResult.hpp
 
-/home/marcin/ClionProjects/myDig/Scanner/InputReader.cpp
+/home/mkoi/mgr/myDig/Scanner/InputReader.cpp
 fstream
 -
 iostream
@@ -28,27 +28,27 @@ iterator
 sstream
 -
 InputReader.h
-/home/marcin/ClionProjects/myDig/Scanner/InputReader.h
+/home/mkoi/mgr/myDig/Scanner/InputReader.h
 
-/home/marcin/ClionProjects/myDig/Scanner/InputReader.h
+/home/mkoi/mgr/myDig/Scanner/InputReader.h
 string
 -
 vector
 -
 ScannedDomain.hpp
-/home/marcin/ClionProjects/myDig/Scanner/ScannedDomain.hpp
+/home/mkoi/mgr/myDig/Scanner/ScannedDomain.hpp
 
-/home/marcin/ClionProjects/myDig/Scanner/ScannedDomain.hpp
+/home/mkoi/mgr/myDig/Scanner/ScannedDomain.hpp
 string
 -
 
-/home/marcin/ClionProjects/myDig/Scanner/ScanningResult.hpp
+/home/mkoi/mgr/myDig/Scanner/ScanningResult.hpp
 iostream
 -
 string
 -
 
-/home/marcin/ClionProjects/myDig/Scanner/axfrLookup.cpp
+/home/mkoi/mgr/myDig/Scanner/axfrLookup.cpp
 iostream
 -
 vector
@@ -60,35 +60,35 @@ sstream
 algorithm
 -
 ../digUtils/digQuery.h
-/home/marcin/ClionProjects/myDig/digUtils/digQuery.h
+/home/mkoi/mgr/myDig/digUtils/digQuery.h
 dig_parser.h
 -
 axfrLookup.h
-/home/marcin/ClionProjects/myDig/Scanner/axfrLookup.h
+/home/mkoi/mgr/myDig/Scanner/axfrLookup.h
 
-/home/marcin/ClionProjects/myDig/Scanner/axfrLookup.h
+/home/mkoi/mgr/myDig/Scanner/axfrLookup.h
 AxfrDatabase.hpp
-/home/marcin/ClionProjects/myDig/Scanner/AxfrDatabase.hpp
+/home/mkoi/mgr/myDig/Scanner/AxfrDatabase.hpp
 dig_parser.h
 -
 ../digUtils/digQuery.h
-/home/marcin/ClionProjects/myDig/digUtils/digQuery.h
+/home/mkoi/mgr/myDig/digUtils/digQuery.h
 
-/home/marcin/ClionProjects/myDig/axfrlib.cpp
+/home/mkoi/mgr/myDig/axfrlib.cpp
 Scanner/axfrLookup.h
-/home/marcin/ClionProjects/myDig/Scanner/axfrLookup.h
+/home/mkoi/mgr/myDig/Scanner/axfrLookup.h
 Scanner/AxfrDatabase.hpp
-/home/marcin/ClionProjects/myDig/Scanner/AxfrDatabase.hpp
+/home/mkoi/mgr/myDig/Scanner/AxfrDatabase.hpp
 Scanner/InputReader.h
-/home/marcin/ClionProjects/myDig/Scanner/InputReader.h
+/home/mkoi/mgr/myDig/Scanner/InputReader.h
 digUtils/dig_parser.h
-/home/marcin/ClionProjects/myDig/digUtils/dig_parser.h
+/home/mkoi/mgr/myDig/digUtils/dig_parser.h
 
-/home/marcin/ClionProjects/myDig/digUtils/digQuery.h
+/home/mkoi/mgr/myDig/digUtils/digQuery.h
 dig_parser.h
 -
 
-/home/marcin/ClionProjects/myDig/digUtils/dig_parser.h
+/home/mkoi/mgr/myDig/digUtils/dig_parser.h
 stdio.h
 -
 stdint-gcc.h

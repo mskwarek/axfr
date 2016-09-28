@@ -41,12 +41,6 @@ void axfrLookup::int_parse(char* res)
     {
         lines.push_back(line);
     }
-
-    for(auto a : lines)
-    {
-        std::cout<<"linia"<<std::endl;
-        std::cout<<a<<std::endl;
-    }
 }
 
 void axfrLookup::print()
@@ -61,7 +55,7 @@ void axfrLookup::save_data_xml(response_t* res)
 
 void axfrLookup::performLookup(const char* domain, const char* asked_ns)
 {
-    const char *args[4] = {"dupa", domain, asked_ns, "axfr"};
+    const char *args[4] = {"myDig", domain, asked_ns, "axfr"};
     int_parse(tryLookup(4, (char**) args));
 }
 
