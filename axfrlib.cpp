@@ -23,6 +23,40 @@ extern "C"
   {
     return lookup->get_domains();
   }
+
+  std::vector<std::string> axfrLookup_getReturnedDomains(axfrLookup* lookup)
+  {
+    std::vector<std::string> data;
+    
+    for(int i = 0; i<lookup->get_domains()->size(); ++i)
+    {
+      data.push_back(lookup->get_domains()->at(i)->get_rdata());
+    }
+
+    return data;
+  }
+
+  std::vector<std::string> axfrLookup_getDumbVector(axfrLookup* lookup)
+  {
+    std::vector<std::string> to_return = {"dns1.onet.pl", "dns2.onet.pl", "dns3.onet.pl"};
+    return to_return;
+  }
+  std::vector<int> axfrLookup_getDumbVectorInt()
+  {
+    std::vector<int> to_return = {1, 2, 3};
+    return to_return;
+  }
+
+  int axfrLookup_getDumbSize(std::vector<std::string> vec)
+  {
+    return vec.size();
+  }
+
+  int axfrLookup_getSizeOfReturnedData(axfrLookup* lookup)
+  {
+    return lookup->get_domains()->size();
+  }
+
   void print_data(std::vector<ScanningResult*>* data)
   {
     if(data == NULL)

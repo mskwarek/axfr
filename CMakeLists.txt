@@ -65,13 +65,4 @@ target_link_libraries(AxfrLib
 
 add_executable(myDig ${common_src} main.cpp)
 
-target_link_libraries(myDig
-		AxfrLib
-#		${CMAKE_CURRENT_SOURCE_DIR}/bind_lib/lib/dns/libdns.a
-#		gssapi_krb5 krb5 k5crypto com_err crypto
-#		${CMAKE_CURRENT_SOURCE_DIR}/bind_lib/lib/lwres/liblwres.a
-#		${CMAKE_CURRENT_SOURCE_DIR}/bind_lib/lib/bind9/libbind9.a
-#		${CMAKE_CURRENT_SOURCE_DIR}/bind_lib/lib/isccfg/libisccfg.a
-#		${CMAKE_CURRENT_SOURCE_DIR}/bind_lib/lib/isc/libisc.a
-#		dl z pthread  xml2
-		)
+target_link_libraries(myDig AxfrLib)

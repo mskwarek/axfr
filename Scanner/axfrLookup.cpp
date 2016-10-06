@@ -61,8 +61,13 @@ void axfrLookup::save_data_xml(response_t* res)
 
 void axfrLookup::performLookup(const char* domain, const char* asked_ns)
 {
-    const char *args[4] = {"dupa", domain, asked_ns, "axfr"};
+    char* tmp = NULL;
+    tmp = new char(strlen(asked_ns) + 1);
+    memmove(tmp+1, asked_ns, strlen(asked_ns));
+    tmp[0] = '@';
+    const char *args[4] = {"dupa", domain, tmp, "axfr"};
     int_parse(tryLookup(4, (char**) args));
+    delete tmp;
 }
 
 std::vector<ScanningResult*>* axfrLookup::get_domains()

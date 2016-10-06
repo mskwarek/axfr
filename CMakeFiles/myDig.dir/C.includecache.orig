@@ -6,7 +6,11 @@
 
 #IncludeRegexTransform: 
 
+<<<<<<< Updated upstream
 /home/mkoi/mgr/myDig/GeneralUtils/ms_response_list.c
+stdlib.h
+-
+ms_response_list.h
 /home/mkoi/mgr/myDig/GeneralUtils/ms_response_list.h
 
 /home/mkoi/mgr/myDig/GeneralUtils/ms_response_list.h
@@ -1145,3 +1149,5 @@ dns/types.h
 dns/message.h
 -
 
+=======
+>>>>>>> Stashed changes
