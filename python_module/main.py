@@ -8,4 +8,4 @@ db = database.Psql("credentials.json")
 db.readCredentials()
 db.openConnection()
 
-db.insertDomainList(hosts)
+db.insertScan('onet.pl', hosts)

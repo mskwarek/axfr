@@ -32,6 +32,14 @@ class Psql(object):
         self.cursor.close()
         self.conn.close()
 
+    def insertScan(self, root_domain, domain_list):
+        insert_scan_query='SELECT * FROM v.ins_scan(\'%s\', \'%s\')'
+        domain_list = str(map(str, domain_list))
+        domain_list = domain_list.replace('[', '{').replace(']', '}').replace('\'', '\"')
+        query = insert_scan_query%(root_domain, domain_list)
+        #print query
+        x = self.executeQuery(query)
+        print x
     def insertDomainList(self, domain_list):
         insert_domain_array_query ='SELECT * FROM v.get_id_of_domains(\'%s\')'
         domain_list = str(map(str, domain_list))

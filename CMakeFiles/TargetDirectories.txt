@@ -1,4 +1,2 @@
-/home/mkoi/mgr/myDig/CMakeFiles/edit_cache.dir
-/home/mkoi/mgr/myDig/CMakeFiles/rebuild_cache.dir
-/home/mkoi/mgr/myDig/CMakeFiles/myDig.dir
-/home/mkoi/mgr/myDig/CMakeFiles/AxfrLib.dir
+/home/marcin/ClionProjects/myDig/CMakeFiles/AxfrLib.dir
+/home/marcin/ClionProjects/myDig/CMakeFiles/myDig.dir

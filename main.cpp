@@ -11,7 +11,7 @@ int main(int argc, char* argv[])
   axfrLookup* lookup = new axfrLookup();
    
   for(int i=0; i<1; ++i){
-    lookup->performLookup("unknowncheats.me.", "@jim.ns.cloudflare.com.");
+    lookup->performLookup("unknowncheats.me.", "jim.ns.cloudflare.com.");
     
   }
 
