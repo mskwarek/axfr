@@ -1,0 +1,18 @@
+__author__='marcin'
+
+import database
+
+<<<<<<< HEAD
+
+hosts = ['www.google.com', 'www.facebook.com', 'www.yahoo.com']
+=======
+>>>>>>> 0f1dfc03d4b5d05c9453cf05df5f8232a3ac7aa0
+db = database.Psql("credentials.json")
+db.readCredentials()
+db.openConnection()
+
+<<<<<<< HEAD
+db.insertDomainList(hosts)
+=======
+hosts = ['www.google.com', 'www.facebook.com', 'www.yahoo.com']
+>>>>>>> 0f1dfc03d4b5d05c9453cf05df5f8232a3ac7aa0

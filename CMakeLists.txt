@@ -51,7 +51,7 @@ set(common_src digUtils/digQuery.c
 		GeneralUtils/ms_response_list.h
 		GeneralUtils/ms_response_list.c)
 
-add_library(AxfrLib SHARED ${common_src} axfrlib.cpp)
+add_library(AxfrLib SHARED ${common_src} axfrlib.cpp m_vector.cpp)
 
 target_link_libraries(AxfrLib
 		${CMAKE_CURRENT_SOURCE_DIR}/bind_lib/lib/dns/libdns.a

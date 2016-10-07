@@ -3,9 +3,8 @@ import ctypes
 import time 
 import database
 
-
 class axfrLookup(object):
-    lib = cdll.LoadLibrary('/home/marcin/ClionProjects/myDig/build/lib/libAxfrLib.so')
+    lib = cdll.LoadLibrary('/home/mkoi/mgr/myDig/build/lib/libAxfrLib.so')
 
     def __init__(self):
         self.obj = self.lib.axfrLookup_new()
@@ -15,25 +14,34 @@ class axfrLookup(object):
     def getResult(self, domain, ns):
         self.lib.axfrLookup_performLookup(self.obj, domain, ns)
         print "after perform"
-        self.lib.axfrLookup_getReturnedDomains.restype = ctypes.POINTER(ctypes.c_char_p * self.lib.axfrLookup_getSizeOfReturnedData(self.obj))
+        self.lib.axfrLookup_getReturnedDomain.restype = ctypes.POINTER(ctypes.c_char_p * self.lib.axfrLookup_getSizeOfReturnedData(self.obj))
         dupa = self.lib.axfrLookup_getReturnedDomains(self.obj)
         print dupa
         #lib.print_data(dupa)
     def destroy(self):
         self.lib.axfrLookup_destroy(self.obj)
 
-    def dumbData(self):
-        self.lib.axfrLookup_getDumbVector.argtype = ctypes.c_void_p
-        self.lib.axfrLookup_getDumbVector.restype = ctypes.POINTER(ctypes.c_char_p * 3) #ctypes.POINTER(ctypes.c_char_p * 3)
-        x = self.lib.axfrLookup_getDumbVector(self)
-        #return '[{}]'.format(', '.join(str(self[i]) for i in range(len(self))))
-        print x[0] 
 
-    def dumbDataInt(self):
-        self.lib.axfrLookup_getDumbVectorInt.argtype = None
-        self.lib.axfrLookup_getDumbVectorInt.restype = ctypes.POINTER(ctypes.c_int)
-        x = self.lib.axfrLookup_getDumbVectorInt()
-        print x[3]
+
+        
+        
+class testVector(object):
+    lib = cdll.LoadLibrary('/home/mkoi/mgr/myDig/build/lib/libAxfrLib.so')
+
+    def __init__(self):
+        self.vector = testVector.lib.axfrLookup_getDumbVector()
+    
+    def __len__(self):
+        return testVector.lib.axfrLookup_getDumbSize(self.vector)
+    
+    def __getitem__(self, i):
+        if 0 <= i < len(self):
+            return Vector.lib.vector_get(self.vector, c_int(i))
+        raise IndexError('Vector index out of range')
+    
+    def __repr__(self):
+        return '[{}]'.format(', '.join(str(self[i]) for i in range(len(self))))
+
 
 def perform_lookup(in_list):
     x = axfrLookup()
@@ -87,5 +95,5 @@ def main_scan():
 
 if __name__ == '__main__':
     #main_scan()
-    x = axfrLookup()
-    x.dumbDataInt()
+    x = testVector()
+    print x

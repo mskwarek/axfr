@@ -6,17 +6,17 @@
 
 #IncludeRegexTransform: 
 
-/home/marcin/ClionProjects/myDig/GeneralUtils/ms_response_list.c
+/home/mkoi/mgr/myDig/GeneralUtils/ms_response_list.c
 stdlib.h
 -
 ms_response_list.h
-/home/marcin/ClionProjects/myDig/GeneralUtils/ms_response_list.h
+/home/mkoi/mgr/myDig/GeneralUtils/ms_response_list.h
 
-/home/marcin/ClionProjects/myDig/GeneralUtils/ms_response_list.h
+/home/mkoi/mgr/myDig/GeneralUtils/ms_response_list.h
 dig_parser.h
 -
 
-/home/marcin/ClionProjects/myDig/digUtils/digQuery.c
+/home/mkoi/mgr/myDig/digUtils/digQuery.c
 config.h
 -
 stdlib.h
@@ -68,11 +68,11 @@ dig/dig.h
 digQuery.h
 -
 ../GeneralUtils/ms_response_list.h
-/home/marcin/ClionProjects/myDig/GeneralUtils/ms_response_list.h
+/home/mkoi/mgr/myDig/GeneralUtils/ms_response_list.h
 
-/home/marcin/ClionProjects/myDig/digUtils/dig_parser.c
+/home/mkoi/mgr/myDig/digUtils/dig_parser.c
 
-/home/marcin/ClionProjects/myDig/digUtils/dighost.c
+/home/mkoi/mgr/myDig/digUtils/dighost.c
 config.h
 -
 stdlib.h
