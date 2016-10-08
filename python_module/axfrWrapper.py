@@ -1,7 +1,8 @@
 from ctypes import cdll
 import ctypes
 import time 
-lib = cdll.LoadLibrary('/home/marcin/ClionProjects/myDig/build/lib/libAxfrLib.so')
+import database
+
 
 class axfrLookup(object):
     lib = cdll.LoadLibrary('/home/marcin/ClionProjects/myDig/build/lib/libAxfrLib.so')
@@ -39,8 +40,7 @@ def perform_lookup(in_list):
     print "dziala", in_list[0], in_list[1]
     x.getResult(in_list[0], in_list[1])
     x.destroy()
-    return 0
-    
+        
 
 def start_new_process(domain, ns):
     p = Process(target=perform_lookup, args=(domain, ns))    
@@ -55,13 +55,35 @@ def log_result(result):
     print "result", result
 
 def process_lookup(input_list):
-    pool = multiprocessing.Pool(None)
-    for i in input_list:
-        print i
-        pool.apply_async(perform_lookup, args = (i, ), callback = log_result)
+    for i in range(len(input_list)):
+        pool = multiprocessing.Pool(None)
+        #print i
+        try:
+            pool.apply_async(perform_lookup, args = (input_list[i], ), callback = log_result)
+            i+=1
+        except:
+            time.sleep(5)
+            continue
     pool.close()
     pool.join()
-    print(result_list)
+
+def main_scan():
+    input_list = [line.rstrip('\n').split(' ') for line in open('/home/mkoi/mgr/myDig/python_module/inputData')]
+    #process_lookup(input_list)
+
+    db = database.Psql("credentials.json")
+    db.readCredentials()
+    db.openConnection()
+
+    hosts = column(input_list, 0)
+    #print hosts
+    start = time.time()
+    print db.insertDomainList(hosts)
+    db.commitTransaction()
+    end = time.time()
+    print end-start
+    db.closeConnection()
+
 
 def column(matrix, i):
     return [row[i] for row in matrix]
@@ -69,8 +91,8 @@ def column(matrix, i):
 
 
 if __name__ == '__main__':
-    input_list = [line.rstrip('\n').split(' ') for line in open('/home/marcin/ClionProjects/myDig/python_module/inputData')]
-    process_lookup(input_list)
+    #main_scan()
+    x = axfrLookup()
 
     db = database.Psql("credentials.json")
     db.readCredentials()
