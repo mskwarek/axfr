@@ -24,16 +24,28 @@ extern "C"
     return lookup->get_domains();
   }
 
-  std::string axfrLookup_getReturnedDomain(axfrLookup* lookup, int domain_index)
+  const char* axfrLookup_getReturnedDomain(axfrLookup* lookup, int domain_index)
   {
-    return lookup->get_domains()->at(domain_index)->get_rdata();
+    return lookup->get_domains()->at(domain_index)->get_rdata().c_str();
   }
 
   int axfrLookup_getSizeOfReturnedData(axfrLookup* lookup)
   {
-    return lookup->get_domains()->size();
+    try
+      {
+	return lookup->get_domains()->size();
+      }
+    catch(...)
+      {
+	return 0;
+      }
   }
 
+  int axfrLookup_getSize(std::vector<std::string>* vec)
+  {
+    return vec->size();
+  }
+  
   void print_data(std::vector<ScanningResult*>* data)
   {
     if(data == NULL)
@@ -66,7 +78,14 @@ extern "C"
    
   std::vector<std::string>* axfrLookup_getDumbVector()
   {
-    return &to_return;
+    return new std::vector<std::string>();
+  }
+
+  void axfrLookup_fillWithData(std::vector<std::string>* vec)
+  {
+    vec->push_back("dns1.onet.pl");
+    vec->push_back("dns2.onet.pl");
+    vec->push_back("dns3.onet.pl");
   }
   
   int axfrLookup_getDumbSize(std::vector<std::string>* vec)
@@ -74,8 +93,16 @@ extern "C"
     return vec->size();
   }
 
-  std::string axfrLookup_get_to_return(std::vector<std::string>* vec, int index)
+  const char* axfrLookup_get_to_return(std::vector<std::string>* vec, int index)
   {
-    return vec->at(index);
+    std::cout<<index<<std::endl;
+    if(index < vec->size() && index >= 0)
+      {
+	return vec->at(index).c_str();
+      }
+    else
+      {
+	return "";
+      }
   }
 }
