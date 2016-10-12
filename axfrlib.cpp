@@ -16,7 +16,14 @@ extern "C"
   
   void axfrLookup_performLookup(axfrLookup* lookup, const char* domain, const char* ns)
   {
-    lookup->performLookup(domain, ns);
+    try
+    {
+      lookup->performLookup(domain, ns);
+    }
+    catch(...)
+    {
+      
+    }
   }
 
   std::vector<ScanningResult*>* axfrLookup_getResult(axfrLookup* lookup)
@@ -32,13 +39,13 @@ extern "C"
   int axfrLookup_getSizeOfReturnedData(axfrLookup* lookup)
   {
     try
-      {
-	return lookup->get_domains()->size();
-      }
+    {
+      return lookup->get_domains()->size();
+    }
     catch(...)
-      {
-	return 0;
-      }
+    {
+	    return 0;
+    }
   }
 
   int axfrLookup_getSize(std::vector<std::string>* vec)

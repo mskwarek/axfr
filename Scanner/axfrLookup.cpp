@@ -26,6 +26,23 @@ axfrLookup::~axfrLookup()
         delete database;
 }
 
+static inline void ltrim(std::string &s) {
+    s.erase(s.begin(), std::find_if(s.begin(), s.end(),
+            std::not1(std::ptr_fun<int, int>(std::isspace))));
+}
+
+// trim from end (in place)
+static inline void rtrim(std::string &s) {
+    s.erase(std::find_if(s.rbegin(), s.rend(),
+            std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
+}
+
+// trim from both ends (in place)
+static inline void trim(std::string &s) {
+    ltrim(s);
+    rtrim(s);
+}
+
 void axfrLookup::int_parse(response_t* res)
 {
     save_data_xml(res);
@@ -33,7 +50,11 @@ void axfrLookup::int_parse(response_t* res)
 
 void axfrLookup::int_parse(char* res)
 {
-    this->response = std::string(res);
+  if(res == NULL)
+    {
+      return;
+    }
+  this->response = std::string(res);
     std::istringstream iss(this->response);
     std::string line;
     std::vector<std::string> lines;
@@ -65,7 +86,9 @@ void axfrLookup::performLookup(const char* domain, const char* asked_ns)
     tmp = new char(strlen(asked_ns) + 1);
     memmove(tmp+1, asked_ns, strlen(asked_ns));
     tmp[0] = '@';
-    const char *args[4] = {"dupa", domain, tmp, "axfr"};
+    std::string nameserver(tmp, strnlen(tmp, 100));
+    trim(nameserver);
+    const char *args[4] = {"dupa", domain, nameserver.c_str(), "axfr"};
     int_parse(tryLookup(4, (char**) args));
     delete tmp;
 }
@@ -77,3 +100,4 @@ std::vector<ScanningResult*>* axfrLookup::get_domains()
   else
     return NULL;
 }
+
