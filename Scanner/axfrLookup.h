@@ -26,6 +26,7 @@ private:
     void int_parse(response_t* res);
     void int_parse(char* res);
     std::string response;
+    std::string name_scanned;
 
 };
 

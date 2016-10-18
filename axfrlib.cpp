@@ -33,7 +33,7 @@ extern "C"
 
   const char* axfrLookup_getReturnedDomain(axfrLookup* lookup, int domain_index)
   {
-    return lookup->get_domains()->at(domain_index)->get_rdata().c_str();
+    return lookup->get_domains()->at(domain_index)->get_name().c_str();
   }
 
   int axfrLookup_getSizeOfReturnedData(axfrLookup* lookup)

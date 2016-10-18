@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <stdlib.h>
 
 class ScanningResult
 {
@@ -14,11 +15,23 @@ public:
     {}
     ScanningResult(response_t* response):
             name(response->name),
-            ip(response->ip),
-            ttl(response->ttl),
+            ip(response->ip),        
             cls(response->cls),
             type(response->type),
             rdata(response->rdata)
+    {
+        this->ttl = std::to_string(response->ttl);
+    }
+
+    ScanningResult(const std::string _name, const std::string _ip, 
+        const std::string _ttl, const std::string _cls, 
+        const std::string _type, const std::string _rdata):
+            name(_name),
+            ip(_ip),
+            ttl(_ttl),
+            cls(_cls),
+            type(_type),
+            rdata(_rdata)
     {}
 
     ~ScanningResult(){
@@ -49,7 +62,7 @@ public:
         return this->rdata;
     }
 
-    int32_t get_ttl()
+    std::string get_ttl()
     {
         return this->ttl;
     }
@@ -57,7 +70,7 @@ public:
 private:
     std::string name;
     std::string ip;
-    int32_t ttl;
+    std::string ttl;
     std::string cls;
     std::string type;
     std::string rdata;

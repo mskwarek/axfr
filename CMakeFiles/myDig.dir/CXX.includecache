@@ -47,6 +47,8 @@ iostream
 -
 string
 -
+stdlib.h
+-
 
 /home/mkoi/mgr/myDig/Scanner/axfrLookup.cpp
 iostream

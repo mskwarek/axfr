@@ -22,7 +22,7 @@ class Vector(object):
     def __len__(self):
         return self.getlen_cb()
     def __repr__(self):
-        return '[{}]'.format(', '.join(self[i] for i in range(len(self))))
+        return '[{}]'.format(', '.join(str(self[i]) for i in range(len(self))))
 
 
     def getlen_cb(self):
@@ -94,8 +94,8 @@ def process_lookup_thread(input_list):
 
 def main_scan():
     input_list = [line.rstrip('\n').split(' ') for line in open('/home/mkoi/mgr/myDig/python_module/inputData')]
-    process_lookup(input_list)
-    
+    #process_lookup(input_list)
+    process_lookup([['oeeee.com.', 'ns1.oeeee.com.']])
     #db = database.Psql("credentials.json")
     #db.readCredentials()
     #db.openConnection()
@@ -106,7 +106,7 @@ def main_scan():
     #print db.insertDomainList(hosts)
     #db.commitTransaction()
     #end = time.time()
-    #print end-start
+    #print end-start 	
     #db.closeConnection()
     
     

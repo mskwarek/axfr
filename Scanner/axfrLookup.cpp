@@ -60,13 +60,31 @@ void axfrLookup::int_parse(char* res)
     std::vector<std::string> lines;
     while(std::getline(iss, line))
     {
+        std::cout<<"linia"<<std::endl;
+        std::cout<<line<<std::endl;
+        std::istringstream iss(line);
+        std::vector<std::string> tokens;
+        copy(std::istream_iterator<std::string>(iss),
+            std::istream_iterator<std::string>(),
+            std::back_inserter(tokens));
+        try
+        {
+            ScanningResult *res = new ScanningResult(this->name_scanned, tokens[0], tokens[1], tokens[2], tokens[3], tokens[4]);
+            this->database->add_to_db(res);
+        }
+        catch(...)
+        { }
+        for(auto a : tokens)
+        {
+            std::cout<<a<<" ";
+        }
+        std::cout<<"\n";
         lines.push_back(line);
     }
 
     for(auto a : lines)
     {
-        std::cout<<"linia"<<std::endl;
-        std::cout<<a<<std::endl;
+        
     }
 }
 
@@ -83,12 +101,13 @@ void axfrLookup::save_data_xml(response_t* res)
 void axfrLookup::performLookup(const char* domain, const char* asked_ns)
 {
     char* tmp = NULL;
+    this->name_scanned = std::string(domain);
     tmp = new char(strlen(asked_ns) + 1);
     memmove(tmp+1, asked_ns, strlen(asked_ns));
     tmp[0] = '@';
     std::string nameserver(tmp, strnlen(tmp, 100));
     trim(nameserver);
-    const char *args[4] = {"dupa", domain, nameserver.c_str(), "axfr"};
+    const char *args[4] = {"axfrscan", domain, nameserver.c_str(), "axfr"};
     int_parse(tryLookup(4, (char**) args));
     delete tmp;
 }
