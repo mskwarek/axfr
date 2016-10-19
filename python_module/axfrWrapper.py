@@ -4,6 +4,7 @@ import time
 import database
 
 class Vector(object):
+    charptr = ctypes.POINTER(ctypes.c_char)
     lib = cdll.LoadLibrary('/home/mkoi/mgr/myDig/build/lib/libAxfrLib.so')
     lib.axfrLookup_getDumbVector.restype = ctypes.c_void_p
     lib.axfrLookup_getDumbVector.argtypes = []
@@ -11,6 +12,11 @@ class Vector(object):
     lib.axfrLookup_getDumbSize.argtypes = [ctypes.c_void_p]
     lib.axfrLookup_get_to_return.restype = ctypes.c_char_p
     lib.axfrLookup_get_to_return.argtypes = [ctypes.c_void_p, ctypes.c_int]
+    lib.axfrLookup_getSizeOfReturnedData.restype = ctypes.c_int
+    lib.axfrLookup_getSizeOfReturnedData.argtypes = [ctypes.c_void_p]
+    lib.axfrLookup_getReturnedDomain.restype = ctypes.c_char_p
+    lib.axfrLookup_getReturnedDomain.argtypes = [ctypes.c_void_p, ctypes.c_int]
+
 
     def __init__(self):
         self.vector = Vector.lib.axfrLookup_getDumbVector()
@@ -22,15 +28,16 @@ class Vector(object):
     def __len__(self):
         return self.getlen_cb()
     def __repr__(self):
-        return '[{}]'.format(', '.join(str(self[i]) for i in range(len(self))))
+        return '[{}]'.format("', '".join(self[i] for i in range(len(self))))
 
 
     def getlen_cb(self):
-        return Vector.lib.axfrLookup_getDumbSize(self.vector)
+        raise NotImplementedError
     def getitem_cb(self, i):
-        return Vector.lib.axfrLookup_get_to_return(self.vector, i)
+        return NotImplementedError
 
 class axfrVector(Vector):
+
     def __init__(self, lookup):
         self.lookup = lookup
     def getlen_cb(self):
@@ -95,7 +102,8 @@ def process_lookup_thread(input_list):
 def main_scan():
     input_list = [line.rstrip('\n').split(' ') for line in open('/home/mkoi/mgr/myDig/python_module/inputData')]
     #process_lookup(input_list)
-    process_lookup([['oeeee.com.', 'ns1.oeeee.com.']])
+    for i in range(100000):
+        process_lookup([['oeeee.com.', 'ns1.oeeee.com.']])
     #db = database.Psql("credentials.json")
     #db.readCredentials()
     #db.openConnection()

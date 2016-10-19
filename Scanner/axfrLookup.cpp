@@ -60,8 +60,6 @@ void axfrLookup::int_parse(char* res)
     std::vector<std::string> lines;
     while(std::getline(iss, line))
     {
-        std::cout<<"linia"<<std::endl;
-        std::cout<<line<<std::endl;
         std::istringstream iss(line);
         std::vector<std::string> tokens;
         copy(std::istream_iterator<std::string>(iss),
@@ -74,17 +72,6 @@ void axfrLookup::int_parse(char* res)
         }
         catch(...)
         { }
-        for(auto a : tokens)
-        {
-            std::cout<<a<<" ";
-        }
-        std::cout<<"\n";
-        lines.push_back(line);
-    }
-
-    for(auto a : lines)
-    {
-        
     }
 }
 
