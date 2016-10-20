@@ -158,8 +158,10 @@ class Daemon(object):
 
 class MyDaemon(Daemon):
     def run(self):
+        import axfrWrapper
         print("wee")
         while True:
+            axfrWrapper.main_scan()
             time.sleep(0.1)
 
 
@@ -183,7 +185,7 @@ def main():
     operation = args.operation
 
     # Daemon
-    daemon = MyDaemon('/home/marcin/python.pid',
+    daemon = MyDaemon('/home/mkoi/mgr/myDig/python_module/python.pid',
     )
 
     if operation == 'start':

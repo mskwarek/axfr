@@ -33,12 +33,19 @@ extern "C"
 
   const char* axfrLookup_getReturnedDomain(axfrLookup* lookup, int domain_index)
   {
-    // char* tmp = NULL;
-    // int size = lookup->get_domains()->at(domain_index)->get_ip().length() + 1;
-    // tmp = (char*)malloc(size);
-    // snprintf(tmp, size, "%s", lookup->get_domains()->at(domain_index)->get_ip().c_str());
-    // return tmp;
     return lookup->get_domains()->at(domain_index)->get_ip();
+  }
+
+  const char* axfrLookup_getScannedDomainName(axfrLookup* lookup)
+  {
+  	try
+  	{
+    	return lookup->get_domains()->at(0)->get_name();
+    }
+    catch(...)
+    {
+    	return " ";
+    }
   }
 
   int axfrLookup_getSizeOfReturnedData(axfrLookup* lookup)

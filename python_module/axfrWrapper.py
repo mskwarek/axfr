@@ -3,6 +3,7 @@ import ctypes
 import time
 import database
 
+
 class Vector(object):
     charptr = ctypes.POINTER(ctypes.c_char)
     lib = cdll.LoadLibrary('/home/mkoi/mgr/myDig/build/lib/libAxfrLib.so')
@@ -16,6 +17,8 @@ class Vector(object):
     lib.axfrLookup_getSizeOfReturnedData.argtypes = [ctypes.c_void_p]
     lib.axfrLookup_getReturnedDomain.restype = ctypes.c_char_p
     lib.axfrLookup_getReturnedDomain.argtypes = [ctypes.c_void_p, ctypes.c_int]
+    lib.axfrLookup_getScannedDomainName.restype = ctypes.c_char_p
+    lib.axfrLookup_getScannedDomainName.argtypes = [ctypes.c_void_p]
 
 
     def __init__(self):
@@ -29,7 +32,6 @@ class Vector(object):
         return self.getlen_cb()
     def __repr__(self):
         return '[{}]'.format("', '".join(self[i] for i in range(len(self))))
-
 
     def getlen_cb(self):
         raise NotImplementedError
@@ -48,7 +50,8 @@ class axfrVector(Vector):
     
 class axfrLookup(object):
     lib = cdll.LoadLibrary('/home/mkoi/mgr/myDig/build/lib/libAxfrLib.so')
-    
+    def getDomainName(self):
+        return Vector.lib.axfrLookup_getScannedDomainName(self.obj)
     def __init__(self):
         self.obj = self.lib.axfrLookup_new()
     def performLookup(self, domain, ns):
@@ -57,15 +60,27 @@ class axfrLookup(object):
     def getResult(self, domain, ns):
         self.lib.axfrLookup_performLookup(self.obj, domain, ns)
         print "after perform"
-        vec = axfrVector(self.obj)
-        print vec
+        self.returnedVec = axfrVector(self.obj)
+        self.domainName = self.getDomainName()
+    def insertDataToDb(self, db):
+        db.insertScan(self.domainName, self.returnedVec)
+        db.commitTransaction()
+
     def destroy(self):
         self.lib.axfrLookup_destroy(self.obj)
+
             
 def perform_lookup(in_list):
+
     x = axfrLookup()
     print "dziala", in_list[0], in_list[1]
     x.getResult(in_list[0], in_list[1])
+    if(len(x.returnedVec) > 0):
+        db = database.Psql("/home/mkoi/mgr/myDig/python_module/credentials.json")
+        db.readCredentials()
+        db.openConnection()
+        x.insertDataToDb(db)
+        db.closeConnection()
     x.destroy()
         
 from multiprocessing import Process, Queue, Lock
@@ -101,9 +116,9 @@ def process_lookup_thread(input_list):
 
 def main_scan():
     input_list = [line.rstrip('\n').split(' ') for line in open('/home/mkoi/mgr/myDig/python_module/inputData')]
-    #process_lookup(input_list)
-    for i in range(100000):
-        process_lookup([['oeeee.com.', 'ns1.oeeee.com.']])
+    process_lookup(input_list)
+
+    #process_lookup([['oeeee.com.', 'ns1.oeeee.com.']])
     #db = database.Psql("credentials.json")
     #db.readCredentials()
     #db.openConnection()
