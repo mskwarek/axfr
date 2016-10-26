@@ -27,13 +27,13 @@ public:
     ScanningResult(const std::string _name, const std::string _ip, 
         const std::string _ttl, const std::string _cls, 
         const std::string _type, const std::string _rdata)
-    {
-            name = (char*) malloc(_name.length() + 1);
-            ip = (char*) malloc(_ip.length() + 1);
-            ttl = (char*) malloc(_ttl.length() + 1);
-            cls = (char*) malloc(_cls.length() + 1);
-            type = (char*) malloc(_type.length() + 1);
-            rdata = (char*) malloc(_rdata.length() + 1);
+  {
+    name = (char*) malloc(sizeof(char)*(_name.length() + 1));
+    ip = (char*) malloc(sizeof(char)*(_ip.length() + 1));
+    ttl = (char*) malloc(sizeof(char)*(_ttl.length() + 1));
+    cls = (char*) malloc(sizeof(char)*(_cls.length() + 1));
+    type = (char*) malloc(sizeof(char)*(_type.length() + 1));
+    rdata = (char*) malloc(sizeof(char)*(_rdata.length() + 1));
 
             snprintf(name, _name.length() + 1, "%s", _name.c_str());
             snprintf(ip, _ip.length() + 1, "%s", _ip.c_str());
@@ -45,12 +45,30 @@ public:
 
     ~ScanningResult(){
         // std::cout<<"d_ctor c++ "<<ip<<std::endl;
-        free(name);
-        free(ip);
-        free(ttl);
-        free(cls);
-        free(type);
-        free(rdata);
+      if(name!=NULL)
+	{
+	  free(name);
+	}
+      if(ip!=NULL)
+	{
+	  free(ip);
+	}
+      if(ttl!=NULL)
+	{
+	  free(ttl);
+	}
+      if(cls!=NULL)
+	{
+	  free(cls);
+	}
+      if(type=NULL)
+	{
+	  free(type);
+	}
+      if(rdata!=NULL)
+	{
+	  free(rdata);
+	}
     }
 
     char* get_name()

@@ -123,7 +123,7 @@ if __name__ == '__main__':
     print "DUPA"
     process_lookup_and_print(input_list)
     for i in range(1, 100):
-        process_lookup_and_print([['oeeee.com.', 'ns1.oeeee.com.']])
+        process_lookup_and_print([['verizonwireless.com.', 'ns-dbln.verizonwireless.com.']])
 
     #x = axfrLookup()
     #x.dumbDataInt()

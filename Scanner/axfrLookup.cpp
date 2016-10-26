@@ -87,16 +87,13 @@ void axfrLookup::save_data_xml(response_t* res)
 
 void axfrLookup::performLookup(const char* domain, const char* asked_ns)
 {
-    char* tmp = NULL;
+    std::string nameserver= "@";
     this->name_scanned = std::string(domain);
-    tmp = new char(strlen(asked_ns) + 1);
-    memmove(tmp+1, asked_ns, strlen(asked_ns));
-    tmp[0] = '@';
-    std::string nameserver(tmp, strnlen(tmp, 100));
+    nameserver += asked_ns;
     trim(nameserver);
     const char *args[4] = {"axfrscan", domain, nameserver.c_str(), "axfr"};
     int_parse(tryLookup(4, (char**) args));
-    delete tmp;
+
 }
 
 std::vector<ScanningResult*>* axfrLookup::get_domains()
