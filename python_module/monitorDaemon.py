@@ -158,15 +158,30 @@ class Daemon(object):
 
 class MyDaemon(Daemon):
     def run(self):
+        import axfrWrapper
         print("wee")
         while True:
+            axfrWrapper.main_scan()
             time.sleep(0.1)
 
+def startDaemon(daemon):
+	print("Starting daemon")
+	daemon.start()
+	pid = daemon.get_pid()
+	if not pid:
+		print("Unable run daemon")
+	else:
+		print("Daemon is running [PID=%d]" % pid)
 
-def main():
-    """
-    The application entry point
-    """
+def statusDaemon(daemon):
+	print("Viewing daemon status")
+	pid = daemon.get_pid()
+	if not pid:
+		print("Daemon isn't running ;)")
+	else:
+		print("Daemon is running [PID=%d]" % pid)
+
+def parseArgs():
     parser = argparse.ArgumentParser(
         #prog='PROG',
         description='Daemon runner',
@@ -179,38 +194,38 @@ def main():
                     help='Operation with daemon. Accepts any of these values: start, stop, restart, status',
                     choices=['start', 'stop', 'restart', 'status'])
 
-    args = parser.parse_args()
-    operation = args.operation
+    parser.add_argument('--pidfile',
+                    dest='pidfile',
+                    required=True,
+                    type=str,
+                    help='path to pid file')
+
+    return parser.parse_args()
+
+
+def main():
+    """
+    The application entry point
+    """
+    args = parseArgs()
+    print args.pidfile
 
     # Daemon
-    daemon = MyDaemon('/home/marcin/python.pid',
+    daemon = MyDaemon(args.pidfile,
     )
 
-    if operation == 'start':
-        print("Starting daemon")
-        daemon.start()
-        pid = daemon.get_pid()
+    if args.operation == 'start':
+        startDaemon(daemon)
 
-        if not pid:
-            print("Unable run daemon")
-        else:
-            print("Daemon is running [PID=%d]" % pid)
-
-    elif operation == 'stop':
+    elif args.operation == 'stop':
         print("Stoping daemon")
         daemon.stop()
 
-    elif operation == 'restart':
+    elif args.operation == 'restart':
         print("Restarting daemon")
         daemon.restart()
-    elif operation == 'status':
-        print("Viewing daemon status")
-        pid = daemon.get_pid()
-
-        if not pid:
-            print("Daemon isn't running ;)")
-        else:
-            print("Daemon is running [PID=%d]" % pid)
+    elif args.operation == 'status':
+    	statusDaemon(daemon)
 
     sys.exit(0)
 

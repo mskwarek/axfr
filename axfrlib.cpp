@@ -16,7 +16,14 @@ extern "C"
   
   void axfrLookup_performLookup(axfrLookup* lookup, const char* domain, const char* ns)
   {
-    lookup->performLookup(domain, ns);
+    try
+    {
+      lookup->performLookup(domain, ns);
+    }
+    catch(...)
+    {
+      
+    }
   }
 
   std::vector<ScanningResult*>* axfrLookup_getResult(axfrLookup* lookup)
@@ -24,39 +31,40 @@ extern "C"
     return lookup->get_domains();
   }
 
-  std::vector<std::string> axfrLookup_getReturnedDomains(axfrLookup* lookup)
+  const char* axfrLookup_getReturnedDomain(axfrLookup* lookup, int domain_index)
   {
-    std::vector<std::string> data;
-    
-    for(int i = 0; i<lookup->get_domains()->size(); ++i)
-    {
-      data.push_back(lookup->get_domains()->at(i)->get_rdata());
+    return lookup->get_domains()->at(domain_index)->get_ip();
+  }
+
+  const char* axfrLookup_getScannedDomainName(axfrLookup* lookup)
+  {
+  	try
+  	{
+    	return lookup->get_domains()->at(0)->get_name();
     }
-
-    return data;
-  }
-
-  std::vector<std::string> axfrLookup_getDumbVector(axfrLookup* lookup)
-  {
-    std::vector<std::string> to_return = {"dns1.onet.pl", "dns2.onet.pl", "dns3.onet.pl"};
-    return to_return;
-  }
-  std::vector<int> axfrLookup_getDumbVectorInt()
-  {
-    std::vector<int> to_return = {1, 2, 3};
-    return to_return;
-  }
-
-  int axfrLookup_getDumbSize(std::vector<std::string> vec)
-  {
-    return vec.size();
+    catch(...)
+    {
+    	return " ";
+    }
   }
 
   int axfrLookup_getSizeOfReturnedData(axfrLookup* lookup)
   {
-    return lookup->get_domains()->size();
+    try
+    {
+      return lookup->get_domains()->size();
+    }
+    catch(...)
+    {
+	    return 0;
+    }
   }
 
+  int axfrLookup_getSize(std::vector<std::string>* vec)
+  {
+    return vec->size();
+  }
+  
   void print_data(std::vector<ScanningResult*>* data)
   {
     if(data == NULL)
@@ -80,5 +88,40 @@ extern "C"
   void axfrLookup_destroy(axfrLookup* lookup)
   {
     delete lookup;
+  }
+
+
+
+
+  std::vector<std::string> to_return = {"dns1.onet.pl", "dns2.onet.pl", "dns3.onet.pl"};
+   
+  std::vector<std::string>* axfrLookup_getDumbVector()
+  {
+    return new std::vector<std::string>();
+  }
+
+  void axfrLookup_fillWithData(std::vector<std::string>* vec)
+  {
+    vec->push_back("dns1.onet.pl");
+    vec->push_back("dns2.onet.pl");
+    vec->push_back("dns3.onet.pl");
+  }
+  
+  int axfrLookup_getDumbSize(std::vector<std::string>* vec)
+  {
+    return vec->size();
+  }
+
+  const char* axfrLookup_get_to_return(std::vector<std::string>* vec, int index)
+  {
+    std::cout<<index<<std::endl;
+    if(index < vec->size() && index >= 0)
+      {
+	return vec->at(index).c_str();
+      }
+    else
+      {
+	return "";
+      }
   }
 }

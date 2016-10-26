@@ -28,17 +28,19 @@ public:
         {
             return;
         }
-
-	bool cl = std::string("SOA").compare(res->cls);
-	bool ty = std::string("SOA").compare(res->type);
-	if(cl && ty) {
-	  std::cout<<res->name<<std::endl;
-	  ScanningResult* temp = new ScanningResult(res);
-	  if(temp != NULL)
-	    data.push_back(temp);
-	}
-	else
-	  return;
+        bool cl = std::string("SOA").compare(res->cls);
+	    bool ty = std::string("SOA").compare(res->type);
+	    if(cl && ty) {
+	       std::cout<<res->name<<std::endl;
+	       ScanningResult* temp = new ScanningResult(res);
+	       if(temp != NULL)
+            {
+               std::cout<<"adding result"<<std::endl;
+	           data.push_back(temp);
+            }
+	   }
+	   else
+	       return;
     }
 
     void addRdata()
@@ -62,6 +64,10 @@ public:
 
     AxfrDatabase(const AxfrDatabase&) = delete;
     AxfrDatabase operator=(const AxfrDatabase &a) = delete;
+    void add_to_db(ScanningResult* res)
+    {
+        this->data.push_back(res);
+    }
     std::vector<ScanningResult*>* get_result()
     {
       return &data;

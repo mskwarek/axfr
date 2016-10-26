@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/home/marcin/ClionProjects/myDig/Scanner/AxfrDatabase.hpp
+/home/mkoi/mgr/myDig/Scanner/AxfrDatabase.hpp
 dig_parser.h
 -
 vector
@@ -16,7 +16,7 @@ boost/property_tree/ptree.hpp
 boost/property_tree/xml_parser.hpp
 -
 ScanningResult.hpp
-/home/marcin/ClionProjects/myDig/Scanner/ScanningResult.hpp
+/home/mkoi/mgr/myDig/Scanner/ScanningResult.hpp
 
 /home/mkoi/mgr/myDig/Scanner/InputReader.cpp
 fstream
@@ -46,6 +46,8 @@ string
 iostream
 -
 string
+-
+stdlib.h
 -
 
 /home/mkoi/mgr/myDig/Scanner/axfrLookup.cpp
@@ -96,6 +98,16 @@ stdint-gcc.h
 dns/types.h
 -
 dns/message.h
+-
+
+/home/mkoi/mgr/myDig/m_vector.cpp
+vector
+-
+iostream
+-
+fstream
+-
+string
 -
 
 bind_lib/lib/dns/include/dns/compress.h

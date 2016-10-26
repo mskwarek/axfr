@@ -1,4 +1,4 @@
-FILE(REMOVE_RECURSE
+file(REMOVE_RECURSE
   "CMakeFiles/myDig.dir/digUtils/digQuery.c.o"
   "CMakeFiles/myDig.dir/digUtils/dighost.c.o"
   "CMakeFiles/myDig.dir/Scanner/axfrLookup.cpp.o"
@@ -11,6 +11,6 @@ FILE(REMOVE_RECURSE
 )
 
 # Per-language clean rules from dependency scanning.
-FOREACH(lang C CXX)
-  INCLUDE(CMakeFiles/myDig.dir/cmake_clean_${lang}.cmake OPTIONAL)
-ENDFOREACH(lang)
+foreach(lang C CXX)
+  include(CMakeFiles/myDig.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()
