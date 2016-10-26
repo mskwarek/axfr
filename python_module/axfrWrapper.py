@@ -20,7 +20,6 @@ class Vector(object):
     lib.axfrLookup_getScannedDomainName.restype = ctypes.c_char_p
     lib.axfrLookup_getScannedDomainName.argtypes = [ctypes.c_void_p]
 
-
     def __init__(self):
         self.vector = Vector.lib.axfrLookup_getDumbVector()
         Vector.lib.axfrLookup_fillWithData(self.vector)
@@ -71,7 +70,6 @@ class axfrLookup(object):
 
             
 def perform_lookup(in_list):
-
     x = axfrLookup()
     print "dziala", in_list[0], in_list[1]
     x.getResult(in_list[0], in_list[1])
@@ -82,13 +80,18 @@ def perform_lookup(in_list):
         x.insertDataToDb(db)
         db.closeConnection()
     x.destroy()
-        
+
+    
+def perform_lookup_and_print(in_list):
+    x = axfrLookup()
+    print "dziala", in_list[0], in_list[1]
+    x.getResult(in_list[0], in_list[1])
+    if(len(x.returnedVec) > 0):
+        print x
+    x.destroy()
 from multiprocessing import Process, Queue, Lock
 import multiprocessing
 import threading
-
-def log_result(result):
-    print "result", result
     
 def process_lookup(input_list):
     for i in range(len(input_list)):
@@ -96,45 +99,32 @@ def process_lookup(input_list):
             p = Process(target=perform_lookup, args=(input_list[i], ))
             p.start()
             p.join()
-            #print i
-            #print input_list[i]
-            #perform_lookup(input_list[i])
         except:
             time.sleep(5)
-            #continue
         i+=1
 
-
-
-def process_lookup_thread(input_list):
+def process_lookup_and_print(input_list):
     for i in range(len(input_list)):
-        pool = multiprocessing.Pool()
-        pool.apply_async(perform_lookup, args = (input_list[i], ), callback = log_result)
+        try:
+            p = Process(target=perform_lookup_and_print, args=(input_list[i], ))
+            p.start()
+            p.join()
+        except:
+            time.sleep(5)
         i+=1
-        pool.close()
-        pool.join()
-
+        
 def main_scan():
     input_list = [line.rstrip('\n').split(' ') for line in open('/home/mkoi/mgr/myDig/python_module/inputData')]
     process_lookup(input_list)
 
-    #process_lookup([['oeeee.com.', 'ns1.oeeee.com.']])
-    #db = database.Psql("credentials.json")
-    #db.readCredentials()
-    #db.openConnection()
-    
-    #hosts = column(input_list, 0)
-    #print hosts
-    #start = time.time()
-    #print db.insertDomainList(hosts)
-    #db.commitTransaction()
-    #end = time.time()
-    #print end-start 	
-    #db.closeConnection()
-    
     
 if __name__ == '__main__':
-    main_scan()
+    input_list = [line.rstrip('\n').split(' ') for line in open('/home/mkoi/mgr/myDig/python_module/inputData')]
+    print "DUPA"
+    process_lookup_and_print(input_list)
+    for i in range(1, 100):
+        process_lookup_and_print([['oeeee.com.', 'ns1.oeeee.com.']])
+
     #x = axfrLookup()
     #x.dumbDataInt()
     
