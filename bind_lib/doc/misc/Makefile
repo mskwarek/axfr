@@ -41,7 +41,7 @@ DESTDIR =
 
 
 
-top_builddir =	/home/marcin/ClionProjects/myDig/bind_lib
+top_builddir =	/home/mkoi/mgr/myDig/bind_lib
 
 ###
 ### All
@@ -110,14 +110,14 @@ install clean distclean maintainer-clean doc docclean man manclean::
 ###     EXT_CFLAGS
 
 CC = 		gcc
-CFLAGS =	-fPIC -I/usr/include/libxml2  -fPIC
+CFLAGS =	-g -O2 -I/usr/include/libxml2  -fPIC
 LDFLAGS =	
 STD_CINCLUDES =	
 STD_CDEFINES =	 -D_GNU_SOURCE
 STD_CWARNINGS =	 -W -Wall -Wmissing-prototypes -Wcast-qual -Wwrite-strings -Wformat -Wpointer-arith -fno-strict-aliasing -fno-delete-null-pointer-checks
 
 BUILD_CC = gcc
-BUILD_CFLAGS = -fPIC -I/usr/include/libxml2  -fPIC
+BUILD_CFLAGS = -g -O2 -I/usr/include/libxml2  -fPIC
 BUILD_CPPFLAGS =  -D_GNU_SOURCE 
 BUILD_LDFLAGS = 
 BUILD_LIBS = -ldl -lz -lpthread  -lxml2
@@ -313,10 +313,10 @@ INSTALL_LIBRARY =	${INSTALL_DATA}
 XSLTPROC =		xsltproc --novalid --xinclude --nonet
 XMLLINT =		xmllint
 PERL =			/usr/bin/perl
-LATEX =			/usr/bin/latex
-PDFLATEX =		/usr/bin/pdflatex
+LATEX =			latex
+PDFLATEX =		pdflatex
 DBLATEX =		dblatex
-W3M =			w3m
+W3M =			/usr/bin/w3m
 
 ###
 ### Script language program used to create internal symbol tables

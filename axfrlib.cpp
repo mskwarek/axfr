@@ -36,10 +36,30 @@ extern "C"
     return lookup->get_domains()->at(domain_index)->get_ip();
   }
 
+  const char* axfrLookup_getReturnedCls(axfrLookup* lookup, int domain_index)
+  {
+    return lookup->get_domains()->at(domain_index)->get_cls();
+  }
+
+  const char* axfrLookup_getReturnedType(axfrLookup* lookup, int domain_index)
+  {
+    return lookup->get_domains()->at(domain_index)->get_type();
+  }
+
+  const char* axfrLookup_getReturnedRdata(axfrLookup* lookup, int domain_index)
+  {
+    return lookup->get_domains()->at(domain_index)->get_rdata();
+  }
+
+  const char* axfrLookup_getReturnedTtl(axfrLookup* lookup, int domain_index)
+  {
+    return lookup->get_domains()->at(domain_index)->get_ttl();
+  }
+  
   const char* axfrLookup_getScannedDomainName(axfrLookup* lookup)
   {
-  	try
-  	{
+    try
+    {
     	return lookup->get_domains()->at(0)->get_name();
     }
     catch(...)

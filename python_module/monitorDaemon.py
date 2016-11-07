@@ -155,32 +155,38 @@ class Daemon(object):
         """
         raise NotImplementedError
 
+import threading
+import axfrWrapper
+import logger
+import axfrInterface
+
+def rundaemon():
+    while True:
+        axfrWrapper.main_scan()
+        time.sleep(0.1)
 
 class MyDaemon(Daemon):
     def run(self):
-        import axfrWrapper
-        print("wee")
-        while True:
-            axfrWrapper.main_scan()
-            time.sleep(0.1)
-
+        x = threading.Thread(target = rundaemon)
+        x.start()
+        
 def startDaemon(daemon):
 	print("Starting daemon")
 	daemon.start()
 	pid = daemon.get_pid()
 	if not pid:
-		print("Unable run daemon")
+            print "Unable run daemon"
 	else:
-		print("Daemon is running [PID=%d]" % pid)
+            print "Daemon is running [PID=%d]" % pid
 
 def statusDaemon(daemon):
-	print("Viewing daemon status")
-	pid = daemon.get_pid()
-	if not pid:
-		print("Daemon isn't running ;)")
-	else:
-		print("Daemon is running [PID=%d]" % pid)
-
+    print("Viewing daemon status")
+    pid = daemon.get_pid()
+    if not pid:
+	print("Daemon isn't running ;)")
+    else:
+	print("Daemon is running [PID=%d]" % pid)
+            
 def parseArgs():
     parser = argparse.ArgumentParser(
         #prog='PROG',

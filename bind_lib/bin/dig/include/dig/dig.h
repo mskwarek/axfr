@@ -435,6 +435,8 @@ void save_opt(dig_lookup_t *lookup, char *code, char *value);
 void setup_file_key(void);
 void setup_text_key(void);
 
+void do_nothing(const char* tmpl, ...);
+
 ISC_LANG_ENDDECLS
 
 #endif

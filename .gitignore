@@ -31,3 +31,4 @@
 CMakeCache.txt
 build/
 python_module/credentials.json
+python_module/*.pyc

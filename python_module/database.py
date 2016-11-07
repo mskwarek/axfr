@@ -3,6 +3,7 @@ __author__ = 'marcin'
 import time, datetime
 import psycopg2
 import json
+from time import gmtime, strftime
 
 class Psql(object):
     def __init__(self, cred_file_path):
@@ -15,7 +16,7 @@ class Psql(object):
         self.dbname = credentials['dbname']
         self.user = credentials['user']
         self.password = credentials['password']
-        print self.host, self.dbname, self.user, self.password
+        #print self.host, self.dbname, self.user, self.password
 
     def openConnection(self):
         self.conn = psycopg2.connect("host='"+self.host+"' dbname='"+self.dbname+"' user ='"+self.user+"' password='"+self.password+"'")
@@ -35,15 +36,20 @@ class Psql(object):
     def insertScan(self, root_domain, domain_list):
         insert_scan_query='SELECT * FROM v.ins_scan(\'%s\', \'%s\')'
         domain_list = str(map(str, domain_list))
-        domain_list = domain_list.replace('[', '{').replace(']', '}').replace('\'', '\"')
+        domain_list = domain_list.replace('[', '{').replace(']', '}').replace('\"', '//').replace('\'', '\"')
         query = insert_scan_query%(root_domain, domain_list)
         #print query
+        #with open('db_script'+str(time), 'w') as fi:
+        #    fi.write(query)
+            
         x = self.executeQuery(query)
-        print x
+        #print x
     def insertDomainList(self, domain_list):
         insert_domain_array_query ='SELECT * FROM v.get_id_of_domains(\'%s\')'
         domain_list = str(map(str, domain_list))
         domain_list = domain_list.replace('[', '{').replace(']', '}').replace('\'', '\"')
+        time = strftime("%Y-%m-%d %H:%M:%S", gmtime())
         query = insert_domain_array_query%(domain_list)
+        
         x = self.executeQuery(query)
         print x

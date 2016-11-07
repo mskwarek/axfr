@@ -8,6 +8,9 @@
 
 /*! \file */
 
+#define fatal do_nothing
+#define debug do_nothing
+
 #include <config.h>
 #include <stdlib.h>
 #include <time.h>
@@ -85,6 +88,13 @@ static const char * const opcodetext[] = {
 	"RESERVED14",
 	"RESERVED15"
 };
+
+
+void do_nothing(const char* tmpl, ...)
+{
+
+}
+
 
 static const char *
 rcode_totext(dns_rcode_t rcode) {
