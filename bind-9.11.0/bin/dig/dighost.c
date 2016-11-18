@@ -3413,6 +3413,7 @@ check_for_more_data(dig_query_t *query, dns_message_t *msg,
 	query->byte_count += sevent->n;
 	result = dns_message_firstname(msg, DNS_SECTION_ANSWER);
 	if (result != ISC_R_SUCCESS) {
+	  //printf(";;TF");
 		puts("; Transfer failed.");
 		return (ISC_TRUE);
 	}
