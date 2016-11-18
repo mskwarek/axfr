@@ -11,6 +11,7 @@ import shlex
 import random
 import argparse
 import os
+import traceback
 
 class scan_input():
     def __init__(self, domain, ns):
@@ -20,22 +21,12 @@ class scan_input():
         return self.domain+" "+self.ns
 
 def insert_scan_to_db(returnedVec, domain):
-    db = database.Psql("/home/mkoi/mgr/myDig/python_module/credentials.json")
+    db = database.Psql(parse_arguments().rootdir+"/python_module/credentials.json")
     db.readCredentials()
     db.openConnection()
     db.insertScan(domain, returnedVec)
     db.commitTransaction()
     db.closeConnection()
-
-def run_cmd(cmd):
-    proc=subprocess.Popen(shlex.split(cmd),stdout=subprocess.PIPE)
-    out,err=proc.communicate()
-    #print cmd
-    return out
-
-def try_subprocess(i):
-    cmd = 'mkdir /home/mkoi/tst/dir_'+str(i)
-    run_cmd(cmd)
 
 def parse_output(out):
     returnedVec = []
@@ -51,36 +42,78 @@ def parse_arguments():
                         required=True,
                         type=str,
                         help='Defines output folder for iteration results')
+    parser.add_argument('--input_list',
+                        dest='inp',
+                        required=True,
+                        type=str,
+                        help='path to file with input data (domain|ns list)')
+
+    parser.add_argument('--root_project_dir',
+                        dest='rootdir',
+                        required=True,
+                        type=str,
+                        help='Path to root project dir')
     return parser.parse_args()
 
-def get_output_path():
-    return './'+parse_arguments().output+'/'
 
-def create_output_folder_if_needed():
-    directory = get_output_path()
-    if not os.path.exists(directory):
-        os.makedirs(directory)
+def get_axfr_output_path():
+    return create_output_folder_if_needed('ans')
+
+def get_log_output_path():
+    return create_output_folder_if_needed('.')+'/log'    
+
+def create_output_folder_if_needed(folder_to_create):
+    directory = parse_arguments().output
+    if not os.path.exists(directory+'/'+folder_to_create):
+        os.makedirs(directory+'/'+folder_to_create)
+    return directory+'/'+folder_to_create
 
 def write_result_to_file(returnedVec, domain):
-    create_output_folder_if_needed()
-    with open(get_output_path()+str(domain), 'w') as fi:
+    with open(get_axfr_output_path()+'/'+str(domain), 'w') as fi:
         fi.write("\n".join(returnedVec))
         
 def insert_to_db_if_needed(returnedVec, domain):
     if(len(returnedVec) > 0):
-        if re.match(";;", returnedVec[0]):
-            logger.Logger().write_tf_log(domain)
+        if re.match(";; TF", returnedVec[0]):
+            logger.Logger().write_tf_log(get_log_output_path(), domain)
+        elif re.match(";; TO", returnedVec[0]):
+            logger.Logger().write_to_log(get_log_output_path(), domain)
         else:
-            logger.Logger().write_axfr_log(domain)
+            logger.Logger().write_axfr_log(get_log_output_path(), domain)
             write_result_to_file(returnedVec, domain)
-    logger.Logger().write_unknown_log(domain)
+        return
+    logger.Logger().write_unknown_log(get_log_output_path(), domain)
     #insert_scan_to_db(returnedVec, domain)
-    
+
+
+class Command(object):
+    def __init__(self, cmd):
+        self.cmd = cmd
+        self.process = None
+        
+    def run(self):
+        def run_cmd():
+            self.process=subprocess.Popen(shlex.split(self.cmd),stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE)
+            self.out,err=self.process.communicate()
+            errcode = self.process.returncode
+            suc = False
+            while not suc:
+                proc = self.process.poll()
+                if proc is not None:
+                    suc = True
+                else:
+                    print "still running"
+
+        run_cmd()
+        return self.out
 def try_to_do_lookup(scan_arguments):
-    cmd='/home/mkoi/mgr/bind-9.11.0/bin/dig/dig @'+scan_arguments.ns+' '+scan_arguments.domain+' +short +tries=1 axfr'
-    out = run_cmd(cmd)
-    print out
+    cmd=str(parse_arguments().rootdir)+'/bind-9.11.0/bin/dig/dig @'+scan_arguments.ns+' '+scan_arguments.domain+' +short +tries=1 axfr'
+    print cmd
+    
+    command = Command(cmd)
+    out = command.run()
     db_data = parse_output(out)
+    #print db_data
     insert_to_db_if_needed(db_data, scan_arguments.domain)
     return 0
 
@@ -88,12 +121,17 @@ import sys
     
 def process_one_case(input_list):
     success = False
+    timeout = 0
     while not success:
         try:
             try_to_do_lookup(input_list)
             success = True
         except Exception as e:
             print e
+            traceback.print_exc()
+            timeout+=1
+            if timeout > 4:
+                return
             #print "exception, try again"
             #pass
         
@@ -110,7 +148,7 @@ class processes():
                 self.release()
     def release(self):
         try:
-            self.processes_list.pop(0).join()
+            self.processes_list.pop(0).join(timeout=60)
             #print "join"
         except:
             print "wtf"
@@ -123,6 +161,7 @@ from time import gmtime, strftime
         
 def process_python(in_list):
     i = 0
+    timeout = 0
     a = processes()
     #print len(in_list)
     while i < len(in_list):
@@ -133,19 +172,20 @@ def process_python(in_list):
             #p = Process(target = try_subprocess, args = (i, ))
             p.start()
             a.push_process(p)
-            logger.Logger().increment()
+            #logger.Logger().increment()
             i += 1
         except Exception as e:
-            print e
+            timeout += 1
+            if timeout > 4:
+                i+=1
+            #print e
             #pass
-        if i%20 == 0:
-            time.sleep(1)
     a.release_all()
 import re
 
 def main_scan():
     input_list = [ ]
-    for line in open('/home/mkoi/mgr/myDig/python_module/logs/after_logs3.chk'):
+    for line in open(parse_arguments().inp):
         domain = line.rstrip('\n').split('|')[0]
         ns = line.rstrip('\n').split('|')[2]
         if re.match("(\d+).(\d+).(\d+).(\d+)", ns):
@@ -153,9 +193,9 @@ def main_scan():
             input_list.append(scan_input(domain, ns_ip))
 
     #print input_list
-    in_l = random.sample(input_list, 100000)
+    #in_l = random.sample(input_list, 10000)
     print "start: ", strftime("%Y-%m-%d %H:%M:%S", gmtime())
-    process_python(in_l)
+    process_python(input_list)
     print "end: ", strftime("%Y-%m-%d %H:%M:%S", gmtime())
     
 

@@ -26,16 +26,18 @@ class Logger(Singleton):
                     file.write(strftime("%a, %d %b %Y %H:%M:%S +0000", gmtime()) + ", " + str(self.value)+"\n")
         finally:
             self.lock.release()
-    def write_log(self, domain, result):
+    def write_log(self, file_path, domain, result):
         self.lock.acquire()
         try:
-            with open('/home/mkoi/mgr/myDig/python_module/log/test_log', 'a') as f:
+            with open(file_path, 'a') as f:
                 f.write(domain+ " " + result+"\n")
         finally:
             self.lock.release()
-    def write_tf_log(self, domain):
-        self.write_log(domain, "TF")
-    def write_axfr_log(self, domain):
-        self.write_log(domain, "AXFR answer")
-    def write_unknown_log(self, domain):
-        self.write_log(domain, "TO/unknown")
+    def write_to_log(self, file_path, domain):
+        self.write_log(file_path, domain, "TO")
+    def write_tf_log(self, file_path, domain):
+        self.write_log(file_path, domain, "TF")
+    def write_axfr_log(self, file_path, domain):
+        self.write_log(file_path, domain, "AXFR answer")
+    def write_unknown_log(self, file_path, domain):
+        self.write_log(file_path, domain, "unknown")

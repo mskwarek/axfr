@@ -3131,6 +3131,7 @@ connect_timeout(isc_task_t *task, isc_event_t *event) {
 		}
 	} else {
 		fputs(l->cmdline, stdout);
+		printf(";; TO\n");
 		//printf(";; connection timed out; no servers could be "
 		//     "reached\n");
 		cancel_lookup(l);
@@ -3413,7 +3414,7 @@ check_for_more_data(dig_query_t *query, dns_message_t *msg,
 	query->byte_count += sevent->n;
 	result = dns_message_firstname(msg, DNS_SECTION_ANSWER);
 	if (result != ISC_R_SUCCESS) {
-	  //printf(";;TF");
+	  printf(";; TF\n");
 		puts("; Transfer failed.");
 		return (ISC_TRUE);
 	}
