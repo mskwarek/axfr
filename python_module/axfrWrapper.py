@@ -112,9 +112,9 @@ def process_one_case(input_list, write_utils):
             success = True
         except Exception as e:
             print e
-            traceback.print_exc()
+            #traceback.print_exc()
             timeout+=1
-            if timeout > 4:
+            if timeout > 20:
                 return
             #print "exception, try again"
             #pass
@@ -132,7 +132,7 @@ class processes():
                 self.release()
     def release(self):
         try:
-            self.processes_list.pop(0).join(timeout=60)
+            self.processes_list.pop(0).join(timeout=20)
             #print "join"
         except:
             print "wtf"
