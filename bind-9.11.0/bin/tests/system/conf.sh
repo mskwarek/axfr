@@ -109,9 +109,9 @@ PYTHON=
 # Determine if we support various optional features.
 #
 CHECK_DSA=0
-XMLSTATS=1
+XMLSTATS=
 JSONSTATS=
-ZLIB=1
+ZLIB=
 NZD=
 
 . ${TOP}/version

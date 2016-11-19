@@ -1,12 +1,14 @@
 #!/bin/bash 
 
+SCRIPT=`realpath -s $0`
+SCRIPTPATH=`dirname $SCRIPT`
+
 function process_file {
     echo $1 $2
 
+    python $SCRIPTPATH/axfrWrapper.py --output_folder $2 --input_list $1 --root_project_dir $SCRIPTPATH/..
 
-    python /home/mkoi/mgr/myDig/python_module/axfrWrapper.py --output_folder $2 --input_list $1
-
-    cp -r $2 /home/mkoi/cp_res
+    cp -r $2 /home/marcin/cp_res
 
     if [ $? -eq 0 ];
     then
@@ -18,11 +20,9 @@ function process_file {
 }
 
 
-FILES=/home/mkoi/mgr/myDig/python_module/logs
+FILES=$SCRIPTPATH/logs
 s=($FILES/*.*)
 numfiles=${#s[@]}
-
-echo $numfiles
 
 j=0
 

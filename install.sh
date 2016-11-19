@@ -1,6 +1,4 @@
-cd bind_lib
-./configure CFLAGS=-fPIC
+cd bind-9.11.0
+./configure --witout-openssl
 make
 cd ..
-cmake .
-make

@@ -1,7 +1,7 @@
 import time
 import database
 import logger
-from axfrVector import *
+#from axfrVector import *
 from multiprocessing import Process, Queue, Lock, Pool
 import multiprocessing
 import threading
@@ -56,33 +56,17 @@ def parse_arguments():
     return parser.parse_args()
 
 
-def get_axfr_output_path():
-    return create_output_folder_if_needed('ans')
-
-def get_log_output_path():
-    return create_output_folder_if_needed('.')+'/log'    
-
-def create_output_folder_if_needed(folder_to_create):
-    directory = parse_arguments().output
-    if not os.path.exists(directory+'/'+folder_to_create):
-        os.makedirs(directory+'/'+folder_to_create)
-    return directory+'/'+folder_to_create
-
-def write_result_to_file(returnedVec, domain):
-    with open(get_axfr_output_path()+'/'+str(domain), 'w') as fi:
-        fi.write("\n".join(returnedVec))
-        
-def insert_to_db_if_needed(returnedVec, domain):
+def insert_to_db_if_needed(writeUtils, returnedVec, domain):
     if(len(returnedVec) > 0):
         if re.match(";; TF", returnedVec[0]):
-            logger.Logger().write_tf_log(get_log_output_path(), domain)
+            logger.Logger().write_tf_log(writeUtils.get_log_output_path(), domain)
         elif re.match(";; TO", returnedVec[0]):
-            logger.Logger().write_to_log(get_log_output_path(), domain)
+            logger.Logger().write_to_log(writeUtils.get_log_output_path(), domain)
         else:
-            logger.Logger().write_axfr_log(get_log_output_path(), domain)
-            write_result_to_file(returnedVec, domain)
+            logger.Logger().write_axfr_log(writeUtils.get_log_output_path(), domain)
+            writeUtils.write_result_to_file(returnedVec, domain)
         return
-    logger.Logger().write_unknown_log(get_log_output_path(), domain)
+    logger.Logger().write_unknown_log(writeUtils.get_log_output_path(), domain)
     #insert_scan_to_db(returnedVec, domain)
 
 
@@ -106,25 +90,25 @@ class Command(object):
 
         run_cmd()
         return self.out
-def try_to_do_lookup(scan_arguments):
+def try_to_do_lookup(scan_arguments, write_utils):
     cmd=str(parse_arguments().rootdir)+'/bind-9.11.0/bin/dig/dig @'+scan_arguments.ns+' '+scan_arguments.domain+' +short +tries=1 axfr'
-    print cmd
+    #print cmd
     
     command = Command(cmd)
     out = command.run()
     db_data = parse_output(out)
     #print db_data
-    insert_to_db_if_needed(db_data, scan_arguments.domain)
+    insert_to_db_if_needed(write_utils, db_data, scan_arguments.domain)
     return 0
 
 import sys
     
-def process_one_case(input_list):
+def process_one_case(input_list, write_utils):
     success = False
     timeout = 0
     while not success:
         try:
-            try_to_do_lookup(input_list)
+            try_to_do_lookup(input_list, write_utils)
             success = True
         except Exception as e:
             print e
@@ -158,17 +142,19 @@ class processes():
             self.release()
         
 from time import gmtime, strftime
-        
+import utils
+
 def process_python(in_list):
     i = 0
     timeout = 0
     a = processes()
     #print len(in_list)
     while i < len(in_list):
+        write_utils = utils.WriteUtils(parse_arguments().output)
         if i %100 == 0:
             print i
         try:
-            p = Process(target = process_one_case, args = (in_list[i], ))
+            p = Process(target = process_one_case, args = (in_list[i], write_utils, ))
             #p = Process(target = try_subprocess, args = (i, ))
             p.start()
             a.push_process(p)

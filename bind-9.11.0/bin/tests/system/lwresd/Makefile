@@ -26,30 +26,30 @@ VERSION=9.11.0
 # latter case, because there are no machine-generated OS-specific
 # headers.
 
-ISC_INCLUDES = -I/home/mkoi/mgr/bind-9.11.0/lib/isc/include \
+ISC_INCLUDES = -I/home/marcin/myDig/bind-9.11.0/lib/isc/include \
 	-I${top_srcdir}/lib/isc \
 	-I${top_srcdir}/lib/isc/include \
 	-I${top_srcdir}/lib/isc/unix/include \
 	-I${top_srcdir}/lib/isc/pthreads/include \
 	-I${top_srcdir}/lib/isc/x86_32/include
 
-ISCCC_INCLUDES = -I/home/mkoi/mgr/bind-9.11.0/lib/isccc/include \
+ISCCC_INCLUDES = -I/home/marcin/myDig/bind-9.11.0/lib/isccc/include \
        -I${top_srcdir}/lib/isccc/include
 
-ISCCFG_INCLUDES = -I/home/mkoi/mgr/bind-9.11.0/lib/isccfg/include \
+ISCCFG_INCLUDES = -I/home/marcin/myDig/bind-9.11.0/lib/isccfg/include \
        -I${top_srcdir}/lib/isccfg/include
 
-DNS_INCLUDES = -I/home/mkoi/mgr/bind-9.11.0/lib/dns/include \
+DNS_INCLUDES = -I/home/marcin/myDig/bind-9.11.0/lib/dns/include \
 	-I${top_srcdir}/lib/dns/include
 
-IRS_INCLUDES = -I/home/mkoi/mgr/bind-9.11.0/lib/irs/include \
+IRS_INCLUDES = -I/home/marcin/myDig/bind-9.11.0/lib/irs/include \
 	-I${top_srcdir}/lib/irs/include
 
-LWRES_INCLUDES = -I/home/mkoi/mgr/bind-9.11.0/lib/lwres/include \
+LWRES_INCLUDES = -I/home/marcin/myDig/bind-9.11.0/lib/lwres/include \
 	-I${top_srcdir}/lib/lwres/unix/include \
 	-I${top_srcdir}/lib/lwres/include
 
-BIND9_INCLUDES = -I/home/mkoi/mgr/bind-9.11.0/lib/bind9/include \
+BIND9_INCLUDES = -I/home/marcin/myDig/bind-9.11.0/lib/bind9/include \
 	-I${top_srcdir}/lib/bind9/include
 
 TEST_INCLUDES = \
@@ -61,14 +61,14 @@ CDEFINES =
 CWARNINGS =
 
 LWRESLIBS =	../../../../lib/lwres/liblwres.a
-ISCLIBS =	../../../../lib/isc/libisc.a  -lcrypto
+ISCLIBS =	../../../../lib/isc/libisc.a 
 
 LWRESDEPLIBS =	../../../../lib/lwres/liblwres.a
 ISCDEPLIBS =	../../../../lib/isc/libisc.a
 
 DEPLIBS =	${LWRESDEPLIBS} ${ISCDEPLIBS}
 
-LIBS =		${LWRESLIBS} ${ISCLIBS} -ldl -lz -lpthread  -lxml2
+LIBS =		${LWRESLIBS} ${ISCLIBS} -ldl -lpthread 
 
 TARGETS =	lwtest
 
@@ -107,7 +107,7 @@ DESTDIR =
 
 
 
-top_builddir =	/home/mkoi/mgr/bind-9.11.0
+top_builddir =	/home/marcin/myDig/bind-9.11.0
 
 ###
 ### All
@@ -177,17 +177,17 @@ install clean distclean maintainer-clean doc docclean man manclean::
 ###     EXT_CFLAGS
 
 CC = 		gcc
-CFLAGS =	-g -O2 -I/usr/include/libxml2  -fPIC
+CFLAGS =	-g -O2 -fPIC
 LDFLAGS =	
 STD_CINCLUDES =	
 STD_CDEFINES =	 -D_GNU_SOURCE
 STD_CWARNINGS =	 -W -Wall -Wmissing-prototypes -Wcast-qual -Wwrite-strings -Wformat -Wpointer-arith -fno-strict-aliasing -fno-delete-null-pointer-checks
 
 BUILD_CC = gcc
-BUILD_CFLAGS = -g -O2 -I/usr/include/libxml2  -fPIC
+BUILD_CFLAGS = -g -O2 -fPIC
 BUILD_CPPFLAGS =  -D_GNU_SOURCE 
 BUILD_LDFLAGS = 
-BUILD_LIBS = -ldl -lz -lpthread  -lxml2
+BUILD_LIBS = -ldl -lpthread 
 
 .SUFFIXES:
 .SUFFIXES: .c .o

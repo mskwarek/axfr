@@ -143,7 +143,7 @@ if test x"$echo_libs" = x"true"; then
 		libs="$libs -lbind9"
 	fi
 	if test x"$libdns" = x"true" ; then
-		libs="$libs -ldns  -lgssapi_krb5 -lkrb5 -lk5crypto -lcom_err -lcrypto"
+		libs="$libs -ldns "
 	fi
 	if test x"$libisccfg" = x"true" ; then
 		libs="$libs -lisccfg"
@@ -156,7 +156,7 @@ if test x"$echo_libs" = x"true"; then
 		needothers=true
 	fi
 	if test x"$needothers" = x"true" ; then
-		libs="$libs  -ldl -lz -lpthread  -lxml2"
+		libs="$libs  -ldl -lpthread "
 	fi
 	echo $libs
 fi
