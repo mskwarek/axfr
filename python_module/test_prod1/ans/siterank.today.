@@ -1,0 +1,13 @@
+ns1.siterank.today. webmaster.siterank.today. 2015060901 86400 7200 3600000 86400
+10 mail.siterank.today.
+20 mx2.siterank.today.
+"v=spf1 +a +mx +ip4:104.236.142.110 +ip6:fe80::601:36ff:feab:4c01 -all"
+ns1.siterank.today.
+ns2.siterank.today.
+104.236.142.110
+159.148.27.15
+159.148.27.200
+104.236.142.110
+104.236.142.110
+siterank.today.
+ns1.siterank.today. webmaster.siterank.today. 2015060901 86400 7200 3600000 86400

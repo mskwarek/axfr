@@ -1,0 +1,16 @@
+lcim1144.amhost.net. root.example.com. 2016091018 10800 3600 604800 86400
+95.211.241.45
+ns1.example.com.
+ns2.example.com.
+"v=spf1 ip4:95.211.196.239 a mx ~all"
+"v=spf1 ip4:95.211.241.41 a mx ~all"
+10 mail.porn720.net.
+20 mail.porn720.net.
+95.211.241.41
+95.211.241.41
+95.211.241.41
+95.211.241.41
+95.211.241.43
+95.211.241.43
+95.211.241.45
+lcim1144.amhost.net. root.example.com. 2016091018 10800 3600 604800 86400

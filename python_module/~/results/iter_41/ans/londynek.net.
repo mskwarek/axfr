@@ -1,0 +1,70 @@
+ns1.londynek.net. root.londynek.net. 2016101301 86400 7200 2419200 10800
+ns1.londynek.net.
+ns2.londynek.net.
+ns3.londynek.net.
+94.236.92.50
+94.236.92.51
+10 mail.londynek.net.
+"v=spf1 a mx ip4:91.121.69.201 -all"
+"v=spf1 a mx ip4:91.121.69.201 -all"
+"o=~;"
+"v=DKIM1; k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDTl8WZOQtmQLVutqPuXWynZfW8rjEZyTagxDxqjG2KiG+8Gp2rpH9oL/psKCwRUTF4PaMIX3d4Gm5/LPepPjaGHQtsfr2UJW71bukWNMr8Sr+Ham91wDAmLijYZfQy5PFzxBSLkAx/ig9sBD2Q3VM5np+bHWyAdwlVVuZ960N56wIDAQAB"
+londynek.net.
+94.236.82.4
+londynek.net.
+h2b06.londynek.net.
+91.121.69.201
+172.30.0.61
+londynek.net.
+h1b02.londynek.net.
+192.168.0.1
+94.236.92.50
+192.168.1.2
+192.168.1.10
+192.168.1.11
+192.168.1.12
+192.168.1.13
+192.168.1.14
+192.168.1.15
+192.168.1.1
+94.236.92.51
+192.168.2.2
+192.168.2.10
+192.168.2.11
+192.168.2.12
+192.168.2.13
+192.168.2.14
+192.168.2.15
+192.168.2.1
+172.30.0.61
+172.30.0.61
+172.30.0.61
+94.236.92.50
+91.121.69.201
+10 gal0.galicjusz.pl.
+"v=spf1 a mx ip4:91.121.69.201 -all"
+"v=spf1 a mx ip4:91.121.69.201 -all"
+"o=-;"
+"v=DKIM1; k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDDX6m7CGGKWIzl58CLNOADUL9Lx4ZNx7Gg0LNCtnUBqtiqLgGwZ12K8WC9/jlgPGFLPCthVco3G/3tG60vmfgryQku2tz2DkG+OMMgFAx5FZXpAE7iE7cd0DpoR61lUT0qKchD80koZe398vG15iywNgkoJcSPOoOyQ+hNaknLnwIDAQAB"
+storage1.londynek.net.
+image.londynek.net.
+image.londynek.net.
+94.236.92.50
+94.236.92.51
+91.121.69.201
+rrb01.londynek.net.
+londynek.net.
+rrb01.londynek.net.
+londynek.net.
+192.168.1.1
+192.168.2.1
+londynek.net.
+h1b02.londynek.net.
+h2b02.londynek.net.
+94.236.92.50
+storage1.londynek.net.
+storage1.londynek.net.
+172.30.0.6
+londynek.net.
+londynek.net.
+ns1.londynek.net. root.londynek.net. 2016101301 86400 7200 2419200 10800
