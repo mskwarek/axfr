@@ -87,12 +87,12 @@ BIND9_INCLUDES = -I/home/marcin/myDig/bind-9.11.0/lib/bind9/include \
 TEST_INCLUDES = \
 	-I${top_srcdir}/lib/tests/include
 
-USE_ISC_SPNEGO = 
+USE_ISC_SPNEGO = -DUSE_ISC_SPNEGO
 
 CINCLUDES =	-I. -I${top_srcdir}/lib/dns -Iinclude ${DNS_INCLUDES} \
-		${ISC_INCLUDES}  
+		${ISC_INCLUDES}  -I/usr/include
 
-CDEFINES =	-DUSE_MD5   ${USE_ISC_SPNEGO}
+CDEFINES =	-DUSE_MD5  -DGSSAPI ${USE_ISC_SPNEGO}
 
 CWARNINGS =
 
@@ -100,7 +100,7 @@ ISCLIBS =	../../lib/isc/libisc.a
 
 ISCDEPLIBS =	../../lib/isc/libisc.a
 
-LIBS =		-ldl -lpthread 
+LIBS =		-ldl -lz -lpthread  -lxml2
 
 # Alphabetically
 
@@ -112,7 +112,7 @@ OPENSSLLINKOBJS = openssl_link.o openssldh_link.o openssldsa_link.o \
 PKCS11LINKOBJS	= pkcs11dh_link.o pkcs11dsa_link.o pkcs11rsa_link.o \
 		pkcs11ecdsa_link.o pkcs11gost_link.o pkcs11.o
 
-DSTOBJS =	   \
+DSTOBJS =	 spnego.o   \
 		dst_api.o dst_lib.o dst_parse.o dst_result.o \
 		gssapi_link.o gssapictx.o hmac_link.o key.o
 
@@ -152,7 +152,7 @@ OPENSSLLINKSRCS = openssl_link.c openssldh_link.c openssldsa_link.c \
 PKCS11LINKSRCS	= pkcs11dh_link.c pkcs11dsa_link.c pkcs11rsa_link.c \
 		pkcs11ecdsa_link.c pkcs11gost_link.c pkcs11.c
 
-DSTSRCS =	   \
+DSTSRCS =	 spnego.c   \
 		dst_api.c dst_lib.c dst_parse.c \
 		dst_result.c gssapi_link.c gssapictx.c \
 		hmac_link.c key.c
@@ -289,17 +289,17 @@ install clean distclean maintainer-clean doc docclean man manclean::
 ###     EXT_CFLAGS
 
 CC = 		gcc
-CFLAGS =	-g -O2 -fPIC
+CFLAGS =	-g -O2 -I/usr/include/libxml2  -fPIC
 LDFLAGS =	
 STD_CINCLUDES =	
 STD_CDEFINES =	 -D_GNU_SOURCE
 STD_CWARNINGS =	 -W -Wall -Wmissing-prototypes -Wcast-qual -Wwrite-strings -Wformat -Wpointer-arith -fno-strict-aliasing -fno-delete-null-pointer-checks
 
 BUILD_CC = gcc
-BUILD_CFLAGS = -g -O2 -fPIC
+BUILD_CFLAGS = -g -O2 -I/usr/include/libxml2  -fPIC
 BUILD_CPPFLAGS =  -D_GNU_SOURCE 
 BUILD_LDFLAGS = 
-BUILD_LIBS = -ldl -lpthread 
+BUILD_LIBS = -ldl -lz -lpthread  -lxml2
 
 .SUFFIXES:
 .SUFFIXES: .c .o
@@ -562,7 +562,7 @@ libdns.la: ${OBJS}
 	${LIBTOOL_MODE_LINK} \
 		${CC} ${ALL_CFLAGS} ${LDFLAGS} -o libdns.la -rpath ${libdir} \
 		-version-info ${LIBINTERFACE}:${LIBREVISION}:${LIBAGE} \
-		${OBJS} ${ISCLIBS}  ${LIBS}
+		${OBJS} ${ISCLIBS}  -lgssapi_krb5 -lkrb5 -lk5crypto -lcom_err ${LIBS}
 
 timestamp: libdns.a
 	touch timestamp

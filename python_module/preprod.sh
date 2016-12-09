@@ -8,8 +8,8 @@ function process_file {
 
     python $SCRIPTPATH/axfrWrapper.py --output_folder $2 --input_list $1 --root_project_dir $SCRIPTPATH/..
 
-    if ( mountpoint -a $SCRIPTPATH/cp_res ); then	
-	cp -r $2/../* $SCRIPTPATH/cp_res
+    #if ( mountpoint -a $SCRIPTPATH/cp_res ); then	
+	cp -r $2/../* /home/maciej/DDNS/AXFR_output
 
 	if [ $? -eq 0 ];
 	then
@@ -18,18 +18,26 @@ function process_file {
 	else
             echo "NOK"
 	fi
-    fi
+    #fi
 }
 
-FILES=$SCRIPTPATH/$1
+FILES=$1
 s=($FILES/*.*)
 numfiles=${#s[@]}
+
+PROCS=0
 
 j=0
 
 for i in $FILES/*.*
 do
-    process_file $i "~/results/iter_"$j
+    process_file $i "/home/marcin/results/iter_"$j &
+    while (( $PROCS > 1 ))
+    do
+	echo $PROCS
+	sleep 30
+	PROCS=(`jobs | wc -l`)
+    done
     j=$[$j+1]
 done
 

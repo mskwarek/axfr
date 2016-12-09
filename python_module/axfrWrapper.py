@@ -1,7 +1,5 @@
 import time
-import database
 import logger
-#from axfrVector import *
 from multiprocessing import Process, Queue, Lock, Pool
 import multiprocessing
 import threading
@@ -151,8 +149,6 @@ def process_python(in_list):
     #print len(in_list)
     while i < len(in_list):
         write_utils = utils.WriteUtils(parse_arguments().output)
-        if i %100 == 0:
-            print i
         try:
             p = Process(target = process_one_case, args = (in_list[i], write_utils, ))
             #p = Process(target = try_subprocess, args = (i, ))
@@ -173,7 +169,7 @@ def main_scan():
     input_list = [ ]
     for line in open(parse_arguments().inp):
         domain = line.rstrip('\n').split('|')[0]
-        ns = line.rstrip('\n').split('|')[2]
+        ns = line.rstrip('\n').split('|')[1]
         if re.match("(\d+).(\d+).(\d+).(\d+)", ns):
             ns_ip = re.match("(\d+).(\d+).(\d+).(\d+)", ns).group()
             input_list.append(scan_input(domain, ns_ip))

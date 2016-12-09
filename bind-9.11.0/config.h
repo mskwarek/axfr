@@ -247,13 +247,13 @@ int sigwait(const unsigned int *set, int *sig);
 /* #undef HAVE_GPERFTOOLS_PROFILER */
 
 /* Define to 1 if you have the <gssapi/gssapi.h> header file. */
-/* #undef HAVE_GSSAPI_GSSAPI_H */
+#define HAVE_GSSAPI_GSSAPI_H 1
 
 /* Define to 1 if you have the <gssapi/gssapi_krb5.h> header file. */
-/* #undef HAVE_GSSAPI_GSSAPI_KRB5_H */
+#define HAVE_GSSAPI_GSSAPI_KRB5_H 1
 
 /* Define to 1 if you have the <gssapi.h> header file. */
-/* #undef HAVE_GSSAPI_H */
+#define HAVE_GSSAPI_H 1
 
 /* Define to 1 if you have the <gssapi_krb5.h> header file. */
 /* #undef HAVE_GSSAPI_KRB5_H */
@@ -274,10 +274,10 @@ int sigwait(const unsigned int *set, int *sig);
 /* #undef HAVE_KERBEROSV5_KRB5_H */
 
 /* Define to 1 if you have the <krb5.h> header file. */
-/* #undef HAVE_KRB5_H */
+#define HAVE_KRB5_H 1
 
 /* Define to 1 if you have the <krb5/krb5.h> header file. */
-/* #undef HAVE_KRB5_KRB5_H */
+#define HAVE_KRB5_KRB5_H 1
 
 /* Define to 1 if you have the `c' library (-lc). */
 /* #undef HAVE_LIBC */
@@ -313,7 +313,7 @@ int sigwait(const unsigned int *set, int *sig);
 /* #undef HAVE_LIBTHR */
 
 /* Define if libxml2 was found */
-/* #undef HAVE_LIBXML2 */
+#define HAVE_LIBXML2 1
 
 /* Define to 1 if you have the <linux/capability.h> header file. */
 #define HAVE_LINUX_CAPABILITY_H 1
@@ -376,7 +376,7 @@ int sigwait(const unsigned int *set, int *sig);
 /* #undef HAVE_PTHREAD_YIELD_NP */
 
 /* Define to 1 if you have the `readline' function. */
-/* #undef HAVE_READLINE */
+#define HAVE_READLINE 1
 
 /* Define to 1 if you have the <regex.h> header file. */
 #define HAVE_REGEX_H 1
@@ -466,7 +466,7 @@ int sigwait(const unsigned int *set, int *sig);
 #define HAVE_USLEEP 1
 
 /* Define if zlib was found */
-/* #undef HAVE_ZLIB */
+#define HAVE_ZLIB 1
 
 /* HMAC_*() return ints */
 /* #undef HMAC_RETURN_INT */

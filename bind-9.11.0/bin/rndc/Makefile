@@ -65,7 +65,7 @@ ISCCFGLIBS =	../../lib/isccfg/libisccfg.a
 ISCCCLIBS =	../../lib/isccc/libisccc.a
 ISCLIBS =	../../lib/isc/libisc.a
 ISCNOSYMLIBS =	../../lib/isc/libisc-nosymtbl.a
-DNSLIBS =	../../lib/dns/libdns.a 
+DNSLIBS =	../../lib/dns/libdns.a  -lgssapi_krb5 -lkrb5 -lk5crypto -lcom_err
 BIND9LIBS =	../../lib/bind9/libbind9.a
 
 ISCCFGDEPLIBS =	../../lib/isccfg/libisccfg.a
@@ -74,8 +74,8 @@ ISCDEPLIBS =	../../lib/isc/libisc.a
 DNSDEPLIBS =	../../lib/dns/libdns.a
 BIND9DEPLIBS =	../../lib/bind9/libbind9.a
 
-LIBS =		${ISCLIBS} -ldl -lpthread 
-NOSYMLIBS =	${ISCNOSYMLIBS} -ldl -lpthread 
+LIBS =		${ISCLIBS} -ldl -lz -lpthread  -lxml2
+NOSYMLIBS =	${ISCNOSYMLIBS} -ldl -lz -lpthread  -lxml2
 
 RNDCDEPLIBS =	${ISCCFGDEPLIBS} ${ISCCCDEPLIBS} ${BIND9DEPLIBS} ${DNSDEPLIBS} ${ISCDEPLIBS}
 
@@ -192,17 +192,17 @@ install clean distclean maintainer-clean doc docclean man manclean::
 ###     EXT_CFLAGS
 
 CC = 		gcc
-CFLAGS =	-g -O2 -fPIC
+CFLAGS =	-g -O2 -I/usr/include/libxml2  -fPIC
 LDFLAGS =	
 STD_CINCLUDES =	
 STD_CDEFINES =	 -D_GNU_SOURCE
 STD_CWARNINGS =	 -W -Wall -Wmissing-prototypes -Wcast-qual -Wwrite-strings -Wformat -Wpointer-arith -fno-strict-aliasing -fno-delete-null-pointer-checks
 
 BUILD_CC = gcc
-BUILD_CFLAGS = -g -O2 -fPIC
+BUILD_CFLAGS = -g -O2 -I/usr/include/libxml2  -fPIC
 BUILD_CPPFLAGS =  -D_GNU_SOURCE 
 BUILD_LDFLAGS = 
-BUILD_LIBS = -ldl -lpthread 
+BUILD_LIBS = -ldl -lz -lpthread  -lxml2
 
 .SUFFIXES:
 .SUFFIXES: .c .o

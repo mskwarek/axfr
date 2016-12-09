@@ -80,7 +80,7 @@ ISCCFGLIBS =	../../lib/cfg/libisccfg.a
 ISCDEPLIBS =	../../lib/isc/libisc.a
 ISCCFGDEPLIBS =	libisccfg.a
 
-LIBS =		-ldl -lpthread 
+LIBS =		-ldl -lz -lpthread  -lxml2
 
 SUBDIRS =	include
 
@@ -195,17 +195,17 @@ install clean distclean maintainer-clean doc docclean man manclean::
 ###     EXT_CFLAGS
 
 CC = 		gcc
-CFLAGS =	-g -O2 -fPIC
+CFLAGS =	-g -O2 -I/usr/include/libxml2  -fPIC
 LDFLAGS =	
 STD_CINCLUDES =	
 STD_CDEFINES =	 -D_GNU_SOURCE
 STD_CWARNINGS =	 -W -Wall -Wmissing-prototypes -Wcast-qual -Wwrite-strings -Wformat -Wpointer-arith -fno-strict-aliasing -fno-delete-null-pointer-checks
 
 BUILD_CC = gcc
-BUILD_CFLAGS = -g -O2 -fPIC
+BUILD_CFLAGS = -g -O2 -I/usr/include/libxml2  -fPIC
 BUILD_CPPFLAGS =  -D_GNU_SOURCE 
 BUILD_LDFLAGS = 
-BUILD_LIBS = -ldl -lpthread 
+BUILD_LIBS = -ldl -lz -lpthread  -lxml2
 
 .SUFFIXES:
 .SUFFIXES: .c .o
@@ -464,7 +464,7 @@ libisccfg.la: ${OBJS}
 	 ${LIBTOOL_MODE_LINK} \
 		${CC} ${ALL_CFLAGS} ${LDFLAGS} -o libisccfg.la -rpath ${libdir} \
 		-version-info ${LIBINTERFACE}:${LIBREVISION}:${LIBAGE} \
-		${OBJS} ${DNSLIBS} ${ISCCCLIBS} ${ISCLIBS}  \
+		${OBJS} ${DNSLIBS} ${ISCCCLIBS} ${ISCLIBS}  -lgssapi_krb5 -lkrb5 -lk5crypto -lcom_err \
 		${LIBS}
 
 timestamp: libisccfg.a

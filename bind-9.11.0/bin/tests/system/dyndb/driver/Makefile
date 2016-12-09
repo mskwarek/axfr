@@ -64,7 +64,7 @@ ISCDEPLIBS =	../../../../../lib/isc/libisc.a
 
 DEPLIBS =	${DNSDEPLIBS} ${ISCDEPLIBS}
 
-LIBS =		${DNSLIBS} ${ISCLIBS} -ldl -lpthread 
+LIBS =		${DNSLIBS} ${ISCLIBS} -ldl -lz -lpthread  -lxml2
 
 
 SRCS =		db.c driver.c instance.c \
@@ -176,17 +176,17 @@ install clean distclean maintainer-clean doc docclean man manclean::
 ###     EXT_CFLAGS
 
 CC = 		gcc
-CFLAGS =	-g -O2 -fPIC
+CFLAGS =	-g -O2 -I/usr/include/libxml2  -fPIC
 LDFLAGS =	
 STD_CINCLUDES =	
 STD_CDEFINES =	 -D_GNU_SOURCE
 STD_CWARNINGS =	 -W -Wall -Wmissing-prototypes -Wcast-qual -Wwrite-strings -Wformat -Wpointer-arith -fno-strict-aliasing -fno-delete-null-pointer-checks
 
 BUILD_CC = gcc
-BUILD_CFLAGS = -g -O2 -fPIC
+BUILD_CFLAGS = -g -O2 -I/usr/include/libxml2  -fPIC
 BUILD_CPPFLAGS =  -D_GNU_SOURCE 
 BUILD_LDFLAGS = 
-BUILD_LIBS = -ldl -lpthread 
+BUILD_LIBS = -ldl -lz -lpthread  -lxml2
 
 .SUFFIXES:
 .SUFFIXES: .c .o
@@ -429,7 +429,7 @@ ALWAYS_MAKE_SYMTABLE =
 	${XSLTPROC} -o $@ ${top_srcdir}/doc/xsl/isc-manpage.xsl $<
 
 
-CFLAGS =	-g -O2 -fPIC -fPIC
+CFLAGS =	-g -O2 -I/usr/include/libxml2  -fPIC -fPIC
 SO_LDFLAGS =	 -shared
 
 lib/sample.so: sample.so
@@ -438,7 +438,7 @@ lib/sample.so: sample.so
 
 sample.so: ${OBJS} ${DNSDEPLIBS} ${ISCDEPLIBS}
 	${LIBTOOL_MODE_LINK} gcc ${SO_LDFLAGS} -o $@ ${OBJS} \
-		${DNSLIBS} ${ISCLIBS}  ${LIBS}
+		${DNSLIBS} ${ISCLIBS}  -lgssapi_krb5 -lkrb5 -lk5crypto -lcom_err ${LIBS}
 
 clean distclean::
 	rm -f ${OBJS} sample.so lib/sample.so
