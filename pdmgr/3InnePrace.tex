@@ -1,0 +1,41 @@
+\section{Zaprojektowany system}
+
+Podstawowym krysterium przy projektowaniu opisywanego systemu była jego wydajność. W założeniu powinien on skanować jak najwięcej domen w możliwie najkrótszym czasie. Nałożone ograniczenia wynikały z kilku istotnych przyczyn. 
+
+Pierwszą była ogarniczona dostępność odpowiednio wydajnej maszyny. Dzięki uprzejmości dra Macieja Korczyńskiego z TU Delft otrzymaliśmy możliwość skorzystania z wydajnego serwera, jednak mogliśmy z niego skorzystać tylko przez krótki czas. Czas ten wynosił około 5 dni, gdzie w stosunku do ogromu danych jakie należało przeanalizować okazało się to niewystarczające. Niemniej jednak została przeprowadzona pewna część całego skanowania, dzięki czemu pozyskaliśmy informacje umożliwiające dalsze prace w zakresie ich analizy. 
+
+Kolejne ogarniczenie odnosi się już do samej istoty systemu DNS. Jeżeli skanowanie opisane w niniejszym raporcie byłoby zbyt długo rozciągnięte w czasie, to moglibyśmy wyciągnąć niepoprawne wnioski. Chodzi tu głównie o zmiany, które można określić jako ogólne, po prostu zachądzące w sieci. Mamy tu na myśli choćby dynamicznie przydzialane IP prze różnych dostawców internetu. Jako przykład może posłużyć bardzo prosty scenariusz opisany poniżej:
+\begin{enumerate}
+    \item Odpytujemy domenę x.
+    \item W odpowiedzi domeny otrzymujemy adres a.b.c.d .
+    \item Skanowanie innych domen trwa bardzo długo.
+    \item Adres a.b.c.d zostaje przydzielony do domeny y.
+    \item Skanujemy domenę y, otrzymujemy ten sam adres, co dla domeny x.
+\end{enumerate}
+Na podstawie powyższego scenariusza możemy wyciągnąć bardzo pochopny wniosek, że domeny x i y mają choćby wspólny serwer. Niekoniecznie musi to być prawda, ponieważ jak przestawiono, przyczyna może leżeć w sposobie przydzielania adresów przez usługodawcę. 
+
+Oczywiście w idealnym przypadku, najlepiej byłoby zrobić skanowanie całego zbioru danych wejściowych w jednym, ustalonym stanie sieci, jednak biorąc pod uwagę akademickie możliwości, nie było to zbyt oczywiste do wykonania.
+
+Ograniczenia nałożone na przedstawiony problem wymagały użycia odpowiednich narzędzi. W przedstawionym przypadku zdecydowano na wykorzystanie systemu operacyjnego Linux oraz napisaniu programu wykonującego skanowanie.
+
+Implementacja odpowiedniej logiki trwała relatywnie długo w porównaniu do reszty prac. Dojście do ostatecznej wersji systemu zajęło około dwóch miesięcy. Wpływ miały na to zarówno technologia (język C), zagadnienie programowania sieciowego jak i standardy protokołu DNS. Głównym problemem był brak dobrych bibliotek wspierających protokół DNS. Jeśli już takowe się pojawiały, to głównie w kontekście oferowania translacji nazw domen na adresy IP, nie umożliwiając wysłania zapytania AXFR. 
+
+Kolejną próbą rozwiązania tego problemu było skorzystanie z kodów źródłowych programu dig, który wchodzi w zakres pakietu BIND. Rzeczywiście program wspiera wysyłanie i odbieranie zapytań AXFR. Mimo wszystko, pakiet dotknięty jest typowymi problemami oprogramowania open source. Po pierwsze nie ma spójnej implementacji, różne moduły są napisane w inny sposób co utrudnia czytanie takich źródeł. Po drugie, w momencie podjęcia próby rozszerzenia programu o możliwość parsowania danych wejściowych i odpytywania kolejnych domen w pętli programista może się niezwykle rozczarować. Okazuje się bowiem, że program dig powoduje tzw. ,,wycieki pamięci'', przez co już przy drugiej próbie odpytania domeny w tym samym procesie jest on kończony. Wynikiem prac nad tym problemem jest również raport z programu valgrind wysłany do Internet Systems Consortium informujący o wykrytym problemie z pamięcią. Raport został również dołączony do niniejszej pracy jako załącznik 1.
+
+Niestety podobne problemy pojawiały się przy próbie implementacji sportowanej biblioteki do języka C++. Postanowiono więc poszukać innego rozwiązania, czyli ,,nabudowania'' menadżera, który zarządza kolejnymi procesami.
+
+Ważną zmianą jaką zdecydowano się podjąć, była kompilacja programu dig ze źródeł, z kilkoma poprawkami na potrzeby tego zadania. Ograniczały się one do usunięcia niechcianego wydruku przy prezentacji wyników. Początkowo celem było wydzielenie specjalnego interfejsu w języku C, który bazowałby na implementacji programu dig, jednak z wyżej wymienionych powodów nie było to możliwe. Dlatego zdecydowano się na rozwiązanie pośrednie, a konkretnie usunięcie wszystkich niepotrzebnych informacji z wydruku działania programu dig, skompilowanie i bazowanie na tej wersji aplikacji.  
+
+Opisywany wariant zdecydowano się implementować w Pythonie. Wykorzystano mechanizm tak zwanych wątków programowych, dostępny w tym języku. Każde z zapytań programu dig było uruchamiane jako zupełnie odrębny proces, co zapewniało, że otrzyma on swoje zasoby. W ten sposób możliwe było obejście wycieków pamięci, które zostały zdiagnozowane przy okazji poprzednich prac. Wspomniane podprocesy były uruchamiane współbieżnie dopóki na serwerze występowały wolne zasoby. Niestety, jak się później okazało, i ta implementacja posiadała swoje wady, a główną było wykorzystanie tylko jednego fizycznego procesora. Zostało to zdiagnozowane dopiero na bardzo wydajnym serwerze. Aby nie rozbudowywać niepotrzebnie implementacji, zdecydowano się na uruchamianie kilku odrębnych menadżerów procesów. Zarządzanie menadżerami odbywało się już na poziomie powłoki systemu Linux, głównie przy użyciu skryptów bashowych.
+
+Założono, że przeskanowanych zostanie ponad 3.3 miliarda par domena - serwer autorytatywny. Dane wejściowe zostały podzielone na około 33 tysiące plików, w kazdym po 100 tysięcy par do przeskanowania. Jedna iteracja skryptu przygotowanego w Pythonie zakładała przeanalizowanie jednego z 33 tysięcy plików.
+
+Wyniki działania programów zapisywane są do specjalnej struktury plików. Każda iteracja zapisywana była do oddzielnego folderu. Każdy z folderów miał bliźniaczą strukturę. Składał się z pliku, w którym przechowywane były informacje o wyniku skanowania pary:
+\begin{itemize}
+    \item upłynięcie limitu czasu żądania,
+    \item błędna odpowiedź od serwera,
+    \item odpowiedź poprawna,
+    \item błąd nieznany.
+\end{itemize}
+Drugim elementem był folder, w którym przechowywano odpowiedzi od serwerów. W folderze z odpowiedzmi znajdowały się pliki, których nazwy określały domenę, o której dane przechowują. 
+

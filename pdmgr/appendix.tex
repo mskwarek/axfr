@@ -1,0 +1,27 @@
+\newpage\section*{Załącznik 1.}
+\begin{lstlisting}
+==12119== Memcheck, a memory error detector
+==12119== Copyright (C) 2002-2013, and GNU GPL'd, by Julian Seward et al.
+==12119== Using Valgrind-3.10.1 and LibVEX; rerun with -h for copyright info
+==12119== Command: dig pw.edu.pl AXFR
+==12119== 
+
+; <<>> DiG 9.2.3 <<>> pw.edu.pl AXFR
+;; global options:  printcmd
+; Transfer failed.
+==12119== 
+==12119== HEAP SUMMARY:
+==12119==     in use at exit: 240 bytes in 7 blocks
+==12119==   total heap usage: 54 allocs, 47 frees, 222,504 bytes allocated
+==12119== 
+==12119== LEAK SUMMARY:
+==12119==    definitely lost: 0 bytes in 0 blocks
+==12119==    indirectly lost: 0 bytes in 0 blocks
+==12119==      possibly lost: 0 bytes in 0 blocks
+==12119==    still reachable: 240 bytes in 7 blocks
+==12119==         suppressed: 0 bytes in 0 blocks
+==12119== Rerun with --leak-check=full to see details of leaked memory
+==12119== 
+==12119== For counts of detected and suppressed errors, rerun with: -v
+==12119== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+\end{lstlisting}

@@ -1,0 +1,9 @@
+\section{Wstęp teoretyczny}
+
+DNS Zone Transfer Protocol (AXFR) został opisany w RFC 5936 \cite{RFC5936}. Mechanizm został zaprojektowany w celu umożliwienia przesyłania informacji pomiędzy serwerami systemu DNS. Typową sytuacją kiedy pomocne jest wykorzystanie protokołu AXFR jest edycja danych na jednym z kilku serwerów DNS i wykorzystanie protokołu AXFR aby przepropagować zmiany na kolejne serwery.
+
+Zapytania AXFR bywają oczywiście wykorzystywane przez cyberprzestępców, którzy chcą wykraść dane przechowywane w plikach konfiguracyjnych serwerów. Wysyłają oni zapytania licząć na błąd przy konfiguracji serwera DNS, który zwróci informacje o domenach obsługiwanych przez daną maszynę. Jeszcze kilka lat temu takie działanie niemal zawsze kończyło się pozyskaniem danych, jednak administratorzy zwracają na to większą uwagę i duża liczba serwerów jest odporna na tę podatność.
+
+Przykładem wykorzystania opisywanej podatności jest atak na serwery firmy Western Digital opisany w SecurityWeek \cite{wd} w kwietniu poprzedniego roku. Okazało się, że jeden z serwerów DNS obsługujących domenę wd2go.com był źle skonfigurowany i odpowiadał na zapytania AXFR, co pozwoliło uzyskać dostęp do niemal 6 milionów wpisów w tym ponad milion unikatowych adresów IP, które należały do klientów koncernu WesterDigital.
+
+AXFR sam w sobie nie jest krytyczną luką w systemach, niemniej jednak może dawać atakującemu dużą ilość informacji na temat potencjalnej ofiary. Jak przestawiono w przytoczonym wcześniej artykule \cite{wd} ewentualnym problemem, który może wyniknąć z przeprowadzonego ataku może być wygenerowanie listy adresów IP klientów. Jeśli w oprogramowaniu urządzenia znalezionoby błąd, to atakujący dokładnie wie, czyje dane może starać się wykraść, a nawet ma dokładny adres urządzeń, które mogą posiadać tę lukę.
