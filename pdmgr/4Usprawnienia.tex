@@ -1,5 +1,5 @@
 \section{Wyniki}
-Pomimo stosunkowo krótkiego działania skanera, udalo zaobserwować się, że wiele domen rzeczywiście odpowiada na zapytania AXFR. Konkretne wyniki zostały zaprezentowane na rysunku \ref{fig:odpowiedzi}. Możemy zauważyc, że w kilku iteracjach było bardo wiele odpowiedzi. Dane wejściowe były uporządkowane według nazw, więc można postawić hipotezę, że o te same domeny odpytywano kilka serwerów autorytatywnych i większośc była rzeczywiście źle skonfigurowana. Innym powodem może byc po prostu czynnik losowy, jednak zastanawiające jest, że trzy iteracje znacznie wyróżniają się na tle innych.
+Pomimo stosunkowo krótkiego działania skanera, udało zaobserwować się, że wiele domen rzeczywiście odpowiada na zapytania AXFR. Konkretne wyniki zostały zaprezentowane na rysunku \ref{fig:odpowiedzi}. Możemy zauważyć, że w kilku iteracjach było bardo wiele odpowiedzi. Dane wejściowe były uporządkowane według nazw, więc można postawić hipotezę, że o te same domeny odpytywano kilka serwerów autorytatywnych i większość była rzeczywiście źle skonfigurowana. Innym powodem może byc po prostu czynnik losowy, jednak zastanawiające jest, że trzy iteracje znacznie wyróżniają się na tle innych.
 
 
 \begin{figure}
@@ -11,7 +11,7 @@ Pomimo stosunkowo krótkiego działania skanera, udalo zaobserwować się, że w
 
 Innym interesującym zjawiskiem są wpisy TXT\cite{RFC1035}, które zwracają niektóre serwery. Wpis TXT był wprowadzony głównie po to, aby ułatwić ludzie mogli przeczytać informację, która zostanie zawarta w odpowiedzi DNS. Z czasem oczywiście okazało się, że wpis częściej jest używany przez komputery niż ludzi, czego przykład mamy w odpowiedziach.
 
-Pierwsyzm przykładem może być znalezienie reguły SPF\cite{RFC7208}:
+Pierwszym przykładem może być znalezienie reguły SPF\cite{RFC7208}:
 \begin{lstlisting}
 "v=spf1 ip4:52.72.252.186/13 ip4:52.220.30.76/15 ip4:54.179.130.187/15 ip4:52.95.240.219/20 ip4:54.251.128.33/12 ip4:114.134.29.0/23 ip4:54.169.107.198/15 ip4:46.51.216.57/20 ip4:103.228.178.81/15 ip4:157.119.230.135/14 ip4:103.44.71.16/15 ~all"
 \end{lstlisting}

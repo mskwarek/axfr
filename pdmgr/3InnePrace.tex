@@ -1,10 +1,10 @@
 \section{Zaprojektowany system}
 
-Podstawowym krysterium przy projektowaniu opisywanego systemu była jego wydajność. W założeniu powinien on skanować jak najwięcej domen w możliwie najkrótszym czasie. Nałożone ograniczenia wynikały z kilku istotnych przyczyn. 
+Podstawowym kryterium przy projektowaniu opisywanego systemu była jego wydajność. W założeniu powinien on skanować jak najwięcej domen w możliwie najkrótszym czasie. Nałożone ograniczenia wynikały z kilku istotnych przyczyn. 
 
-Pierwszą była ogarniczona dostępność odpowiednio wydajnej maszyny. Dzięki uprzejmości dra Macieja Korczyńskiego z TU Delft otrzymaliśmy możliwość skorzystania z wydajnego serwera, jednak mogliśmy z niego skorzystać tylko przez krótki czas. Czas ten wynosił około 5 dni, gdzie w stosunku do ogromu danych jakie należało przeanalizować okazało się to niewystarczające. Niemniej jednak została przeprowadzona pewna część całego skanowania, dzięki czemu pozyskaliśmy informacje umożliwiające dalsze prace w zakresie ich analizy. 
+Pierwszą była ograniczona dostępność odpowiednio wydajnej maszyny. Dzięki uprzejmości dra Macieja Korczyńskiego z TU Delft otrzymaliśmy możliwość skorzystania z wydajnego serwera, jednak mogliśmy z niego skorzystać tylko przez krótki czas. Czas ten wynosił około 5 dni, gdzie w stosunku do ogromu danych jakie należało przeanalizować okazało się to niewystarczające. Niemniej jednak została przeprowadzona pewna część całego skanowania, dzięki czemu pozyskaliśmy informacje umożliwiające dalsze prace w zakresie ich analizy. 
 
-Kolejne ogarniczenie odnosi się już do samej istoty systemu DNS. Jeżeli skanowanie opisane w niniejszym raporcie byłoby zbyt długo rozciągnięte w czasie, to moglibyśmy wyciągnąć niepoprawne wnioski. Chodzi tu głównie o zmiany, które można określić jako ogólne, po prostu zachądzące w sieci. Mamy tu na myśli choćby dynamicznie przydzialane IP prze różnych dostawców internetu. Jako przykład może posłużyć bardzo prosty scenariusz opisany poniżej:
+Kolejne ograniczenie odnosi się już do samej istoty systemu DNS. Jeżeli skanowanie opisane w niniejszym raporcie byłoby zbyt długo rozciągnięte w czasie, to moglibyśmy wyciągnąć niepoprawne wnioski. Chodzi tu głównie o zmiany, które można określić jako ogólne, po prostu zachodzące w sieci. Mamy tu na myśli choćby dynamicznie przydzielane IP prze różnych dostawców internetu. Jako przykład może posłużyć bardzo prosty scenariusz opisany poniżej:
 \begin{enumerate}
     \item Odpytujemy domenę x.
     \item W odpowiedzi domeny otrzymujemy adres a.b.c.d .
@@ -28,7 +28,7 @@ Ważną zmianą jaką zdecydowano się podjąć, była kompilacja programu dig z
 
 Opisywany wariant zdecydowano się implementować w Pythonie. Wykorzystano mechanizm tak zwanych wątków programowych, dostępny w tym języku. Każde z zapytań programu dig było uruchamiane jako zupełnie odrębny proces, co zapewniało, że otrzyma on swoje zasoby. W ten sposób możliwe było obejście wycieków pamięci, które zostały zdiagnozowane przy okazji poprzednich prac. Wspomniane podprocesy były uruchamiane współbieżnie dopóki na serwerze występowały wolne zasoby. Niestety, jak się później okazało, i ta implementacja posiadała swoje wady, a główną było wykorzystanie tylko jednego fizycznego procesora. Zostało to zdiagnozowane dopiero na bardzo wydajnym serwerze. Aby nie rozbudowywać niepotrzebnie implementacji, zdecydowano się na uruchamianie kilku odrębnych menadżerów procesów. Zarządzanie menadżerami odbywało się już na poziomie powłoki systemu Linux, głównie przy użyciu skryptów bashowych.
 
-Założono, że przeskanowanych zostanie ponad 3.3 miliarda par domena - serwer autorytatywny. Dane wejściowe zostały podzielone na około 33 tysiące plików, w kazdym po 100 tysięcy par do przeskanowania. Jedna iteracja skryptu przygotowanego w Pythonie zakładała przeanalizowanie jednego z 33 tysięcy plików.
+Założono, że przeskanowanych zostanie ponad 3.3 miliarda par domena - serwer autorytatywny. Dane wejściowe zostały podzielone na około 33 tysiące plików, w każdym po 100 tysięcy par do przeskanowania. Jedna iteracja skryptu przygotowanego w Pythonie zakładała przeanalizowanie jednego z 33 tysięcy plików.
 
 Wyniki działania programów zapisywane są do specjalnej struktury plików. Każda iteracja zapisywana była do oddzielnego folderu. Każdy z folderów miał bliźniaczą strukturę. Składał się z pliku, w którym przechowywane były informacje o wyniku skanowania pary:
 \begin{itemize}
@@ -37,5 +37,5 @@ Wyniki działania programów zapisywane są do specjalnej struktury plików. Ka�
     \item odpowiedź poprawna,
     \item błąd nieznany.
 \end{itemize}
-Drugim elementem był folder, w którym przechowywano odpowiedzi od serwerów. W folderze z odpowiedzmi znajdowały się pliki, których nazwy określały domenę, o której dane przechowują. 
+Drugim elementem był folder, w którym przechowywano odpowiedzi od serwerów. W folderze z odpowiedziami znajdowały się pliki, których nazwy określały domenę, o której dane przechowują. 
 
