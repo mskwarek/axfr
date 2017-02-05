@@ -1,6 +1,9 @@
 import sqlite3
 from string import Template
-
+import argparse
+import performWhoIs
+import pythonwhois
+import socket
 
 def get_template():
     return Template('''
@@ -17,13 +20,26 @@ def get_template():
 def insert_values(cur, address, registrar):
     cur.executescript(get_template().substitute(address=address, registrar=registrar))
 
+def parse_arguments():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--src_file', type=str, required=True, dest='src')
+    return parser.parse_args()
+    
 def __main__():
-    with open('/home/mkoi/mgr_wyniki/ip.input') as f:
+    with open(parse_arguments().src) as f:
         content = f.readlines()
     # you may also want to remove whitespace characters like `\n` at the end of each line
     content = [x.strip() for x in content]
     for item in content:
-        print item
+
+        whois = ""
+        try:
+            whois = performWhoIs.performWhoIs.pwhois(item)
+        except (pythonwhois.shared.WhoisException, socket.error):
+            print 'whois/socket exception'
+        except:
+            print 'general exception'
+        print whois
         #con = sqlite3.connect("/home/mkoi/mgr_wyniki/database.db")
         #cur = con.cursor()
         #insert_values(cur, 'test3', 'test2')
