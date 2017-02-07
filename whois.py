@@ -29,6 +29,7 @@ def __main__():
     with open(parse_arguments().src) as f:
         content = f.readlines()
     # you may also want to remove whitespace characters like `\n` at the end of each line
+
     content = [x.strip() for x in content]
     for item in content:
 
@@ -40,7 +41,7 @@ def __main__():
         except:
             print 'general exception'
         print whois
-        #con = sqlite3.connect("/home/mkoi/mgr_wyniki/database.db")
+        con = sqlite3.connect("./database.db")
         #cur = con.cursor()
         #insert_values(cur, 'test3', 'test2')
     #cur.fetchone()
