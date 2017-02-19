@@ -49,7 +49,7 @@ class performWhoIs(object):
         signal.alarm(10)
         try:
             data, server_list = pythonwhois.net.get_whois_raw(domain, with_server_list=True)
-            print data[0]
+            #print data[0]
             try:
                 from collections import OrderedDict
             except ImportError as e:
@@ -71,16 +71,8 @@ class performWhoIs(object):
                 parsed = pythonwhois.parse.parse_raw_whois(data, normalized=True, never_query_handles=False, handle_server=server_list[-1])
             else:
                 parsed = pythonwhois.parse.parse_raw_whois(data, normalized=True)
-        
-            nameservers = parsed['nameservers']
-            print parsed['nameservers']
-            for ns in nameservers:
-                ip = socket.gethostbyname(ns)
-                as_, typ = whoIs.get_asn(ip)
-                nameserv.append([ns+".", ip, as_, typ])
+            #print parsed['status'], parsed['contacts']
+            return parsed['contacts']['registrant']['name']
         except:
             nameserv.append(["NONAMEXERVER", "0.0.0.0", 300000, "NOTYPE"])
-        json_string = json.dumps(parsed, default=json_fallback)
         
-        registrar = whoIs.MyParser(parsed, ['registrar'])[0].replace("'", "")
-        return registrar
