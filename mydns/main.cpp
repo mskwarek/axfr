@@ -1,12 +1,42 @@
 #include <iostream>
+#include <fstream>
 
 extern "C"{
 #include<dns.h>
 }
 
-int main(){
-	for(int i = 0; i<100; ++i){
-		ngethostbyname("onet.pl", "8.8.8.8", 252);
-	}
-	return 0;
+#include <string>
+#include <sstream>
+#include <vector>
+#include <iterator>
+
+template<typename Out>
+void split(const std::string &s, char delim, Out result) {
+  std::stringstream ss;
+  ss.str(s);
+  std::string item;
+  while (std::getline(ss, item, delim)) {
+    *(result++) = item;
+  }
+}
+
+
+std::vector<std::string> split(const std::string &s, char delim) {
+  std::vector<std::string> elems;
+  split(s, delim, std::back_inserter(elems));
+  return elems;
+}
+
+
+int main(int argc, char* argv[]){
+  std::string line;
+  int i=0;
+  std::string filename = argv[1];
+  std::ifstream inputFile(filename.c_str());
+  while(std::getline(inputFile, line)){
+    std::cout<<i++<<std::endl;
+    std::vector<std::string> x = split(line, ' ');
+    ngethostbyname(x[0].c_str(), x[1].c_str(), 252);
+  }
+  return 0;
 }

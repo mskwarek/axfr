@@ -1,4 +1,3 @@
-//Header Files
 #include<stdio.h> //printf
 #include<string.h>    //strlen
 #include<stdlib.h>    //malloc
@@ -6,7 +5,10 @@
 #include<arpa/inet.h> //inet_addr , inet_ntoa , ntohs etc
 #include<netinet/in.h>
 #include<unistd.h>    //getpid
- 
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <netdb.h>
+
 //List of DNS Servers registered on the system
 char dns_servers[10][100];
 int dns_server_count = 0;
@@ -47,7 +49,6 @@ struct DNS_HEADER
     unsigned short add_count; // number of resource entries
 };
  
-//Constant sized fields of query structure
 struct QUESTION
 {
     unsigned short qtype;
@@ -93,7 +94,10 @@ void ngethostbyname(const char *que , const char *server, int query_type)
     snprintf(host, 128, "%s", que);
     struct sockaddr_in a = {0};
  
-    struct RES_RECORD answers[20],auth[20],addit[20]; //the replies from the DNS server
+    struct hostent *he = NULL;
+    struct RES_RECORD *answers = NULL;
+    struct RES_RECORD *auth = NULL;
+    struct RES_RECORD *addit = NULL; //the replies from the DNS server
     struct sockaddr_in dest = {0};
  
     struct DNS_HEADER *dns = NULL;
@@ -102,10 +106,20 @@ void ngethostbyname(const char *que , const char *server, int query_type)
     printf("Resolving %s" , host);
  
     s = socket(AF_INET , SOCK_DGRAM , IPPROTO_UDP); //UDP packet for DNS queries
- 
+    if( (he = gethostbyname(server)) == NULL){
+      return;
+    }
+    memcpy(&dest.sin_addr.s_addr, he->h_addr_list[0], he->h_length);
     dest.sin_family = AF_INET;
     dest.sin_port = htons(53);
-    dest.sin_addr.s_addr = inet_addr(server); //dns servers
+
+    struct timeval tv;
+    tv.tv_sec = 0;
+    tv.tv_usec = 100000;
+    if (setsockopt(s, SOL_SOCKET, SO_RCVTIMEO,&tv,sizeof(tv)) < 0) {
+      perror("Error");
+    }
+    //dest.sin_addr.s_addr = inet_addr(server); //dns servers
  
     //Set the DNS structure to standard queries
     dns = (struct DNS_HEADER *)&buf;
@@ -161,7 +175,11 @@ void ngethostbyname(const char *que , const char *server, int query_type)
     printf("\n %d Answers.",ntohs(dns->ans_count));
     printf("\n %d Authoritative Servers.",ntohs(dns->auth_count));
     printf("\n %d Additional records.\n\n",ntohs(dns->add_count));
- 
+
+    answers = (struct RES_RECORD*)calloc(ntohs(dns->ans_count), sizeof(struct RES_RECORD));
+    auth = (struct RES_RECORD*)calloc(ntohs(dns->auth_count), sizeof(struct RES_RECORD));
+    addit = (struct RES_RECORD*)calloc(ntohs(dns->add_count), sizeof(struct RES_RECORD));
+    
     //Start reading answers
     stop=0;
  
@@ -287,14 +305,14 @@ void ngethostbyname(const char *que , const char *server, int query_type)
         }
         printf("\n");
     }
-    for(i=0;i<ntohs(dns->ans_count);++i)
-    {
-	//free(answers[i].rdata);
-    }
-    for(i=0;i<ntohs(dns->add_count);++i)
-    {
-       //free(addit[i].rdata);
-    }
+    //for(i=0;i<ntohs(dns->ans_count);++i)
+    //{
+	free(answers);
+	//}
+	//for(i=0;i<ntohs(dns->add_count);++i)
+	//{
+       free(addit);
+   
     return;
 }
  
