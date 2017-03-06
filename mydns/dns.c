@@ -80,13 +80,48 @@ typedef struct
     unsigned char *name;
     struct QUESTION *ques;
 } QUERY;
- 
+
+
+int hostname_to_ip(char *hostname , char *ip)
+{
+  int sockfd;
+  struct addrinfo hints, *servinfo, *p;
+  struct sockaddr_in *h;
+  int rv;
+
+  memset(&hints, 0, sizeof hints);
+  hints.ai_family = AF_UNSPEC; // use AF_INET6 to force IPv6
+  hints.ai_socktype = SOCK_STREAM;
+
+  if ( (rv = getaddrinfo( hostname , NULL , NULL , &servinfo)) != 0)
+    {
+      fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
+      return 1;
+    }
+
+  // loop through all the results and connect to the first we can
+  for(p = servinfo; p != NULL; p = p->ai_next)
+    {
+      h = (struct sockaddr_in *) p->ai_addr;
+      strcpy(ip , inet_ntoa( h->sin_addr ) );
+      if(strcmp(ip, "0.0.0.0") != 0)
+	{
+	  freeaddrinfo(servinfo);
+	  return 0;
+	}
+      printf("IP: %s", ip);
+    }
+
+  freeaddrinfo(servinfo); // all done with this structure
+  return 0;
+}
  
 /*
  * Perform a DNS query by sending a packet
  * */
 void ngethostbyname(const char *que , const char *server, int query_type)
 {
+  printf("Arguments: %s, %s\n", que, server);
     unsigned char host[128] = {0};
     unsigned char buf[65536],*qname,*reader;
     int i , j , stop , s;
@@ -103,24 +138,32 @@ void ngethostbyname(const char *que , const char *server, int query_type)
     struct DNS_HEADER *dns = NULL;
     struct QUESTION *qinfo = NULL;
  
-    printf("Resolving %s" , host);
+    printf("Resolving %s\n" , host);
  
-    s = socket(AF_INET , SOCK_DGRAM , IPPROTO_UDP); //UDP packet for DNS queries
-    if( (he = gethostbyname(server)) == NULL){
+    s = socket(AF_INET , SOCK_STREAM , IPPROTO_TCP); //UDP packet for DNS queries
+    printf("Get host by name\n");
+    char server_ip[100] = {0};
+    if( hostname_to_ip(server, server_ip) != 0){
       return;
     }
-    memcpy(&dest.sin_addr.s_addr, he->h_addr_list[0], he->h_length);
+    printf("Nameserver IP: %s", server_ip);
+    dest.sin_addr.s_addr = inet_addr(server_ip);
     dest.sin_family = AF_INET;
     dest.sin_port = htons(53);
-
+    /*
     struct timeval tv;
     tv.tv_sec = 0;
-    tv.tv_usec = 100000;
+    tv.tv_usec = 5000;
     if (setsockopt(s, SOL_SOCKET, SO_RCVTIMEO,&tv,sizeof(tv)) < 0) {
       perror("Error");
     }
     //dest.sin_addr.s_addr = inet_addr(server); //dns servers
- 
+    */
+    if (connect(s, &dest, sizeof(dest)) < 0)
+    {
+        perror("ERROR connecting");
+    }
+    
     //Set the DNS structure to standard queries
     dns = (struct DNS_HEADER *)&buf;
  
@@ -147,29 +190,29 @@ void ngethostbyname(const char *que , const char *server, int query_type)
     qinfo =(struct QUESTION*)&buf[sizeof(struct DNS_HEADER) + (strlen((const char*)qname) + 1)]; //fill it
  
     qinfo->qtype = htons( query_type ); //type of the query , A , MX , CNAME , NS etc
-    qinfo->qclass = htons(1); //its internet (lol)
- 
-    printf("\nSending Packet...");
-    if( sendto(s,(char*)buf,sizeof(struct DNS_HEADER) + (strlen((const char*)qname)+1) + sizeof(struct QUESTION),0,(struct sockaddr*)&dest,sizeof(dest)) < 0)
-    {
-        perror("sendto failed");
-    }
-    printf("Done");
-     
-    //Receive the answer
-    i = sizeof dest;
-    printf("\nReceiving answer...");
-    if(recvfrom (s,(char*)buf , 65536 , 0 , (struct sockaddr*)&dest , (socklen_t*)&i ) < 0)
-    {
-        perror("recvfrom failed");
-    }
-    printf("Done");
- 
+    qinfo->qclass = htons(1);
+
+
+
+    int n = write(s, buf, strlen(buf));
+    if (n < 0)
+      perror("ERROR writing to socket");
+    
+    bzero(buf, 65536);
+    n = read(s, buf, 65536);
+    if (n < 0)
+      perror("ERROR reading from socket");
+    printf("Echo from server: %s", buf);
+    //close(sockfd);
+    
     dns = (struct DNS_HEADER*) buf;
- 
+    
+    
     //move ahead of the dns header and the query field
     reader = &buf[sizeof(struct DNS_HEADER) + (strlen((const char*)qname)+1) + sizeof(struct QUESTION)];
- 
+
+    //printf("%s", buf);
+    
     printf("\nThe response contains : ");
     printf("\n %d Questions.",ntohs(dns->q_count));
     printf("\n %d Answers.",ntohs(dns->ans_count));
