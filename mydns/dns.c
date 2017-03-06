@@ -29,6 +29,7 @@ void get_dns_servers();
 //DNS header structure
 struct DNS_HEADER
 {
+  unsigned short len;
     unsigned short id; // identification number
  
     unsigned char rd :1; // recursion desired
@@ -192,9 +193,10 @@ void ngethostbyname(const char *que , const char *server, int query_type)
     qinfo->qtype = htons( query_type ); //type of the query , A , MX , CNAME , NS etc
     qinfo->qclass = htons(1);
 
+    int len =  sizeof(struct DNS_HEADER) + (strlen((const char*)qname)+1) + sizeof(struct QUESTION);
+    dns->len = htons((unsigned int)sizeof(struct DNS_HEADER) + (strlen((const char*)qname)+1) + sizeof(struct QUESTION)-2);
 
-
-    int n = write(s, buf, strlen(buf));
+    int n = write(s, (char*)buf, len);
     if (n < 0)
       perror("ERROR writing to socket");
     
