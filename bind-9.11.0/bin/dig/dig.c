@@ -2107,6 +2107,8 @@ main(int argc, char **argv) {
 		set_search_domain(domainopt);
 		usesearch = ISC_TRUE;
 	}
+	int i = 0;
+	for(i = 0; i<10; ++i){
 	result = isc_app_onrun(mctx, global_task, onrun_callback, NULL);
 	check_result(result, "isc_app_onrun");
 	isc_app_run();
@@ -2119,7 +2121,7 @@ main(int argc, char **argv) {
 #ifdef DIG_SIGCHASE
 	clean_trustedkey();
 #endif
-	cancel_all();
+	cancel_all();}
 	destroy_libs();
 	isc_app_finish();
 	return (exitcode);
