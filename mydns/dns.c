@@ -168,6 +168,13 @@ void ngethostbyname(const char *que , const char *server, int query_type)
     if (n < 0)
       perror("ERROR writing to socket");
 
+    struct timeval timeout;
+    timeout.tv_sec = 5;
+    timeout.tv_usec = 0;
+
+    //if (setsockopt (s, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout,
+    ///	    sizeof(timeout)) < 0)
+    //  error("setsockopt failed\n");
     
     bzero(buf, 65536);
 
@@ -188,17 +195,18 @@ void ngethostbyname(const char *que , const char *server, int query_type)
 	off+=numBytesRecv;
 	printf("%ld\n", numBytesRecv);
 	memset(&replyMessage, 0, sizeof(replyMessage));
+    
 	printf("po memset\n");
       }
     while (numBytesRecv > 0);
     close(s);
 
-    printf("\nHere is the message:n\n");
+    /*    printf("\nHere is the message:n\n");
     for (int i = 0; i < off; i++)
       {
 	printf("%x", buf[i]);
       }
-    
+    */
     dns = (struct DNS_HEADER*) &buf;
     printf("\n n: %d, offset: %d, datalen: %d", n, off, ntohs(dns->len));
 
@@ -224,24 +232,31 @@ void ngethostbyname(const char *que , const char *server, int query_type)
 
     //move ahead of the dns header and the query field
     reader = &buf[sizeof(struct DNS_HEADER) + (strlen((const char*)qname)+1) + sizeof(struct QUESTION)];
-
-    for(int i=0; i < 16; ++i){printf("%02x", reader[i]);}
     
     //Start reading answers
     stop=0;
 
     for(i=0;i<ntohs(dns->ans_count);i++)
       {
-	answers[i].name = (unsigned char*)malloc(256);
+	printf("\n%02x %02x\n", *reader, *(reader+1));
+	//answers[i].name = (unsigned char*)calloc(256, sizeof(unsigned char));
 	//ReadName(reader,buf,&stop, answers[i].name, 256);
-	reader+=stop;
+	//reader+=4;//stop;
+	printf("name: %02x %02x\n", *(reader), *(reader+1));
+	printf("type: %02x %02x\n", *(reader+2), *(reader+3));
+	printf("class: %02x %02x\n", *(reader+4), *(reader+5));
+	printf("ttl: %02x %02x %02x %02x\n", *(reader+6), *(reader+7), *(reader+8), *(reader+9));
+	printf("len: %02x %02x\n", *(reader+10), *(reader+11));
 
+	unsigned short name_size = ((*(reader+10) << 8) &0xFF00) | (*(reader+11) & 0xFF);
 	answers[i].resource=(struct R_DATA*)(reader);
-	reader+=sizeof(struct R_DATA);
 
-	size_t name_size = answers[i].resource->data_len;
+
+	reader+=sizeof(struct R_DATA);
+	
+	printf("name_s: %d, ttl: %d, class: %d, type: %d\n", name_size, ntohs(answers[i].resource->ttl), ntohs(answers[i].resource->_class), ntohs(answers[i].resource->type));
 	answers[i].rdata = (unsigned char*)malloc(name_size);
-	//ReadName(reader,buf,&stop,answers[i].rdata, name_size);
+	ReadName(reader,buf,&stop,answers[i].rdata, name_size);
 	reader+=stop;
       }
 
