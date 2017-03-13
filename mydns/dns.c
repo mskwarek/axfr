@@ -248,16 +248,19 @@ void ngethostbyname(const char *que , const char *server, int query_type)
 	printf("ttl: %02x %02x %02x %02x\n", *(reader+6), *(reader+7), *(reader+8), *(reader+9));
 	printf("len: %02x %02x\n", *(reader+10), *(reader+11));
 
+
+	unsigned short class = ((*(reader+4) << 8) &0xFF00) | (*(reader+5) & 0xFF);
+	unsigned short type = ((*(reader+2) << 8) &0xFF00) | (*(reader+3) & 0xFF);
 	unsigned short name_size = ((*(reader+10) << 8) &0xFF00) | (*(reader+11) & 0xFF);
 	answers[i].resource=(struct R_DATA*)(reader);
 
 
-	reader+=sizeof(struct R_DATA);
+	reader+=12;
 	
-	printf("name_s: %d, ttl: %d, class: %d, type: %d\n", name_size, ntohs(answers[i].resource->ttl), ntohs(answers[i].resource->_class), ntohs(answers[i].resource->type));
+	printf("sizeof R_DATA: %lu, name_s: %d, ttl: %d, class: %d, type: %d\n", sizeof(struct R_DATA), name_size, ntohs(answers[i].resource->ttl), class, type);
 	answers[i].rdata = (unsigned char*)malloc(name_size);
 	ReadName(reader,buf,&stop,answers[i].rdata, name_size);
-	reader+=stop;
+	reader+=name_size;
       }
 
     //print answers
