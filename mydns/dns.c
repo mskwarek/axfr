@@ -23,9 +23,20 @@ enum
     T_CNAME= 5, // canonical name
     T_SOA=6, /* start of authority zone */
     T_PTR=12, /* domain name pointer */
-    T_MX=15
+    T_HINFO = 13,
+    T_MX=15,
+    T_TXT = 16,
+    T_RP = 17,
+    T_AFSDB = 18,
+    T_AAAA  = 28,
+    T_LOC = 29,
+    T_SRV = 33,
+    T_NAPTR = 25,
+    T_RRSIG = 46,
+    T_NSEC = 47,
+    T_DNSKEY = 48
+    
   };//Mail server
-
 
 
 //DNS header structure
@@ -88,8 +99,11 @@ typedef struct
 
 //Function Prototypes
 void ChangetoDnsNameFormat (unsigned char*,unsigned char*);
-void ReadName(unsigned char* reader,unsigned char* buffer,int* count, unsigned char* dst_buf, size_t data_len);
+void ReadName(unsigned char* reader,unsigned char* buffer,int* count, unsigned char* dst_buf, size_t data_len, unsigned short type);
 int hostname_to_ip(const char *hostname , char *ip);
+void parse_ip(unsigned char* data);
+void parse_ns(unsigned char* data);
+
 /*
  * Perform a DNS query by sending a packet
  * */
@@ -238,16 +252,13 @@ void ngethostbyname(const char *que , const char *server, int query_type)
 
     for(i=0;i<ntohs(dns->ans_count);i++)
       {
-	printf("\n%02x %02x\n", *reader, *(reader+1));
-	//answers[i].name = (unsigned char*)calloc(256, sizeof(unsigned char));
-	//ReadName(reader,buf,&stop, answers[i].name, 256);
-	//reader+=4;//stop;
+	/*
 	printf("name: %02x %02x\n", *(reader), *(reader+1));
 	printf("type: %02x %02x\n", *(reader+2), *(reader+3));
 	printf("class: %02x %02x\n", *(reader+4), *(reader+5));
 	printf("ttl: %02x %02x %02x %02x\n", *(reader+6), *(reader+7), *(reader+8), *(reader+9));
 	printf("len: %02x %02x\n", *(reader+10), *(reader+11));
-
+	*/
 
 	unsigned short class = ((*(reader+4) << 8) &0xFF00) | (*(reader+5) & 0xFF);
 	unsigned short type = ((*(reader+2) << 8) &0xFF00) | (*(reader+3) & 0xFF);
@@ -259,10 +270,10 @@ void ngethostbyname(const char *que , const char *server, int query_type)
 	
 	printf("sizeof R_DATA: %lu, name_s: %d, ttl: %d, class: %d, type: %d\n", sizeof(struct R_DATA), name_size, ntohs(answers[i].resource->ttl), class, type);
 	answers[i].rdata = (unsigned char*)malloc(name_size);
-	ReadName(reader,buf,&stop,answers[i].rdata, name_size);
+	ReadName(reader,buf,&stop,answers[i].rdata, name_size, type);
 	reader+=name_size;
       }
-
+    /*
     //print answers
     printf("\nAnswer Records : %d \n" , ntohs(dns->ans_count) );
     for(i=0 ; i < ntohs(dns->ans_count) ; i++)
@@ -277,15 +288,9 @@ void ngethostbyname(const char *que , const char *server, int query_type)
 	    printf("has IPv4 address : %s",inet_ntoa(a.sin_addr));
 	  }
 
-	if(ntohs(answers[i].resource->type)==5)
-	  {
-	    //Canonical name for an alias
-	    printf("has alias name : %s",answers[i].rdata);
-	  }
-
 	printf("\n");
       }
-
+    */
     free(answers);
     return;
 }
@@ -294,60 +299,43 @@ void ngethostbyname(const char *que , const char *server, int query_type)
  * 
  * */
 
-void ReadName(unsigned char* reader,unsigned char* buffer,int* count, unsigned char* name, size_t data_len)
+void ReadName(unsigned char* reader,unsigned char* buffer,int* count, unsigned char* name, size_t data_len, unsigned short type)
 {
-  unsigned int p=0,jumped=0,offset;
-  int i , j;
-
-  *count = 1;
-  if(data_len <=0 || name ==NULL)
-    {
-      return;
+  switch(type)
+    {      
+    case T_A:
+      parse_ip(reader);
+      break;
+    case T_NS:
+      parse_ns(reader);
+      break;
+    case T_CNAME:
+    case T_SOA:
+    case T_PTR:
+    case T_HINFO:
+    case T_MX:
+    case T_TXT:
+    case T_RP:
+    case T_AFSDB:
+    case T_AAAA:
+    case T_LOC:
+    case T_SRV:
+    case T_NAPTR:
+    case T_RRSIG:
+    case T_NSEC:
+    case T_DNSKEY:
+      break;
     }
+}
 
-  name[0]='\0';
+void parse_ip(unsigned char* data)
+{
+  printf(" %d.%d.%d.%d ", (int)*data, (int)*(data+1), (int)*(data+2), (int)*(data+3));
+}
 
-  //read the names in 3www6google3com format
-  while(*reader!=0)
-    {
-      if(*reader>=192)
-	{
-	  offset = (*reader)*256 + *(reader+1) - 49152; //49152 = 11000000 00000000 ;)
-	  reader = buffer + offset - 1;
-	  jumped = 1; //we have jumped to another location so counting wont go up!
-	}
-      else
-	{
-	  name[p++]=*reader;
-	}
-
-      reader = reader+1;
-
-      if(jumped==0)
-	{
-	  *count = *count + 1; //if we havent jumped to another location then we can count up
-	}
-    }
-
-  name[p]='\0'; //string complete
-  if(jumped==1)
-    {
-      *count = *count + 1; //number of steps we actually moved forward in the packet
-    }
-
-  //now convert 3www6google3com0 to www.google.com
-  for(i=0;i<(int)strlen((const char*)name);i++)
-    {
-      p=name[i];
-      for(j=0;j<(int)p;j++)
-	{
-	  name[i]=name[i+1];
-	  i=i+1;
-	}
-      name[i]='.';
-    }
-  name[i-1]='\0'; //remove the last dot
-  //return name;
+void parse_ns(unsigned char* data)
+{
+  
 }
  
 /*
