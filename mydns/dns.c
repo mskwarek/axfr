@@ -11,11 +11,21 @@
 #include<unistd.h>    //usleep
 #include<fcntl.h> //fcntl
 
+
+#include "dns.h"
 //List of DNS Servers registered on the system
 char dns_servers[10][100];
 int dns_server_count = 0;
 //Types of DNS resource records :)
- 
+
+static unsigned short dns_id = 0x1122;/**< DNS query id  */
+static unsigned char*  dns_buf;
+static unsigned char* get_domain_name;
+static unsigned long get_domain_ip;/**< Resolved ip address */
+static QUERYDATA query_data;/**< Query type */
+
+//extern NETCONF NetConf;
+
 enum
   {
     T_A=1, //Ipv4 address
@@ -97,12 +107,18 @@ typedef struct
     struct QUESTION *ques;
 } QUERY;
 
+
+static int dns_parse_reponse(void);/* analyze a response from DNS sever */
+static unsigned char * dns_parse_question(unsigned char * cp);/* analyze a question part in resources recode */
+static unsigned char * dns_answer(unsigned char *cp);/* analyze a answer part in resources recode */
+static int parse_name(char* cp,char* qname, unsigned int qname_maxlen);/* analyze a qname in each part. */
+
 //Function Prototypes
 void ChangetoDnsNameFormat (unsigned char*,unsigned char*);
 void ReadName(unsigned char* reader,unsigned char* buffer,int* count, unsigned char* dst_buf, size_t data_len, unsigned short type);
 int hostname_to_ip(const char *hostname , char *ip);
 void parse_ip(unsigned char* data);
-void parse_ns(unsigned char* data);
+void parse_ns(unsigned char* data, unsigned short data_len);
 
 /*
  * Perform a DNS query by sending a packet
@@ -307,7 +323,7 @@ void ReadName(unsigned char* reader,unsigned char* buffer,int* count, unsigned c
       parse_ip(reader);
       break;
     case T_NS:
-      parse_ns(reader);
+      parse_ns(reader, (unsigned short)data_len);
       break;
     case T_CNAME:
     case T_SOA:
@@ -333,7 +349,7 @@ void parse_ip(unsigned char* data)
   printf(" %d.%d.%d.%d ", (int)*data, (int)*(data+1), (int)*(data+2), (int)*(data+3));
 }
 
-void parse_ns(unsigned char* data)
+void parse_ns(unsigned char* data, unsigned short data_len)
 {
   
 }
@@ -394,4 +410,166 @@ int hostname_to_ip(const char *hostname , char *ip)
 
   freeaddrinfo(servinfo); // all done with this structure
   return 0;
+}
+
+
+static unsigned char * dns_answer(
+			   unsigned char *cp
+			   )
+{
+  int len, type;
+  char qname[MAX_QNAME_LEN];
+  unsigned long tip;
+
+  len = parse_name(cp, qname, sizeof(qname));
+
+  if(!len) return 0;
+
+  cp += len;
+  type = *cp++;
+  type = (type << 8) + (unsigned int)*cp++;// type
+  cp += 2;// skip class
+  cp += 4;// skip ttl
+  cp += 2;// skip len
+
+  switch(type)
+    {
+    case TYPE_A:
+      tip = 0;
+      *((unsigned char*)&tip) = *cp++;// Network odering
+      *(((unsigned char*)&tip) + 1) = *cp++;
+      *(((unsigned char*)&tip) + 2) = *cp++;
+      *(((unsigned char*)&tip) + 3) = *cp++;
+      #ifdef DEBUG_DNS
+      DPRINTLN1("RRs : TYPE_A = %s", inet_ntoa(ntohl(tip)));
+#endif
+      if(query_data == BYNAME) get_domain_ip = tip;
+      break;
+    case TYPE_CNAME:
+    case TYPE_MB:
+    case TYPE_MG:
+    case TYPE_MR:
+    case TYPE_NS:
+    case TYPE_PTR:
+      len = parse_name(cp, qname, sizeof(qname));// These types all consist of a single domain name
+      if(!len) return 0;// convert it to ascii format
+      cp += len;
+      if(query_data == BYIP && type == TYPE_PTR)
+	{
+	  strcpy(get_domain_name,qname);
+	  #ifdef DEBUG_DNS
+	  DPRINTLN1("RRs : TYPE_PTR  = %s",qname);
+	  #endif
+	}
+      break;
+    case TYPE_HINFO:
+      len = *cp++;
+      cp += len;
+
+      len = *cp++;
+      cp += len;
+      break;
+    case TYPE_MX:
+      cp += 2;
+      len = parse_name(cp, qname, sizeof(qname));// Get domain name of exchanger
+      if(!len)
+	{
+	  #ifdef DEBUG_DNS
+	  DPRINTLN("TYPE_MX : Fail to get domain name of exechanger");
+#endif
+	  return 0;
+	}
+      cp += len;
+      break;
+    case TYPE_SOA:
+      len = parse_name(cp, qname, sizeof(qname));// Get domain name of name server
+      if(!len)
+	{
+	  #ifdef DEBUG_DNS
+	  DPRINTLN("TYPE_SOA : Fail to get domain name of name server");
+#endif
+	  return 0;
+	}
+
+      cp += len;
+
+      len = parse_name(cp, qname, sizeof(qname));// Get domain name of responsible person
+      if(!len)
+	{
+	  #ifdef DEBUG_DNS
+	  DPRINTLN("TYPE_SOA : Fail to get domain name of responsible person");
+#endif
+	  return 0;
+	}
+      cp += len;
+
+      cp += 4;
+      cp += 4;
+      cp += 4;
+      cp += 4;
+      cp += 4;
+      break;
+    case TYPE_TXT:
+      break;// Just stash
+    default:
+      break;// Ignore
+    }
+  return cp;
+}
+
+
+/** 
+    @briefParse answer section in the DNS query. Store resolved IP address into destination address
+    @returnend address of answer section, fail - 0
+*/
+static int parse_name(
+		      char* cp,/**< Convert a compressed domain name to the human-readable form */
+		      char* qname, /**< store human-readable form(input,output); */
+		      unsigned int qname_maxlen/**< qname_max_len - max length of qname(input) */
+		      )
+{
+  unsigned int slen;// Length of current segment
+  int clen = 0;// Total length of compressed name
+  int indirect = 0;// Set if indirection encountered
+  int nseg = 0;// Total number of label in name
+
+  for(;;)
+    {
+      slen = *cp++;// Length of this segment
+      if (!indirect) clen++;
+
+      if ((slen & 0xc0) == 0xc0)// Is used in compression scheme?
+	{
+	  cp = &dns_buf[((slen & 0x3f)<<8) + *cp];// Follow indirection
+	  if(!indirect)clen++;
+	  indirect = 1;
+	  slen = *cp++;
+	}
+
+      if (slen == 0)// zero length == all done
+	break;
+
+      if (!indirect) clen += slen;
+
+      if((qname_maxlen -= slen+1) < 0)
+	{
+#ifdef DEBUG_DNS
+	  DPRINTLN("Not enough memory");
+#endif
+	  return 0;
+	}
+      while (slen-- != 0) *qname++ = (char)*cp++;
+      *qname++ = '.';
+
+      nseg++;
+    }
+
+  if(nseg == 0)*qname++ = '.';// Root name; represent as single dot
+  else --qname;
+
+  *qname = '\0';
+#ifdef DEBUG_DNS
+  DPRINTLN1("Result of parsing (Q)NAME field : %s",qname);
+#endif
+  return clen;// Length of compressed message// Length of compressed message
 }
