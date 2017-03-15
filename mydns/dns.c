@@ -18,7 +18,7 @@ char dns_servers[10][100];
 int dns_server_count = 0;
 //Types of DNS resource records :)
 
-static unsigned short dns_id = 0x1122;/**< DNS query id  */
+static unsigned short dns_id = 0;//0x1122;/**< DNS query id  */
 static unsigned char*  dns_buf;
 static unsigned char* get_domain_name;
 static unsigned long get_domain_ip;/**< Resolved ip address */
@@ -125,8 +125,6 @@ void parse_ns(unsigned char* data, unsigned short data_len);
  * */
 void ngethostbyname(const char *que , const char *server, int query_type)
 {
-  printf("Arguments: %s, %s\n", que, server);
-
     int s;
     unsigned char name[256] = {0};
     unsigned char buf[65536] = {0};
@@ -141,19 +139,11 @@ void ngethostbyname(const char *que , const char *server, int query_type)
     if( hostname_to_ip(server, server_ip) != 0){
       return;
     }
-    printf("Nameserver IP: %s", server_ip);
+    printf("Nameserver IP: %s\n", server_ip);
     dest.sin_addr.s_addr = inet_addr(server_ip);
     dest.sin_family = AF_INET;
     dest.sin_port = htons(53);
-    /*
-    struct timeval tv;
-    tv.tv_sec = 0;
-    tv.tv_usec = 5000;
-    if (setsockopt(s, SOL_SOCKET, SO_RCVTIMEO,&tv,sizeof(tv)) < 0) {
-      perror("Error");
-    }
-    //dest.sin_addr.s_addr = inet_addr(server); //dns servers
-    */
+
     if (connect(s,(struct sockaddr *) &dest, sizeof(dest)) < 0)
     {
         perror("ERROR connecting");
@@ -168,8 +158,9 @@ void ngethostbyname(const char *que , const char *server, int query_type)
     printf("\nResolving %s\n" , host);
 
     dns = (struct DNS_HEADER *)&buf;
- 
-    dns->id = (unsigned short) htons(getpid());
+
+    dns_id = getpid();
+    dns->id = (unsigned short) htons(dns_id);
     dns->qr = 0; //This is a query
     dns->opcode = 0; //This is a standard query
     dns->aa = 0; //Not Authoritative
@@ -209,12 +200,19 @@ void ngethostbyname(const char *que , const char *server, int query_type)
     bzero(buf, 65536);
 
     enum{BUFSIZE=65536};
-    char replyMessage[BUFSIZE];
+    char replyMessage[BUFSIZE] = {0};
     ssize_t numBytesRecv = 0;
     int off = 0;
+    int data_length = 0;
     do
       {
+	printf("start\n");
+	memset(&replyMessage, 0, sizeof(replyMessage));
 	numBytesRecv = recv(s, replyMessage, BUFSIZE, 0);
+	if(off == 0 && numBytesRecv >= 2)
+	  {
+	    data_length = ((*(replyMessage) << 8) &0xFF00) | (*(replyMessage+1) & 0xFF);
+	  }
 	if ( numBytesRecv < 0)
 	  {
 	    printf("recv() failed\n");
@@ -224,9 +222,11 @@ void ngethostbyname(const char *que , const char *server, int query_type)
 	memcpy(buf+off, replyMessage, numBytesRecv);    
 	off+=numBytesRecv;
 	printf("%ld\n", numBytesRecv);
-	memset(&replyMessage, 0, sizeof(replyMessage));
-    
-	printf("po memset\n");
+	printf("stop\n");
+	if(off>=data_length+2 && off != 0)
+	  {
+	    break;
+	  }
       }
     while (numBytesRecv > 0);
     close(s);
@@ -237,6 +237,9 @@ void ngethostbyname(const char *que , const char *server, int query_type)
 	printf("%x", buf[i]);
       }
     */
+    dns_buf = buf;
+    dns_parse_reponse();
+
     dns = (struct DNS_HEADER*) &buf;
     printf("\n n: %d, offset: %d, datalen: %d", n, off, ntohs(dns->len));
 
@@ -346,7 +349,7 @@ void ReadName(unsigned char* reader,unsigned char* buffer,int* count, unsigned c
 
 void parse_ip(unsigned char* data)
 {
-  printf(" %d.%d.%d.%d ", (int)*data, (int)*(data+1), (int)*(data+2), (int)*(data+3));
+  printf(" %d.%d.%d.%d \n", (int)*data, (int)*(data+1), (int)*(data+2), (int)*(data+3));
 }
 
 void parse_ns(unsigned char* data, unsigned short data_len)
@@ -405,11 +408,136 @@ int hostname_to_ip(const char *hostname , char *ip)
 	  freeaddrinfo(servinfo);
 	  return 0;
 	}
-      printf("IP: %s", ip);
+      printf("IP: %s\n", ip);
     }
 
   freeaddrinfo(servinfo); // all done with this structure
   return 0;
+}
+
+
+static int dns_parse_reponse(void)
+{
+  u_int i;
+  DHDR dhdr;
+  char* cur_ptr = dns_buf+2;
+
+
+  dhdr.id = ntohs(*((u_short*)cur_ptr));
+  if(dhdr.id != dns_id)
+    {
+      
+      printf("Responsed ID != Query ID : %d ! = %d\n",dhdr.id, dns_id);
+
+      return 0;
+    }
+  dns_id++;
+  cur_ptr += 2;
+  dhdr.flag0 = *cur_ptr++;
+  dhdr.flag1 = *cur_ptr++;
+  if(!(dhdr.flag0 & 0x80 && dhdr.flag0 & 0x84) || !(dhdr.flag1 & 0x80) )
+    {
+      
+      printf("No reponse message, flag0 = 0x%02X, flag1 = 0x%02X\n",dhdr.flag0,dhdr.flag1);
+
+      return 0;
+    }
+  if(dhdr.flag1 & 0x0F)
+    {
+      #ifdef DEBUG_DNS
+      printf("Error of reponse : \n");
+      switch(dhdr.flag1 & 0x0F)
+	{
+	case RC_FORMAT_ERROR:
+	  printf("Format Error\n");
+	  break;
+	case RC_SERVER_FAIL:
+	  printf("Server failure\n");
+	  break;
+	case RC_NAME_ERROR:
+	  printf("Name Error\n");
+	  break;
+	case RC_NOT_IMPL:
+	  printf("Not Implemented\n");
+	  break;
+	case RC_REFUSED:
+	  printf("Refused\n");
+	  break;
+	}
+#endif
+      return 0;
+    }
+
+  dhdr.qdcount = ntohs(*((u_short*)cur_ptr));
+  cur_ptr += 2;
+  dhdr.ancount = ntohs(*((u_short*)cur_ptr));
+  cur_ptr += 2;
+  dhdr.nscount = ntohs(*((u_short*)cur_ptr));
+  cur_ptr += 2;
+  dhdr.arcount = ntohs(*((u_short*)cur_ptr));
+  cur_ptr += 2;
+
+
+  printf("Response : question count = %d, answer count = %d\n",dhdr.qdcount,dhdr.ancount);
+  printf("Response : authority count = %d, additiional count = %d\n",dhdr.nscount,dhdr.arcount);
+
+  /* Now parse the variable length sections */
+  for(i = 0; i < dhdr.qdcount; i++)
+    {
+      cur_ptr = dns_parse_question(cur_ptr);// Question section
+      if(!cur_ptr)
+	{
+
+	  printf("Fail to parse question section%d\n",i);
+
+	  return 0;
+	}
+    }
+
+  /* parse resource records */
+
+  for(i=0; i < dhdr.ancount; i++)
+    {
+      cur_ptr = dns_answer(cur_ptr);// Answer section
+      if(!cur_ptr)
+	{
+
+	  printf("Fail to parse answer section%d\n",i);
+
+	  return 0;
+	}
+    }
+  
+  return 1;
+}
+
+
+/** 
+    @briefParse question section in the DNS query
+    @returnsuccess - 1, fail - 0 
+*/
+static u_char * dns_parse_question(
+				   u_char * cp/**< curruent pointer to be parsed */
+				   )
+{
+  int len;
+  char name[MAX_QNAME_LEN];
+
+  len = parse_name(cp, name, sizeof(name));
+  if(!len)
+    {
+      
+      printf("Fail to parse (Q)NAME field\n");
+      return 0;
+    }
+
+  cp += len;
+  cp += 2;// skip type
+  cp += 2;// skip class
+  
+  printf("In question section, (Q)NAME field value : %s\n",name);
+
+  return cp;
 }
 
 
@@ -440,9 +568,11 @@ static unsigned char * dns_answer(
       *(((unsigned char*)&tip) + 1) = *cp++;
       *(((unsigned char*)&tip) + 2) = *cp++;
       *(((unsigned char*)&tip) + 3) = *cp++;
-      #ifdef DEBUG_DNS
-      DPRINTLN1("RRs : TYPE_A = %s", inet_ntoa(ntohl(tip)));
-#endif
+      struct in_addr ip_addr;
+      ip_addr.s_addr = tip;
+     
+      printf("RRs : TYPE_A = %s\n", inet_ntoa(ip_addr));
+
       if(query_data == BYNAME) get_domain_ip = tip;
       break;
     case TYPE_CNAME:
@@ -457,9 +587,7 @@ static unsigned char * dns_answer(
       if(query_data == BYIP && type == TYPE_PTR)
 	{
 	  strcpy(get_domain_name,qname);
-	  #ifdef DEBUG_DNS
-	  DPRINTLN1("RRs : TYPE_PTR  = %s",qname);
-	  #endif
+	  printf("RRs : TYPE_PTR  = %s\n",qname);
 	}
       break;
     case TYPE_HINFO:
@@ -474,9 +602,8 @@ static unsigned char * dns_answer(
       len = parse_name(cp, qname, sizeof(qname));// Get domain name of exchanger
       if(!len)
 	{
-	  #ifdef DEBUG_DNS
-	  DPRINTLN("TYPE_MX : Fail to get domain name of exechanger");
-#endif
+	
+	  printf("TYPE_MX : Fail to get domain name of exechanger\n");
 	  return 0;
 	}
       cp += len;
@@ -485,9 +612,8 @@ static unsigned char * dns_answer(
       len = parse_name(cp, qname, sizeof(qname));// Get domain name of name server
       if(!len)
 	{
-	  #ifdef DEBUG_DNS
-	  DPRINTLN("TYPE_SOA : Fail to get domain name of name server");
-#endif
+	  
+	  printf("TYPE_SOA : Fail to get domain name of name server\n");
 	  return 0;
 	}
 
@@ -496,9 +622,8 @@ static unsigned char * dns_answer(
       len = parse_name(cp, qname, sizeof(qname));// Get domain name of responsible person
       if(!len)
 	{
-	  #ifdef DEBUG_DNS
-	  DPRINTLN("TYPE_SOA : Fail to get domain name of responsible person");
-#endif
+	 
+	  printf("TYPE_SOA : Fail to get domain name of responsible person\n");
 	  return 0;
 	}
       cp += len;
@@ -554,7 +679,7 @@ static int parse_name(
       if((qname_maxlen -= slen+1) < 0)
 	{
 #ifdef DEBUG_DNS
-	  DPRINTLN("Not enough memory");
+	  printf("Not enough memory\n");
 #endif
 	  return 0;
 	}
@@ -568,8 +693,7 @@ static int parse_name(
   else --qname;
 
   *qname = '\0';
-#ifdef DEBUG_DNS
-  DPRINTLN1("Result of parsing (Q)NAME field : %s",qname);
-#endif
+  printf("Result of parsing (Q)NAME field : %s\n",qname);
+
   return clen;// Length of compressed message// Length of compressed message
 }
