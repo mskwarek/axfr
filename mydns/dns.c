@@ -118,7 +118,9 @@ void ChangetoDnsNameFormat (unsigned char*,unsigned char*);
 void ReadName(unsigned char* reader,unsigned char* buffer,int* count, unsigned char* dst_buf, size_t data_len, unsigned short type);
 int hostname_to_ip(const char *hostname , char *ip);
 void parse_ip(unsigned char* data);
-void parse_ns(unsigned char* data, unsigned short data_len);
+void parse_ptr(unsigned char* data, unsigned short data_len);
+void parse_hinfo(unsigned char* data, unsigned short data_len);
+void parse_rrsig(unsigned char* data, unsigned short data_len);
 
 /*
  * Perform a DNS query by sending a packet
@@ -238,7 +240,6 @@ void ngethostbyname(const char *que , const char *server, int query_type)
       }
     */
     dns_buf = buf;
-    dns_parse_reponse();
 
     dns = (struct DNS_HEADER*) &buf;
     printf("\n n: %d, offset: %d, datalen: %d", n, off, ntohs(dns->len));
@@ -283,8 +284,8 @@ void ngethostbyname(const char *que , const char *server, int query_type)
 	unsigned short type = ((*(reader+2) << 8) &0xFF00) | (*(reader+3) & 0xFF);
 	unsigned short name_size = ((*(reader+10) << 8) &0xFF00) | (*(reader+11) & 0xFF);
 	answers[i].resource=(struct R_DATA*)(reader);
-
-
+	char name[1024] = {0};
+	
 	reader+=12;
 	
 	printf("sizeof R_DATA: %lu, name_s: %d, ttl: %d, class: %d, type: %d\n", sizeof(struct R_DATA), name_size, ntohs(answers[i].resource->ttl), class, type);
@@ -326,12 +327,17 @@ void ReadName(unsigned char* reader,unsigned char* buffer,int* count, unsigned c
       parse_ip(reader);
       break;
     case T_NS:
-      parse_ns(reader, (unsigned short)data_len);
       break;
     case T_CNAME:
+      break;
     case T_SOA:
+      parse_ptr(reader, (unsigned short)data_len);
+      break;
     case T_PTR:
+      break;
     case T_HINFO:
+      parse_hinfo(reader, (unsigned short)data_len);
+      break;
     case T_MX:
     case T_TXT:
     case T_RP:
@@ -341,6 +347,8 @@ void ReadName(unsigned char* reader,unsigned char* buffer,int* count, unsigned c
     case T_SRV:
     case T_NAPTR:
     case T_RRSIG:
+      parse_rrsig(reader, (unsigned short) data_len);
+      break;
     case T_NSEC:
     case T_DNSKEY:
       break;
@@ -349,14 +357,34 @@ void ReadName(unsigned char* reader,unsigned char* buffer,int* count, unsigned c
 
 void parse_ip(unsigned char* data)
 {
-  printf(" %d.%d.%d.%d \n", (int)*data, (int)*(data+1), (int)*(data+2), (int)*(data+3));
+  printf(" %d.%d.%d.%d \n\n", (int)*data, (int)*(data+1), (int)*(data+2), (int)*(data+3));
 }
 
-void parse_ns(unsigned char* data, unsigned short data_len)
+void parse_ptr(unsigned char* data, unsigned short data_len)
 {
+  char qname[1024] = {0};
+  int len = 0;
+
+  len = parse_name(data, qname, sizeof(qname));// These types all consist of a single domain name
+  if(!len) return;// convert it to ascii format
+  //cp += len;
+      printf("RRs : TYPE_PTR  = %s\n\n",qname);
   
 }
- 
+
+void parse_hinfo(unsigned char* data, unsigned short data_len)
+{
+  int len_cpu = (int)*data;
+  int len_os = (int)*(data + len_cpu + 1);
+
+  printf("cpu len: %d os len: %d", len_cpu, len_os);
+}
+
+void parse_rrsig(unsigned char* data, unsigned short data_len)
+{
+
+}
+
 /*
  * This will convert www.google.com to 3www6google3com 
  * got it :)
@@ -526,7 +554,6 @@ static u_char * dns_parse_question(
   len = parse_name(cp, name, sizeof(name));
   if(!len)
     {
-      
       printf("Fail to parse (Q)NAME field\n");
       return 0;
     }
@@ -678,9 +705,7 @@ static int parse_name(
 
       if((qname_maxlen -= slen+1) < 0)
 	{
-#ifdef DEBUG_DNS
 	  printf("Not enough memory\n");
-#endif
 	  return 0;
 	}
       while (slen-- != 0) *qname++ = (char)*cp++;
@@ -693,7 +718,7 @@ static int parse_name(
   else --qname;
 
   *qname = '\0';
-  printf("Result of parsing (Q)NAME field : %s\n",qname);
+  //printf("Result of parsing (Q)NAME field : %s\n", qname);
 
   return clen;// Length of compressed message// Length of compressed message
 }
