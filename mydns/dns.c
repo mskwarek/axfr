@@ -369,7 +369,7 @@ void getName(unsigned char* data, unsigned char* dns_packet_resp)
   printf("data: %02x %02x\n", *data, *(data+1));
   //printf
   
-  if((uint8_t)(*data) & (uint8_t)0x0c == (uint8_t)0x0c)
+  if((uint8_t)(*data) >= 192)
     {
       unsigned short name_offset = (((*(data) << 8) &0xFF00) | (*(data+1) & 0xFF)) - 49152;
       printf("from pointer: %02x %02x offset: %d\n", *data, *(data+1), name_offset);
@@ -385,17 +385,32 @@ void getName(unsigned char* data, unsigned char* dns_packet_resp)
 void readString(unsigned char* data)
 {
   unsigned char name[1024] = {0};
-  unsigned int i = 0;
+  unsigned int i = 0, p = 0, j = 0;
   printf("name data: %02x %02x\n", *data, *(data+1));
   
   while(*data != 0x00)
     {
       
-      name[i++]=*data++;
+      name[p++]=*data++;
     }
-  name[i] = '\0';
-  printf("%s\n", name);
+  name[p] = '\0';
+  //now convert 3www6google3com0 to www.google.com
+  for(i=0;i<(int)strlen((const char*)name);i++)
+    {
+      p=name[i];
+      for(j=0;j<(int)p;j++)
+	{
+         name[i]=name[i+1];
+	 i=i+1;
+	}
+      name[i]='.';
+    }
+  name[i-1]='\0'; //remove the last dot
+
+  printf("NAME: %s\n", name);
 }
+
+
 
 /*
  * This will convert www.google.com to 3www6google3com 
