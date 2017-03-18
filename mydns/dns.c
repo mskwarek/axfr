@@ -115,12 +115,14 @@ static int parse_name(char* cp,char* qname, unsigned int qname_maxlen);/* analyz
 
 //Function Prototypes
 void ChangetoDnsNameFormat (unsigned char*,unsigned char*);
-void ReadName(unsigned char* reader,unsigned char* buffer,int* count, unsigned char* dst_buf, size_t data_len, unsigned short type);
+void ReadName(unsigned char* reader,unsigned char* buffer,int* count, unsigned char* dst_buf, size_t data_len, unsigned short type, unsigned char* dns);
 int hostname_to_ip(const char *hostname , char *ip);
 void parse_ip(unsigned char* data);
-void parse_ptr(unsigned char* data, unsigned short data_len);
+void parse_ptr(unsigned char* data, unsigned short data_len, unsigned char* dns);
 void parse_hinfo(unsigned char* data, unsigned short data_len);
 void parse_rrsig(unsigned char* data, unsigned short data_len);
+void readString(unsigned char*);
+void getName(unsigned char* data, unsigned char* dns_packet_resp);
 
 /*
  * Perform a DNS query by sending a packet
@@ -194,10 +196,6 @@ void ngethostbyname(const char *que , const char *server, int query_type)
     struct timeval timeout;
     timeout.tv_sec = 5;
     timeout.tv_usec = 0;
-
-    //if (setsockopt (s, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout,
-    ///	    sizeof(timeout)) < 0)
-    //  error("setsockopt failed\n");
     
     bzero(buf, 65536);
 
@@ -280,6 +278,7 @@ void ngethostbyname(const char *que , const char *server, int query_type)
 	printf("len: %02x %02x\n", *(reader+10), *(reader+11));
 	*/
 
+	getName(reader, buf+2);
 	unsigned short class = ((*(reader+4) << 8) &0xFF00) | (*(reader+5) & 0xFF);
 	unsigned short type = ((*(reader+2) << 8) &0xFF00) | (*(reader+3) & 0xFF);
 	unsigned short name_size = ((*(reader+10) << 8) &0xFF00) | (*(reader+11) & 0xFF);
@@ -288,29 +287,12 @@ void ngethostbyname(const char *que , const char *server, int query_type)
 	
 	reader+=12;
 	
-	printf("sizeof R_DATA: %lu, name_s: %d, ttl: %d, class: %d, type: %d\n", sizeof(struct R_DATA), name_size, ntohs(answers[i].resource->ttl), class, type);
+	printf("name_s: %d, ttl: %d, class: %d, type: %d\n", name_size, ntohs(answers[i].resource->ttl), class, type);
 	answers[i].rdata = (unsigned char*)malloc(name_size);
-	ReadName(reader,buf,&stop,answers[i].rdata, name_size, type);
+	ReadName(reader,buf,&stop,answers[i].rdata, name_size, type, buf + 2);
 	reader+=name_size;
       }
-    /*
-    //print answers
-    printf("\nAnswer Records : %d \n" , ntohs(dns->ans_count) );
-    for(i=0 ; i < ntohs(dns->ans_count) ; i++)
-      {
-	printf("Name : %s %s",answers[i].name, answers[i].rdata);
 
-	if( ntohs(answers[i].resource->type) == T_A) //IPv4 address
-	  {
-	    long *p;
-	    p=(long*)answers[i].rdata;
-	    a.sin_addr.s_addr=(*p); //working without ntohl
-	    printf("has IPv4 address : %s",inet_ntoa(a.sin_addr));
-	  }
-
-	printf("\n");
-      }
-    */
     free(answers);
     return;
 }
@@ -319,7 +301,7 @@ void ngethostbyname(const char *que , const char *server, int query_type)
  * 
  * */
 
-void ReadName(unsigned char* reader,unsigned char* buffer,int* count, unsigned char* name, size_t data_len, unsigned short type)
+void ReadName(unsigned char* reader,unsigned char* buffer,int* count, unsigned char* name, size_t data_len, unsigned short type, unsigned char* dns)
 {
   switch(type)
     {      
@@ -331,7 +313,7 @@ void ReadName(unsigned char* reader,unsigned char* buffer,int* count, unsigned c
     case T_CNAME:
       break;
     case T_SOA:
-      parse_ptr(reader, (unsigned short)data_len);
+      parse_ptr(reader, (unsigned short)data_len, dns);
       break;
     case T_PTR:
       break;
@@ -360,16 +342,13 @@ void parse_ip(unsigned char* data)
   printf(" %d.%d.%d.%d \n\n", (int)*data, (int)*(data+1), (int)*(data+2), (int)*(data+3));
 }
 
-void parse_ptr(unsigned char* data, unsigned short data_len)
+void parse_ptr(unsigned char* data, unsigned short data_len, unsigned char* dns)
 {
   char qname[1024] = {0};
   int len = 0;
 
-  len = parse_name(data, qname, sizeof(qname));// These types all consist of a single domain name
-  if(!len) return;// convert it to ascii format
-  //cp += len;
-      printf("RRs : TYPE_PTR  = %s\n\n",qname);
-  
+  printf("PTR: ");
+  getName(data, dns);// These types all consist of a single domain name 
 }
 
 void parse_hinfo(unsigned char* data, unsigned short data_len)
@@ -383,6 +362,39 @@ void parse_hinfo(unsigned char* data, unsigned short data_len)
 void parse_rrsig(unsigned char* data, unsigned short data_len)
 {
 
+}
+ 
+void getName(unsigned char* data, unsigned char* dns_packet_resp)
+{
+  printf("data: %02x %02x\n", *data, *(data+1));
+  //printf
+  
+  if((uint8_t)(*data) & (uint8_t)0x0c == (uint8_t)0x0c)
+    {
+      unsigned short name_offset = (((*(data) << 8) &0xFF00) | (*(data+1) & 0xFF)) - 49152;
+      printf("from pointer: %02x %02x offset: %d\n", *data, *(data+1), name_offset);
+      data++;
+      readString(dns_packet_resp + name_offset);
+    }
+  else
+    {
+      readString(data);
+    }
+}
+
+void readString(unsigned char* data)
+{
+  unsigned char name[1024] = {0};
+  unsigned int i = 0;
+  printf("name data: %02x %02x\n", *data, *(data+1));
+  
+  while(*data != 0x00)
+    {
+      
+      name[i++]=*data++;
+    }
+  name[i] = '\0';
+  printf("%s\n", name);
 }
 
 /*
