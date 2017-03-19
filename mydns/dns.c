@@ -24,8 +24,6 @@ static unsigned char* get_domain_name;
 static unsigned long get_domain_ip;/**< Resolved ip address */
 static QUERYDATA query_data;/**< Query type */
 
-//extern NETCONF NetConf;
-
 enum
   {
     T_A=1, //Ipv4 address
@@ -123,6 +121,7 @@ void parse_hinfo(unsigned char* data, unsigned short data_len);
 void parse_rrsig(unsigned char* data, unsigned short data_len);
 void readString(unsigned char*);
 void getName(unsigned char* data, unsigned char* dns_packet_resp);
+void parse_ns(unsigned char* data, unsigned char* dns);
 
 /*
  * Perform a DNS query by sending a packet
@@ -231,12 +230,6 @@ void ngethostbyname(const char *que , const char *server, int query_type)
     while (numBytesRecv > 0);
     close(s);
 
-    /*    printf("\nHere is the message:n\n");
-    for (int i = 0; i < off; i++)
-      {
-	printf("%x", buf[i]);
-      }
-    */
     dns_buf = buf;
 
     dns = (struct DNS_HEADER*) &buf;
@@ -309,6 +302,7 @@ void ReadName(unsigned char* reader,unsigned char* buffer,int* count, unsigned c
       parse_ip(reader);
       break;
     case T_NS:
+      parse_ns(reader, dns);
       break;
     case T_CNAME:
       break;
@@ -342,6 +336,12 @@ void parse_ip(unsigned char* data)
   printf(" %d.%d.%d.%d \n\n", (int)*data, (int)*(data+1), (int)*(data+2), (int)*(data+3));
 }
 
+void parse_ns(unsigned char* data, unsigned char* dns)
+{
+  printf("NS: ");
+  getName(data, dns);
+}
+
 void parse_ptr(unsigned char* data, unsigned short data_len, unsigned char* dns)
 {
   char qname[1024] = {0};
@@ -366,7 +366,7 @@ void parse_rrsig(unsigned char* data, unsigned short data_len)
  
 void getName(unsigned char* data, unsigned char* dns_packet_resp)
 {
-  printf("data: %02x %02x\n", *data, *(data+1));
+  printf("data: %02x %02x   ", *data, *(data+1));
   //printf
   
   if((uint8_t)(*data) >= 192)
@@ -386,7 +386,7 @@ void readString(unsigned char* data)
 {
   unsigned char name[1024] = {0};
   unsigned int i = 0, p = 0, j = 0;
-  printf("name data: %02x %02x\n", *data, *(data+1));
+  printf("name data: %02x %02x  ", *data, *(data+1));
   
   while(*data != 0x00)
     {
@@ -407,7 +407,7 @@ void readString(unsigned char* data)
     }
   name[i-1]='\0'; //remove the last dot
 
-  printf("NAME: %s\n", name);
+  printf(" %s\n", name);
 }
 
 
