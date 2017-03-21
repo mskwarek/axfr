@@ -117,12 +117,14 @@ void ReadName(unsigned char* reader,unsigned char* buffer,int* count, unsigned c
 int hostname_to_ip(const char *hostname , char *ip);
 void parse_ip(unsigned char* data);
 void parse_ptr(unsigned char* data, unsigned short data_len, unsigned char* dns);
+void parse_soa(unsigned char* data, unsigned short data_len, unsigned char* dns);
 void parse_hinfo(unsigned char* data, unsigned short data_len);
 void parse_rrsig(unsigned char* data, unsigned short data_len);
 unsigned int readString(unsigned char* data, unsigned char* dns_packet_resp, unsigned char* name);
 void getName(unsigned char* data, unsigned char* dns_packet_resp);
 void parse_ns(unsigned char* data, unsigned char* dns);
-
+void parse_mx(unsigned char* data, unsigned short data_len, unsigned char* dns_packet_resp);
+void parse_txt(unsigned char* data, unsigned short data_len);
 /*
  * Perform a DNS query by sending a packet
  * */
@@ -311,15 +313,20 @@ void ReadName(unsigned char* reader,unsigned char* buffer,int* count, unsigned c
     case T_CNAME:
       break;
     case T_SOA:
-      parse_ptr(reader, (unsigned short)data_len, dns);
+      parse_soa(reader, (unsigned short)data_len, dns);
       break;
     case T_PTR:
+        parse_ptr(reader, (unsigned short)data_len, dns);
       break;
     case T_HINFO:
       parse_hinfo(reader, (unsigned short)data_len);
       break;
     case T_MX:
+        parse_mx(reader, (unsigned short)data_len, dns);
+        break;
     case T_TXT:
+        parse_txt(reader, data_len);
+        break;
     case T_RP:
     case T_AFSDB:
     case T_AAAA:
@@ -342,17 +349,22 @@ void parse_ip(unsigned char* data)
 
 void parse_ns(unsigned char* data, unsigned char* dns)
 {
-  printf("\nNS: ");
+  printf("NS: ");
   getName(data, dns);
+    printf("\n\n");
 }
 
 void parse_ptr(unsigned char* data, unsigned short data_len, unsigned char* dns)
 {
-  char qname[1024] = {0};
-  int len = 0;
-
   printf("PTR: ");
   getName(data, dns);// These types all consist of a single domain name 
+}
+
+void parse_soa(unsigned char* data, unsigned short data_len, unsigned char* dns)
+{
+    printf("PTR: ");
+    getName(data, dns);
+    // TODO
 }
 
 void parse_hinfo(unsigned char* data, unsigned short data_len)
@@ -363,9 +375,45 @@ void parse_hinfo(unsigned char* data, unsigned short data_len)
   printf("cpu len: %d os len: %d", len_cpu, len_os);
 }
 
+void parse_mx(unsigned char* data, unsigned short data_len, unsigned char* dns_packet_resp)
+{
+    unsigned short preference = ((*(data) << 8) &0xFF00) | (*(data+1) & 0xFF);
+    getName(data+2, dns_packet_resp);
+}
+
+void parse_txt(unsigned char* data, unsigned short data_len)
+{
+    unsigned int i = 0;
+    unsigned char *txt= NULL;
+
+    txt = (unsigned char*)malloc(data_len-1);
+    data++;
+    while(i<data_len)
+    {
+        txt[i++]=*data++;
+    }
+
+    printf("%s\n", txt);
+    free(txt);
+}
+
 void parse_rrsig(unsigned char* data, unsigned short data_len)
 {
+    unsigned short type = ((*(data) << 8) &0xFF00) | (*(data+1) & 0xFF);
+    unsigned char algorithm = *data + 2;
+    unsigned char labels = *data + 3;
+    unsigned int ttl = 0;
+    unsigned int timestamp_exp = 0;
+    unsigned int timestamp_inc = 0;
+    unsigned short key_tag = type = ((*(data + 16) << 8) &0xFF00) | (*(data+17) & 0xFF);
+    unsigned char name[1024] = {0};
+    unsigned int p = 0;
+    while(*data != 0x00)
+    {
+        name[p++]=*data++;
+    }
 
+    unsigned char signature[1024] = {0};
 }
  
 void getName(unsigned char* data, unsigned char* dns_packet_resp)
