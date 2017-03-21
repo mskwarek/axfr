@@ -2,7 +2,7 @@
 #include <fstream>
 
 extern "C"{
-#include<dns.h>
+#include"dns.h"
 }
 
 #include <string>

@@ -119,7 +119,7 @@ void parse_ip(unsigned char* data);
 void parse_ptr(unsigned char* data, unsigned short data_len, unsigned char* dns);
 void parse_hinfo(unsigned char* data, unsigned short data_len);
 void parse_rrsig(unsigned char* data, unsigned short data_len);
-void readString(unsigned char*);
+unsigned int readString(unsigned char* data, unsigned char* dns_packet_resp, unsigned char* name);
 void getName(unsigned char* data, unsigned char* dns_packet_resp);
 void parse_ns(unsigned char* data, unsigned char* dns);
 
@@ -286,6 +286,10 @@ void ngethostbyname(const char *que , const char *server, int query_type)
 	reader+=name_size;
       }
 
+    for(i=0; i < ntohs(dns->ans_count); ++i)
+    {
+        free(answers[i].rdata);
+    }
     free(answers);
     return;
 }
@@ -299,7 +303,7 @@ void ReadName(unsigned char* reader,unsigned char* buffer,int* count, unsigned c
   switch(type)
     {      
     case T_A:
-      parse_ip(reader);
+      //parse_ip(reader);
       break;
     case T_NS:
       parse_ns(reader, dns);
@@ -338,7 +342,7 @@ void parse_ip(unsigned char* data)
 
 void parse_ns(unsigned char* data, unsigned char* dns)
 {
-  printf("NS: ");
+  printf("\nNS: ");
   getName(data, dns);
 }
 
@@ -366,48 +370,45 @@ void parse_rrsig(unsigned char* data, unsigned short data_len)
  
 void getName(unsigned char* data, unsigned char* dns_packet_resp)
 {
-  printf("data: %02x %02x   ", *data, *(data+1));
-  //printf
-  
-  if((uint8_t)(*data) >= 192)
+    unsigned char name[1024] = {0};
+    unsigned int i = 0, j = 0, p = 0;
+
+    p = readString(data, dns_packet_resp, name);
+    //now convert 3www6google3com0 to www.google.com
+    for(i=0;i<(int)strlen((const char*)name);i++)
     {
-      unsigned short name_offset = (((*(data) << 8) &0xFF00) | (*(data+1) & 0xFF)) - 49152;
-      printf("from pointer: %02x %02x offset: %d\n", *data, *(data+1), name_offset);
-      data++;
-      readString(dns_packet_resp + name_offset);
+        p=name[i];
+        for(j=0;j<(int)p;j++)
+        {
+            name[i]=name[i+1];
+            i=i+1;
+        }
+        name[i]='.';
     }
-  else
-    {
-      readString(data);
-    }
+    name[i-1]='\0'; //remove the last dot
+
+    printf(" %s\n", name);
 }
 
-void readString(unsigned char* data)
+unsigned int readString(unsigned char* data, unsigned char* dns_packet_resp, unsigned char* name)
 {
-  unsigned char name[1024] = {0};
-  unsigned int i = 0, p = 0, j = 0;
-  printf("name data: %02x %02x  ", *data, *(data+1));
+    unsigned int p = 0;
+    printf("name data: %02x %02x  ", *data, *(data+1));
   
-  while(*data != 0x00)
+    while(*data != 0x00)
     {
-      
-      name[p++]=*data++;
-    }
-  name[p] = '\0';
-  //now convert 3www6google3com0 to www.google.com
-  for(i=0;i<(int)strlen((const char*)name);i++)
-    {
-      p=name[i];
-      for(j=0;j<(int)p;j++)
-	{
-         name[i]=name[i+1];
-	 i=i+1;
-	}
-      name[i]='.';
-    }
-  name[i-1]='\0'; //remove the last dot
+        if((uint8_t)(*data) >= 192)
+        {
+            unsigned short name_offset = (((*(data) << 8) &0xFF00) | (*(data+1) & 0xFF)) - 49152;
+            printf("from pointer: %02x %02x offset: %d\n", *data, *(data+1), name_offset);
+            p+=readString(dns_packet_resp + name_offset, dns_packet_resp, name+p);
+            break;
+        }
 
-  printf(" %s\n", name);
+        name[p++]=*data++;
+    }
+    name[p] = '\0';
+    return p;
 }
 
 
@@ -468,284 +469,4 @@ int hostname_to_ip(const char *hostname , char *ip)
 
   freeaddrinfo(servinfo); // all done with this structure
   return 0;
-}
-
-
-static int dns_parse_reponse(void)
-{
-  u_int i;
-  DHDR dhdr;
-  char* cur_ptr = dns_buf+2;
-
-
-  dhdr.id = ntohs(*((u_short*)cur_ptr));
-  if(dhdr.id != dns_id)
-    {
-      
-      printf("Responsed ID != Query ID : %d ! = %d\n",dhdr.id, dns_id);
-
-      return 0;
-    }
-  dns_id++;
-  cur_ptr += 2;
-  dhdr.flag0 = *cur_ptr++;
-  dhdr.flag1 = *cur_ptr++;
-  if(!(dhdr.flag0 & 0x80 && dhdr.flag0 & 0x84) || !(dhdr.flag1 & 0x80) )
-    {
-      
-      printf("No reponse message, flag0 = 0x%02X, flag1 = 0x%02X\n",dhdr.flag0,dhdr.flag1);
-
-      return 0;
-    }
-  if(dhdr.flag1 & 0x0F)
-    {
-      #ifdef DEBUG_DNS
-      printf("Error of reponse : \n");
-      switch(dhdr.flag1 & 0x0F)
-	{
-	case RC_FORMAT_ERROR:
-	  printf("Format Error\n");
-	  break;
-	case RC_SERVER_FAIL:
-	  printf("Server failure\n");
-	  break;
-	case RC_NAME_ERROR:
-	  printf("Name Error\n");
-	  break;
-	case RC_NOT_IMPL:
-	  printf("Not Implemented\n");
-	  break;
-	case RC_REFUSED:
-	  printf("Refused\n");
-	  break;
-	}
-#endif
-      return 0;
-    }
-
-  dhdr.qdcount = ntohs(*((u_short*)cur_ptr));
-  cur_ptr += 2;
-  dhdr.ancount = ntohs(*((u_short*)cur_ptr));
-  cur_ptr += 2;
-  dhdr.nscount = ntohs(*((u_short*)cur_ptr));
-  cur_ptr += 2;
-  dhdr.arcount = ntohs(*((u_short*)cur_ptr));
-  cur_ptr += 2;
-
-
-  printf("Response : question count = %d, answer count = %d\n",dhdr.qdcount,dhdr.ancount);
-  printf("Response : authority count = %d, additiional count = %d\n",dhdr.nscount,dhdr.arcount);
-
-  /* Now parse the variable length sections */
-  for(i = 0; i < dhdr.qdcount; i++)
-    {
-      cur_ptr = dns_parse_question(cur_ptr);// Question section
-      if(!cur_ptr)
-	{
-
-	  printf("Fail to parse question section%d\n",i);
-
-	  return 0;
-	}
-    }
-
-  /* parse resource records */
-
-  for(i=0; i < dhdr.ancount; i++)
-    {
-      cur_ptr = dns_answer(cur_ptr);// Answer section
-      if(!cur_ptr)
-	{
-
-	  printf("Fail to parse answer section%d\n",i);
-
-	  return 0;
-	}
-    }
-  
-  return 1;
-}
-
-
-/** 
-    @briefParse question section in the DNS query
-    @returnsuccess - 1, fail - 0 
-*/
-static u_char * dns_parse_question(
-				   u_char * cp/**< curruent pointer to be parsed */
-				   )
-{
-  int len;
-  char name[MAX_QNAME_LEN];
-
-  len = parse_name(cp, name, sizeof(name));
-  if(!len)
-    {
-      printf("Fail to parse (Q)NAME field\n");
-      return 0;
-    }
-
-  cp += len;
-  cp += 2;// skip type
-  cp += 2;// skip class
-  
-  printf("In question section, (Q)NAME field value : %s\n",name);
-
-  return cp;
-}
-
-
-static unsigned char * dns_answer(
-			   unsigned char *cp
-			   )
-{
-  int len, type;
-  char qname[MAX_QNAME_LEN];
-  unsigned long tip;
-
-  len = parse_name(cp, qname, sizeof(qname));
-
-  if(!len) return 0;
-
-  cp += len;
-  type = *cp++;
-  type = (type << 8) + (unsigned int)*cp++;// type
-  cp += 2;// skip class
-  cp += 4;// skip ttl
-  cp += 2;// skip len
-
-  switch(type)
-    {
-    case TYPE_A:
-      tip = 0;
-      *((unsigned char*)&tip) = *cp++;// Network odering
-      *(((unsigned char*)&tip) + 1) = *cp++;
-      *(((unsigned char*)&tip) + 2) = *cp++;
-      *(((unsigned char*)&tip) + 3) = *cp++;
-      struct in_addr ip_addr;
-      ip_addr.s_addr = tip;
-     
-      printf("RRs : TYPE_A = %s\n", inet_ntoa(ip_addr));
-
-      if(query_data == BYNAME) get_domain_ip = tip;
-      break;
-    case TYPE_CNAME:
-    case TYPE_MB:
-    case TYPE_MG:
-    case TYPE_MR:
-    case TYPE_NS:
-    case TYPE_PTR:
-      len = parse_name(cp, qname, sizeof(qname));// These types all consist of a single domain name
-      if(!len) return 0;// convert it to ascii format
-      cp += len;
-      if(query_data == BYIP && type == TYPE_PTR)
-	{
-	  strcpy(get_domain_name,qname);
-	  printf("RRs : TYPE_PTR  = %s\n",qname);
-	}
-      break;
-    case TYPE_HINFO:
-      len = *cp++;
-      cp += len;
-
-      len = *cp++;
-      cp += len;
-      break;
-    case TYPE_MX:
-      cp += 2;
-      len = parse_name(cp, qname, sizeof(qname));// Get domain name of exchanger
-      if(!len)
-	{
-	
-	  printf("TYPE_MX : Fail to get domain name of exechanger\n");
-	  return 0;
-	}
-      cp += len;
-      break;
-    case TYPE_SOA:
-      len = parse_name(cp, qname, sizeof(qname));// Get domain name of name server
-      if(!len)
-	{
-	  
-	  printf("TYPE_SOA : Fail to get domain name of name server\n");
-	  return 0;
-	}
-
-      cp += len;
-
-      len = parse_name(cp, qname, sizeof(qname));// Get domain name of responsible person
-      if(!len)
-	{
-	 
-	  printf("TYPE_SOA : Fail to get domain name of responsible person\n");
-	  return 0;
-	}
-      cp += len;
-
-      cp += 4;
-      cp += 4;
-      cp += 4;
-      cp += 4;
-      cp += 4;
-      break;
-    case TYPE_TXT:
-      break;// Just stash
-    default:
-      break;// Ignore
-    }
-  return cp;
-}
-
-
-/** 
-    @briefParse answer section in the DNS query. Store resolved IP address into destination address
-    @returnend address of answer section, fail - 0
-*/
-static int parse_name(
-		      char* cp,/**< Convert a compressed domain name to the human-readable form */
-		      char* qname, /**< store human-readable form(input,output); */
-		      unsigned int qname_maxlen/**< qname_max_len - max length of qname(input) */
-		      )
-{
-  unsigned int slen;// Length of current segment
-  int clen = 0;// Total length of compressed name
-  int indirect = 0;// Set if indirection encountered
-  int nseg = 0;// Total number of label in name
-
-  for(;;)
-    {
-      slen = *cp++;// Length of this segment
-      if (!indirect) clen++;
-
-      if ((slen & 0xc0) == 0xc0)// Is used in compression scheme?
-	{
-	  cp = &dns_buf[((slen & 0x3f)<<8) + *cp];// Follow indirection
-	  if(!indirect)clen++;
-	  indirect = 1;
-	  slen = *cp++;
-	}
-
-      if (slen == 0)// zero length == all done
-	break;
-
-      if (!indirect) clen += slen;
-
-      if((qname_maxlen -= slen+1) < 0)
-	{
-	  printf("Not enough memory\n");
-	  return 0;
-	}
-      while (slen-- != 0) *qname++ = (char)*cp++;
-      *qname++ = '.';
-
-      nseg++;
-    }
-
-  if(nseg == 0)*qname++ = '.';// Root name; represent as single dot
-  else --qname;
-
-  *qname = '\0';
-  //printf("Result of parsing (Q)NAME field : %s\n", qname);
-
-  return clen;// Length of compressed message// Length of compressed message
 }
