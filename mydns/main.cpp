@@ -36,7 +36,7 @@ int main(int argc, char* argv[]){
   if(argc==4)
   {
     std::cout<<"Main args: "<<argv[1]<<" " <<argv[2]<<std::endl;
-    ngethostbyname(argv[1], argv[2], atoi(argv[3]));
+    ngethostbyname(argv[1], argv[2], atoi(argv[3]), atoi(argv[4]));
   }
   else
   {
@@ -45,7 +45,7 @@ int main(int argc, char* argv[]){
   while(std::getline(inputFile, line)){
     std::cout<<i++<<std::endl;
     std::vector<std::string> x = split(line, ' ');
-    ngethostbyname(x[0].c_str(), x[1].c_str(), 252);
+    ngethostbyname(x[0].c_str(), x[1].c_str(), 252, atoi(argv[2]));
   }
   }
   return 0;

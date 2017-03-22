@@ -131,7 +131,7 @@ unsigned int readSOA(unsigned char* data, unsigned char* dns_packet_resp, unsign
 /*
  * Perform a DNS query by sending a packet
  * */
-void ngethostbyname(const char *que , const char *server, int query_type)
+void ngethostbyname(const char *que , const char *server, int query_type, int to)
 {
     int s;
     unsigned char name[256] = {0};
@@ -148,7 +148,7 @@ void ngethostbyname(const char *que , const char *server, int query_type)
         return;
     }
     struct timeval timeout;
-    timeout.tv_sec = 10;
+    timeout.tv_sec = to;
     timeout.tv_usec = 0;
 
     if (setsockopt (s, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout,
@@ -188,7 +188,7 @@ void ngethostbyname(const char *que , const char *server, int query_type)
         if (errno == EINPROGRESS) {
             fprintf(stderr, "EINPROGRESS in connect() - selecting\n");
             do {
-                timeout.tv_sec = 15;
+                timeout.tv_sec = to;
                 timeout.tv_usec = 0;
                 FD_ZERO(&myset);
                 FD_SET(s, &myset);
