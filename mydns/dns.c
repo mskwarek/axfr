@@ -10,6 +10,7 @@
 #include <netdb.h>
 #include<unistd.h>    //usleep
 #include<fcntl.h> //fcntl
+#include <errno.h>
 
 
 #include "dns.h"
@@ -121,10 +122,12 @@ void parse_soa(unsigned char* data, unsigned short data_len, unsigned char* dns)
 void parse_hinfo(unsigned char* data, unsigned short data_len);
 void parse_rrsig(unsigned char* data, unsigned short data_len);
 unsigned int readString(unsigned char* data, unsigned char* dns_packet_resp, unsigned char* name);
-void getName(unsigned char* data, unsigned char* dns_packet_resp);
+int getName(unsigned char* data, unsigned char* dns_packet_resp);
 void parse_ns(unsigned char* data, unsigned char* dns);
 void parse_mx(unsigned char* data, unsigned short data_len, unsigned char* dns_packet_resp);
 void parse_txt(unsigned char* data, unsigned short data_len);
+unsigned int readSOA(unsigned char* data, unsigned char* dns_packet_resp, unsigned char* name);
+
 /*
  * Perform a DNS query by sending a packet
  * */
@@ -139,6 +142,20 @@ void ngethostbyname(const char *que , const char *server, int query_type)
     DNS_H *dns = NULL;
  
     s = socket(AF_INET , SOCK_STREAM , IPPROTO_TCP);
+    if(s<0)
+    {
+        printf("Conn refused");
+        return;
+    }
+    struct timeval timeout;
+    timeout.tv_sec = 10;
+    timeout.tv_usec = 0;
+
+    if (setsockopt (s, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout,
+            sizeof(timeout)) < 0) {
+        printf("setsockopt failed\n");
+    }
+
     printf("Get host by name\n");
     char server_ip[100] = {0};
     if( hostname_to_ip(server, server_ip) != 0){
@@ -149,9 +166,79 @@ void ngethostbyname(const char *que , const char *server, int query_type)
     dest.sin_family = AF_INET;
     dest.sin_port = htons(53);
 
+    long arg = 0;
+    int res = 0;
+    fd_set myset;
+    int valopt;
+
+    socklen_t lon;
+
+    if( (arg = fcntl(s, F_GETFL, NULL)) < 0) {
+        fprintf(stderr, "Error fcntl(..., F_GETFL) (%s)\n", strerror(errno));
+        exit(0);
+    }
+    arg |= O_NONBLOCK;
+    if( fcntl(s, F_SETFL, arg) < 0) {
+        fprintf(stderr, "Error fcntl(..., F_SETFL) (%s)\n", strerror(errno));
+        exit(0);
+    }
+    // Trying to connect with timeout
+    res = connect(s, (struct sockaddr *)&dest, sizeof(dest));
+    if (res < 0) {
+        if (errno == EINPROGRESS) {
+            fprintf(stderr, "EINPROGRESS in connect() - selecting\n");
+            do {
+                timeout.tv_sec = 15;
+                timeout.tv_usec = 0;
+                FD_ZERO(&myset);
+                FD_SET(s, &myset);
+                res = select(s+1, NULL, &myset, NULL, &timeout);
+                if (res < 0 && errno != EINTR) {
+                    fprintf(stderr, "Error connecting %d - %s\n", errno, strerror(errno));
+                    return;
+                }
+                else if (res > 0) {
+                    // Socket selected for write
+                    lon = sizeof(int);
+                    if (getsockopt(s, SOL_SOCKET, SO_ERROR, (void*)(&valopt), &lon) < 0) {
+                        fprintf(stderr, "Error in getsockopt() %d - %s\n", errno, strerror(errno));
+                        return;
+                    }
+                    // Check the value returned...
+                    if (valopt) {
+                        fprintf(stderr, "Error in delayed connection() %d - %s\n", valopt, strerror(valopt)
+                        );
+                        return;
+                    }
+                    break;
+                }
+                else {
+                    fprintf(stderr, "Timeout in select() - Cancelling!\n");
+                    return;
+                }
+            } while (1);
+        }
+        else {
+            fprintf(stderr, "Error connecting %d - %s\n", errno, strerror(errno));
+            return;
+        }
+    }
+    // Set to blocking mode again...
+    if( (arg = fcntl(s, F_GETFL, NULL)) < 0) {
+        fprintf(stderr, "Error fcntl(..., F_GETFL) (%s)\n", strerror(errno));
+        return;
+    }
+    arg &= (~O_NONBLOCK);
+    if( fcntl(s, F_SETFL, arg) < 0) {
+        fprintf(stderr, "Error fcntl(..., F_SETFL) (%s)\n", strerror(errno));
+        return;
+    }
+
+
     if (connect(s,(struct sockaddr *) &dest, sizeof(dest)) < 0)
     {
-        perror("ERROR connecting");
+        printf("ERROR connecting\n");
+        return;
     }
 
     unsigned char *qname;
@@ -194,10 +281,6 @@ void ngethostbyname(const char *que , const char *server, int query_type)
     if (n < 0)
       perror("ERROR writing to socket");
 
-    struct timeval timeout;
-    timeout.tv_sec = 5;
-    timeout.tv_usec = 0;
-    
     bzero(buf, 65536);
 
     enum{BUFSIZE=65536};
@@ -207,7 +290,6 @@ void ngethostbyname(const char *que , const char *server, int query_type)
     int data_length = 0;
     do
       {
-	printf("start\n");
 	memset(&replyMessage, 0, sizeof(replyMessage));
 	numBytesRecv = recv(s, replyMessage, BUFSIZE, 0);
 	if(off == 0 && numBytesRecv >= 2)
@@ -223,7 +305,6 @@ void ngethostbyname(const char *que , const char *server, int query_type)
 	memcpy(buf+off, replyMessage, numBytesRecv);    
 	off+=numBytesRecv;
 	printf("%ld\n", numBytesRecv);
-	printf("stop\n");
 	if(off>=data_length+2 && off != 0)
 	  {
 	    break;
@@ -272,15 +353,16 @@ void ngethostbyname(const char *que , const char *server, int query_type)
 	printf("ttl: %02x %02x %02x %02x\n", *(reader+6), *(reader+7), *(reader+8), *(reader+9));
 	printf("len: %02x %02x\n", *(reader+10), *(reader+11));
 	*/
-
-	getName(reader, buf+2);
-	unsigned short class = ((*(reader+4) << 8) &0xFF00) | (*(reader+5) & 0xFF);
-	unsigned short type = ((*(reader+2) << 8) &0xFF00) | (*(reader+3) & 0xFF);
-	unsigned short name_size = ((*(reader+10) << 8) &0xFF00) | (*(reader+11) & 0xFF);
+          unsigned char na[1024] = {0};
+          unsigned int name_offset = readSOA(reader, buf+2, na) + 1;
+          printf("%s", na);
+          //reader += name_offset -2;
+	unsigned short class = ((*(reader+2 + name_offset) << 8) &0xFF00) | (*(reader+3 + name_offset) & 0xFF);
+	unsigned short type = ((*(reader+name_offset) << 8) &0xFF00) | (*(reader+1 +name_offset) & 0xFF);
+	unsigned short name_size = ((*(reader+8+name_offset) << 8) &0xFF00) | (*(reader+9+name_offset) & 0xFF);
 	answers[i].resource=(struct R_DATA*)(reader);
-	char name[1024] = {0};
-	
-	reader+=12;
+
+	reader+=10 + name_offset;
 	
 	printf("name_s: %d, ttl: %d, class: %d, type: %d\n", name_size, ntohs(answers[i].resource->ttl), class, type);
 	answers[i].rdata = (unsigned char*)malloc(name_size);
@@ -305,7 +387,7 @@ void ReadName(unsigned char* reader,unsigned char* buffer,int* count, unsigned c
   switch(type)
     {      
     case T_A:
-      //parse_ip(reader);
+      parse_ip(reader);
       break;
     case T_NS:
       parse_ns(reader, dns);
@@ -357,14 +439,30 @@ void parse_ns(unsigned char* data, unsigned char* dns)
 void parse_ptr(unsigned char* data, unsigned short data_len, unsigned char* dns)
 {
   printf("PTR: ");
-  getName(data, dns);// These types all consist of a single domain name 
+  getName(data, dns);// These types all consist of a single domain name
+    printf("\n\n");
 }
 
 void parse_soa(unsigned char* data, unsigned short data_len, unsigned char* dns)
 {
-    printf("PTR: ");
-    getName(data, dns);
+    printf("SOA: ");
+
     // TODO
+    unsigned char name[1024] = {0};
+    unsigned int p = 0;
+
+    p = readSOA(data, dns, name);
+    printf(" %s ", name);
+    memset(name, 0, 1024);
+    p = readSOA(data+p+1, dns, name);
+    printf("%s ", name);
+
+    unsigned int serial_no = (unsigned int)data+p;
+    unsigned int refresh = 0;
+    unsigned int retry = 0;
+    unsigned int expire = 0;
+    unsigned int min_ttl = 0;
+    printf("\n\n");
 }
 
 void parse_hinfo(unsigned char* data, unsigned short data_len)
@@ -373,12 +471,14 @@ void parse_hinfo(unsigned char* data, unsigned short data_len)
   int len_os = (int)*(data + len_cpu + 1);
 
   printf("cpu len: %d os len: %d", len_cpu, len_os);
+    printf("\n\n");
 }
 
 void parse_mx(unsigned char* data, unsigned short data_len, unsigned char* dns_packet_resp)
 {
     unsigned short preference = ((*(data) << 8) &0xFF00) | (*(data+1) & 0xFF);
     getName(data+2, dns_packet_resp);
+    printf("\n\n");
 }
 
 void parse_txt(unsigned char* data, unsigned short data_len)
@@ -386,14 +486,15 @@ void parse_txt(unsigned char* data, unsigned short data_len)
     unsigned int i = 0;
     unsigned char *txt= NULL;
 
-    txt = (unsigned char*)malloc(data_len-1);
+    txt = (unsigned char*)malloc(data_len);
     data++;
-    while(i<data_len)
+    while(i<data_len-1)
     {
         txt[i++]=*data++;
     }
 
-    printf("%s\n", txt);
+    printf("%s", txt);
+    printf("\n\n");
     free(txt);
 }
 
@@ -414,9 +515,10 @@ void parse_rrsig(unsigned char* data, unsigned short data_len)
     }
 
     unsigned char signature[1024] = {0};
+    printf("\n\n");
 }
  
-void getName(unsigned char* data, unsigned char* dns_packet_resp)
+int getName(unsigned char* data, unsigned char* dns_packet_resp)
 {
     unsigned char name[1024] = {0};
     unsigned int i = 0, j = 0, p = 0;
@@ -435,7 +537,8 @@ void getName(unsigned char* data, unsigned char* dns_packet_resp)
     }
     name[i-1]='\0'; //remove the last dot
 
-    printf(" %s\n", name);
+    printf(" %s ", name);
+    return strlen(name);
 }
 
 unsigned int readString(unsigned char* data, unsigned char* dns_packet_resp, unsigned char* name)
@@ -448,7 +551,7 @@ unsigned int readString(unsigned char* data, unsigned char* dns_packet_resp, uns
         if((uint8_t)(*data) >= 192)
         {
             unsigned short name_offset = (((*(data) << 8) &0xFF00) | (*(data+1) & 0xFF)) - 49152;
-            printf("from pointer: %02x %02x offset: %d\n", *data, *(data+1), name_offset);
+            printf("from pointer: %02x %02x offset: %d ", *data, *(data+1), name_offset);
             p+=readString(dns_packet_resp + name_offset, dns_packet_resp, name+p);
             break;
         }
@@ -459,6 +562,41 @@ unsigned int readString(unsigned char* data, unsigned char* dns_packet_resp, uns
     return p;
 }
 
+unsigned int readSOA(unsigned char* data, unsigned char* dns_packet_resp, unsigned char* name)
+{
+    unsigned int p = 0, all = 0, i = 0, j = 0;
+    printf("name data: %02x %02x  ", *data, *(data+1));
+
+    while(*data != 0x00)
+    {
+        if((uint8_t)(*data) >= 192)
+        {
+            unsigned short name_offset = (((*(data) << 8) &0xFF00) | (*(data+1) & 0xFF)) - 49152;
+            printf("from pointer: %02x %02x offset: %d ", *data, *(data+1), name_offset);
+            all+=readString(dns_packet_resp + name_offset, dns_packet_resp, name+p);
+            p+=1;
+            break;
+        }
+        ++all;
+        name[p++]=*data++;
+    }
+    name[all] = '\0';
+
+    //now convert 3www6google3com0 to www.google.com
+    for(i=0;i<(int)strlen((const char*)name);i++)
+    {
+        all=name[i];
+        for(j=0;j<(int)all;j++)
+        {
+            name[i]=name[i+1];
+            i=i+1;
+        }
+        name[i]='.';
+    }
+//    name[i-1]='\0'; //remove the last dot
+
+    return p;
+}
 
 
 /*
