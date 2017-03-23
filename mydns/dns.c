@@ -156,13 +156,13 @@ void ngethostbyname(const char *que , const char *server, int query_type, int to
         printf("setsockopt failed\n");
     }
 
-    printf("Get host by name\n");
-    char server_ip[100] = {0};
-    if( hostname_to_ip(server, server_ip) != 0){
-      return;
-    }
-    printf("Nameserver IP: %s\n", server_ip);
-    dest.sin_addr.s_addr = inet_addr(server_ip);
+    //printf("Get host by name\n");
+    //char server_ip[100] = {0};
+    //if( hostname_to_ip(server, server_ip) != 0){
+    //  return;
+    //}
+    printf("Nameserver IP: %s\n", server);
+    dest.sin_addr.s_addr = inet_addr(server);
     dest.sin_family = AF_INET;
     dest.sin_port = htons(53);
 
