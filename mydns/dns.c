@@ -11,8 +11,6 @@
 #include<unistd.h>    //usleep
 #include<fcntl.h> //fcntl
 #include <errno.h>
-
-
 #include "dns.h"
 //List of DNS Servers registered on the system
 char dns_servers[10][100];
@@ -120,13 +118,22 @@ void parse_ip(unsigned char* data);
 void parse_ptr(unsigned char* data, unsigned short data_len, unsigned char* dns);
 void parse_soa(unsigned char* data, unsigned short data_len, unsigned char* dns);
 void parse_hinfo(unsigned char* data, unsigned short data_len);
-void parse_rrsig(unsigned char* data, unsigned short data_len);
+void parse_rrsig(unsigned char* data, unsigned char*, unsigned short data_len);
 unsigned int readString(unsigned char* data, unsigned char* dns_packet_resp, unsigned char* name);
 int getName(unsigned char* data, unsigned char* dns_packet_resp);
 void parse_ns(unsigned char* data, unsigned char* dns);
 void parse_mx(unsigned char* data, unsigned short data_len, unsigned char* dns_packet_resp);
 void parse_txt(unsigned char* data, unsigned short data_len);
 unsigned int readSOA(unsigned char* data, unsigned char* dns_packet_resp, unsigned char* name);
+void parse_nsec(unsigned char* data, unsigned char*);
+void parse_cname(unsigned char* data, unsigned char* dns);
+void parse_rp(unsigned char* data);
+void parse_dnskey(unsigned char*, unsigned short);
+void parse_afsdb(unsigned char* data);
+void parse_aaaa(unsigned char* data);
+void parse_loc(unsigned char* data);
+void parse_srv(unsigned char* data, unsigned char*);
+void parse_naptr(unsigned char* data);
 
 /*
  * Perform a DNS query by sending a packet
@@ -353,7 +360,9 @@ void ngethostbyname(const char *que , const char *server, int query_type, int to
 	printf("ttl: %02x %02x %02x %02x\n", *(reader+6), *(reader+7), *(reader+8), *(reader+9));
 	printf("len: %02x %02x\n", *(reader+10), *(reader+11));
 	*/
-          unsigned char na[1024] = {0};
+	printf("%d ", i);
+
+	unsigned char na[1024] = {0};
           unsigned int name_offset = readSOA(reader, buf+2, na) + 1;
           printf("%s", na);
           //reader += name_offset -2;
@@ -363,8 +372,8 @@ void ngethostbyname(const char *que , const char *server, int query_type, int to
 	answers[i].resource=(struct R_DATA*)(reader);
 
 	reader+=10 + name_offset;
-	
-	printf("name_s: %d, ttl: %d, class: %d, type: %d\n", name_size, ntohs(answers[i].resource->ttl), class, type);
+
+	printf(" name_s: %d, ttl: %d, class: %d, type: %d   ", name_size, ntohs(answers[i].resource->ttl), class, type);
 	answers[i].rdata = (unsigned char*)malloc(name_size);
 	ReadName(reader,buf,&stop,answers[i].rdata, name_size, type, buf + 2);
 	reader+=name_size;
@@ -393,12 +402,13 @@ void ReadName(unsigned char* reader,unsigned char* buffer,int* count, unsigned c
       parse_ns(reader, dns);
       break;
     case T_CNAME:
+      parse_cname(reader, dns);
       break;
     case T_SOA:
       parse_soa(reader, (unsigned short)data_len, dns);
       break;
     case T_PTR:
-        parse_ptr(reader, (unsigned short)data_len, dns);
+      parse_ptr(reader, (unsigned short)data_len, dns);
       break;
     case T_HINFO:
       parse_hinfo(reader, (unsigned short)data_len);
@@ -410,18 +420,88 @@ void ReadName(unsigned char* reader,unsigned char* buffer,int* count, unsigned c
         parse_txt(reader, data_len);
         break;
     case T_RP:
+      parse_rp(reader);
+      break;
     case T_AFSDB:
+      parse_afsdb(reader);
+      break;
     case T_AAAA:
+      parse_aaaa(reader);
+      break;
     case T_LOC:
+      parse_loc(reader);
+      break;
     case T_SRV:
+      parse_srv(reader, dns);
+      break;
     case T_NAPTR:
+      parse_naptr(reader);
+      break;
     case T_RRSIG:
-      parse_rrsig(reader, (unsigned short) data_len);
+      parse_rrsig(reader, dns, (unsigned short) data_len);
       break;
     case T_NSEC:
+      parse_nsec(reader, dns);
+      break;
     case T_DNSKEY:
+      parse_dnskey(reader, (unsigned short)data_len);
       break;
     }
+}
+
+unsigned short parse_to_ushort(unsigned char* data)
+{
+  return ((*(data) << 8) &0xFF00) | (*(data+1) & 0xFF);
+}
+
+void parse_dnskey(unsigned char* data, unsigned short data_len)
+{
+  unsigned short flags = parse_to_ushort(data);
+  unsigned char protocol = *(data+2);
+  unsigned char algorithm = *(data+3);
+  int i = 0;
+  while(i < data_len - 4)
+    {
+      printf("%02x", *(data+i+4));
+      ++i;
+    }
+  printf("\n");
+}
+
+void parse_rp(unsigned char* data)
+{
+  printf("\n");
+}
+
+void parse_afsdb(unsigned char* data)
+{
+  printf("\n");
+}
+
+void parse_aaaa(unsigned char* data)
+{
+  printf("\n");
+}
+
+void parse_loc(unsigned char* data)
+{
+  printf("\n");
+}
+
+void parse_srv(unsigned char* data, unsigned char *dns)
+{
+  unsigned short priority = parse_to_ushort(data);
+  unsigned short weight = parse_to_ushort(data+2);
+  unsigned short port = parse_to_ushort(data+4);
+  unsigned char name[512] = {0};
+  readSOA(data+6, dns, name);
+  printf("SRV: %u %u %u %s", priority, weight, port, name);
+  printf("\n");
+}
+
+void parse_naptr(unsigned char* data)
+{
+  printf("\n");
 }
 
 void parse_ip(unsigned char* data)
@@ -443,11 +523,24 @@ void parse_ptr(unsigned char* data, unsigned short data_len, unsigned char* dns)
     printf("\n\n");
 }
 
+void parse_cname(unsigned char* data, unsigned char* dns)
+{
+  unsigned char name[512] = {0};
+  readSOA(data, dns, name);
+  printf("CNAME: %s\n", name);
+}
+
+
+unsigned int parse_to_uint(unsigned char* data)
+{
+  return (unsigned int)*data << 24 |(unsigned int)*(data+1) << 16 |
+    (unsigned int)*(data+2) << 8 | (unsigned int)*(data+3);
+}
+
 void parse_soa(unsigned char* data, unsigned short data_len, unsigned char* dns)
 {
     printf("SOA: ");
 
-    // TODO
     unsigned char name[1024] = {0};
     unsigned int p = 0;
 
@@ -456,12 +549,13 @@ void parse_soa(unsigned char* data, unsigned short data_len, unsigned char* dns)
     memset(name, 0, 1024);
     p = readSOA(data+p+1, dns, name);
     printf("%s ", name);
-
-    unsigned int serial_no = (unsigned int)data+p;
-    unsigned int refresh = 0;
-    unsigned int retry = 0;
-    unsigned int expire = 0;
-    unsigned int min_ttl = 0;
+    
+    unsigned int serial_no = parse_to_uint(data+p+3);
+    unsigned int refresh = parse_to_uint(data+p+7);
+    unsigned int retry = parse_to_uint(data+p+11);
+    unsigned int expire = parse_to_uint(data+p+15);
+    unsigned int min_ttl = parse_to_uint(data+p+19);
+    printf(" %u %u %u %u %u ", serial_no, refresh, retry, expire, min_ttl);
     printf("\n\n");
 }
 
@@ -498,24 +592,37 @@ void parse_txt(unsigned char* data, unsigned short data_len)
     free(txt);
 }
 
-void parse_rrsig(unsigned char* data, unsigned short data_len)
+void parse_rrsig(unsigned char* data, unsigned char* dns, unsigned short data_len)
 {
+
+  //TODO CONVERT TIME
     unsigned short type = ((*(data) << 8) &0xFF00) | (*(data+1) & 0xFF);
-    unsigned char algorithm = *data + 2;
-    unsigned char labels = *data + 3;
-    unsigned int ttl = 0;
-    unsigned int timestamp_exp = 0;
-    unsigned int timestamp_inc = 0;
+    unsigned char algorithm = *(data + 2)& 0xFF;
+    unsigned char labels = *(data + 3) & 0xFF;
+    unsigned int ttl = parse_to_uint(data+4);
+    unsigned int timestamp_exp = parse_to_uint(data+8);
+    unsigned int timestamp_inc = parse_to_uint(data+12);
     unsigned short key_tag = type = ((*(data + 16) << 8) &0xFF00) | (*(data+17) & 0xFF);
     unsigned char name[1024] = {0};
     unsigned int p = 0;
-    while(*data != 0x00)
-    {
-        name[p++]=*data++;
-    }
 
-    unsigned char signature[1024] = {0};
+    p = readSOA(data+18, dns, name);
+
+    printf("RRSIG: %u %u %u %u %u %u %u %s ", type, algorithm, labels, ttl, timestamp_exp, timestamp_inc, key_tag, name);
+    int i = 0;
+    while(i < data_len - p - 19)
+    {
+  	printf("%02x", *(data+p+i+19));
+  	++i;
+    }
     printf("\n\n");
+}
+
+void parse_nsec(unsigned char* data, unsigned char* dns)
+{
+  unsigned char name[512] = {0};
+  readSOA(data, dns, name);
+  printf("NSEC: %s\n", name);
 }
  
 int getName(unsigned char* data, unsigned char* dns_packet_resp)
@@ -544,14 +651,14 @@ int getName(unsigned char* data, unsigned char* dns_packet_resp)
 unsigned int readString(unsigned char* data, unsigned char* dns_packet_resp, unsigned char* name)
 {
     unsigned int p = 0;
-    printf("name data: %02x %02x  ", *data, *(data+1));
+    //printf("name data: %02x %02x  ", *data, *(data+1));
   
     while(*data != 0x00)
     {
         if((uint8_t)(*data) >= 192)
         {
             unsigned short name_offset = (((*(data) << 8) &0xFF00) | (*(data+1) & 0xFF)) - 49152;
-            printf("from pointer: %02x %02x offset: %d ", *data, *(data+1), name_offset);
+            //printf("from pointer: %02x %02x offset: %d ", *data, *(data+1), name_offset);
             p+=readString(dns_packet_resp + name_offset, dns_packet_resp, name+p);
             break;
         }
@@ -565,14 +672,14 @@ unsigned int readString(unsigned char* data, unsigned char* dns_packet_resp, uns
 unsigned int readSOA(unsigned char* data, unsigned char* dns_packet_resp, unsigned char* name)
 {
     unsigned int p = 0, all = 0, i = 0, j = 0;
-    printf("name data: %02x %02x  ", *data, *(data+1));
+    //printf("name data: %02x %02x  ", *data, *(data+1));
 
     while(*data != 0x00)
     {
         if((uint8_t)(*data) >= 192)
         {
             unsigned short name_offset = (((*(data) << 8) &0xFF00) | (*(data+1) & 0xFF)) - 49152;
-            printf("from pointer: %02x %02x offset: %d ", *data, *(data+1), name_offset);
+            //printf("from pointer: %02x %02x offset: %d ", *data, *(data+1), name_offset);
             all+=readString(dns_packet_resp + name_offset, dns_packet_resp, name+p);
             p+=1;
             break;
