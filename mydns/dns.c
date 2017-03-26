@@ -127,13 +127,15 @@ void parse_txt(unsigned char* data, unsigned short data_len);
 unsigned int readSOA(unsigned char* data, unsigned char* dns_packet_resp, unsigned char* name);
 void parse_nsec(unsigned char* data, unsigned char*);
 void parse_cname(unsigned char* data, unsigned char* dns);
-void parse_rp(unsigned char* data);
+void parse_rp(unsigned char* data, unsigned char*);
 void parse_dnskey(unsigned char*, unsigned short);
-void parse_afsdb(unsigned char* data);
+void parse_afsdb(unsigned char* data, unsigned char*);
 void parse_aaaa(unsigned char* data);
 void parse_loc(unsigned char* data);
 void parse_srv(unsigned char* data, unsigned char*);
 void parse_naptr(unsigned char* data);
+unsigned int parse_to_uint(unsigned char*);
+
 
 /*
  * Perform a DNS query by sending a packet
@@ -420,10 +422,10 @@ void ReadName(unsigned char* reader,unsigned char* buffer,int* count, unsigned c
         parse_txt(reader, data_len);
         break;
     case T_RP:
-      parse_rp(reader);
+      parse_rp(reader, dns);
       break;
     case T_AFSDB:
-      parse_afsdb(reader);
+      parse_afsdb(reader, dns);
       break;
     case T_AAAA:
       parse_aaaa(reader);
@@ -468,23 +470,42 @@ void parse_dnskey(unsigned char* data, unsigned short data_len)
   printf("\n");
 }
 
-void parse_rp(unsigned char* data)
+void parse_rp(unsigned char* data, unsigned char* dns)
 {
+  unsigned char mailbox[1024] = {0};
+  unsigned char txt_rr[1024] = {0};
+
+  int x = readSOA(data, dns, mailbox);
+  readSOA(data+x+1, dns, txt_rr);
+  printf(" %s %s ", mailbox, txt_rr);
   printf("\n");
 }
 
-void parse_afsdb(unsigned char* data)
+void parse_afsdb(unsigned char* data, unsigned char* dns)
 {
+  unsigned short subtype = parse_to_ushort(data);
+  unsigned char hostname[1024] = {0};
+  readSOA(data+2, dns, hostname);
+  printf(" %u %s ", subtype, hostname);
   printf("\n");
 }
 
 void parse_aaaa(unsigned char* data)
 {
+  printf("%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x", *(data), *(data+1), *(data+2), *(data+3), *(data+4), *(data+5), *(data+6), *(data+7), *(data+8), *(data+9), *(data+10), *(data+11), *(data+12), *(data+13), *(data+14), *(data+15)); 
   printf("\n");
 }
 
 void parse_loc(unsigned char* data)
 {
+  uint8_t size = (uint8_t)*data+1;
+  uint8_t version = (uint8_t)*data;
+  uint8_t hor_precision = (uint8_t)*data+2;
+  uint8_t ver_precision = (uint8_t)*data+3;
+  unsigned int latitude = parse_to_uint(data+4);
+  unsigned int longitude = parse_to_uint(data+8);
+  unsigned int altitude = parse_to_uint(data+12);
+  printf("%u, %u, %u, %u, %u, %u, %u", version, size, hor_precision, ver_precision, latitude, longitude, altitude );
   printf("\n");
 }
 
