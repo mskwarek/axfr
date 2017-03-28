@@ -33,7 +33,7 @@ int main(int argc, char* argv[]){
   std::string line;
   int i=0;
 
-  if(argc>=4)
+  if(argc>=5)
   {
     std::cout<<"Main args: "<<argv[1]<<" " <<argv[2]<<std::endl;
     ngethostbyname(argv[1], argv[2], argv[5], atoi(argv[3]), atoi(argv[4]));
