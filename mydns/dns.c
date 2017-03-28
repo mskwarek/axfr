@@ -199,6 +199,7 @@ void ngethostbyname(const char *que , const char *server, const char *dst_log_pa
                 res = select(s+1, NULL, &myset, NULL, &timeout);
                 if (res < 0 && errno != EINTR) {
                     fprintf(stderr, "Error connecting %d - %s\n", errno, strerror(errno));
+                    close(s);
                     return;
                 }
                 else if (res > 0) {
@@ -206,35 +207,41 @@ void ngethostbyname(const char *que , const char *server, const char *dst_log_pa
                     lon = sizeof(int);
                     if (getsockopt(s, SOL_SOCKET, SO_ERROR, (void*)(&valopt), &lon) < 0) {
                         fprintf(stderr, "Error in getsockopt() %d - %s\n", errno, strerror(errno));
+                        close(s);
                         return;
                     }
                     // Check the value returned...
                     if (valopt) {
                         fprintf(stderr, "Error in delayed connection() %d - %s\n", valopt, strerror(valopt)
                         );
+                        close(s);
                         return;
                     }
                     break;
                 }
                 else {
                     fprintf(stderr, "Timeout in select() - Cancelling!\n");
+                    close(s);
                     return;
                 }
             } while (1);
         }
         else {
             fprintf(stderr, "Error connecting %d - %s\n", errno, strerror(errno));
+            close(s);
             return;
         }
     }
     // Set to blocking mode again...
     if( (arg = fcntl(s, F_GETFL, NULL)) < 0) {
         fprintf(stderr, "Error fcntl(..., F_GETFL) (%s)\n", strerror(errno));
+        close(s);
         return;
     }
     arg &= (~O_NONBLOCK);
     if( fcntl(s, F_SETFL, arg) < 0) {
         fprintf(stderr, "Error fcntl(..., F_SETFL) (%s)\n", strerror(errno));
+        close(s);
         return;
     }
 
@@ -242,6 +249,7 @@ void ngethostbyname(const char *que , const char *server, const char *dst_log_pa
     if (connect(s,(struct sockaddr *) &dest, sizeof(dest)) < 0)
     {
         printf("ERROR connecting\n");
+        close(s);
         return;
     }
 
@@ -282,8 +290,9 @@ void ngethostbyname(const char *que , const char *server, const char *dst_log_pa
     
     int len = (unsigned int)sizeof(struct DNS_HEADER) + (strlen((const char*)qname)+1) + sizeof(struct QUESTION);
     int n = write(s, (char*)buf, len);
-    if (n < 0)
-      perror("ERROR writing to socket");
+    if (n < 0) {
+        perror("ERROR writing to socket");
+    }
 
     bzero(buf, 65536);
 

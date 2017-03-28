@@ -45,7 +45,7 @@ int main(int argc, char* argv[]){
   while(std::getline(inputFile, line)){
     std::cout<<i++<<std::endl;
     std::vector<std::string> x = split(line, ' ');
-    ngethostbyname(x[0].c_str(), x[1].c_str(), argv[5], 252, atoi(argv[2]));
+    ngethostbyname(x[0].c_str(), x[1].c_str(), argv[3], 252, atoi(argv[2]));
   }
   }
   return 0;
