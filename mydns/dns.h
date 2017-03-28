@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 
-void ngethostbyname (const char* , const char*, int, int);
+void ngethostbyname (const char* , const char*, const char *dst_log_path, int, int);
 
 /**
    @filedns.h
