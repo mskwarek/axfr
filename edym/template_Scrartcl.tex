@@ -1,0 +1,27 @@
+\documentclass[a4paper,onecolumn,oneside,12pt]{mwrep}
+
+\usepackage{polski}
+\usepackage{graphicx}
+\usepackage{fontspec}
+\usepackage{lipsum}
+\usepackage{afterpage}
+
+%opening
+\title{MSc tba}
+\author{Marcin Skwarek}
+
+\begin{document}
+
+\input{0intro}
+\tableofcontents
+
+\pagenumbering{arabic}
+\setcounter{page}{4}
+\input{1teoria}
+\input{implementacja}
+
+
+\bibliography{bibliography}
+\nocite{*}
+\bibliographystyle{plain}
+\end{document}
