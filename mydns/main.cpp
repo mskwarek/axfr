@@ -47,6 +47,7 @@ int main(int argc, char* argv[]){
     std::vector<std::string> x = split(line, ' ');
     ngethostbyname(x[0].c_str(), x[1].c_str(), argv[3], 252, atoi(argv[2]));
   }
+  inputFile.close();
   }
   return 0;
 }

@@ -1,6 +1,6 @@
 #include<stdio.h> //printf
 #include<string.h>    //strlen
-#include<stdlib.h>    //malloc
+#include<stdlib.h>    
 #include<sys/socket.h>    //you know what this is for
 #include<arpa/inet.h> //inet_addr , inet_ntoa , ntohs etc
 #include<netinet/in.h>
@@ -142,7 +142,7 @@ unsigned int parse_to_uint(unsigned char*);
  * */
 void ngethostbyname(const char *que , const char *server, const char *dst_log_path, int query_type, int to)
 {
-    int s;
+    int s = -1;
     unsigned char name[256] = {0};
     unsigned char buf[65536] = {0};
     struct hostent *he = NULL;
@@ -172,10 +172,10 @@ void ngethostbyname(const char *que , const char *server, const char *dst_log_pa
 
     long arg = 0;
     int res = 0;
-    fd_set myset;
-    int valopt;
+    fd_set myset = {0};
+    int valopt = 0;
 
-    socklen_t lon;
+    socklen_t lon = {0};
 
     if( (arg = fcntl(s, F_GETFL, NULL)) < 0) {
         fprintf(stderr, "Error fcntl(..., F_GETFL) (%s)\n", strerror(errno));
@@ -253,7 +253,7 @@ void ngethostbyname(const char *que , const char *server, const char *dst_log_pa
         return;
     }
 
-    unsigned char *qname;
+    unsigned char *qname = NULL;
     struct QUESTION *qinfo = NULL;
     unsigned char host[128] = {0}; 
       //Set the DNS structure to standard queries
@@ -332,8 +332,8 @@ void ngethostbyname(const char *que , const char *server, const char *dst_log_pa
     printf("\n n: %d, offset: %d, datalen: %d", n, off, ntohs(dns->len));
 
 
-    int i , j , stop;
-    unsigned char *reader;
+    int i =0  , j = 0;
+    unsigned char *reader = NULL;
     struct sockaddr_in a = {0};
 
     struct RES_RECORD *answers = NULL;
@@ -358,7 +358,7 @@ void ngethostbyname(const char *que , const char *server, const char *dst_log_pa
     reader = &buf[sizeof(struct DNS_HEADER) + (strlen((const char*)qname)+1) + sizeof(struct QUESTION)];
     
     //Start reading answers
-    stop=0;
+ 
 
     for(i=0;i<ntohs(dns->ans_count);i++)
       {
@@ -380,7 +380,7 @@ void ngethostbyname(const char *que , const char *server, const char *dst_log_pa
 	ReadName(reader, name_size, type, buf + 2, f);
 	reader+=name_size;
       }
-
+    fclose(f);
     for(i=0; i < ntohs(dns->ans_count); ++i)
     {
         free(answers[i].rdata);
@@ -485,7 +485,7 @@ void parse_afsdb(unsigned char* data, unsigned char* dns, FILE* f)
   unsigned short subtype = parse_to_ushort(data);
   unsigned char hostname[1024] = {0};
   readSOA(data+2, dns, hostname);
-    fprintf(f, " %u %s\n", subtype, hostname);;
+  fprintf(f, " %u %s\n", subtype, hostname);;
 }
 
 void parse_aaaa(unsigned char* data, FILE* f)
@@ -597,7 +597,7 @@ void parse_txt(unsigned char* data, unsigned short data_len, FILE* f)
     unsigned int i = 0;
     unsigned char *txt= NULL;
 
-    txt = (unsigned char*)malloc(data_len);
+    txt = (unsigned char*)calloc(data_len, sizeof(unsigned char));
     data++;
     while(i<data_len-1)
     {
@@ -729,7 +729,7 @@ unsigned int readSOA(unsigned char* data, unsigned char* dns_packet_resp, unsign
  * */
 void ChangetoDnsNameFormat(unsigned char* dns,unsigned char* host) 
 {
-    int lock = 0 , i;
+    int lock = 0 , i = 0;
     strcat((char*)host,".");
      
     for(i = 0 ; i < strlen((char*)host) ; i++) 
@@ -749,10 +749,10 @@ void ChangetoDnsNameFormat(unsigned char* dns,unsigned char* host)
 
 int hostname_to_ip(const char *hostname , char *ip)
 {
-  int sockfd;
-  struct addrinfo hints, *servinfo, *p;
-  struct sockaddr_in *h;
-  int rv;
+  int sockfd = 0;
+  struct addrinfo hints = {0}, *servinfo = NULL, *p = NULL;
+  struct sockaddr_in *h = NULL;
+  int rv = 0;
 
   memset(&hints, 0, sizeof hints);
   hints.ai_family = AF_UNSPEC; // use AF_INET6 to force IPv6

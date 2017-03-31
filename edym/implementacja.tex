@@ -1,0 +1,19 @@
+\chapter{Implementacja}
+Przeanalizowanie problemu postawionego w niniejszej pracy magisterskiej wymagało implementacji własnych narzędzi. Jak wcześniej wspomniano, programy dostępne w sieci są bardzo dobre (dig \cite{dig}, axfr-tool \cite{git_axfr_tool}, robotex \cite{robotex}) jednak nie zapewniają oczekiwanej wydajności. Wynika to z faktu, że są one nastawione głównie na analizę konkretnego przypadku. Narzędzia są używane głównie przez pentesterów, których typowym zadaniem jest przetestowanie pod kątem bezpieczeństwa pewnej aplikacji. Proces ten sam w sobie jest niezwykle złożony i często wymaga nawet tygodni pracy, dlatego czas w jakim wykonywał się będzie program sprawdzający podatności DNS nie jest aż tak istotny. W podejściu prezentowanym w tej pracy założono, że przeanalizuje się możliwie jak najwięcej domen dostępnych w sieci internet. Dlatego też różnica procesowania jednej pary domena -- adres IP serwera autorytatywnego już nawet na poziomie kilku sekund pozwala zaobserwować bardzo duży skok wydajności. 
+
+Dojście do rozwiązania optymalnego nie było zbyt oczywiste. Początkowe rozwiązania opierały się na próbach nabudowania managera zarządzającego procesami w których uruchamiane były zewnętrzne narzędzia -- głównie dig. Rozwiązanie takie miało szereg zalet, na przykład było bardzo skalowalne i łatwe do zrealizowania. Niestety okazało się, że manager zarządzający procesami wymaga zbyt dużej ilości zasobów, a głównie pamięci RAM, dlatego wymuszone zostało zrezygnowanie z tego podejścia. 
+
+Ostatecznie zdecydowano się na napisanie własnego narzędzia umożliwiającego transfer strefy DNS. Wybór padł na język programowania C \cite{clanguage} w wersji standardu c03 \cite{c03std}. Oczywiście aplikacje pisane w języku C nie należą do rozwiązań prostych, jednak są bardzo dobrym kompromisem pomiędzy wysokim poziomem abstrakcji modeli programistycznych i łatwością dostępu do interfejsów sieciowych. Ponadto język C charakteryzuje się dość dobrą szybkością działania. Kryterium to było jednym z kluczowych przy implementacji.
+
+Rolę danych wejściowych programu mogą pełnić odpowiednio:
+\begin{enumerate}
+	\item plik tekstowy w formacie \textit{adres\_domeny}|\textit{IP\_serwera\_autorytatywnego},
+	\item para parametrów wejściowych podanych w odpowiedniej kolejności - \textit{adres\_domeny IP\_serwera\_autorytatywnego}. 
+\end{enumerate}
+Zdecydowano się na takie rozróżnienie z prostego powodu. Autor rozwiązania chciał zachować podobieństwo tworzonego rozwiązania do programu dig, który jest wykorzystywany przez wiele osób. Dodatkowo, dużo łatwiej można testować logikę programu na małych porcjach danych i opcja numer 2. została w pewnym sensie funckją debugową. Jako wspomniane dane testowe najczęściej wykorzystywana była domena \textit{zonetransfer.me}\cite{zonetransfer}, której autor specjalnie umożliwia transfer strefy, aby uzmysłowić innym ludziom zagrożenie wynikające z niepowołanego korzystania.
+
+Logika programu jest bardzo prosta. Początkowo budowana jest jednostka APDU protokołu DNS z odpowiednimi danymi, a w szczególności z poprawnie ustawioną flagą \textit{qtype} odpowiedzialną za identyfikację rodzaju zapytania DNS. Co ważne, mechanizm AXFR wymaga używania nietypowego dla DNS protokołu TCP.
+
+Komunikacja z serwerami autorytatywnymi została oparta na blokujących socketach. Dodatkowo, zaimplementowany został autorski mechanizm pozwalający na wykorzystywanie timeoutów podczas łączenia się z serwerem. 
+
+Algorytm postępowania w przypadku odebrania pakietu danych przedstawiony jest na rysunku\ref{}.
