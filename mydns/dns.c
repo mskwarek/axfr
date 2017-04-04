@@ -135,6 +135,7 @@ void parse_loc(unsigned char* data, FILE* f);
 void parse_srv(unsigned char* data, unsigned char*, FILE* f);
 void parse_naptr(unsigned char* data, FILE* f);
 unsigned int parse_to_uint(unsigned char*);
+void parse_default(unsigned char* data, unsigned short data_len, FILE* f);
 
 
 /*
@@ -369,7 +370,7 @@ void ngethostbyname(const char *que , const char *server, const char *dst_log_pa
 
 	unsigned short class = ((*(reader+2 + name_offset) << 8) &0xFF00) | (*(reader+3 + name_offset) & 0xFF);
 	unsigned short type = ((*(reader+name_offset) << 8) &0xFF00) | (*(reader+1 +name_offset) & 0xFF);
-          unsigned int ttl = parse_to_uint(reader+4);
+          unsigned int ttl = parse_to_uint(reader+4+name_offset);
 	unsigned short name_size = ((*(reader+8+name_offset) << 8) &0xFF00) | (*(reader+9+name_offset) & 0xFF);
 	answers[i].resource=(struct R_DATA*)(reader);
 
@@ -448,6 +449,9 @@ void ReadName(unsigned char* reader,size_t data_len, unsigned short type, unsign
     case T_DNSKEY:
       parse_dnskey(reader, (unsigned short)data_len, f);
       break;
+    default:
+      parse_default(reader, (unsigned short) data_len, f);
+      break;
     }
 }
 
@@ -455,7 +459,10 @@ unsigned short parse_to_ushort(unsigned char* data)
 {
   return ((*(data) << 8) &0xFF00) | (*(data+1) & 0xFF);
 }
+void parse_default(unsigned char* data, unsigned short data_len, FILE* f)
+{
 
+}
 void parse_dnskey(unsigned char* data, unsigned short data_len, FILE* f)
 {
   unsigned short flags = parse_to_ushort(data);
