@@ -525,7 +525,30 @@ void parse_srv(unsigned char* data, unsigned char *dns, FILE* f)
 
 void parse_naptr(unsigned char* data, FILE* f)
 {
-    fprintf(f,"\n");
+    unsigned short order = parse_to_ushort(data);
+    data+=2;
+    unsigned short preference = parse_to_ushort(data);
+    ++data;
+    unsigned char flags_length = *(data);
+    unsigned char *txt= NULL;
+    unsigned char *txt2= NULL;
+    int i =0;
+
+    txt = (unsigned char*)calloc(flags_length+1, sizeof(unsigned char));
+    while(i<flags_length-1)
+    {
+        txt[i++]=*data++;
+    }
+    txt[i]='\0';
+
+    unsigned char service_len = *(data);
+    txt2 = (unsigned char*)calloc(service_len+1, sizeof(unsigned char));
+    while(i<service_len-1)
+    {
+        txt2[i++]=*data++;
+    }
+    txt2[i]='\0';
+    fprintf(f,"%u %u %s %s\n", order, preference, txt, txt2);
 }
 
 void parse_ip(unsigned char* data, FILE* f)
