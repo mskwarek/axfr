@@ -65,10 +65,7 @@ Bardzo ważnym punktem jest wspomniana w poprzednim akapicie ,,chęć'' dołącz
 	\item pozyskać adres IP.
 \end{enumerate}
 
-\subsection{Strefa DNS}
-Strefa DNS jest pojęciem, które określa wszystkie nazywy za które odpowiedzialny jest konkretny serwer przestrzeni nazw. Bardzo trafne jest tu porównanie całego systemu do systemu plików. 
-
-Nazwa domeny bezpośrednio określa jej miejsce w całej przestrzeni nazw, podobnie jak ścieżka bezwzględna pliku określa jego miejsce w całym systemie. Po rejestracji domeny, jest ona dołączana w odpowiednie miejsce w hierarchii. Przykład domeny \textit{google.com} razem z jej poddomenami i odpowiednimi miejscami w herarchii systemu przedstawiono na rysunku \ref{example_domain_tree}.
+Bardzo trafne jest tu porównanie całego systemu Domain Name System do struktury plików w systemach operacyjnych z rodziny UNIX.  Nazwa domeny bezpośrednio określa jej miejsce w całej przestrzeni nazw, podobnie jak ścieżka bezwzględna pliku określa jego miejsce w całym systemie. Po rejestracji domeny, jest ona dołączana w odpowiednie miejsce w hierarchii. Przykład domeny \textit{google.com} razem z jej poddomenami i odpowiednimi miejscami w herarchii systemu przedstawiono na rysunku \ref{example_domain_tree}.
 
 \begin{center}
 	\begin{figure}
@@ -78,6 +75,19 @@ Nazwa domeny bezpośrednio określa jej miejsce w całej przestrzeni nazw, podob
 \end{center}
 
 Serwer autorytatywny (ang. \textit{domain authority}) posiada odgórne przyzwolenie na zarządzanie nazwami swoich hostów (kto przyznaje(?)). Ze względu na drzewiastą strukturę systemu można oczekiwać, że kolejne domeny oraz ich serwery autorytatywne będą delegować odpowiedzialność za kolejne strefy do serwerów niższego poziomu. W ten sposób, powołując się na przykład przedstawiony na rysunku \ref{example_domain_tree} serwer autorytatywny com. zarządza nazwami w domenie com, natomiast zarządzanie nazwami w domenie google.com przekazuje do niższego szczeblem serwera przestrzeni nazw. W ten sposób serwer domeny google.com ma możliwość przypisywania nazw takim domenom jak zaprezentowane support.google.com.
+
+\subsection{Domena DNS}
+Domeną określa się dany podzbiór herarchii DNS. Są to wszystkie poddomeny podlegające tej samej domenie wyższego poziomu. Odnosząc się do wcześniej przywołanego porównania do systemu plików -- domena to odpowiednik folderu. Może zawierać kolejne domeny, może być określana zarówno na bardzo wysokim (domeny poziomu TLD) jak i bardzo szczegółowym(domeny 2-3 LD) poziomie abstrakcji. Jeśli chcielibyśmy reprezentować system DNS jako drzewo, to domeną DNS nazwiemy węzeł drzewa i wszystkie węzły które są jego potomkami. Pojęcie domeny i elementy które ono określa przedstawiono na rysunku \ref{domain_dns_example}.
+
+\subsection{Strefa DNS}
+Strefa DNS jest pojęciem, które określa zbiór domen za które odpowiedzialny jest konkretny serwer przestrzeni nazw. Jeśli wyobrazimy sobie hierarchię DNS jako drzewo, w którym węzłami są kolejne nazwy domen, to strefą DNS będzie zbiór węzłów tego drzewa. Zbiór węzłów wyznaczany jest na podstawie informacji o serwerze autorytatywnym odpowiedzialnym za daną domenę. Te węzły (domeny) których nazwami zarządza ten sam serwer znajdują się w jednej strefie DNS. Przykładowy podział systemu na konkretne strefy został zaprezentowany na rysunku \ref{dns_zone_example}.
+
+\subsection{Strefa DNS a domena DNS}
+
+
+\subsection{Kompletne nazwy domen}
+Określeniem pełne, kompletne lub zupełne nazwy domen (ang \textit{Fully Qualified Domain Names (FQDNs)}) nazywane są te domeny, których nazwy zawierają domenę każdego poziomu, począwszy od lokalnej, aż po domenę główną, czyli root. Łatwo dostrzec analogię do wcześniej wspomnianego systemu pliku w systemach operacyjnych UNIX pomiędzy FQDN a bezpośrednią ścieżką do pliku. Różnicą jest tu jednak sposób odczytywania takiej ścieżki. W systemach DNS najbardziej ogólny węzeł znajduje się na skrajnie prawej pozycji a poruszając się w stronę lewą dochodzimy do kolejnych lokalnych domen. 
+
 
 \chapter{Przegląd dostępnych narzędzi}
 Społeczność internetu oferuje bardzo szeroką gamę narzędzi umożliwiających pozyskiwanie informacji na podstawie protokołu DNS. Bardzo użytecznym i przydatnym narzędziem jest w tym przypadku program dig. Wspomniany program ma jednak znaczącą wadę -- jest wydajny jedynie przy niewielkiej liczbie odpytywanych domen. Dodatkową niedogodnością jest, wbrew pozorom, fakt, że program wchodzi w skład pakietu Open Source bind. Ten, jak każde oprogramowanie na wolnej licencji, cierpi na szereg niedogodności z tym związanych. Najbardziej prozaicznym problemem jest fakt, że oprogramowanie jest tworzone przez wiele osób, więc bardzo trudno zastosować jeden standard kodowania, gdyż każda z osób ma swój preferowany. Poza tym, dużą wadą jest trudność wprowadzania zmian w tego typu oprogramowaniu, wynikająca zarówno z punktu poprzedniego jak i ze złożoności programu, którą cechuje się dig w tym momencie.
