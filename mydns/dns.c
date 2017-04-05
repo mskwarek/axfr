@@ -38,7 +38,7 @@ enum
     T_AAAA  = 28,
     T_LOC = 29,
     T_SRV = 33,
-    T_NAPTR = 25,
+    T_NAPTR = 35,
     T_RRSIG = 46,
     T_NSEC = 47,
     T_DNSKEY = 48
@@ -133,7 +133,7 @@ void parse_afsdb(unsigned char* data, unsigned char*, FILE* f);
 void parse_aaaa(unsigned char* data, FILE* f);
 void parse_loc(unsigned char* data, FILE* f);
 void parse_srv(unsigned char* data, unsigned char*, FILE* f);
-void parse_naptr(unsigned char* data, FILE* f);
+void parse_naptr(unsigned char* data, unsigned short, FILE* f);
 unsigned int parse_to_uint(unsigned char*);
 void parse_default(unsigned char* data, unsigned short data_len, FILE* f);
 
@@ -330,7 +330,7 @@ void ngethostbyname(const char *que , const char *server, const char *dst_log_pa
     dns_buf = buf;
 
     dns = (struct DNS_HEADER*) &buf;
-    printf("\n n: %d, offset: %d, datalen: %d", n, off, ntohs(dns->len));
+    printf("\n n: %d, offset: %d, datalen: %d\n", n, off, ntohs(dns->len));
 
 
     int i =0  , j = 0;
@@ -340,7 +340,7 @@ void ngethostbyname(const char *que , const char *server, const char *dst_log_pa
     struct RES_RECORD *answers = NULL;
 
     unsigned char filename[512] = {0};
-    snprintf(filename, 512, "%s/%s_%s.resp", dst_log_path, que, server);
+    snprintf(filename, 512, "%s/%s_%s.axfr", dst_log_path, que, server);
     printf("%s\n", filename);
     FILE *f = fopen(filename, "w");
     if (f == NULL)
@@ -376,7 +376,7 @@ void ngethostbyname(const char *que , const char *server, const char *dst_log_pa
 
 	reader+=10 + name_offset;
 
-	fprintf(f, "%s ttl: %d type: %d ", na, ttl, type);
+	fprintf(f, "%s\t%d\t%d\t", na, ttl, type);
 	answers[i].rdata = (unsigned char*)malloc(name_size);
 	ReadName(reader, name_size, type, buf + 2, f);
 	reader+=name_size;
@@ -438,7 +438,7 @@ void ReadName(unsigned char* reader,size_t data_len, unsigned short type, unsign
       parse_srv(reader, dns, f);
       break;
     case T_NAPTR:
-      parse_naptr(reader, f);
+      parse_naptr(reader, (unsigned short) data_len, f);
       break;
     case T_RRSIG:
       parse_rrsig(reader, dns, (unsigned short) data_len, f);
@@ -509,7 +509,7 @@ void parse_loc(unsigned char* data, FILE* f)
   unsigned int latitude = parse_to_uint(data+4);
   unsigned int longitude = parse_to_uint(data+8);
   unsigned int altitude = parse_to_uint(data+12);
-    fprintf(f, "%u, %u, %u, %u, %u, %u, %u\n", version, size, hor_precision, ver_precision, latitude, longitude, altitude );
+    fprintf(f, "%u %u %u %u %u %u %u\n", version, size, hor_precision, ver_precision, latitude, longitude, altitude );
 }
 
 void parse_srv(unsigned char* data, unsigned char *dns, FILE* f)
@@ -523,32 +523,67 @@ void parse_srv(unsigned char* data, unsigned char *dns, FILE* f)
     fprintf(f, "\n");
 }
 
-void parse_naptr(unsigned char* data, FILE* f)
+void parse_naptr(unsigned char* data, unsigned short data_len, FILE* f)
 {
     unsigned short order = parse_to_ushort(data);
     data+=2;
     unsigned short preference = parse_to_ushort(data);
+    data+=2;
+    unsigned char flags_length = *(data) & 0xFF;
     ++data;
-    unsigned char flags_length = *(data);
     unsigned char *txt= NULL;
     unsigned char *txt2= NULL;
+
+    unsigned char *txt3= NULL;
+    unsigned char *txt4= NULL;
+        
     int i =0;
 
     txt = (unsigned char*)calloc(flags_length+1, sizeof(unsigned char));
-    while(i<flags_length-1)
+    while(i<flags_length)
     {
         txt[i++]=*data++;
+        
     }
     txt[i]='\0';
 
-    unsigned char service_len = *(data);
+    unsigned char service_len = *(data) & 0xFF;
+    ++data;
+    i=0;
     txt2 = (unsigned char*)calloc(service_len+1, sizeof(unsigned char));
-    while(i<service_len-1)
+    while(i<service_len)
     {
         txt2[i++]=*data++;
     }
     txt2[i]='\0';
-    fprintf(f,"%u %u %s %s\n", order, preference, txt, txt2);
+
+    unsigned char regex_len = *(data) & 0xFF;
+    ++data;
+    i=0;
+    txt3 = (unsigned char*)calloc(regex_len+1, sizeof(unsigned char));
+    while(i<regex_len)
+    {
+        txt3[i++]=*data++;
+    }
+    txt3[i]='\0';
+    
+    i=0;
+    int rep_len = data_len - 5 - 1 -1 - 1 -service_len-regex_len;
+    ++data;
+//printf("\n\n\n DUPA : %d\n\n", rep_len);
+    txt4 = (unsigned char*)calloc(rep_len+1, sizeof(unsigned char));
+    while(i<rep_len)
+    {
+      txt4[i++]=*data++;
+    }
+    txt4[i]='\0';
+    
+    fprintf(f,"NAPTR: %u %u %d %d %s %s %s %s\n", order, preference, flags_length, service_len, txt, txt2, txt3, txt4);
+free(txt);
+    free(txt2);
+    free(txt3);
+    free(txt4);
+    
 }
 
 void parse_ip(unsigned char* data, FILE* f)
