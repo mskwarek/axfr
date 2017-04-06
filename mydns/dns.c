@@ -111,6 +111,7 @@ static unsigned char * dns_answer(unsigned char *cp);/* analyze a answer part in
 static int parse_name(char* cp,char* qname, unsigned int qname_maxlen);/* analyze a qname in each part. */
 
 //Function Prototypes
+void convert_name(unsigned char *name);
 void ChangetoDnsNameFormat (unsigned char*,unsigned char*);
 void ReadName(unsigned char* reader, size_t data_len, unsigned short type, unsigned char* dns, FILE* f);
 int hostname_to_ip(const char *hostname , char *ip);
@@ -569,7 +570,7 @@ void parse_naptr(unsigned char* data, unsigned short data_len, FILE* f)
     
     i=0;
     int rep_len = data_len - 5 - 1 -1 - 1 -service_len-regex_len;
-    ++data;
+    // ++data;
 //printf("\n\n\n DUPA : %d\n\n", rep_len);
     txt4 = (unsigned char*)calloc(rep_len+1, sizeof(unsigned char));
     while(i<rep_len)
@@ -577,9 +578,12 @@ void parse_naptr(unsigned char* data, unsigned short data_len, FILE* f)
       txt4[i++]=*data++;
     }
     txt4[i]='\0';
-    
+
+    convert_name(txt4);
+
     fprintf(f,"NAPTR: %u %u %d %d %s %s %s %s\n", order, preference, flags_length, service_len, txt, txt2, txt3, txt4);
-free(txt);
+    
+    free(txt);
     free(txt2);
     free(txt3);
     free(txt4);
@@ -753,7 +757,7 @@ unsigned int readString(unsigned char* data, unsigned char* dns_packet_resp, uns
 
 unsigned int readSOA(unsigned char* data, unsigned char* dns_packet_resp, unsigned char* name)
 {
-    unsigned int p = 0, all = 0, i = 0, j = 0;
+    unsigned int p = 0, all = 0;
     //printf("name data: %02x %02x  ", *data, *(data+1));
 
     while(*data != 0x00)
@@ -772,6 +776,16 @@ unsigned int readSOA(unsigned char* data, unsigned char* dns_packet_resp, unsign
     name[all] = '\0';
 
     //now convert 3www6google3com0 to www.google.com
+    convert_name(name);
+//    name[i-1]='\0'; //remove the last dot
+
+    return p;
+}
+
+
+void convert_name(unsigned char *name)
+{
+    unsigned int i = 0, j = 0, all = 0;
     for(i=0;i<(int)strlen((const char*)name);i++)
     {
         all=name[i];
@@ -782,9 +796,7 @@ unsigned int readSOA(unsigned char* data, unsigned char* dns_packet_resp, unsign
         }
         name[i]='.';
     }
-//    name[i-1]='\0'; //remove the last dot
-
-    return p;
+    // name[i-1]='\0';
 }
 
 
