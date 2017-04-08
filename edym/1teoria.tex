@@ -22,11 +22,15 @@ Oczywiste jest, że AXFR został wykorzystywany w celach zupełnie innych niż t
 \section{Domain Name System}
 Głównym zadaniem protokołu DNS (\textit{Domain Name System}) jest translacja nazw przyswajalnych dla użytkowników (najczęściej alfanumerycznych) na nazwy sieciowe, czyli adresy IP. 
 
+DNS jest jednym z podstawowych elementów internetu. Z wystawionego przez niego interfejsu korzysta wiele usług sieciowych i innych protokołów. Można traktować go jako bazę danych, która jest rozproszona po wielu lokalizacjach. Ponadto, system powinien oraz cechuje się dużą niezawodnością. W tym przypadku została ona osiągnięta poprzez wprowadzenie dość prostego mechanizmu -- nadmiarowości serwerów nazw. To właśnie dzięki tej redundancji DNS cechuje się wysokim wskaźnikiem niezawodności.
+
 System DNS ma charakterystyczną, hierarchiczną strukturę, którą zaprezentowano na rysunku \ref{hierarchy_dns}. Na rysunku przedstawiono węzeł główny (ang. \textit{root}) reprezentowany jako znak pojedyńczej kropki oraz przykład dwóch typów domen pierwszego poziomu.
 
 \begin{center}
 	\includegraphics[scale=1]{image/hierarchy_dns}\label{hierarchy_dns}
 \end{center}
+
+Dzięki tej hierarchii systemu możemy powiedzieć o DNS, że charakteryzuje go bardzo dobra skalowalność oraz elastyczność. 
 
 Jeśli chodzi o podział domen pierwszego poziomu ze względu na przynależność organizacyjną, to aktualny stan przedstawiony jest w tabeli poniżej.
 
@@ -142,12 +146,12 @@ Z racji, że system DNS dostarcza administratorom wielu funkcji poza standardowy
 	\end{tabular}
 \end{table}
 
-Oczywiście na przestrzeni lat protokół rozszerzano o kolejne funkcje. Jednym z istotnych wydarzeń było zaproponowanie zmian spisanych w dokumencie RFC 4034 \cite{}. Opisano tam rozszerzenia protokołu DNS, które podnoszą jego bezpieczeństwo. 
+Oczywiście na przestrzeni lat protokół rozszerzano o kolejne funkcje. Jednym z istotnych wydarzeń było zaproponowanie zmian spisanych w dokumencie RFC 4034 \cite{}. Opisano tam rozszerzenia protokołu DNS, które podnoszą jego bezpieczeństwo. W tabeli \ref{typyRekordowDnsExt} przedstawiono najważniejsze z punktu widzenia niniejszej pracy typy rekordów, które zostały wprowadzone w kolejnych dokumentach RFC, których dokładne numery zostały wspomniane przy konkretnych wpisach w tabeli. 
 
 \begin{table}[]
 	\centering
 	\caption{Rodzaje rekordów w bazach danych serwerów przestrzeni nazw określonych w rozszerzeniach dokumentu RFC 1035 \cite{}.}
-	\label{typyRekordowDns}
+	\label{typyRekordowDnsExt}
 	\begin{tabular}{|r|p{3cm}|p{8cm}|}
 		\hline
 		\textbf{Rekord} & 
@@ -161,8 +165,15 @@ Oczywiście na przestrzeni lat protokół rozszerzano o kolejne funkcje. Jednym 
 	\end{tabular}
 \end{table}
 
+\subsection{TLD ARPA}
+Specyficzną domeną najwyższego rzędu jest domena \textit{ARPA}.
+
+\subsection{Domena 2LD e164}
+
+\subsection{Domena 2LD in-addr}
+
 
 \chapter{Przegląd dostępnych narzędzi}
 Społeczność internetu oferuje bardzo szeroką gamę narzędzi umożliwiających pozyskiwanie informacji na podstawie protokołu DNS. Bardzo użytecznym i przydatnym narzędziem jest w tym przypadku program dig. Wspomniany program ma jednak znaczącą wadę -- jest wydajny jedynie przy niewielkiej liczbie odpytywanych domen. Dodatkową niedogodnością jest, wbrew pozorom, fakt, że program wchodzi w skład pakietu Open Source bind. Ten, jak każde oprogramowanie na wolnej licencji, cierpi na szereg niedogodności z tym związanych. Najbardziej prozaicznym problemem jest fakt, że oprogramowanie jest tworzone przez wiele osób, więc bardzo trudno zastosować jeden standard kodowania, gdyż każda z osób ma swój preferowany. Poza tym, dużą wadą jest trudność wprowadzania zmian w tego typu oprogramowaniu, wynikająca zarówno z punktu poprzedniego jak i ze złożoności programu, którą cechuje się dig w tym momencie.
 
-Istnieją także inne pakiety implementujące w dość wydajny sposób klienta systemu DNS jak np. pjlib \cite{pjlib}. Również w tym przypadku można borykać się z problemami wynikającymi z założeń przyjętych przez twórców tego oprogramowania. Koknkretyzując to stwierdzenie - wspomniana biblioteka z założenia miała być wykorzystywana do protokołu SIP, a więc implementacja klienta DNS weszła w jej skład tylko i wyłączenie dlatego, że twórcy jej potrzebowali do innych celów. Implikuje to fakt, że pobieranie wiadomości jest niekompletne na płaszczyźnie typów wiadomości. Jednym z nich jest typ nr 252, czyli AXFR, który jest jednym z kluczowych elementów rekonsesansu na podstawie protokołu DNS.
+Istnieją także inne pakiety implementujące w dość wydajny sposób klienta systemu DNS jak np. pjlib \cite{pjlib}. Również w tym przypadku można borykać się z problemami wynikającymi z założeń przyjętych przez twórców tego oprogramowania. Koknkretyzując to stwierdzenie - wspomniana biblioteka z założenia miała być wykorzystywana do protokołu SIP, a więc implementacja klienta DNS weszła w jej skład tylko i wyłączenie dlatego, że twórcy jej potrzebowali jako narzędzia do zrealizowania innych celów. Implikuje to fakt, że pobieranie wiadomości jest niekompletne na płaszczyźnie typów wiadomości. Jednym z nich jest typ nr 252, czyli AXFR, który jest jednym z kluczowych elementów rekonsesansu na podstawie protokołu DNS.
