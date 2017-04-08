@@ -34,8 +34,10 @@ Jeśli chodzi o podział domen pierwszego poziomu ze względu na przynależnoś�
 	\centering
 	\caption{Podział domen najwyższego poziomu ze względu na działalność.}
 	\label{my-label}
-	\begin{tabular}{ll}
+	\begin{tabular}{|r|p{10.5cm}|}
 		\hline
+		\textbf{TLD} & \textbf{Opis jednostki} \\
+		\hline\hline
 		com & Jednostki o działalności komercyjnej (ang. \textit{commercial institutions}) \\
 		\hline
 		edu & Jednostki edukacyjne (ang. \textit{educational institutions})\\
@@ -89,13 +91,33 @@ System DNS danej domeny jest zrealizowany w oparciu o zbiór serwerów przestrze
 \subsection{Kompletne nazwy domen}
 Określeniem pełne, kompletne lub zupełne nazwy domen (ang \textit{Fully Qualified Domain Names (FQDNs)}) nazywane są te domeny, których nazwy zawierają domenę każdego poziomu, począwszy od lokalnej, aż po domenę główną, czyli root. Łatwo dostrzec analogię do wcześniej wspomnianego systemu pliku w systemach operacyjnych UNIX pomiędzy FQDN a bezpośrednią ścieżką do pliku. Różnicą jest tu jednak sposób odczytywania takiej ścieżki. W systemach DNS najbardziej ogólny węzeł znajduje się na skrajnie prawej pozycji a poruszając się w stronę lewą dochodzimy do kolejnych lokalnych domen. 
 
-\subsection{Mapowanie nazw na adres IP}
+\subsection{Mapowanie nazw na adres IP}\label{mapping}
 Mapowanie nazw domeny na jej adres IP jest możliwe dzięki plikom strefy DNS, które znajdują się na autorytatywnym serwerze przestrzeni nazw, tzw. \textit{zone files}. Jeden z typów tych plików przechowuje nazwy domen wraz z odpowiadającymi im adresami IP. Gdy klient chce dowiedzieć się pod jaki adres kierować swoje zapytanie, kieruje informacje do serwera autorytatywnego. On odpowiada za znalezienie i przedstawienie mapowania nazwy na adres IP, dokonując przeszukania plików strefy.
 
-\subsection{Mapowanie odwrotne}
-Baza danych DNS może także zawierać pliki, któe umożliwiają mapowania odwrotne, tj. adresu IP na nazwę domeny/hosta. Mechanizm ten może być użyty przy próbie weryfikacji pochodzenia wiadomości. Chcąc wykluczyć próbę oszustwa ze strony prawdziwego nadawcy możemy posiłkować się właśnie odwrotnym mapowaniem. Możemy zweryfikować, czy adres IP mapowania odwrotnego zgadza się z adresem IP z którego nadano wiadomość. Mechanizm ten może być również wykorzystywany do autoryzacji operacji wykonywanych zdalnie. 
+\subsection{Mapowanie odwrotne}\label{revmapping}
+Baza danych DNS może także zawierać pliki, które umożliwiają mapowania odwrotne, tj. adresu IP na nazwę domeny/hosta. Mechanizm ten może być użyty przy próbie weryfikacji pochodzenia wiadomości. Chcąc wykluczyć próbę oszustwa ze strony prawdziwego nadawcy możemy posiłkować się właśnie odwrotnym mapowaniem. Możemy zweryfikować, czy adres IP mapowania odwrotnego zgadza się z adresem IP z którego nadano wiadomość. Mechanizm ten może być również wykorzystywany do autoryzacji operacji wykonywanych zdalnie. 
 
 Odwrotne mapowanie wykorzystuje specjalną domenę \textit{in-addr.arpa}. Z założenia domena ta wykorzystuje adresy IP zamiast adresów domen.  Wspomniana domena jest częścią strefy DNS, która umożliwia takie właśnie odwzorowanie. Istotne jest, że adresy w domenie \textit{in-addr.arpa} są zapisywane w specyficzny dla siebie sposób -- od najniższego do najbardziej istotnego poziomu. Wynika z tego, że adresy IP w opisywanej domenie są w pewnym sensie zapisywane ,,od końca''. Powołując się na przykład, załóżmy, że maszyna ma przypisany adres 10.8.0.32. W plikach strefy dla domeny in-addr.arpa adres ten będzie zapisany jako 32.0.8.10.in-addr.arpa. oczywiście z kropką po członie \textit{in-addr.arpa}, która reprezentuje domenę \textit{root}.
+
+\subsection{Wplisy plików strefy}
+Tak jak wspomniano we wcześniejszych punktach \ref{mapping} oraz \ref{revmapping} działanie całego mechanizmu mapowana (czy to właściwego czy odwrotnego) może zachodzić dzięki serwerom autorytatywnym oraz przechowywanym przez nie plikom strefy DNS. 
+
+Z racji, że system DNS dostarcza administratorom wielu funkcji poza standardowym mapowaniem adresów na IP, wpisy w bazach danych mogą być różnych typów. Najpopularniejsze typy to oczywiście te, z którymi można zetknąć się na codzień, na przykład wpis typu \textit{A} -- tłumaczący nazwę hosta na adres IP w wersji 4, \textit{AAAA} -- mapujący nazwę hosta na adres IP w wersji 6, rekordy \textit{CNAME} służące do aliasów, czy MX -- specyfikujące serwer wymiany wiadomości elektronicznych dla danej domeny. Oprócz wspomnianych podstawowych typów twórcy standardu dla systemu DNS wprowadzili także mniej znane typy. Cały zbiór wraz z przeznaczeniem konkretnych wpisów umieszczono w tabeli \ref{typyRekordowDns}.
+
+\begin{table}[]
+	\centering
+	\caption{Podział domen najwyższego poziomu ze względu na działalność.}
+	\label{typyRekordowDns}
+	\begin{tabular}{|r|p{10.5cm}|}
+		\hline
+		\textbf{Rekord} & \textbf{Pełniona funkcja(opis zawartości)} \\
+		\hline\hline
+		A & Mapowanie adresu domeny na adres IP wersji 4 \\
+		\hline
+		
+	\end{tabular}
+\end{table}
+
 
 \chapter{Przegląd dostępnych narzędzi}
 Społeczność internetu oferuje bardzo szeroką gamę narzędzi umożliwiających pozyskiwanie informacji na podstawie protokołu DNS. Bardzo użytecznym i przydatnym narzędziem jest w tym przypadku program dig. Wspomniany program ma jednak znaczącą wadę -- jest wydajny jedynie przy niewielkiej liczbie odpytywanych domen. Dodatkową niedogodnością jest, wbrew pozorom, fakt, że program wchodzi w skład pakietu Open Source bind. Ten, jak każde oprogramowanie na wolnej licencji, cierpi na szereg niedogodności z tym związanych. Najbardziej prozaicznym problemem jest fakt, że oprogramowanie jest tworzone przez wiele osób, więc bardzo trudno zastosować jeden standard kodowania, gdyż każda z osób ma swój preferowany. Poza tym, dużą wadą jest trudność wprowadzania zmian w tego typu oprogramowaniu, wynikająca zarówno z punktu poprzedniego jak i ze złożoności programu, którą cechuje się dig w tym momencie.
