@@ -102,19 +102,62 @@ Odwrotne mapowanie wykorzystuje specjalną domenę \textit{in-addr.arpa}. Z zał
 \subsection{Wplisy plików strefy}
 Tak jak wspomniano we wcześniejszych punktach \ref{mapping} oraz \ref{revmapping} działanie całego mechanizmu mapowana (czy to właściwego czy odwrotnego) może zachodzić dzięki serwerom autorytatywnym oraz przechowywanym przez nie plikom strefy DNS. 
 
-Z racji, że system DNS dostarcza administratorom wielu funkcji poza standardowym mapowaniem adresów na IP, wpisy w bazach danych mogą być różnych typów. Najpopularniejsze typy to oczywiście te, z którymi można zetknąć się na codzień, na przykład wpis typu \textit{A} -- tłumaczący nazwę hosta na adres IP w wersji 4, \textit{AAAA} -- mapujący nazwę hosta na adres IP w wersji 6, rekordy \textit{CNAME} służące do aliasów, czy MX -- specyfikujące serwer wymiany wiadomości elektronicznych dla danej domeny. Oprócz wspomnianych podstawowych typów twórcy standardu dla systemu DNS wprowadzili także mniej znane typy. Cały zbiór wraz z przeznaczeniem konkretnych wpisów umieszczono w tabeli \ref{typyRekordowDns}.
+Z racji, że system DNS dostarcza administratorom wielu funkcji poza standardowym mapowaniem adresów na IP, wpisy w bazach danych mogą być różnych typów. Najpopularniejsze typy to oczywiście te, z którymi można zetknąć się na codzień, na przykład wpis typu \textit{A} -- tłumaczący nazwę hosta na adres IP w wersji 4, \textit{AAAA} -- mapujący nazwę hosta na adres IP w wersji 6, rekordy \textit{CNAME} służące do aliasów, czy MX -- specyfikujące serwer wymiany wiadomości elektronicznych dla danej domeny. Oprócz wspomnianych podstawowych typów twórcy standardu dla systemu DNS wprowadzili także mniej znane typy. Opis zbioru najbardziej istotnych wpisów określonych w dokumencie RFC 1035 \cite{} wraz z ich przeznaczeniem umieszczono w tabeli \ref{typyRekordowDns}.
 
 \begin{table}[]
 	\centering
-	\caption{Podział domen najwyższego poziomu ze względu na działalność.}
+	\caption{Rodzaje rekordów w bazach danych serwerów przestrzeni nazw. Opis na podstawie \cite{}}
 	\label{typyRekordowDns}
-	\begin{tabular}{|r|p{10.5cm}|}
+	\begin{tabular}{|r|p{3cm}|p{8cm}|}
 		\hline
-		\textbf{Rekord} & \textbf{Pełniona funkcja(opis zawartości)} \\
+			\textbf{Rekord} & 
+			\textbf{Pełna nazwa} & 
+			\textbf{Pełniona funkcja(opis zawartości)} \\
 		\hline\hline
-		A & Mapowanie adresu domeny na adres IP wersji 4 \\
+			A & 
+			Wpis mapowania adresów(ang. \textit{Address mapping record}) & 
+			Określa adres IP wersji 4 dla danego hosta. Służą do konwersji nazwy domen do opowiednich adresów IP.\\
+		\hline
+			CNAME & 
+			Nazwa kanoniczna (ang. \textit{Canonical Name)} & 
+			\\
+		\hline
+			MX & 
+			Wymiana wiadomości elektronicznych (ang. \textit{Mail exchange)} & 
+			\\
+		\hline
+			NS & 
+			Serwer nazw (ang. \textit{Name server)} & 
+			\\		
+		\hline
+			SOA & 
+			Początek (ang. \textit{Start of Authority)} & 
+			\\
+		\hline
+			TXT & 
+			Tekst & 
+		\\
 		\hline
 		
+	\end{tabular}
+\end{table}
+
+Oczywiście na przestrzeni lat protokół rozszerzano o kolejne funkcje. Jednym z istotnych wydarzeń było zaproponowanie zmian spisanych w dokumencie RFC 4034 \cite{}. Opisano tam rozszerzenia protokołu DNS, które podnoszą jego bezpieczeństwo. 
+
+\begin{table}[]
+	\centering
+	\caption{Rodzaje rekordów w bazach danych serwerów przestrzeni nazw określonych w rozszerzeniach dokumentu RFC 1035 \cite{}.}
+	\label{typyRekordowDns}
+	\begin{tabular}{|r|p{3cm}|p{8cm}|}
+		\hline
+		\textbf{Rekord} & 
+		\textbf{Pełna nazwa} & 
+		\textbf{Pełniona funkcja(opis zawartości)} \\
+		\hline\hline
+			AAAA & 
+			Wpis mapowania adresów IPv6 & 
+			Określa adres IP wersji 6 dla danego hosta. Zasada działania jest taka jak w przypadku rekordu A z jedyną różnicą w wersji adresu IP. \\
+		\hline
 	\end{tabular}
 \end{table}
 
