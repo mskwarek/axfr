@@ -1,5 +1,12 @@
 \begin{thebibliography}{1}
 
-\bibitem{}
+\bibitem{domain_tree_src}
+
+
+\bibitem{RFC1035}
+P.~Mockapetris.
+\newblock Domain names - implementation and specification.
+\newblock STD~13, RFC Editor, November 1987.
+\newblock \url{http://www.rfc-editor.org/rfc/rfc1035.txt}.
 
 \end{thebibliography}
