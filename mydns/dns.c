@@ -152,6 +152,7 @@ void ngethostbyname(const char *que , const char *server, const char *dst_log_pa
  
     DNS_H *dns = NULL;
  
+    printf("%s %s\n", que, server);
     s = socket(AF_INET , SOCK_STREAM , IPPROTO_TCP);
     if(s<0)
     {
@@ -167,7 +168,7 @@ void ngethostbyname(const char *que , const char *server, const char *dst_log_pa
         printf("setsockopt failed\n");
     }
 
-    printf("Nameserver IP: %s\n", server);
+    // printf("Nameserver IP: %s\n", server);
     dest.sin_addr.s_addr = inet_addr(server);
     dest.sin_family = AF_INET;
     dest.sin_port = htons(53);
@@ -181,18 +182,20 @@ void ngethostbyname(const char *que , const char *server, const char *dst_log_pa
 
     if( (arg = fcntl(s, F_GETFL, NULL)) < 0) {
         fprintf(stderr, "Error fcntl(..., F_GETFL) (%s)\n", strerror(errno));
-        exit(0);
+        return;
+        // exit(0);
     }
     arg |= O_NONBLOCK;
     if( fcntl(s, F_SETFL, arg) < 0) {
         fprintf(stderr, "Error fcntl(..., F_SETFL) (%s)\n", strerror(errno));
-        exit(0);
+        return;
+        // exit(0);
     }
     // Trying to connect with timeout
     res = connect(s, (struct sockaddr *)&dest, sizeof(dest));
     if (res < 0) {
         if (errno == EINPROGRESS) {
-            fprintf(stderr, "EINPROGRESS in connect() - selecting\n");
+            // fprintf(stderr, "EINPROGRESS in connect() - selecting\n");
             do {
                 timeout.tv_sec = to;
                 timeout.tv_usec = 0;
@@ -261,7 +264,7 @@ void ngethostbyname(const char *que , const char *server, const char *dst_log_pa
       //Set the DNS structure to standard queries
 
     snprintf(host, 128, "%s", que);
-    printf("\nResolving %s\n" , host);
+    // printf("\nResolving %s\n" , host);
 
     dns = (struct DNS_HEADER *)&buf;
 
@@ -319,7 +322,7 @@ void ngethostbyname(const char *que , const char *server, const char *dst_log_pa
 	  }
 	memcpy(buf+off, replyMessage, numBytesRecv);    
 	off+=numBytesRecv;
-	printf("%ld\n", numBytesRecv);
+	// printf("%ld\n", numBytesRecv);
 	if(off>=data_length+2 && off != 0)
 	  {
 	    break;
@@ -331,7 +334,7 @@ void ngethostbyname(const char *que , const char *server, const char *dst_log_pa
     dns_buf = buf;
 
     dns = (struct DNS_HEADER*) &buf;
-    printf("\n n: %d, offset: %d, datalen: %d\n", n, off, ntohs(dns->len));
+    // printf("\n n: %d, offset: %d, datalen: %d\n", n, off, ntohs(dns->len));
 
 
     int i =0  , j = 0;
@@ -342,7 +345,7 @@ void ngethostbyname(const char *que , const char *server, const char *dst_log_pa
 
     unsigned char filename[512] = {0};
     snprintf(filename, 512, "%s/%s_%s.axfr", dst_log_path, que, server);
-    printf("%s\n", filename);
+    // printf(" %s\n", filename);
     FILE *f = fopen(filename, "w");
     if (f == NULL)
     {
@@ -350,8 +353,8 @@ void ngethostbyname(const char *que , const char *server, const char *dst_log_pa
         return;
     }
     
-    printf("\nThe response contains : ");
-    printf("\n %d Answers.",ntohs(dns->ans_count));
+    // printf("\nThe response contains : ");
+    // printf("\n %d Answers.",ntohs(dns->ans_count));
 
 
     answers = (struct RES_RECORD*)calloc(ntohs(dns->ans_count), sizeof(struct RES_RECORD));
@@ -364,7 +367,7 @@ void ngethostbyname(const char *que , const char *server, const char *dst_log_pa
 
     for(i=0;i<ntohs(dns->ans_count);i++)
       {
-	printf("%d ", i);
+	// printf("%d ", i);
 
 	unsigned char na[1024] = {0};
           unsigned int name_offset = readSOA(reader, buf+2, na) + 1;
@@ -462,7 +465,13 @@ unsigned short parse_to_ushort(unsigned char* data)
 }
 void parse_default(unsigned char* data, unsigned short data_len, FILE* f)
 {
-
+  int i = 0;
+  while(i < data_len)
+    {
+      fprintf(f, "%02x", *(data+i));
+      ++i;
+    }
+  fprintf(f, "\n");
 }
 void parse_dnskey(unsigned char* data, unsigned short data_len, FILE* f)
 {
@@ -485,7 +494,7 @@ void parse_rp(unsigned char* data, unsigned char* dns, FILE* f)
 
   int x = readSOA(data, dns, mailbox);
   readSOA(data+x+1, dns, txt_rr);
-  fprintf(f, " %s %s\n", mailbox, txt_rr);
+  fprintf(f, "%s %s\n", mailbox, txt_rr);
 }
 
 void parse_afsdb(unsigned char* data, unsigned char* dns, FILE* f)
@@ -493,7 +502,7 @@ void parse_afsdb(unsigned char* data, unsigned char* dns, FILE* f)
   unsigned short subtype = parse_to_ushort(data);
   unsigned char hostname[1024] = {0};
   readSOA(data+2, dns, hostname);
-  fprintf(f, " %u %s\n", subtype, hostname);;
+  fprintf(f, "%u %s\n", subtype, hostname);;
 }
 
 void parse_aaaa(unsigned char* data, FILE* f)
@@ -520,7 +529,7 @@ void parse_srv(unsigned char* data, unsigned char *dns, FILE* f)
   unsigned short port = parse_to_ushort(data+4);
   unsigned char name[512] = {0};
   readSOA(data+6, dns, name);
-    fprintf(f, "SRV: %u %u %u %s", priority, weight, port, name);
+    fprintf(f, "%u %u %u %s", priority, weight, port, name);
     fprintf(f, "\n");
 }
 
@@ -581,7 +590,7 @@ void parse_naptr(unsigned char* data, unsigned short data_len, FILE* f)
 
     convert_name(txt4);
 
-    fprintf(f,"NAPTR: %u %u %d %d %s %s %s %s\n", order, preference, flags_length, service_len, txt, txt2, txt3, txt4);
+    fprintf(f,"%u %u %d %d %s %s %s %s\n", order, preference, flags_length, service_len, txt, txt2, txt3, txt4);
     
     free(txt);
     free(txt2);
@@ -592,19 +601,17 @@ void parse_naptr(unsigned char* data, unsigned short data_len, FILE* f)
 
 void parse_ip(unsigned char* data, FILE* f)
 {
-    fprintf(f," %d.%d.%d.%d \n", (int)*data, (int)*(data+1), (int)*(data+2), (int)*(data+3));
+    fprintf(f,"%d.%d.%d.%d\n", (int)*data, (int)*(data+1), (int)*(data+2), (int)*(data+3));
 }
 
 void parse_ns(unsigned char* data, unsigned char* dns, FILE* f)
 {
-    fprintf(f,"NS: ");
   getName(data, dns, f);
     fprintf(f,"\n");
 }
 
 void parse_ptr(unsigned char* data, unsigned short data_len, unsigned char* dns, FILE* f)
 {
-    fprintf(f,"PTR: ");
   getName(data, dns, f);// These types all consist of a single domain name
     fprintf(f,"\n");
 }
@@ -613,7 +620,7 @@ void parse_cname(unsigned char* data, unsigned char* dns, FILE* f)
 {
   unsigned char name[512] = {0};
   readSOA(data, dns, name);
-    fprintf(f,"CNAME: %s\n", name);
+    fprintf(f,"%s\n", name);
 }
 
 
@@ -625,8 +632,6 @@ unsigned int parse_to_uint(unsigned char* data)
 
 void parse_soa(unsigned char* data, unsigned short data_len, unsigned char* dns, FILE* f)
 {
-    fprintf(f,"SOA: ");
-
     unsigned char name[1024] = {0};
     unsigned int p = 0;
 
@@ -641,7 +646,7 @@ void parse_soa(unsigned char* data, unsigned short data_len, unsigned char* dns,
     unsigned int retry = parse_to_uint(data+p+11);
     unsigned int expire = parse_to_uint(data+p+15);
     unsigned int min_ttl = parse_to_uint(data+p+19);
-    fprintf(f," %u %u %u %u %u ", serial_no, refresh, retry, expire, min_ttl);
+    fprintf(f,"%u %u %u %u %u", serial_no, refresh, retry, expire, min_ttl);
     fprintf(f,"\n");
 }
 
@@ -650,7 +655,14 @@ void parse_hinfo(unsigned char* data, unsigned short data_len, FILE* f)
   int len_cpu = (int)*data;
   int len_os = (int)*(data + len_cpu + 1);
 
-    fprintf(f,"cpu len: %d os len: %d", len_cpu, len_os);
+    fprintf(f,"cpu len: %d os len: %d ", len_cpu, len_os);
+      unsigned char algorithm = *(data+3);
+  int i = 0;
+  while(i < data_len)
+    {
+      fprintf(f, "%02x", *(data+i));
+      ++i;
+    }
     fprintf(f,"\n");
 }
 
@@ -694,7 +706,7 @@ void parse_rrsig(unsigned char* data, unsigned char* dns, unsigned short data_le
 
     p = readSOA(data+18, dns, name);
 
-    fprintf(f,"RRSIG: %u %u %u %u %u %u %u %s ", type, algorithm, labels, ttl, timestamp_exp, timestamp_inc, key_tag, name);
+    fprintf(f,"%u %u %u %u %u %u %u %s ", type, algorithm, labels, ttl, timestamp_exp, timestamp_inc, key_tag, name);
     int i = 0;
     while(i < data_len - p - 19)
     {
@@ -708,7 +720,7 @@ void parse_nsec(unsigned char* data, unsigned char* dns, FILE* f)
 {
   unsigned char name[512] = {0};
   readSOA(data, dns, name);
-    fprintf(f,"NSEC: %s", name);
+    fprintf(f,"%s\n", name);
 }
  
 int getName(unsigned char* data, unsigned char* dns_packet_resp, FILE* f)
@@ -730,7 +742,7 @@ int getName(unsigned char* data, unsigned char* dns_packet_resp, FILE* f)
     }
     name[i-1]='\0'; //remove the last dot
 
-    fprintf(f," %s ", name);
+    fprintf(f,"%s", name);
     return strlen(name);
 }
 
