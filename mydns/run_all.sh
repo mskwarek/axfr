@@ -18,13 +18,18 @@ for (( i=0; i<${tlen}; ));
 do
     x=`ps -aux | grep a.out | grep -v grep | wc -l`
     
+    if [ "$PROCMAX" -eq "$x" ]; then
+        sleep 10;
+    fi
+    
     if [ "$PROCMAX" -gt "$x" ]; then
         echo "start couse x= $x"
         j=$[$j+1]
         datetime=`date "+%Y_%m_%d_%H_%M"`
         mkdir -p $OUTPUTDIR/test_$datetime/iter_$j
+        shuf ${array[$i]} -o ${array[$i]}
         nohup ./a.out ${array[$i]} 3 $OUTPUTDIR/test_$datetime/iter_$j &
-        sleep 1
         i=$[$i+1]
     fi
+
 done
