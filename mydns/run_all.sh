@@ -1,9 +1,9 @@
 #!/bin/bash
 
 j=0
-PROCMAX=100
-OUTPUTDIR=/home/marcin/ClionProjects/myDig/mydns
-INPUTDIR=/home/marcin/ClionProjects/myDig/splitted
+PROCMAX=$1 #100
+OUTPUTDIR=$2 #/home/marcin/ClionProjects/myDig/mydns
+INPUTDIR=$3 #/home/marcin/ClionProjects/myDig/splitted
 
 #mkdir /home/marcin/myDig/splitted
 #split -l 100 /home/marcin/myDig/mydns/inputData2_ip /home/marcin/myDig/splitted/inp.
