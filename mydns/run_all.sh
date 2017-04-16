@@ -13,23 +13,33 @@ array=($INPUTDIR/*.*)
 shopt -u nullglob # Turn off nullglob to make sure it doesn't interfere with anything later
 #echo "${array[@]}"
 tlen=${#array[@]}
+x=`ps -aux | grep a.out | grep -v grep | wc -l`
+STARTPROC=$[$PROCMAX-$x]
 
 for (( i=0; i<${tlen}; ));
 do
-    x=`ps -aux | grep a.out | grep -v grep | wc -l`
-    
-    if [ "$PROCMAX" -eq "$x" ]; then
-        sleep 10;
+    if [ "$STARTPROC" -eq "$i" ]; then
+	echo "sleep $i"
+	sleep 60;
+	x=`ps -aux | grep a.out | grep -v grep | wc -l`
+	withoutasking=$[$PROCMAX-$x]
+	STARTPROC=$[$STARTPROC+$withoutasking]
     fi
     
     if [ "$PROCMAX" -gt "$x" ]; then
-        echo "start couse x= $x"
-        j=$[$j+1]
-        datetime=`date "+%Y_%m_%d_%H_%M"`
-        mkdir -p $OUTPUTDIR/test_$datetime/iter_$j
-        shuf ${array[$i]} -o ${array[$i]}
-        nohup ./a.out ${array[$i]} 3 $OUTPUTDIR/test_$datetime/iter_$j &
+        #echo "start couse x= $x"
+        #j=$[$j+1]
+        datetime=`date "+%Y_%m_%d"`
+	iter_num=`echo ${array[$i]} | cut -d . -f 2`
+	#echo "$iter_num"
+        mkdir -p $OUTPUTDIR/test_$datetime/iter_$iter_num
+        #shuf ${array[$i]} -o ${array[$i]}
+        nohup ./a.out ${array[$i]} 3 $OUTPUTDIR/test_$datetime/iter_$iter_num &
         i=$[$i+1]
+    else
+	echo "sleep else"
+	sleep 60;
+	x=`ps -aux | grep a.out | grep -v grep | wc -l`
     fi
 
 done
