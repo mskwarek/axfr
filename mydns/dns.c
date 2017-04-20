@@ -346,6 +346,13 @@ void ngethostbyname(const char *que , const char *server, const char *dst_log_pa
     unsigned char filename[512] = {0};
     snprintf(filename, 512, "%s/%s_%s.axfr", dst_log_path, que, server);
     // printf(" %s\n", filename);
+
+    if(ntohs(dns->ans_count) <= 0)
+      {
+	return;
+      }
+    
+
     FILE *f = fopen(filename, "w");
     if (f == NULL)
     {

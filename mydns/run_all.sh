@@ -34,7 +34,8 @@ do
 	#echo "$iter_num"
         mkdir -p $OUTPUTDIR/test_$datetime/iter_$iter_num
         #shuf ${array[$i]} -o ${array[$i]}
-        nohup ./a.out ${array[$i]} 3 $OUTPUTDIR/test_$datetime/iter_$iter_num &
+        nohup ./a.out ${array[$i]} 3 $OUTPUTDIR/test_$datetime/iter_$iter_num >/dev/null 2>&1 &
+	
         i=$[$i+1]
     else
 	echo "sleep else"
