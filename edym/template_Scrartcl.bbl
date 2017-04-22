@@ -3,6 +3,21 @@
 \bibitem{domain_tree_src}
 
 
+\bibitem{}
+[Python~Software Foundation.
+\newblock {\em Python Language Reference, version 2.7}.
+
+\bibitem{isc}
+{International Seismological Centre}.
+\newblock {\em BIND The most widely used Name Server Software}.
+\newblock Internatl. Seismol. Cent., Thatcham, United Kingdom, 2017.
+\newblock http://www.isc.org.
+
+\bibitem{Liu:2006:DB:1197828}
+Cricket Liu and Paul Albitz.
+\newblock {\em DNS and BIND (5th Edition)}.
+\newblock O'Reilly Media, Inc., 2006.
+
 \bibitem{RFC1035}
 P.~Mockapetris.
 \newblock Domain names - implementation and specification.
