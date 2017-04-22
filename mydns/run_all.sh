@@ -16,7 +16,7 @@ tlen=${#array[@]}
 x=`ps -aux | grep a.out | grep -v grep | wc -l`
 STARTPROC=$[$PROCMAX-$x]
 
-for (( i=0; i<${tlen}; ));
+for (( i=7500; i<${tlen}; ));
 do
     if [ "$STARTPROC" -eq "$i" ]; then
 	echo "sleep $i"
