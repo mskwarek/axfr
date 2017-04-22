@@ -21,5 +21,20 @@ Algorytm postępowania w przypadku odebrania pakietu danych przedstawiony jest n
 \section{Dane wejściowe}
 Dane wejściowe programu zostały pozyskane od grupy naukowców z TU Delft\cite{deflt} w formie par adres WWW strony oraz adres IP jej serwera autorytarnego. Lista w takim formacie przechowywana była w pliku tekstowym. Zgromadzono w nim ponad 5 miliardów wpisów uporządkowanych w kolejności alfabetycznej, a ich łączny rozmiar przekraczał 130 gigabajtów.
 
-Przeprowadzenie globalnego skanu niosło za sobą szereg konsekwencji. Przede wszystkim tylko niektóre programy umożliwiają w ogóle procesowanie tak dużych plików. Dodatkowo, zakładając, że średnio należy przeznaczyć na skanowanie jednej domeny około 2 sekund okazało się, że przeprocesowanie całego pliku zajęłoby odpowiednio:
-$$2(s) * 5 * 10^{9} = $$
+\section{Zaimplementowane narzędzia}
+Przeprowadzenie globalnego skanu niosło za sobą szereg konsekwencji. Przede wszystkim tylko niektóre programy umożliwiają w ogóle procesowanie tak dużych plików. Dodatkowo, zakładając, że średnio należy przeznaczyć na skanowanie jednej domeny około 3 sekund okazało się, że przeprocesowanie całego pliku zajęłoby odpowiednio:
+$$3(s) * 5 * 10^{9} = 25 * 10^{8}(min) = \frac{25}{60} * 10^{8}(h) = 41.67 * 10^{6} (dni)$$.
+Opierając się na opisanym wyżej rozumowaniu, podjęto decyzję, że należy procesować pary (adres WWW, adres IP) równolegle. Podjętych zostało kilka prób implementacji odpowiedniego narzędzia umożliwiającego przeprowadzenie badań w zadowalającym czasie:
+\begin{itemize}
+	\item narzędzie oparte na programie dig skryptach powłoki bash,
+	\item menadżer procesów programu dig oparty na skryptach języka Python,
+	\item skaner AXFR wspomagany skryptami powłoki bash.
+\end{itemize}
+Szczegółowo zostaną one opisane w kolejnych punktach tego rozdziału.
+
+\subsection{Program dig zarządzany skryptami powłoki}
+Pierwszym rozwiązaniem, które powstało w ramach pracy nad opisywanym problemem był skaner AXFR oparty na programie dig\cite{isc}. Program skupia się wokół protokołu DNS i umożliwia wykonywanie zapytań różnych typów\cite{Liu:2006:DB:1197828}. Ponadto, jest prosty w obsłudze, daje duże możliwości jeśli chodzi o budowanie zapytań DNS oraz bardzo często dostępny jest domyślnie w wielu dystrybucjach systemów operacyjnych Linux. 
+
+Odpowiedzi uzyskane dzięki programowi miały być zapisywane do plików tekstowych. Każda, potencjalnie uzyskana odpowiedź miała być zapisywana do oddzielnego pliku tekstowego, aby wykluczyć równoczesne użycie tego samego zasobu przez wiele procesów. Rozwiązanie tego typu działa oraz z powodzeniem przeskanowano kilka tysięcy domen, jednak okazało się zbyt wolne do zastosowania na szerszą skalę a także występowały kłopoty z zapotrzebowaniem na zasoby (mowa tu głównie o pamięci operacyjnej). Bliźniacze podejście zostało zastosowane w opisywanym wcześniej projekcie skanowania domen z listy \textit{Alexa 1 Milion}\cite{scans.io}.
+
+\subsection{Menedżer procesów zarządzany skryptami języka Python}
