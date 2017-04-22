@@ -17,3 +17,9 @@ Logika programu jest bardzo prosta. Początkowo budowana jest jednostka APDU pro
 Komunikacja z serwerami autorytatywnymi została oparta na blokujących socketach. Dodatkowo, zaimplementowany został autorski mechanizm pozwalający na wykorzystywanie timeoutów podczas łączenia się z serwerem. 
 
 Algorytm postępowania w przypadku odebrania pakietu danych przedstawiony jest na rysunku\ref{}.
+
+\section{Dane wejściowe}
+Dane wejściowe programu zostały pozyskane od grupy naukowców z TU Delft\cite{deflt} w formie par adres WWW strony oraz adres IP jej serwera autorytarnego. Lista w takim formacie przechowywana była w pliku tekstowym. Zgromadzono w nim ponad 5 miliardów wpisów uporządkowanych w kolejności alfabetycznej, a ich łączny rozmiar przekraczał 130 gigabajtów.
+
+Przeprowadzenie globalnego skanu niosło za sobą szereg konsekwencji. Przede wszystkim tylko niektóre programy umożliwiają w ogóle procesowanie tak dużych plików. Dodatkowo, zakładając, że średnio należy przeznaczyć na skanowanie jednej domeny około 2 sekund okazało się, że przeprocesowanie całego pliku zajęłoby odpowiednio:
+$$2(s) * 5 * 10^{9} = $$
