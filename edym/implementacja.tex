@@ -58,4 +58,14 @@ Algorytm postępowania w przypadku odebrania pakietu danych przedstawiony jest n
 	\item ... .
 \end{enumerate} 
 
-Dodatkowo, jeśli zostanie odebrany typ nie przewidziany w implementacji parsera to wszystkie dane odczytane z socketa zostaną przeniesione w formie zapisu heksadecymalnego do pliku z odpowiedzią. Zapewnia ta kompatybilność z rozszerzeniami protokołu DNS oraz zabezpiecza przed błędnym wykluczeniem niektórych informacji ze skanowania. Jeśli pojawi się nie przewidziany wcześniej typ rekordu z bazy danych DNS, to będzie można interpretować go podczas analizy konkretnych odpowiedzi od serwera.
+Dodatkowo, jeśli zostanie odebrany typ który nie został przewidziany w implementacji parsera to wszystkie dane odczytane z socketa zostaną przeniesione w formie zapisu heksadecymalnego do pliku z odpowiedzią. Zapewnia ta kompatybilność z innymi rozszerzeniami protokołu DNS oraz zabezpiecza przed błędnym wykluczeniem niektórych informacji ze skanowania. Jeśli pojawi się nieznany wcześniej typ rekordu z bazy danych DNS, to będzie można interpretować go podczas analizy konkretnych odpowiedzi od serwera.
+
+Tak jak wcześniej wspomniano, transfer strefy DNS wykorzystuje protokół TCP, który nie jest tak powszechnie stosowany jeśli chodzi o Doman Name System. Wpływa to pośrednio na to, jakie wyniki możemy uzyskać przy próbie odpytania serwera o jego strefę. Mowa tu o trzech charakterystycznych sytuacjach, mianowicie:
+\begin{enumerate}
+	\item brak możliwości nawiązania połączenia na warstwie 4 (TCP) na porcie 53,
+	\item uzyskanie połączenia w rozumieniu protokołu TCP na porcie 53 i brak możliwoście transferu danych,
+	\item uzyskanie połączenia TCP na porcie 53 i pomyślny transfer danych.
+\end{enumerate}
+
+Początkowo założono, że uzyskanie już samego połączenia TCP z serwerem może być ciekawym przedmiotem badania. Interfejs serwera autorytatywnego danej domeny powinien umożliwiać swoim klientom tylko kilka podstawowych operacji, jak na przykład rozwiązanie nazwy domenowej komputera ze swojej strefy. Do takich działań połączenie TCP nie powinno być potrzebne. Dodatkowo, port 53 na którym działa DNS jest zarezerwowany tylko dla tego protokołu, więc nie powinno udostępniać się na nim innych usług. Dowodzi to temu, że sytuacja, gdy możliwe jest nawiązanie połączenia TCP na porcie 53 jest nienaturalna i niezgodna z panującymi dobrymi praktykami. Właśnie dlatego, w pierwszej implementacji skanera założono, że program będzie tworzył puste pliki w przypadku opisanym w tym akapicie. Niestety, Zjawisko to okazało się tak powszechne, że powstały duże problemy związane z wydajnością skanera. Mowa tu o dostępie poszczególnych procesów do dysku twardego maszyny na której były one uruchomione. Dlatego też zdecydowano się na zapisywanie informacji jedynie o domenach, które odpowiedziały na zapytanie AXFR a sytuację umożliwiania nawiązywania sesji TCP na porcie 53 pozostawia się do analizy podczas przyszłych badań.
+
