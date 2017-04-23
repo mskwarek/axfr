@@ -3,12 +3,9 @@ Przeanalizowanie problemu postawionego w niniejszej pracy magisterskiej wymagał
 
 Dojście do rozwiązania optymalnego nie było zbyt oczywiste. Początkowe rozwiązania opierały się na próbach nabudowania managera zarządzającego procesami w których uruchamiane były zewnętrzne narzędzia -- głównie dig. Rozwiązanie takie miało szereg zalet, na przykład było bardzo skalowalne i łatwe do zrealizowania. Niestety okazało się, że menedżer zarządzający procesami wymaga zbyt dużej ilości zasobów, a głównie pamięci RAM, dlatego wymuszone zostało zrezygnowanie z tego podejścia. 
 
-\section{Dane wejściowe}
-Dane wejściowe programu zostały pozyskane od grupy naukowców z TU Delft\cite{deflt} w formie par adres WWW strony oraz adres IP jej serwera autorytarnego. Lista w takim formacie przechowywana była w pliku tekstowym. Zgromadzono w nim ponad 5 miliardów wpisów uporządkowanych w kolejności alfabetycznej, a ich łączny rozmiar przekraczał 130 gigabajtów.
-
 \section{Zaimplementowane narzędzia}
-Przeprowadzenie globalnego skanu niosło za sobą szereg konsekwencji. Przede wszystkim tylko niektóre programy umożliwiają w ogóle procesowanie tak dużych plików. Dodatkowo, zakładając, że średnio należy przeznaczyć na skanowanie jednej domeny około 3 sekund okazało się, że przeprocesowanie całego pliku zajęłoby odpowiednio:
-$$3(s) * 5 * 10^{9} = 25 * 10^{8}(min) = \frac{25}{60} * 10^{8}(h) = 41.67 * 10^{6} (dni)$$.
+Przeprowadzenie globalnego skanu niosło za sobą szereg konsekwencji. Zakładając, że średnio należy przeznaczyć na skanowanie jednej pary (adres WWW, adres IP) około 3 sekund okazało się, że przeprocesowanie całego zbioru danych wejściowych (ok. 5 miliardów par) zajęłoby odpowiednio:
+$$3(s) * 5 * 10^{9} = 25 * 10^{8}(min) = \frac{25}{60} * 10^{8}(h) = 41.67 * 10^{6} (dni)\label{obliczenia}$$.
 Opierając się na opisanym wyżej rozumowaniu, podjęto decyzję, że należy procesować pary (adres WWW, adres IP) równolegle. Podjętych zostało kilka prób implementacji odpowiedniego narzędzia umożliwiającego przeprowadzenie badań w zadowalającym czasie:
 \begin{itemize}
 	\item narzędzie oparte na programie dig skryptach powłoki bash,
@@ -69,3 +66,11 @@ Tak jak wcześniej wspomniano, transfer strefy DNS wykorzystuje protokół TCP, 
 
 Początkowo założono, że uzyskanie już samego połączenia TCP z serwerem może być ciekawym przedmiotem badania. Interfejs serwera autorytatywnego danej domeny powinien umożliwiać swoim klientom tylko kilka podstawowych operacji, jak na przykład rozwiązanie nazwy domenowej komputera ze swojej strefy. Do takich działań połączenie TCP nie powinno być potrzebne. Dodatkowo, port 53 na którym działa DNS jest zarezerwowany tylko dla tego protokołu, więc nie powinno udostępniać się na nim innych usług. Dowodzi to temu, że sytuacja, gdy możliwe jest nawiązanie połączenia TCP na porcie 53 jest nienaturalna i niezgodna z panującymi dobrymi praktykami. Właśnie dlatego, w pierwszej implementacji skanera założono, że program będzie tworzył puste pliki w przypadku opisanym w tym akapicie. Niestety, zjawisko to okazało się tak powszechne, że powstały duże problemy związane z wydajnością skanera. Mowa tu o dostępie poszczególnych procesów do dysku twardego maszyny na której były one uruchomione. Dlatego też zdecydowano się na zapisywanie informacji jedynie o domenach, które odpowiedziały na zapytanie AXFR a sytuację umożliwiania nawiązywania sesji TCP na porcie 53 pozostawia się do analizy podczas przyszłych badań.
 
+Ostatecznie przyjęto rozwiązanie, które ignoruje fakt nawiązywania połączenia TCP oraz odpowiedzi od serwerów, w których nie ma żadnych rekordów. Pozwoliło to na niemal dwukrotny wzrost wydajności zaimplementowanego skanera.
+
+\section{Dane wejściowe}
+Dane wejściowe programu zostały pozyskane od grupy naukowców z TU Delft\cite{deflt} w formie par (adres WWW, adres IP serwera autorytarnego). Lista w takim formacie przechowywana była w pliku tekstowym. Zgromadzono w nim, zgodnie z tym co zostało przyjęte w obliczeniach\ref{obliczenia}, ponad 5 miliardów wpisów uporządkowanych w kolejności alfabetycznej, a ich łączny rozmiar przekraczał 130 gigabajtów. Powoduje to oczywiście szereg problemów związanych z procesowaniem takich plików. 
+
+Jedną z niedogodności, które wiążą się z rozmiarem danych wejściowych był problem z wyborem losowej próby do kolejnych procesów skanera. Porządane jest, aby plik wejściowy do każdego z procesów skanujących nie był w żaden sposób uporządkowany, a najlepiej gdyby dane w nim zawarte były wybrane losowo. Nie można założyć, że wszystkie procesy skanowania zakończą się bez żadnych błędów. Jeśli więc dane wejściowe byłyby uporządkowane a proces zakończył się błędem wprowadzona zostanie dodatkowa, błędna korelacja między brakiem odpowiedzi od serwera a nazwą domeny.
+
+W systemach Linux dostępny jest domyślnie program \texit{shuf}\cite{shuf}, który dokonuje permutacji na konkretnych liniach w pliku, jednak niemożliwe było wykorzystanie go wraz z plikiem z danymi wejściowymi z powodów ograniczeń wydajnościowych. Program nie był w stanie zaalokować odpowiedniej liczby komórek w pamięci komputera. Aby zasymulować element losowości zastosowano algorytm zaprezentowany na diagramie \ref{shuf-algorithm} oparty na dzieleniu całego zbioru danych wejściowych oraz permutowaniu kolejnych linii w podgrupach o różnej wielkości.
