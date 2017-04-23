@@ -46,6 +46,16 @@ Zdecydowano się na takie rozróżnienie z prostego powodu. Autor rozwiązania c
 
 Logika programu jest bardzo prosta. Początkowo budowana jest jednostka APDU protokołu DNS z odpowiednimi danymi, a w szczególności z poprawnie ustawioną flagą \textit{qtype} odpowiedzialną za identyfikację rodzaju zapytania DNS. Co ważne, mechanizm AXFR wymaga używania nietypowego dla DNS protokołu TCP.
 
-Komunikacja z serwerami autorytatywnymi została oparta na blokujących socketach. Dodatkowo, zaimplementowany został autorski mechanizm pozwalający na wykorzystywanie timeoutów podczas łączenia się z serwerem. 
+Komunikacja z serwerami autorytatywnymi została oparta na blokujących socketach. Dodatkowo, zaimplementowany został autorski mechanizm pozwalający na wykorzystywanie timeoutów podczas łączenia się z serwerem. Wymagało to przełączania socketu na tryb pracy nieblokujący. Dokładny algorytm działania został przedstawiony na rysunku \ref{}.
 
-Algorytm postępowania w przypadku odebrania pakietu danych przedstawiony jest na rysunku\ref{}.
+Algorytm postępowania w przypadku odebrania pakietu danych przedstawiony jest na rysunku\ref{}. Dane odbierane z interfejsu sieciowego są zapisane w systemie szesnastkowym, zgodnie z zaleceniami znanymi z dokumentu RFC 1035\cite{RFC1035}. Program umożliwia parsowanie najbardziej popularny i najczęściej używanych rekordów RR, czyli:
+\begin{enumerate}
+	\item A
+	\item AAAA
+	\item CNAME
+	\item HINFO
+	\item TXT
+	\item ... .
+\end{enumerate} 
+
+Dodatkowo, jeśli zostanie odebrany typ nie przewidziany w implementacji parsera to wszystkie dane odczytane z socketa zostaną przeniesione w formie zapisu heksadecymalnego do pliku z odpowiedzią. Zapewnia ta kompatybilność z rozszerzeniami protokołu DNS oraz zabezpiecza przed błędnym wykluczeniem niektórych informacji ze skanowania. Jeśli pojawi się nie przewidziany wcześniej typ rekordu z bazy danych DNS, to będzie można interpretować go podczas analizy konkretnych odpowiedzi od serwera.
