@@ -14,9 +14,10 @@ shopt -u nullglob # Turn off nullglob to make sure it doesn't interfere with any
 #echo "${array[@]}"
 tlen=${#array[@]}
 x=`ps -aux | grep a.out | grep -v grep | wc -l`
-STARTPROC=$[$PROCMAX-$x]
+i=64745
+STARTPROC=$[$PROCMAX-$x+$i]
 
-for (( i=7500; i<${tlen}; ));
+for (( ; i<${tlen}; ));
 do
     if [ "$STARTPROC" -eq "$i" ]; then
 	echo "sleep $i"
