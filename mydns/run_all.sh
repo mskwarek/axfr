@@ -14,17 +14,15 @@ shopt -u nullglob # Turn off nullglob to make sure it doesn't interfere with any
 #echo "${array[@]}"
 tlen=${#array[@]}
 x=`ps -aux | grep a.out | grep -v grep | wc -l`
-i=64745
+i=66683
 STARTPROC=$[$PROCMAX-$x+$i]
 
 for (( ; i<${tlen}; ));
 do
-    if [ "$STARTPROC" -eq "$i" ]; then
+    if [ "$x" -gt "$PROCMAX" ]; then
 	echo "sleep $i"
 	sleep 60;
 	x=`ps -aux | grep a.out | grep -v grep | wc -l`
-	withoutasking=$[$PROCMAX-$x]
-	STARTPROC=$[$STARTPROC+$withoutasking]
     fi
     
     if [ "$PROCMAX" -gt "$x" ]; then
@@ -36,7 +34,7 @@ do
         mkdir -p $OUTPUTDIR/test_$datetime/iter_$iter_num
         #shuf ${array[$i]} -o ${array[$i]}
         nohup ./a.out ${array[$i]} 3 $OUTPUTDIR/test_$datetime/iter_$iter_num >/dev/null 2>&1 &
-	
+	x=$[$x+1]
         i=$[$i+1]
     else
 	echo "sleep else"
