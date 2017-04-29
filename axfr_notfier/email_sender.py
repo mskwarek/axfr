@@ -33,17 +33,16 @@ class EmailSender(object):
 I am doing a research on DNS servers and I noticed that your site is vulnerable to unauthorized AXFR zone transfer. \
 It means that anyone at the Internet can see your DNS server's records. You can google what that could cause. Below I\
 send you the data that could identify your vulnerable server:\n
-domain name(s): {domain}\n
-nameserver IP(s): {nsIp}\n
-I would be grateful if you for any feedback from you.\n\n\
+domain name(s): {domain}\nnameserver IP(s): {nsIp}\n
+I would be grateful for any feedback from you.\n\n\
 ---\n{myName}\n{organization}\n{university}""".format(myName=self.data['myName'], organization=self.data['organization'],
                                                       university=self.data['uni'], nsIp=", ".join(IP),
                                                       domain=", ".join(dom))
 
         message = """%s
         """ % (TEXT)
-
-        gpg_passphrase = sys.argv[1]
+        
+        gpg_passphrase = self.data['gpgpre']
 
         basemsg = MIMEText(message)
 
@@ -56,7 +55,7 @@ I would be grateful if you for any feedback from you.\n\n\
                                 protocol="application/pgp-signature")
             msg.attach(basemsg)
             msg.attach(signmsg)
-            msg['Subject'] = "Subject"
+            msg['Subject'] = SUBJECT
             msg['From'] = self.FROM
             msg['To'] = TO[0]
             #print(msg.as_string(unixfrom=True))  # or send
@@ -67,7 +66,6 @@ I would be grateful if you for any feedback from you.\n\n\
         
     def end_conn(self):
         self.server.quit()
-
 es = EmailSender()
 es.open_conn()
 es.send_msg(["marcin.skw@gmail.com"], ["testdomain"], ["0.0.0.0"])
