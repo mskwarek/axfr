@@ -12,3 +12,17 @@ Jednym z udogodnień ze strony pracowników Uniwersytetu z Michigan jest udostę
 Różnicą która jest pomiędzy pracami opisanymi w tym punkcie a niniejszą pracą magisterką jest oczywiście zasięg prowadzonych badań. Ograniczenie się jedynie do miliona najpopularniejszych domen, tak jak to zrobił zespół Censys\cite{censys} jest bardoz dużym uproszczeniem. Ponadto, naturalne jest, że najpopularniejsze strony będą przykłądały dużo uwagi do odpowiedniego zabezpieczenia swoich zasobów, dlatego można się spodziewać, że wyników takiego skanowania będzie mniej niż na równej ilościowo, losowo wybranej próbie. 
 
 \section{DNS Enumeration}
+
+\section{DNS as a service}
+DNS as service to pojęcie wykorzystywane do opisywania usług świadczonych w obrębie protokołu DNS. Dosłownym tłumaczeniem tego terminu jest \textit{DNS jako usługa}. W rozumieniu protokołu DNS jest to ograniczone do wystawienia interfejsów klientowi, tak, aby mógł on dodać interesujące go rekordy. 
+
+\textit{DNS as a service} spotykane jest najczęściej w kontekście unikania ataków DDoS jednak mimo to można przyjrzeć się temu zjawisku również przy okazji analizy bezpieczeństwa transferu strefy DNS. Określenie \textit{Distributed Denial of Service} jest w tym przypadku swego rodzaju chwytem marketingowym, ponieważ najbardziej efektywnie działa na wyobraźnię klientów. Niemniej jednak, bezpieczeństwo systemów DNS to nie tylko unikanie ataków DDoS. 
+
+Tym, co faktycznie sprzedają firmy oferujące usługi \textit{DNS as a service} jest przede wszystkim infrastruktura, ale także pewnego rodzaju bezpieczeństwo informacji oraz pewność dostępności systemu DNS. Dobrym przykładem jest w tym przypadku oferta firmy Nexusguard\cite{nexusguard}. Oferuje ona obsługę oraz zabezpieczenie systemu DNS swojego klinta. Wprowadzenie danych na temat strefy DNS klienta może odbywać się na dwa sposoby:
+\begin{enumerate}
+	\item poprzez panel klienta,
+	\item poprzez transfer strefy DNS z serwera klienta.
+\end{enumerate}
+W kontekście tej pracy magisterskiej pierwszy przypadek nie jest nadzwyczaj interesujący. Klient uzupełnia dane o rekordach DNS swojej domeny czy też strefy i cała odpowiedzialność za rozwiązywanie kolejnych zapytań jest przeniesiona na maszyny działające pod nadzorem firmy oferującej usługę. Dużo bardziej interesującym przypadkiem jest wymieniony jako drugi transfer strefy z serwera klienta. Wydzielona część infrastruktury firmy jest wtedy traktowana jako zapasowy serwer DNS(\textit{ang. slave}) podczas gdy serwerem podstawowym (\textit{ang. primary}) jest maszyna klienta. Transfer strefy DNS jest dużo bardziej bezpieczny. Wynika to z wymagań narzuconych przez organizację, mowa między innymi o mechanizmie TSIG (\textit{ang. Transaction Signature})  opisanym w rozdziale \ref{} oraz wykorzystaniu połączenia szyfrowanego opartego na SSL pomiędzy serwerem podstawowym a podrzędnym. Jeśli chodzi o bezpieczeństwo dostępu do rekordów DNS poprzez panel kliencki, to możliwe jest wykorzystanie dwuetapowej weryfikacji użytkownika.
+
+Warto dodać, że \textit{DNS as a service} jest również w ofercie kilku innych, na przykład Akamai\cite{akamai}, CloudFlare\cite{cloudflare} czy Imperva\cite{incapsula}.
