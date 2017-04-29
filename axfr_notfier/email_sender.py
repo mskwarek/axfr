@@ -1,6 +1,7 @@
 import smtplib
 import json
 import gnupg
+import sys
 from email.message import Message
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -19,7 +20,7 @@ class EmailSender(object):
         self.server.starttls()
         self.server.login(self.data['from'], self.data['password'])
 
-    def messageFromSignature(signature):
+    def messageFromSignature(self, signature):
         message = Message()
         message['Content-Type'] = 'application/pgp-signature; name="signature.asc"'
         message['Content-Description'] = 'OpenPGP digital signature'
@@ -32,23 +33,19 @@ class EmailSender(object):
 I am doing a research on DNS servers and I noticed that your site is vulnerable to unauthorized AXFR zone transfer. \
 It means that anyone at the Internet can see your DNS server's records. You can google what that could cause. Below I\
 send you the data that could identify your vulnerable server:\n
-domain name(s): {domain}\n
-nameserver IP(s): {nsIp}\n
-I would be grateful if you for any feedback from you.\n\n\
+domain name(s): {domain}\nnameserver IP(s): {nsIp}\n
+I would be grateful for any feedback from you.\n\n\
 ---\n{myName}\n{organization}\n{university}""".format(myName=self.data['myName'], organization=self.data['organization'],
                                                       university=self.data['uni'], nsIp=", ".join(IP),
                                                       domain=", ".join(dom))
 
-        message = """From: %s\r\nTo: %s\r\nSubject: %s\r\n\
-
-        %s
-        """ % (self.FROM, ", ".join(TO), SUBJECT, TEXT)
-
-        gpg_passphrase = "xxxx"
+        message = """%s
+        """ % (TEXT)
+        
+        gpg_passphrase = self.data['gpgpre']
 
         basemsg = MIMEText(message)
-
-        gpg = gnupg.GPG()
+        gpg = gnupg.GPG(homedir='/home/marcin/.gnupg')
         basetext = basemsg.as_string().replace('\n', '\r\n')
         signature = str(gpg.sign(basetext, detach=True, passphrase=gpg_passphrase))
         if signature:
@@ -57,19 +54,19 @@ I would be grateful if you for any feedback from you.\n\n\
                                 protocol="application/pgp-signature")
             msg.attach(basemsg)
             msg.attach(signmsg)
-            msg['Subject'] = "Test message"
-            msg['From'] = "sender@example.com"
-            msg['To'] = "recipient@example.com"
-            print(msg.as_string(unixfrom=True))  # or send
+            msg['Subject'] = SUBJECT
+            msg['From'] = self.FROM
+            msg['To'] = TO[0]
+            #print(msg.as_string(unixfrom=True))  # or send
+            self.server.sendmail(self.FROM, TO, msg.as_string(unixfrom=True))
         else:
             print('Warning: failed to sign the message!')
 
-        self.server.sendmail(self.FROM, TO, message)
+        
     def end_conn(self):
         self.server.quit()
-
 es = EmailSender()
 es.open_conn()
-es.send_msg(["marcin.skw@gmail.com"], "testdomain", "0.0.0.0")
+es.send_msg(["marcin.skw@gmail.com"], ["testdomain"], ["0.0.0.0"])
 es.end_conn()
 
