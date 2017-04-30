@@ -45,7 +45,6 @@ I would be grateful for any feedback from you.\n\n\
         gpg_passphrase = self.data['gpgpre']
 
         basemsg = MIMEText(message)
-
         gpg = gnupg.GPG(homedir='/home/marcin/.gnupg')
         basetext = basemsg.as_string().replace('\n', '\r\n')
         signature = str(gpg.sign(basetext, detach=True, passphrase=gpg_passphrase))
