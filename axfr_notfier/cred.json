@@ -4,5 +4,6 @@
   "myName" : "",
   "organization" : "",
   "uni" : "",
-  "password" : ""
+  "password" : "",
+    "gpgpre" : ""  
 }
