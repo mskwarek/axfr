@@ -1,11 +1,5 @@
 \begin{thebibliography}{10}
 
-\bibitem{python_axfr_test}
-
-
-\bibitem{axg-axfr}
-
-
 \bibitem{cloudflare}
 Inc. Cloudflare.
 \newblock Cloudflare's dns firewall, 2017.
@@ -13,6 +7,10 @@ Inc. Cloudflare.
 \bibitem{}
 [Python~Software Foundation.
 \newblock {\em Python Language Reference, version 2.7}.
+
+\bibitem{axg-axfr}
+Stephen Haywood.
+\newblock axfr, 2017.
 
 \bibitem{incapsula}
 Imperva.
@@ -42,6 +40,10 @@ P.~Mockapetris.
 \newblock Domain names - implementation and specification.
 \newblock STD~13, RFC Editor, November 1987.
 \newblock \url{http://www.rfc-editor.org/rfc/rfc1035.txt}.
+
+\bibitem{python_axfr_test}
+Sebastian Neef.
+\newblock Axfr-test, 2016.
 
 \bibitem{akamai}
 Akamai Technologies.
