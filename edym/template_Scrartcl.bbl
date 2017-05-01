@@ -1,8 +1,14 @@
-\begin{thebibliography}{1}
+\begin{thebibliography}{10}
+
+\bibitem{python_axfr_test}
+
+
+\bibitem{axg-axfr}
+
 
 \bibitem{cloudflare}
 Inc. Cloudflare.
-\newblock Cloudflare's dns firewall.
+\newblock Cloudflare's dns firewall, 2017.
 
 \bibitem{}
 [Python~Software Foundation.
@@ -10,7 +16,7 @@ Inc. Cloudflare.
 
 \bibitem{incapsula}
 Imperva.
-\newblock Incapsula name server (ns) protection.
+\newblock Incapsula name server (ns) protection, 2017.
 
 \bibitem{domain_tree_src}
 Google Inc.
@@ -39,6 +45,6 @@ P.~Mockapetris.
 
 \bibitem{akamai}
 Akamai Technologies.
-\newblock Dns services and security.
+\newblock Dns services and security, 2017.
 
 \end{thebibliography}
