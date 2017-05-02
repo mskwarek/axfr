@@ -14,14 +14,14 @@ shopt -u nullglob # Turn off nullglob to make sure it doesn't interfere with any
 #echo "${array[@]}"
 tlen=${#array[@]}
 x=`ps -aux | grep a.out | grep -v grep | wc -l`
-i=66683
+i=196872
 STARTPROC=$[$PROCMAX-$x+$i]
 
 for (( ; i<${tlen}; ));
 do
     if [ "$x" -gt "$PROCMAX" ]; then
 	echo "sleep $i"
-	sleep 60;
+	sleep 240;
 	x=`ps -aux | grep a.out | grep -v grep | wc -l`
     fi
     
@@ -38,7 +38,7 @@ do
         i=$[$i+1]
     else
 	echo "sleep else"
-	sleep 60;
+	sleep 240;
 	x=`ps -aux | grep a.out | grep -v grep | wc -l`
     fi
 
