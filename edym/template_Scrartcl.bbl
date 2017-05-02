@@ -1,17 +1,48 @@
+<<<<<<< HEAD
+\begin{thebibliography}{10}
+
+\bibitem{cloudflare}
+Inc. Cloudflare.
+\newblock Cloudflare's dns firewall, 2017.
+=======
 \begin{thebibliography}{1}
 
-\bibitem{domain_tree_src}
-
+\bibitem{cloudflare}
+Inc. Cloudflare.
+\newblock Cloudflare's dns firewall.
+>>>>>>> 3e496bf... * added tsig entry
 
 \bibitem{}
 [Python~Software Foundation.
 \newblock {\em Python Language Reference, version 2.7}.
+
+<<<<<<< HEAD
+\bibitem{axg-axfr}
+Stephen Haywood.
+\newblock axfr, 2017.
+
+\bibitem{incapsula}
+Imperva.
+\newblock Incapsula name server (ns) protection, 2017.
+=======
+\bibitem{incapsula}
+Imperva.
+\newblock Incapsula name server (ns) protection.
+>>>>>>> 3e496bf... * added tsig entry
+
+\bibitem{domain_tree_src}
+Google Inc.
+\newblock Google domains help, 2017.
 
 \bibitem{isc}
 {International Seismological Centre}.
 \newblock {\em BIND The most widely used Name Server Software}.
 \newblock Internatl. Seismol. Cent., Thatcham, United Kingdom, 2017.
 \newblock http://www.isc.org.
+
+\bibitem{nexusguard}
+Nexusguard Limited.
+\newblock Dns protection.
 
 \bibitem{Liu:2006:DB:1197828}
 Cricket Liu and Paul Albitz.
@@ -23,5 +54,19 @@ P.~Mockapetris.
 \newblock Domain names - implementation and specification.
 \newblock STD~13, RFC Editor, November 1987.
 \newblock \url{http://www.rfc-editor.org/rfc/rfc1035.txt}.
+
+<<<<<<< HEAD
+\bibitem{python_axfr_test}
+Sebastian Neef.
+\newblock Axfr-test, 2016.
+
+\bibitem{akamai}
+Akamai Technologies.
+\newblock Dns services and security, 2017.
+=======
+\bibitem{akamai}
+Akamai Technologies.
+\newblock Dns services and security.
+>>>>>>> 3e496bf... * added tsig entry
 
 \end{thebibliography}
