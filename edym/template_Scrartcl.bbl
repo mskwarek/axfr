@@ -1,8 +1,21 @@
 \begin{thebibliography}{10}
 
+\bibitem{RFC4033}
+R.~Arends, R.~Austein, M.~Larson, D.~Massey, and S.~Rose.
+\newblock Dns security introduction and requirements.
+\newblock RFC 4033, RFC Editor, March 2005.
+\newblock \url{http://www.rfc-editor.org/rfc/rfc4033.txt}.
+
+\bibitem{RFC4035}
+R.~Arends, R.~Austein, M.~Larson, D.~Massey, and S.~Rose.
+\newblock Protocol modifications for the dns security extensions.
+\newblock RFC 4035, RFC Editor, March 2005.
+\newblock \url{http://www.rfc-editor.org/rfc/rfc4035.txt}.
+
 \bibitem{cloudflare}
 Inc. Cloudflare.
 \newblock Cloudflare's dns firewall, 2017.
+\newblock https://www.cloudflare.com/dns/dns-firewall/.
 
 \bibitem{}
 Python~Software Foundation.
@@ -11,14 +24,21 @@ Python~Software Foundation.
 \bibitem{asg-axfr}
 Stephen Haywood.
 \newblock axfr, 2017.
+\newblock https://github.com/averagesecurityguy/axfr.
 
 \bibitem{incapsula}
 Imperva.
 \newblock Incapsula name server (ns) protection, 2017.
+\newblock https://www.incapsula.com/dns-ddos-protection-services.html.
 
 \bibitem{domain_tree_src}
 Google Inc.
 \newblock Google domains help, 2017.
+
+\bibitem{nask-tsig}
+NASK instytut badawczy.
+\newblock Podpisy tsig, 2017.
+\newblock \url{https://www.dns.pl/dnssec/theory_tsig.html}.
 
 \bibitem{isc}
 {International Seismological Centre}.
@@ -44,10 +64,12 @@ P.~Mockapetris.
 \bibitem{python_axfr_test}
 Sebastian Neef.
 \newblock Axfr-test, 2016.
+\newblock https://github.com/internetwache/Python-AXFR-Test.
 
 \bibitem{akamai}
 Akamai Technologies.
 \newblock Dns services and security, 2017.
+\newblock https://www.akamai.com/us/en/solutions/why-akamai/dns-services.jsp.
 
 \bibitem{RFC2845}
 P.~Vixie, O.~Gudmundsson, D.~Eastlake 3rd, and B.~Wellington.
