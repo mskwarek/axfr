@@ -106,7 +106,7 @@ Odwrotne mapowanie wykorzystuje specjalną domenę \textit{in-addr.arpa}. Z zał
 \subsection{Wplisy plików strefy}
 Tak jak wspomniano we wcześniejszych punktach \ref{mapping} oraz \ref{revmapping} działanie całego mechanizmu mapowana (czy to właściwego czy odwrotnego) może zachodzić dzięki serwerom autorytatywnym oraz przechowywanym przez nie plikom strefy DNS. 
 
-Z racji, że system DNS dostarcza administratorom wielu funkcji poza standardowym mapowaniem adresów na IP, wpisy w bazach danych mogą być różnych typów. Najpopularniejsze typy to oczywiście te, z którymi można zetknąć się na codzień, na przykład wpis typu \textit{A} -- tłumaczący nazwę hosta na adres IP w wersji 4, \textit{AAAA} -- mapujący nazwę hosta na adres IP w wersji 6, rekordy \textit{CNAME} służące do aliasów, czy MX -- specyfikujące serwer wymiany wiadomości elektronicznych dla danej domeny. Oprócz wspomnianych podstawowych typów twórcy standardu dla systemu DNS wprowadzili także mniej znane typy. Opis zbioru najbardziej istotnych wpisów określonych w dokumencie RFC 1035 \cite{} wraz z ich przeznaczeniem umieszczono w tabeli \ref{typyRekordowDns}.
+Z racji, że system DNS dostarcza administratorom wielu funkcji poza standardowym mapowaniem adresów na IP, wpisy w bazach danych mogą być różnych typów. Najpopularniejsze typy to oczywiście te, z którymi można zetknąć się na codzień, na przykład wpis typu \textit{A} -- tłumaczący nazwę hosta na adres IP w wersji 4, \textit{AAAA} -- mapujący nazwę hosta na adres IP w wersji 6, rekordy \textit{CNAME} służące do aliasów, czy MX -- specyfikujące serwer wymiany wiadomości elektronicznych dla danej domeny. Oprócz wspomnianych podstawowych typów twórcy standardu dla systemu DNS wprowadzili także mniej znane typy. Opis zbioru najbardziej istotnych wpisów określonych w dokumencie RFC 1035 \cite{RFC1035} wraz z ich przeznaczeniem umieszczono w tabeli \ref{typyRekordowDns}.
 
 \begin{table}[]
 	\centering
@@ -172,9 +172,10 @@ Specyficzną domeną najwyższego rzędu jest domena \textit{ARPA}.
 
 \subsection{Domena 2LD in-addr}
 
-\section{Podpisy TSIG}
+\section{Podpisy TSIG}\label{TSIG}
 Istotnym typem rekordu jest również typ 250. -- rekord TSIG(ang. \textit{Secret Key Transaction Authentication for DNS/Transaction Signature}) zdefiniowany w dokumencie RFC 2845\cite{RFC2845}. Używany jest przede wszystkim w protokole DNS aby zapewnić, że informacja przesyłana pomiędzy obiema komunikującymi się stronami faktycznie pochodzi od nadawcy oraz że nie była modyfikowana w trakcie komunikacji. System uzywany jest przede wszystkim do dynamicznych aktualizacji baz DNS oraz do transferów stref pomiędzy serwerem głównym a podrzędnym. Aby komunikacja była kryptograficznie bezpieczna, w protokole wykorzystywane są klucze tajne oraz bezkolizyjne funkcje skrótu.
 
+\subsection{Opis działania TSIG}
 Rekord TSIG pozwala na wykorzystywanie mechanizmów znanych z protokołu DNSSEC\cite{nask-tsig} w protokole DNS zaproponowanych w RFC 1035\cite{RFC1035}. Praktyka taka została zaproponowana z powodu częstych problemów z używaniem protokołu DNSSEC\cite{RFC4033, RFC4035}. Wprowadzenie korzystania z rekordów TSIG pozwala między innymi na:
 \begin{enumerate}
 	\item kontrolowanie aktualizacji stref DNS,
@@ -186,10 +187,13 @@ Zgodnie z nazwą, rekord TSIG jest w głównej mierze kontenerem mającym za zad
 
 Generowanie podpisanej odpowiedzi może mieć miejsce tylko po odebraniu podpisanego zapytania od klienta. Serwer nie może wysłać odpowiedzi zawierającej rekord TSIG jeśli otrzymał niepodpisane zapytanie. Generacja skrótu znajdującego się w odpowiedzi składa się zarówno ze skrótu który przysłał klient jak i zawartości rekordu TSIG\cite{nask-tsig}.
 
-Użycie mechanizmu podpisywania wiadomości eliminuje może eliminować problem nieuprawnionego transferu danych. Z pewnością wyklucza użycie algorytmu wykorzystywanego w niniejszej pracy magisterskiej, gdyż łamanie nawet prostych kluczy wielokrotnie zwiększa czas procesowania pojedyńczej domeny\cite{nask-tsig}. Oczywiście zabezpieczenie kluczy używanych do podpisywania wiadomości  a także ich długość i jakoś są bardzo ważne w kwestii poziomu bezpieczeństwa protokołu. Zaleca się, aby długość generowanego skrótu była mniejsza bądź równa długości klucza użytego do podpisania wiadomości.
+Użycie mechanizmu podpisywania wiadomości eliminuje może eliminować problem nieuprawnionego transferu danych. Z pewnością wyklucza użycie algorytmu wykorzystywanego w niniejszej pracy magisterskiej, gdyż łamanie nawet prostych kluczy wielokrotnie zwiększa czas procesowania pojedyńczej domeny\cite{nask-tsig}. Oczywiście zabezpieczenie kluczy używanych do podpisywania wiadomości a także ich długość i jakoś są bardzo ważne w kwestii poziomu bezpieczeństwa protokołu. Zaleca się, aby długość generowanego skrótu była mniejsza bądź równa długości klucza użytego do podpisania wiadomości.
 
-Problemem związanym z wykorzystaniem rekordów TSIG jest przede wsyzstkim dystrybucja kluczy. Ponadto w systemie DNS rzadko zdarza się, że tylko jeden klient będzie korzystał z interfejsu serwera, więc każdy z klientów powinien posiadać swój klucz, co ponownie prowadzi do problemu ich dystrybucji, przechowywania i zarządzania\cite{nask-tsig}.
+\subsection{Wady TSIG}
+Problemem związanym z wykorzystaniem rekordów TSIG jest przede wszystkim dystrybucja kluczy. Ponadto w systemie DNS rzadko zdarza się, że tylko jeden klient będzie korzystał z interfejsu serwera, więc każdy z klientów powinien posiadać swój klucz, co ponownie prowadzi do problemu ich dystrybucji, przechowywania i zarządzania\cite{nask-tsig}. Inną istotną wadą protokołu jest rodzaj zaproonowanej funkcji skrótu HMAC-MD5. Algorytm ten nie jest uważany w dzisiejszych czasach za bezpieczny. Ataki na HMAC-MD5 zaprezentowano między innymi w pracach \cite{hmac-md5-attack, hmac-md5-cryptoanalisys} 
 
+\section{Inne metody podpisywania wiadomości}
+Oprócz przedstawionego w podpunkcie \ref{TSIG} mechanimzu TSIG postało kilka innych propozycji podpisywania wiadomości w protokole DNS. Propozycje te opracowaywane były przede wszystkim dlatego, że TSIG charakteryzuje się pewnymi uciążliwymi wadami -- nie rozwiązuje problemu dystrybucji kluczy, nie uwzględnia poziomów w hierarchii systemu DNS czy wykorzystuje przestażałą funkcję skrótu HMAC-MD5. 
 
 \chapter{Przegląd dostępnych narzędzi}
 Społeczność internetu oferuje bardzo szeroką gamę narzędzi umożliwiających pozyskiwanie informacji na podstawie protokołu DNS. Bardzo użytecznym i przydatnym narzędziem jest w tym przypadku program dig. Wspomniany program ma jednak znaczącą wadę -- jest wydajny jedynie przy niewielkiej liczbie odpytywanych domen. Dodatkową niedogodnością jest, wbrew pozorom, fakt, że program wchodzi w skład pakietu Open Source bind. Ten, jak każde oprogramowanie na wolnej licencji, cierpi na szereg niedogodności z tym związanych. Najbardziej prozaicznym problemem jest fakt, że oprogramowanie jest tworzone przez wiele osób, więc bardzo trudno zastosować jeden standard kodowania, gdyż każda z osób ma swój preferowany. Poza tym, dużą wadą jest trudność wprowadzania zmian w tego typu oprogramowaniu, wynikająca zarówno z punktu poprzedniego jak i ze złożoności programu, którą cechuje się dig w tym momencie.

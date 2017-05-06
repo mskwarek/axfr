@@ -55,6 +55,13 @@ Cricket Liu and Paul Albitz.
 \newblock {\em DNS and BIND (5th Edition)}.
 \newblock O'Reilly Media, Inc., 2006.
 
+\bibitem{RFC5905}
+D.~Mills, J.~Martin, J.~Burbank, and W.~Kasch.
+\newblock Network time protocol version 4: Protocol and algorithms
+  specification.
+\newblock RFC 5905, RFC Editor, June 2010.
+\newblock \url{http://www.rfc-editor.org/rfc/rfc5905.txt}.
+
 \bibitem{RFC1035}
 P.~Mockapetris.
 \newblock Domain names - implementation and specification.
