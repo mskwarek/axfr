@@ -15,7 +15,7 @@ R.~Arends, R.~Austein, M.~Larson, D.~Massey, and S.~Rose.
 \bibitem{cloudflare}
 Inc. Cloudflare.
 \newblock Cloudflare's dns firewall, 2017.
-\newblock https://www.cloudflare.com/dns/dns-firewall/.
+\newblock \url{https://www.cloudflare.com/dns/dns-firewall/}.
 
 \bibitem{}
 Python~Software Foundation.
@@ -24,12 +24,11 @@ Python~Software Foundation.
 \bibitem{asg-axfr}
 Stephen Haywood.
 \newblock axfr, 2017.
-\newblock https://github.com/averagesecurityguy/axfr.
+\newblock \url{https://github.com/averagesecurityguy/axfr}.
 
 \bibitem{incapsula}
 Imperva.
 \newblock Incapsula name server (ns) protection, 2017.
-\newblock https://www.incapsula.com/dns-ddos-protection-services.html.
 
 \bibitem{domain_tree_src}
 Google Inc.
@@ -71,16 +70,28 @@ P.~Mockapetris.
 \bibitem{python_axfr_test}
 Sebastian Neef.
 \newblock Axfr-test, 2016.
-\newblock https://github.com/internetwache/Python-AXFR-Test.
+\newblock \url{https://github.com/internetwache/Python-AXFR-Test}.
+
+\bibitem{hmac-md5-attack}
+Phong Q.~Nguyen Pierre-Alain~Fouque, Gaëtan~Leurent.
+\newblock Full key-recovery attacks on hmac/nmac-md4 and nmac-md5.
+\newblock \url{https://www.di.ens.fr/~fouque/pub/crypto07b.pdf}.
 
 \bibitem{akamai}
 Akamai Technologies.
 \newblock Dns services and security, 2017.
-\newblock https://www.akamai.com/us/en/solutions/why-akamai/dns-services.jsp.
+\newblock
+  \url{https://www.akamai.com/us/en/solutions/why-akamai/dns-services.jsp}.
 
 \bibitem{RFC2845}
 P.~Vixie, O.~Gudmundsson, D.~Eastlake 3rd, and B.~Wellington.
 \newblock Secret key transaction authentication for dns (tsig).
 \newblock RFC 2845, RFC Editor, May 2000.
+
+\bibitem{hmac-md5-cryptoanalisys}
+Wei Wang Haina~Zhang Xiaoyun~Wang, Hongbo~Yu and Tao Zhan.
+\newblock Cryptanalysis on hmac/nmac-md5 and md5-mac.
+\newblock
+  \url{https://pdfs.semanticscholar.org/1cc5/63b1eca6695351783e97711b4455c1eca851.pdf}.
 
 \end{thebibliography}
