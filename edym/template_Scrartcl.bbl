@@ -1,5 +1,21 @@
 \begin{thebibliography}{10}
 
+\bibitem{RFC2137}
+D.~Eastlake 3rd.
+\newblock Secure domain name system dynamic update.
+\newblock RFC 2137, RFC Editor, April 1997.
+
+\bibitem{RFC2930}
+D.~Eastlake 3rd.
+\newblock Secret key establishment for dns (tkey rr).
+\newblock RFC 2930, RFC Editor, September 2000.
+
+\bibitem{RFC4635}
+D.~Eastlake 3rd.
+\newblock Hmac sha (hashed message authentication code, secure hash algorithm)
+  tsig algorithm identifiers.
+\newblock RFC 4635, RFC Editor, August 2006.
+
 \bibitem{RFC4033}
 R.~Arends, R.~Austein, M.~Larson, D.~Massey, and S.~Rose.
 \newblock Dns security introduction and requirements.
@@ -16,6 +32,18 @@ R.~Arends, R.~Austein, M.~Larson, D.~Massey, and S.~Rose.
 Inc. Cloudflare.
 \newblock Cloudflare's dns firewall, 2017.
 \newblock \url{https://www.cloudflare.com/dns/dns-firewall/}.
+
+\bibitem{RFC4634}
+D.~Eastlake and T.~Hansen.
+\newblock Us secure hash algorithms (sha and hmac-sha).
+\newblock RFC 4634, RFC Editor, July 2006.
+\newblock \url{http://www.rfc-editor.org/rfc/rfc4634.txt}.
+
+\bibitem{RFC3174}
+D.~Eastlake and P.~Jones.
+\newblock Us secure hash algorithm 1 (sha1).
+\newblock RFC 3174, RFC Editor, September 2001.
+\newblock \url{http://www.rfc-editor.org/rfc/rfc3174.txt}.
 
 \bibitem{}
 Python~Software Foundation.
@@ -45,9 +73,21 @@ NASK instytut badawczy.
 \newblock Internatl. Seismol. Cent., Thatcham, United Kingdom, 2017.
 \newblock http://www.isc.org.
 
+\bibitem{RFC3645}
+S.~Kwan, P.~Garg, J.~Gilroy, L.~Esibov, J.~Westhead, and R.~Hall.
+\newblock Generic security service algorithm for secret key transaction
+  authentication for dns (gss-tsig).
+\newblock RFC 3645, RFC Editor, October 2003.
+
 \bibitem{nexusguard}
 Nexusguard Limited.
 \newblock Dns protection.
+
+\bibitem{RFC2743}
+J.~Linn.
+\newblock Generic security service application program interface version 2,
+  update 1.
+\newblock RFC 2743, RFC Editor, January 2000.
 
 \bibitem{Liu:2006:DB:1197828}
 Cricket Liu and Paul Albitz.
