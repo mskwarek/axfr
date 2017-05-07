@@ -1,5 +1,14 @@
 \begin{thebibliography}{10}
 
+\bibitem{powerdns-forum}
+Ixfr confuses dig, godaddy, 2013.
+\newblock
+  \url{http://powerdns.13854.n7.nabble.com/IXFR-confuses-dig-Godaddy-td10493.html}.
+
+\bibitem{powerdns-git}
+Ixfr response must be soa only when request serial >= current serial, 2014.
+\newblock \url{https://github.com/PowerDNS/pdns/issues/1192}.
+
 \bibitem{RFC2137}
 D.~Eastlake 3rd.
 \newblock Secure domain name system dynamic update.
@@ -28,6 +37,11 @@ R.~Arends, R.~Austein, M.~Larson, D.~Massey, and S.~Rose.
 \newblock RFC 4035, RFC Editor, March 2005.
 \newblock \url{http://www.rfc-editor.org/rfc/rfc4035.txt}.
 
+\bibitem{powerdns}
+PowerDNS.COM B.V.
+\newblock Powerdns, 2017.
+\newblock \url{https://www.powerdns.com}.
+
 \bibitem{cloudflare}
 Inc. Cloudflare.
 \newblock Cloudflare's dns firewall, 2017.
@@ -48,6 +62,11 @@ D.~Eastlake and P.~Jones.
 \bibitem{}
 Python~Software Foundation.
 \newblock {\em Python Language Reference, version 2.7}.
+
+\bibitem{hmac-md5-attack}
+Pierre-Alain Fouque, Gaëtan Leurent, and Phong~Q. Nguyen.
+\newblock Full key-recovery attacks on hmac/nmac-md4 and nmac-md5.
+\newblock \url{https://www.di.ens.fr/~fouque/pub/crypto07b.pdf}.
 
 \bibitem{asg-axfr}
 Stephen Haywood.
@@ -112,10 +131,11 @@ Sebastian Neef.
 \newblock Axfr-test, 2016.
 \newblock \url{https://github.com/internetwache/Python-AXFR-Test}.
 
-\bibitem{hmac-md5-attack}
-Phong Q.~Nguyen Pierre-Alain~Fouque, Gaëtan~Leurent.
-\newblock Full key-recovery attacks on hmac/nmac-md4 and nmac-md5.
-\newblock \url{https://www.di.ens.fr/~fouque/pub/crypto07b.pdf}.
+\bibitem{RFC1995}
+Masataka Ohta.
+\newblock Incremental zone transfer in dns.
+\newblock RFC 1995, RFC Editor, August 1996.
+\newblock \url{http://www.rfc-editor.org/rfc/rfc1995.txt}.
 
 \bibitem{akamai}
 Akamai Technologies.
@@ -129,7 +149,7 @@ P.~Vixie, O.~Gudmundsson, D.~Eastlake 3rd, and B.~Wellington.
 \newblock RFC 2845, RFC Editor, May 2000.
 
 \bibitem{hmac-md5-cryptoanalisys}
-Wei Wang Haina~Zhang Xiaoyun~Wang, Hongbo~Yu and Tao Zhan.
+Xiaoyun Wang, Hongbo Yu, Wei Wang, Haina Zhang, and Tao Zhan.
 \newblock Cryptanalysis on hmac/nmac-md5 and md5-mac.
 \newblock
   \url{https://pdfs.semanticscholar.org/1cc5/63b1eca6695351783e97711b4455c1eca851.pdf}.
