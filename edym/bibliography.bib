@@ -15,11 +15,39 @@
 }
 
 @misc{
-	akamai,
-	author = "Akamai Technologies",
-	title = "DNS SERVICES AND SECURITY",
+	powerdns-forum,
+	author = "",
+	title = "IXFR confuses dig, Godaddy",
+	year = "2013",
+	url = {http://powerdns.13854.n7.nabble.com/IXFR-confuses-dig-Godaddy-td10493.html},
+	note = {\url{http://powerdns.13854.n7.nabble.com/IXFR-confuses-dig-Godaddy-td10493.html}},
+}
+
+@misc{
+	powerdns-git,
+	author = "",
+	title = "IXFR response must be SOA only when request serial >= current serial",
+	year = "2014",
+	url = {https://github.com/PowerDNS/pdns/issues/1192},
+	note = {\url{https://github.com/PowerDNS/pdns/issues/1192}},
+}
+
+@misc{
+	powerdns,
+	author = "PowerDNS.COM B.V.",
+	title = "PowerDNS",
 	year = "2017",
-	url={\url{https://www.akamai.com/us/en/solutions/why-akamai/dns-services.jsp}}	
+	url = {https://www.powerdns.com},
+	note = {\url{https://www.powerdns.com}},
+}
+
+@misc{
+	akamai,
+	author = {Akamai Technologies},
+	title = "DNS SERVICES AND SECURITY",
+	year = {2017},
+	url={https://www.akamai.com/us/en/solutions/why-akamai/dns-services.jsp},
+	note={\url{https://www.akamai.com/us/en/solutions/why-akamai/dns-services.jsp}},
 }
 
 @misc{
@@ -27,7 +55,8 @@
 	author = "Cloudflare, Inc.",
 	title = "Cloudflare's DNS Firewall",
 	year = "2017",
-	url={\url{https://www.cloudflare.com/dns/dns-firewall/}}	
+	url={https://www.cloudflare.com/dns/dns-firewall/},
+	note={\url{https://www.cloudflare.com/dns/dns-firewall/}}	
 }
 
 @misc{
@@ -35,7 +64,8 @@
 	author = "Imperva",
 	title = "Incapsula Name Server (NS) Protection ",
 	year = "2017",
-	url={\url{https://www.incapsula.com/dns-ddos-protection-services.html}}	
+	url={https://www.incapsula.com/dns-ddos-protection-services.html}}	,
+	note={\url{https://www.incapsula.com/dns-ddos-protection-services.html}},
 }
 
 @misc{
@@ -43,7 +73,8 @@
 	author="Sebastian Neef",
 	title="AXFR-test",
 	year = "2016",
-	url={\url{https://github.com/internetwache/Python-AXFR-Test}}
+	url={https://github.com/internetwache/Python-AXFR-Test},
+	note={\url{https://github.com/internetwache/Python-AXFR-Test}},
 }
 
 @misc{
@@ -51,11 +82,35 @@
 	author="Stephen Haywood",
 	title="axfr",
 	year = "2017",
-	url={\url{https://github.com/averagesecurityguy/axfr}}
+	url={https://github.com/averagesecurityguy/axfr},
+	note={\url{https://github.com/averagesecurityguy/axfr}},
 }
 
+@misc{
+	nask-tsig,
+	author="NASK - instytut badawczy",
+	title="Podpisy TSIG",
+	year="2017",
+	ADDRESS = "ul. Kolska 12, 01-045 Warszawa",
+	url={https://www.dns.pl/dnssec/theory_tsig.html},
+	note={\url{https://www.dns.pl/dnssec/theory_tsig.html}},
+}
 
+@misc{
+	hmac-md5-attack,
+	author="Pierre-Alain Fouque and Gaëtan Leurent and Phong Q. Nguyen",
+	title="Full Key-Recovery Attacks on HMAC/NMAC-MD4 and NMAC-MD5",
+	url="https://www.di.ens.fr/~fouque/pub/crypto07b.pdf",
+	note={\url{https://www.di.ens.fr/~fouque/pub/crypto07b.pdf}},
+}
 
+@misc{
+	hmac-md5-cryptoanalisys,
+	author="Xiaoyun Wang and Hongbo Yu and Wei Wang and Haina Zhang and Tao Zhan",
+	title="Cryptanalysis on HMAC/NMAC-MD5 and MD5-MAC",
+	url="https://pdfs.semanticscholar.org/1cc5/63b1eca6695351783e97711b4455c1eca851.pdf",
+	note={\url{https://pdfs.semanticscholar.org/1cc5/63b1eca6695351783e97711b4455c1eca851.pdf}},
+}
 
 
 
@@ -88,7 +143,7 @@
 	ORGANIZATION = "Internatl. Seismol. Cent.",
 	NOTE = "http://www.isc.org",
 	ADDRESS = "Thatcham, United Kingdom",
-	YEAR = "2017"
+	YEAR = "2017",
 } 
 
 @Manual{,
@@ -98,6 +153,21 @@
 	address = {},
 	year = {2017},
 	url = {http://www.python.org/},
+}
+
+@techreport{RFC1995,
+	author = {Masataka Ohta},
+	title = {Incremental Zone Transfer in DNS},
+	howpublished = {Internet Requests for Comments},
+	type = {RFC},
+	number = {1995},
+	year = {1996},
+	month = {August},
+	issn = {2070-1721},
+	publisher = {RFC Editor},
+	institution = {RFC Editor},
+	url = {http://www.rfc-editor.org/rfc/rfc1995.txt},
+	note = {\url{http://www.rfc-editor.org/rfc/rfc1995.txt}},
 }
 
 @techreport{RFC2845,
@@ -112,3 +182,159 @@
 	publisher = {RFC Editor},
 	institution = {RFC Editor},
 }
+
+@techreport{RFC4033,
+	author = {R. Arends and R. Austein and M. Larson and D. Massey and S. Rose},
+	title = {DNS Security Introduction and Requirements},
+	howpublished = {Internet Requests for Comments},
+	type = {RFC},
+	number = {4033},
+	year = {2005},
+	month = {March},
+	issn = {2070-1721},
+	publisher = {RFC Editor},
+	institution = {RFC Editor},
+	url = {http://www.rfc-editor.org/rfc/rfc4033.txt},
+	note = {\url{http://www.rfc-editor.org/rfc/rfc4033.txt}},
+}
+
+@techreport{RFC4035,
+	author = {R. Arends and R. Austein and M. Larson and D. Massey and S. Rose},
+	title = {Protocol Modifications for the DNS Security Extensions},
+	howpublished = {Internet Requests for Comments},
+	type = {RFC},
+	number = {4035},
+	year = {2005},
+	month = {March},
+	issn = {2070-1721},
+	publisher = {RFC Editor},
+	institution = {RFC Editor},
+	url = {http://www.rfc-editor.org/rfc/rfc4035.txt},
+	note = {\url{http://www.rfc-editor.org/rfc/rfc4035.txt}},
+}
+
+@techreport{RFC5905,
+	author = {D. Mills and J. Martin and J. Burbank and W. Kasch},
+	title = {Network Time Protocol Version 4: Protocol and Algorithms Specification},
+	howpublished = {Internet Requests for Comments},
+	type = {RFC},
+	number = {5905},
+	year = {2010},
+	month = {June},
+	issn = {2070-1721},
+	publisher = {RFC Editor},
+	institution = {RFC Editor},
+	url = {http://www.rfc-editor.org/rfc/rfc5905.txt},
+	note = {\url{http://www.rfc-editor.org/rfc/rfc5905.txt}},
+}
+
+@techreport{RFC2137,
+	author = {D. Eastlake 3rd},
+	title = {Secure Domain Name System Dynamic Update},
+	howpublished = {Internet Requests for Comments},
+	type = {RFC},
+	number = {2137},
+	year = {1997},
+	month = {April},
+	issn = {2070-1721},
+	publisher = {RFC Editor},
+	institution = {RFC Editor},
+}
+
+@techreport{RFC2930,
+	author = {D. Eastlake 3rd},
+	title = {Secret Key Establishment for DNS (TKEY RR)},
+	howpublished = {Internet Requests for Comments},
+	type = {RFC},
+	number = {2930},
+	year = {2000},
+	month = {September},
+	issn = {2070-1721},
+	publisher = {RFC Editor},
+	institution = {RFC Editor},
+}
+
+@techreport{RFC2743,
+	author = {J. Linn},
+	title = {Generic Security Service Application Program Interface Version 2, Update 1},
+	howpublished = {Internet Requests for Comments},
+	type = {RFC},
+	number = {2743},
+	year = {2000},
+	month = {January},
+	issn = {2070-1721},
+	publisher = {RFC Editor},
+	institution = {RFC Editor},
+}
+
+@techreport{RFC2930,
+	author = {D. Eastlake 3rd},
+	title = {Secret Key Establishment for DNS (TKEY RR)},
+	howpublished = {Internet Requests for Comments},
+	type = {RFC},
+	number = {2930},
+	year = {2000},
+	month = {September},
+	issn = {2070-1721},
+	publisher = {RFC Editor},
+	institution = {RFC Editor},
+}
+
+@techreport{RFC3174,
+	author = {D. Eastlake and P. Jones},
+	title = {US Secure Hash Algorithm 1 (SHA1)},
+	howpublished = {Internet Requests for Comments},
+	type = {RFC},
+	number = {3174},
+	year = {2001},
+	month = {September},
+	issn = {2070-1721},
+	publisher = {RFC Editor},
+	institution = {RFC Editor},
+	url = {http://www.rfc-editor.org/rfc/rfc3174.txt},
+	note = {\url{http://www.rfc-editor.org/rfc/rfc3174.txt}},
+}
+
+@techreport{RFC3645,
+	author = {S. Kwan and P. Garg and J. Gilroy and L. Esibov and J. Westhead and R. Hall},
+	title = {Generic Security Service Algorithm for Secret Key Transaction Authentication for DNS (GSS-TSIG)},
+	howpublished = {Internet Requests for Comments},
+	type = {RFC},
+	number = {3645},
+	year = {2003},
+	month = {October},
+	issn = {2070-1721},
+	publisher = {RFC Editor},
+	institution = {RFC Editor},
+}
+
+@techreport{RFC4634,
+	author = {D. Eastlake and T. Hansen},
+	title = {US Secure Hash Algorithms (SHA and HMAC-SHA)},
+	howpublished = {Internet Requests for Comments},
+	type = {RFC},
+	number = {4634},
+	year = {2006},
+	month = {July},
+	issn = {2070-1721},
+	publisher = {RFC Editor},
+	institution = {RFC Editor},
+	url = {http://www.rfc-editor.org/rfc/rfc4634.txt},
+	note = {\url{http://www.rfc-editor.org/rfc/rfc4634.txt}},
+}
+
+@techreport{RFC4635,
+	author = {D. Eastlake 3rd},
+	title = {HMAC SHA (Hashed Message Authentication Code, Secure Hash Algorithm) TSIG Algorithm Identifiers},
+	howpublished = {Internet Requests for Comments},
+	type = {RFC},
+	number = {4635},
+	year = {2006},
+	month = {August},
+	issn = {2070-1721},
+	publisher = {RFC Editor},
+	institution = {RFC Editor},
+}
+
+
+
