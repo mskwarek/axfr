@@ -175,6 +175,8 @@ Specyficzną domeną najwyższego rzędu jest domena \textit{ARPA}.
 \section{Transfer strefy DNS}
 Transfer strefy DNS jest typem transakcji DNS, która jest podstawowym elementem mechanizmu odtwarzania bazy danych DNS pomiędzy serwerami systemu. Transfer jako protokołu warstwy 4 używa TCP i przybiera formę komunikacji typu klient-serwer. Zgodnie z założeniem projektantów klient jest podrzędnym lub zapasowym serwerem DNS a serwer, który odpytuje to nadrzędny bądź główny serwer DNS. To, co wysyłane jest w odpowiedzi od serwera głównego jest strefa DNS -- część bazy danych przechowywanych na głównym serwerze. 
 
+Transfer może odbywać się za pośrednictwem dwóch wyspecyfikowanych rodzajów zapytań -- AXFR\cite{RFC1034, RFC5936} bądź IXFR\cite{RFC1995}. To pierwsze definiuje transfer całej strefy, niezależnie od jej wersji czy zmian które zostały naniesione, zaś drugie transfer ,,inkrementalny'' czyli na podstawie informacji zawartych w otrzymanym zapytaniu klienckim potrafi wydzielić tylko tę część strefy która się zmieniła i przesłać tylko te rekordy w odpowiedzi.
+
 \subsection{Transfer AXFR}
 
 \subsection{Transfer IXFR}
