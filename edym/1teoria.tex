@@ -177,7 +177,10 @@ Transfer strefy DNS jest typem transakcji DNS, która jest podstawowym elementem
 
 Transfer może odbywać się za pośrednictwem dwóch wyspecyfikowanych rodzajów zapytań -- AXFR\cite{RFC1034, RFC5936} bądź IXFR\cite{RFC1995}. To pierwsze definiuje transfer całej strefy, niezależnie od jej wersji czy zmian które zostały naniesione, zaś drugie transfer ,,inkrementalny'' czyli na podstawie informacji zawartych w otrzymanym zapytaniu klienckim potrafi wydzielić tylko tę część strefy która się zmieniła i przesłać tylko te rekordy w odpowiedzi.
 
+Niezależnie od wybranego sposobu przesyłania informacji o strefie protokół można określić jako inicjowany przez klienta. Oznacza to, że każda próba pobrania informacji będzie rozpoczynała się od klienta, który wystosuje do serwera odpowiednie zapytanie. Można wyobrazić sobie sytuację, kiedy klient potrzebuje pobrania najbardziej aktualnej informacji o strefie DNS, na przykład jego baza danych jest pusta bądź ,,wygasła'' ważność rekordu SOA określona przez poprzedni transfer strefy. Oczywiście z uwagi na inicjację komunikacji przez klienta, możliwe jest pobieranie bazy danych DNS cyklicznie czy w interwałąch narzuconych przez administratora serwera podrzędnego. Określone zostały także mechanizmy, które pozwalają powiadamiać klientów o zaistnieniu zmian w bazie danych na serwerze podstawowym\cite{RFC5936}, jednak wciąż odpowiedzialność za rozpoczęcie transferu spoczywa na kliencie.
+
 \subsection{Transfer AXFR}
+
 
 \subsection{Transfer IXFR}
 
