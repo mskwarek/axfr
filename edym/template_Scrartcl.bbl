@@ -98,6 +98,11 @@ S.~Kwan, P.~Garg, J.~Gilroy, L.~Esibov, J.~Westhead, and R.~Hall.
   authentication for dns (gss-tsig).
 \newblock RFC 3645, RFC Editor, October 2003.
 
+\bibitem{RFC5936}
+E.~Lewis and A.~Hoenes.
+\newblock Dns zone transfer protocol (axfr).
+\newblock RFC 5936, RFC Editor, June 2010.
+
 \bibitem{nexusguard}
 Nexusguard Limited.
 \newblock Dns protection.
@@ -119,6 +124,12 @@ D.~Mills, J.~Martin, J.~Burbank, and W.~Kasch.
   specification.
 \newblock RFC 5905, RFC Editor, June 2010.
 \newblock \url{http://www.rfc-editor.org/rfc/rfc5905.txt}.
+
+\bibitem{RFC1034}
+P.~Mockapetris.
+\newblock Domain names - concepts and facilities.
+\newblock STD~13, RFC Editor, November 1987.
+\newblock \url{http://www.rfc-editor.org/rfc/rfc1034.txt}.
 
 \bibitem{RFC1035}
 P.~Mockapetris.
