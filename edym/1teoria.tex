@@ -22,7 +22,7 @@ Oczywiste jest, że AXFR został wykorzystywany w celach zupełnie innych niż t
 \section{Domain Name System}
 Głównym zadaniem protokołu DNS (\textit{Domain Name System}) jest translacja nazw przyswajalnych dla użytkowników (najczęściej alfanumerycznych) na nazwy sieciowe, czyli adresy IP. 
 
-DNS jest jednym z podstawowych elementów internetu. Z wystawionego przez niego interfejsu korzysta wiele usług sieciowych i innych protokołów. Można traktować go jako bazę danych, która jest rozproszona po wielu lokalizacjach. Ponadto, system powinien oraz cechuje się dużą niezawodnością. W tym przypadku została ona osiągnięta poprzez wprowadzenie dość prostego mechanizmu -- nadmiarowości serwerów nazw. To właśnie dzięki tej redundancji DNS cechuje się wysokim wskaźnikiem niezawodności.
+DNS jest jednym z podstawowych elementów internetu. Z wystawionego przez niego interfejsu korzysta wiele usług sieciowych i innych protokołów. Można traktować go jako bazę danych, która jest rozproszona po wielu lokalizacjach. Ponadto, system powinien oraz cechuje się dużą niezawodnością. W tym przypadku została ona osiągnięta poprzez wprowadzenie dość prostego mechanizmu -- nadmiarowości serwerów. To właśnie dzięki tej redundancji DNS cechuje się wysokim wskaźnikiem niezawodności, gdyż w momencie gdy któryś z serwerów nie odpowiada informacja pobierana jest z innego serwera -- zapasowego, podrzędnego.
 
 System DNS ma charakterystyczną, hierarchiczną strukturę, którą zaprezentowano na rysunku \ref{hierarchy_dns}. Na rysunku przedstawiono węzeł główny (ang. \textit{root}) reprezentowany jako znak pojedyńczej kropki oraz przykład dwóch typów domen pierwszego poziomu.
 
@@ -32,12 +32,34 @@ System DNS ma charakterystyczną, hierarchiczną strukturę, którą zaprezentow
 
 Dzięki tej hierarchii systemu możemy powiedzieć o DNS, że charakteryzuje go bardzo dobra skalowalność oraz elastyczność. 
 
+Podział ze względu na położenie geograficzne jest oczywiście bardziej naturalny i łatwy zarówno do wdrożenia jak i zrozumienia. Każdemu z państw przydzielono dwu bądź trzyliterowy identyfikator, który reprezentują domenę najwyższego poziomu odpowiadającą danemu państwu. Powołując się na informacje przedstawione na grafice \ref{hierarchy_dns} TLD o identyfikatorze \textit{uk} odpowiada domenom utożnasmianym z Wielką Brytnią, a \textit{fr} -- domenom francuskim.
+
+Hierarchia systemu DNS wynika z faktu, że domenami internetowymi każdego poziomu może zarządzać inna organizacja. Odnosi się to zarówno do domeny \textit{root}, jak i domen nawyższego poziomu niezależnie od przynależności grupowej. W Polsce identyfikatorem TLD jest sufiks \textit{pl}, a jednostką odpowiedzialną za nią jest CERT Polska \cite{cert}. Jeśli użytkownik chciałby dołączyć ze swoją siecią do internetu powinien zgłosić do odpowiedniej organizacji taką chęć oraz dostarczyć wszystkich niezbędnych informacji które są wymagane przez zarządcę. 
+
+Bardzo ważnym punktem jest wspomniana w poprzednim akapicie ,,chęć'' dołączenia do internetu. Jeśli uzytkownik czy organizacja chcą używać protokołu DNS jedynie do użytku wewnętrznego, to nie ma rystrykcyjnych ograniczeń co do używanych nazw. Jeśli natomiast oczekuje się wystawienia domen w taki sposób, aby były widoczne z zewnątrz, to należy odpowiednio:
+\begin{enumerate}
+	\item zarejestrować nazwę domeny,
+	\item pozyskać adres IP.
+\end{enumerate}
+
+Bardzo trafne jest tu porównanie całego systemu Domain Name System do struktury plików w systemach operacyjnych z rodziny UNIX.  Nazwa domeny bezpośrednio określa jej miejsce w całej przestrzeni nazw, podobnie jak ścieżka bezwzględna pliku określa jego miejsce w całym systemie. Po rejestracji domeny, jest ona dołączana w odpowiednie miejsce w hierarchii. Przykład domeny \textit{google.com} razem z jej poddomenami i odpowiednimi miejscami w herarchii systemu przedstawiono na rysunku \ref{example_domain_tree}.
+
+\begin{center}
+	\begin{figure}
+	\includegraphics[scale=1]{image/domain_tree}\label{example_domain_tree}
+	\caption{Położenie domeny w przestrzeni nazw. \cite{domain_tree_src}}
+	\end{figure}
+\end{center}
+
+Serwer autorytatywny (ang. \textit{domain authority}) posiada odgórne przyzwolenie na zarządzanie nazwami swoich hostów (kto przyznaje(?)). Ze względu na drzewiastą strukturę systemu można oczekiwać, że kolejne domeny oraz ich serwery autorytatywne będą delegować odpowiedzialność za kolejne strefy do serwerów niższego poziomu. W ten sposób, powołując się na przykład przedstawiony na rysunku \ref{example_domain_tree} serwer autorytatywny com. zarządza nazwami w domenie com, natomiast zarządzanie nazwami w domenie google.com przekazuje do niższego szczeblem serwera przestrzeni nazw. W ten sposób serwer domeny google.com ma możliwość przypisywania nazw takim domenom jak zaprezentowane support.google.com.
+
+\subsection{Podział domen najwyższego poziomu}
 Jeśli chodzi o podział domen pierwszego poziomu ze względu na przynależność organizacyjną, to aktualny stan przedstawiony jest w tabeli poniżej.
 
 \begin{table}[]
 	\centering
 	\caption{Podział domen najwyższego poziomu ze względu na działalność.}
-	\label{my-label}
+	\label{podział_tld}
 	\begin{tabular}{|r|p{10.5cm}|}
 		\hline
 		\textbf{TLD} & \textbf{Opis jednostki} \\
@@ -60,27 +82,6 @@ Jeśli chodzi o podział domen pierwszego poziomu ze względu na przynależnoś�
 \end{table}
 
 Przedstawiony podział nie jest stały. Autorzy zastrzegli, że w przysłości może być on rozszerzony o dodatkowe kategorie.
-
-Podział ze względu na położenie geograficzne jest oczywiście bardziej naturalny i łatwy zarówno do wdrożenia jak i zrozumienia. Każdemu z państw przydzielono dwu bądź trzyliterowy identyfikator, który reprezentują domenę najwyższego poziomu odpowiadającą danemu państwu. Powołując się na informacje przedstawione na grafice \ref{hierarchy_dns} TLD o identyfikatorze \textit{uk} odpowiada domenom utożnasmianym z Wielką Brytnią, a \textit{fr} -- domenom francuskim.
-
-Hierarchia systemu DNS wynika z faktu, że domenami internetowymi każdego poziomu może zarządzać inna organizacja. Odnosi się to zarówno do domeny \textit{root}, jak i domen nawyższego poziomu niezależnie od przynależności grupowej. W Polsce identyfikatorem TLD jest sufiks \textit{pl}, a jednostką odpowiedzialną za nią jest CERT Polska \cite{cert}. Jeśli użytkownik chciałby dołączyć ze swoją siecią do internetu powinien zgłosić do odpowiedniej organizacji taką chęć oraz dostarczyć wszystkich niezbędnych informacji które są wymagane przez zarządcę. 
-
-Bardzo ważnym punktem jest wspomniana w poprzednim akapicie ,,chęć'' dołączenia do internetu. Jeśli uzytkownik czy organizacja chcą używać protokołu DNS jedynie do użytku wewnętrznego, to nie ma rystrykcyjnych ograniczeń co do używanych nazw. Jeśli natomiast oczekuje się wystawienia domen w taki sposób, aby były widoczne z zewnątrz, to należy odpowiednio:
-\begin{enumerate}
-	\item zarejestrować nazwę domeny,
-	\item pozyskać adres IP.
-\end{enumerate}
-
-Bardzo trafne jest tu porównanie całego systemu Domain Name System do struktury plików w systemach operacyjnych z rodziny UNIX.  Nazwa domeny bezpośrednio określa jej miejsce w całej przestrzeni nazw, podobnie jak ścieżka bezwzględna pliku określa jego miejsce w całym systemie. Po rejestracji domeny, jest ona dołączana w odpowiednie miejsce w hierarchii. Przykład domeny \textit{google.com} razem z jej poddomenami i odpowiednimi miejscami w herarchii systemu przedstawiono na rysunku \ref{example_domain_tree}.
-
-\begin{center}
-	\begin{figure}
-	\includegraphics[scale=1]{image/domain_tree}\label{example_domain_tree}
-	\caption{Położenie domeny w przestrzeni nazw. \cite{domain_tree_src}}
-	\end{figure}
-\end{center}
-
-Serwer autorytatywny (ang. \textit{domain authority}) posiada odgórne przyzwolenie na zarządzanie nazwami swoich hostów (kto przyznaje(?)). Ze względu na drzewiastą strukturę systemu można oczekiwać, że kolejne domeny oraz ich serwery autorytatywne będą delegować odpowiedzialność za kolejne strefy do serwerów niższego poziomu. W ten sposób, powołując się na przykład przedstawiony na rysunku \ref{example_domain_tree} serwer autorytatywny com. zarządza nazwami w domenie com, natomiast zarządzanie nazwami w domenie google.com przekazuje do niższego szczeblem serwera przestrzeni nazw. W ten sposób serwer domeny google.com ma możliwość przypisywania nazw takim domenom jak zaprezentowane support.google.com.
 
 \subsection{Domena DNS}
 Domeną określa się dany podzbiór herarchii DNS. Są to wszystkie poddomeny podlegające tej samej domenie wyższego poziomu. Odnosząc się do wcześniej przywołanego porównania do systemu plików -- domena to odpowiednik folderu. Może zawierać kolejne domeny, może być określana zarówno na bardzo wysokim (domeny poziomu TLD) jak i bardzo szczegółowym(domeny 2-3 LD) poziomie abstrakcji. Jeśli chcielibyśmy reprezentować system DNS jako drzewo, to domeną DNS nazwiemy węzeł drzewa i wszystkie węzły które są jego potomkami. Pojęcie domeny i elementy które ono określa przedstawiono na rysunku \ref{domain_dns_example}.
@@ -187,7 +188,7 @@ Zawarty w rekordzie SOA numer seryjny pozwala na stwierdzenie, czy kopia strefy,
 \subsection{Transfer IXFR}
 Drugą możliwością pobrania informacji na temat strefy DNS jest tak zwany transfer inkrementalny IXFR, którego wartość pola QTYPE wynosi 251. Od zapytania AXFR różni się tym, że przesyłane informacje są tylko różnicą pomiędzy kolejnymi wersjami przechowywanymi na serwerze podstawowym. Wymaga to podania w wystosowanym zapytaniu wersji pliku, który przechowywany jest aktualnie na komputerze-kliencie. W odpowiedzi uzyskiwana jest lista zmian, które zostały wprowadzone w kolejnych wersjach danej strefy DNS. Zawarte w niej są informacje dwóch rodzajów. Pierwszym rodzajem są rekordy dodane do strefy DNS w danej wersji bazy danych, zaś drugim typem -- te, które zostały usunięte. 
 
-Istotną informacją w kontekście transferu inkrementalnego jest fakt, że odpowiedzią na zapytanie IXFR może być odpowiedź AXFR a przekierowanie takie nosi nazwę \textit{AXFR fallback}. W implementacji serwera BIND\cite{bind} możliwe jest zablokowanie takiego przekierowania. AXFR fallback następuje najczęściej w sytuacji, kiedy serwer nie wie jak odpowiedzieć na otrzymane zapytanie IXFR. Może to następować po otrzymaniu wersji strefy wyższej niż ta przechowywana na serwerze podstawowym, albo w momencie, kiedy na serwerze podrzędnym nie ma dostępnej żadnej bazy danych.
+Istotną informacją w kontekście transferu inkrementalnego jest fakt, że odpowiedzią na zapytanie IXFR może być odpowiedź AXFR a przekierowanie takie nosi nazwę \textit{AXFR fallback}. W implementacji serwera BIND\cite{bind} możliwe jest zablokowanie takiego przekierowania. AXFR fallback następuje najczęściej w sytuacji, kiedy serwer nie wie jak odpowiedzieć na otrzymane zapytanie IXFR. Może to następować po otrzymaniu wersji strefy wyższej niż ta przechowywana na serwerze podstawowym, albo w momencie, kiedy na serwerze podrzędnym nie ma dostępnej żadnej bazy danych\cite{I-D.song-dnsop-ixfr-fallback}.
 
 
 \section{Podpisy TSIG}\label{TSIG}
