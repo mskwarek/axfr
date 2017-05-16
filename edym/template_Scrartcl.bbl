@@ -59,6 +59,11 @@ Inc. Cloudflare.
 \newblock Cloudflare's dns firewall, 2017.
 \newblock \url{https://www.cloudflare.com/dns/dns-firewall/}.
 
+\bibitem{RFC3912}
+L.~Daigle.
+\newblock Whois protocol specification.
+\newblock RFC 3912, RFC Editor, September 2004.
+
 \bibitem{RFC4634}
 D.~Eastlake and T.~Hansen.
 \newblock Us secure hash algorithms (sha and hmac-sha).
@@ -115,6 +120,12 @@ S.~Kwan, P.~Garg, J.~Gilroy, L.~Esibov, J.~Westhead, and R.~Hall.
 \newblock Generic security service algorithm for secret key transaction
   authentication for dns (gss-tsig).
 \newblock RFC 3645, RFC Editor, October 2003.
+
+\bibitem{RFC5155}
+B.~Laurie, G.~Sisson, R.~Arends, and D.~Blacka.
+\newblock Dns security (dnssec) hashed authenticated denial of existence.
+\newblock RFC 5155, RFC Editor, March 2008.
+\newblock \url{http://www.rfc-editor.org/rfc/rfc5155.txt}.
 
 \bibitem{RFC5936}
 E.~Lewis and A.~Hoenes.
