@@ -207,6 +207,11 @@ Paul Vixie.
 \newblock RFC 1996, RFC Editor, August 1996.
 \newblock \url{http://www.rfc-editor.org/rfc/rfc1996.txt}.
 
+\bibitem{TLD_popularity}
+W3Techs.
+\newblock Usage of top level domains for websites, 2017.
+\newblock \url{https://w3techs.com/technologies/overview/top_level_domain/all}.
+
 \bibitem{hmac-md5-cryptoanalisys}
 Xiaoyun Wang, Hongbo Yu, Wei Wang, Haina Zhang, and Tao Zhan.
 \newblock Cryptanalysis on hmac/nmac-md5 and md5-mac.
