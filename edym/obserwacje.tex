@@ -21,7 +21,7 @@ Jednym z podejść analizy zebranego zbioru danych było sprawdzenie, jak przeds
 W głównej mierze należy zastanowić się, czy rozkład ten jest w ogóle istotny, czy może nie różni się on niczym od ogólnego, całościowego rozkładu popularności TLD w internecie, bez uwzględnienia podatności czy innych czynników. W tym celu przeanalizowano i przedstawiono wykres popularności domen najwyższego poziomu w sieci internet. Jest on przedstawiony na rysunku \ref{TLD_all}.
 \begin{center}
 	\begin{figure}
-		\includegraphics[width=\textwidth]{image/TLD_all}\label{TLD_all}
+		\includegraphics[scale=0.75]{image/TLD_all}\label{TLD_all}
 		\caption{Popularność TLD w internecie (dostęp na dzień 15. maja 2017), źródło:  \cite{TLD_popularity}}
 	\end{figure}
 \end{center}  
@@ -60,7 +60,7 @@ W przypadku tych bezpośrednich zestawień, można zauważyć więcej interesuj�
 
 Zjawiskiem w pewnym stopniu odwrotnym do opisanego w poprzednim akapicie jest rozład zapytań/odpowiedzi dla TLD .cn (Chiny) lub .tk (Tokelau -- region zależny od Nowej Zelandii). W tym przypadku zauważalna jest również duża dysproporcja, jednak ,,na korzyść'', gdyż w stosunku do wielu zapytań wystosowanych do domen należących do tych TLD uzyskano relatywnie mało odpowiedzi. Dodatkowo, do grupy opisywanej w tym akapicie można zaliczyć również TLD .top, która została oficjalnie wydzielona w 2014 roku. (... ?)
 
-Oprócz opisanych wcześniej względnych porównań pomiędzy pytaniami i odpowiedziami od serwerów autorytatywnych różnych domen sprawdzono jak wygląda dystrybuanta poszczególnych rozkładów. Pozowliło to oszacować ile (ilościowo) domen najwyższego poziomu zawierało się w grupie, dla której generowano większość zapytań (rysunek \ref{cdf_tld_req}). Analogicznie, w przypadku danych dotyczących odpowiedzi AXFR można było ocenić ile różnych TLD pojawia się niemal we wszystkich odpowiedziach (rysunek \ref{cdf_tld_req}).
+Oprócz opisanych wcześniej względnych porównań pomiędzy pytaniami i odpowiedziami od serwerów autorytatywnych różnych domen sprawdzono jak wygląda dystrybuanta poszczególnych rozkładów. Pozowliło to oszacować ile (ilościowo) domen najwyższego poziomu zawierało się w grupie, dla której generowano większość zapytań (rysunek \ref{cdf_tld_req}). Analogicznie, w przypadku danych dotyczących odpowiedzi AXFR można było ocenić ile różnych TLD pojawia się niemal we wszystkich odpowiedziach (rysunek \ref{cdf_tld_resp}).
 
 \begin{figure}[ht]
 	\centering
@@ -71,15 +71,35 @@ Oprócz opisanych wcześniej względnych porównań pomiędzy pytaniami i odpowi
 
 \begin{figure}[ht]
 	\centering
-	\includegraphics[width=1.0\textwidth]{image/cdf_tld_req}
+	\includegraphics[width=1.0\textwidth]{image/cdf_tld_resp}
 	\caption{}
-	\label{cdf_tld_req}
+	\label{cdf_tld_resp}
 \end{figure}
 
+\begin{table}[]
+	\centering
+	\caption{Opis zbiorów zapytań/odpowiedzi}
+	\label{cdf_table}
+	\begin{tabular}{|p{0.2\textwidth}|p{0.3\textwidth}|p{0.4\textwidth}|}
+		\hline
+		\textbf{Zbiór} & 
+		\textbf{Liczba różnych TLD w zbiorze} & 
+		\textbf{Liczba różnych TLD zawierająca 99\% elementów zbioru} \\
+		\hline\hline
+		Zapytania & 
+		1521 & 
+		147\\
+		\hline
+		Odpowiedzi & 
+		751 & 
+		187\\
+		\hline\hline		
+	\end{tabular}
+\end{table}
+
+Oprócz wykreślonych charakterystyk policzono również ile domen najwyższego poziomu gromadzi w sobie 99\% zapytań bądź odpowiedzi (w zależności od badanego zbioru). Wyniki zaprezentowano w tablei \ref{cdf_table}. Warto zauważyć, że pomimo ponad dwukrotnie mniejszego zbioru różnych domen poziomu najwyższego, należy zgrupować dużo więcej TLD aby uzyskać zbiór 99\% wszystkich odpowiedzi. Można z tego wnioskować, że rozkład odpowiedzi jest bardziej jednostajny niż w przypadku danych wejściowych. Można także przypuszczać, że zbiór wejściowy zawierał pojedyncze domeny z różnych, rzadko spotykanych TLD. W momencie, kiedy jedna, czy jedynie kilka domen z takiego TLD są odpowiednio zabezpieczone przed nieuprawnionym transferem AXFR nie znajdziemy danego sufiksu w zbiorze odpowiedzi. Sytuacja taka może mieć miejsce, gdy wszystkie domeny z mało popularnego TLD znajdują się pod zarządem jednej osoby czy organizacji.
 
 
 \section{Analiza AS}
 Podstawową informacją, którą uzyskać można wykorzystując pobrane dane z transferów AXFR jest przynależność otrzymanych adresów IP do konkretnych grup autonomicznych. Grupy te określają przynależność do sieci, które zarządzane są przed tego samego operatora sieciowego, a wykorzystuje się je głównie w protokołach routingu. Informacje związane z systemami autonomicznymi można, w głównej mierze, zanleźć w RFC1930\cite{RFC1930}.
-
-Wartym uwagi jest fakt, że 
 
