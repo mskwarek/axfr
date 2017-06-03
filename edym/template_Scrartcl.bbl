@@ -25,6 +25,12 @@ D.~Eastlake 3rd.
   tsig algorithm identifiers.
 \newblock RFC 4635, RFC Editor, August 2006.
 
+\bibitem{RFC2065}
+Donald E.~Eastlake 3rd and Charles~W. Kaufman.
+\newblock Domain name system security extensions.
+\newblock RFC 2065, RFC Editor, January 1997.
+\newblock \url{http://www.rfc-editor.org/rfc/rfc2065.txt}.
+
 \bibitem{RFC4033}
 R.~Arends, R.~Austein, M.~Larson, D.~Massey, and S.~Rose.
 \newblock Dns security introduction and requirements.
@@ -37,6 +43,12 @@ R.~Arends, R.~Austein, M.~Larson, D.~Massey, and S.~Rose.
 \newblock RFC 4035, RFC Editor, March 2005.
 \newblock \url{http://www.rfc-editor.org/rfc/rfc4035.txt}.
 
+\bibitem{RFC4034}
+R.~Arends, R.~Austein, M.~Larson, D.~Massey, and S.~Rose.
+\newblock Resource records for the dns security extensions.
+\newblock RFC 4034, RFC Editor, March 2005.
+\newblock \url{http://www.rfc-editor.org/rfc/rfc4034.txt}.
+
 \bibitem{powerdns}
 PowerDNS.COM B.V.
 \newblock Powerdns, 2017.
@@ -46,6 +58,11 @@ PowerDNS.COM B.V.
 Inc. Cloudflare.
 \newblock Cloudflare's dns firewall, 2017.
 \newblock \url{https://www.cloudflare.com/dns/dns-firewall/}.
+
+\bibitem{RFC3912}
+L.~Daigle.
+\newblock Whois protocol specification.
+\newblock RFC 3912, RFC Editor, September 2004.
 
 \bibitem{RFC4634}
 D.~Eastlake and T.~Hansen.
@@ -67,6 +84,12 @@ Python~Software Foundation.
 Pierre-Alain Fouque, Gaëtan Leurent, and Phong~Q. Nguyen.
 \newblock Full key-recovery attacks on hmac/nmac-md4 and nmac-md5.
 \newblock \url{https://www.di.ens.fr/~fouque/pub/crypto07b.pdf}.
+
+\bibitem{RFC1930}
+J.~Hawkinson and T.~Bates.
+\newblock Guidelines for creation, selection, and registration of an autonomous
+  system (as).
+\newblock BCP~6, RFC Editor, March 1996.
 
 \bibitem{asg-axfr}
 Stephen Haywood.
@@ -98,6 +121,12 @@ S.~Kwan, P.~Garg, J.~Gilroy, L.~Esibov, J.~Westhead, and R.~Hall.
   authentication for dns (gss-tsig).
 \newblock RFC 3645, RFC Editor, October 2003.
 
+\bibitem{RFC5155}
+B.~Laurie, G.~Sisson, R.~Arends, and D.~Blacka.
+\newblock Dns security (dnssec) hashed authenticated denial of existence.
+\newblock RFC 5155, RFC Editor, March 2008.
+\newblock \url{http://www.rfc-editor.org/rfc/rfc5155.txt}.
+
 \bibitem{RFC5936}
 E.~Lewis and A.~Hoenes.
 \newblock Dns zone transfer protocol (axfr).
@@ -117,6 +146,11 @@ J.~Linn.
 Cricket Liu and Paul Albitz.
 \newblock {\em DNS and BIND (5th Edition)}.
 \newblock O'Reilly Media, Inc., 2006.
+
+\bibitem{DNSsecurityProblem}
+Steven~M. Mellovin.
+\newblock Using the domain name system for system break-ins, 1995.
+\newblock \url{https://www.cs.columbia.edu/~smb/papers/dnshack.pdf}.
 
 \bibitem{RFC5905}
 D.~Mills, J.~Martin, J.~Burbank, and W.~Kasch.
@@ -172,6 +206,11 @@ Paul Vixie.
 \newblock A mechanism for prompt notification of zone changes (dns notify).
 \newblock RFC 1996, RFC Editor, August 1996.
 \newblock \url{http://www.rfc-editor.org/rfc/rfc1996.txt}.
+
+\bibitem{TLD_popularity}
+W3Techs.
+\newblock Usage of top level domains for websites, 2017.
+\newblock \url{https://w3techs.com/technologies/overview/top_level_domain/all}.
 
 \bibitem{hmac-md5-cryptoanalisys}
 Xiaoyun Wang, Hongbo Yu, Wei Wang, Haina Zhang, and Tao Zhan.
