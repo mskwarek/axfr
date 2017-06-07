@@ -101,5 +101,22 @@ Oprócz wykreślonych charakterystyk policzono również ile domen najwyższego 
 
 
 \section{Analiza AS}
-Podstawową informacją, którą uzyskać można wykorzystując pobrane dane z transferów AXFR jest przynależność otrzymanych adresów IP do konkretnych grup autonomicznych. Grupy te określają przynależność do sieci, które zarządzane są przed tego samego operatora sieciowego, a wykorzystuje się je głównie w protokołach routingu. Informacje związane z systemami autonomicznymi można, w głównej mierze, znaleźć w RFC1930\cite{RFC1930}.
+Podstawową informacją, którą uzyskać można wykorzystując pobrane dane z transferów AXFR jest przynależność otrzymanych adresów IP do konkretnych grup autonomicznych. Grupy te określają przynależność do sieci, które zarządzane są przed tego samego operatora sieciowego, a wykorzystuje się je głównie w protokołach routingu. Informacje związane z systemami autonomicznymi można, w głównej mierze, znaleźć w RFC1930\cite{RFC1930}. Zbiór danych został podzielony ze względu na wersję protokołu IP używanej przy adresacji konkretnych maszyn. Przeprowadzono analizę systemów autonomicznych w rozdzielnych grupach, dla wersji 4 protokołu IP oraz dla wersji 6.
+
+\subsection{Sposób określenia AS}
+W celu określenia numerów systemów autonomicznych adresów IP pozyskanych podczas skanowania zaimplementowane zostalo kolejne narzędzie umożliwiające takie mapowanie. Społeczność udostępnia kilka sposobów dopasowania adresów IP do odpowiadających im systemów autonomicznych. Podczas badań zapoznano się z dwoma z nich, które opisano poniżej:
+\begin{enumerate}
+	\item API udostępnione przez Team Cymru\cite{cymru},
+	\item biblioteka języka Python pyasn \cite{pyasn}.
+\end{enumerate}
+
+Pierwszy ze sposobów jest prostszy w użyciu, gdyż wystarczy użyć narzędzia netcat\cite{netcat}, gdzie argumentami jest odpowiednia strona internetowa Team Cymru\cite{cymru} oraz ścieżka do pliku, w którym znajdują się w kolejnych liniach adresy IP. Każdy z plików rozpoczyna się słowem kluczowym ,,begin'' oraz kończy słowem kluczowym ,,end''. Sposób ten jest wygodny, jednak moze budzić pewne wątpliwości. Najbardziej istotną wydaje się być kwestia dotycząca głównie adresacji IP w wersji 4. -- dynamiczne przydzielanie adresów IP różnym operatorom \cite{}. Problem związany jest pośrednio z kończącą sie pulą adresów IPv4. Prowadzi to do zmian przynależności adresów IPv4 do systemów autonomicznych. Dynamikę tych zmian można obserwować między innymi pod adresem \cite{}. 
+
+Wątpliwości, które wynikły z wykorzystania udostępnionego API były bezpośrednią przyczyną szukania innego, optymalnego rozwiązania. Takim okazało się wykorzystanie biblioteki \textit{pyasn} \cite{pyasn}. Umożliwia ona zaimplementowanie narzędzia, które uwzględnia datę, gdy dany adres IP został zeskanowany. Mapowanie adresu IP na AS w konkretnym dniu jest możliwe dzięki wykorzystaniu wielu baz danych. Okazuje się, że w praktyce, dla każdej z dat udostępniony jest oddzielny plik z bazą danych, dzięki której możliwe jest tłumaczenie adresów IP na ASy. Możliwe jest, aby pobrać bazę danych, która najlepiej odpowiada zebranym pomiarom. W przypadku tej pracy magisterskiej pobierane są pliki dla każdego dnia, w którym przeprowadzone zostało skanowanie. Pliki są dystrybuowane wraz z biblioteką. Jedyną akcją, którą musi podjąć jej użytkownik jest przygotownie pliku tekstowego z datami, dla których powinna zostać pobrana baza danych. Następnie bazy są przetwarzane na pliki w formacie odpowiednim dla biblioteki \textit{pyasn}. Aby zautomatyzować opisany proces, zaimplementowano odpowiednie narzędzie w języku skryptowym bash. Pobiera ono daty z odpowiednich katalogów z wynikami skanów, następnie tworzy odpowiedni plik tekstowy, który później wykorzystywany jest jako plik wejściowy dla biblioteki \textit{pyasn}.
+
+\subsection{Zbiór adresów IPv4}
+
+
+\subsection{Zbiór adresów IPv6}
+
 
