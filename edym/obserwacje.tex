@@ -119,4 +119,14 @@ Wątpliwości, które wynikły z wykorzystania udostępnionego API były bezpoś
 
 \subsection{Zbiór adresów IPv6}
 
+\section{Liczba wpisów stref w odpowiedziach}
+Odpowiedzi pobrane w wyniku skanowania zostały poddane analizie uwzględniającej jak duże są strefy pobrane z serwerów przestrzeni nazw. 
 
+W tym przypadku zastosowano inne podejście niż podczas reszty przeprowadzonych badań. Z racji, że częstym przypadkiem odpowiedzi otrzymywanej od serwera był jedynie rekord SOA, postanowiono oddzielnie analizować pliki stref zawierające tylko jeden wpis, a oddzielnie pliki zawierające więcej niż jeden rekord.
+
+W wyniku przeprowadzonych badań ustalono, że:
+\begin{enumerate}
+	\item 6179845 z 8985154 plików stref zawiera jedynie jeden wpis (rekord SOA),
+	\item 2803902 z 8985154 plików stref zawiera więcej niż jeden wpis.
+\end{enumerate}
+Przypadek, gdy plik strefy zawiera więcej niż jeden wpis można utożsamić ze źle skonfigurowanym serwerem autorytatywnym domeny. 
