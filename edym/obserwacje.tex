@@ -129,4 +129,4 @@ W wyniku przeprowadzonych badań ustalono, że:
 	\item 6179845 z 8985154 plików stref zawiera jedynie jeden wpis (rekord SOA),
 	\item 2803902 z 8985154 plików stref zawiera więcej niż jeden wpis.
 \end{enumerate}
-Przypadek, gdy plik strefy zawiera więcej niż jeden wpis można utożsamić ze źle skonfigurowanym serwerem autorytatywnym domeny. 
+Przypadek, gdy plik strefy zawiera więcej niż jeden wpis można utożsamić ze źle skonfigurowanym serwerem autorytatywnym domeny. Zwracanie samego wpisu SOA nie może być traktowane jako błąd, gdyż w dokładnie taki sam sposób zachowuje się serwer DNS w przypadku podania błędnego numeru serii w transferze IXFR. 
