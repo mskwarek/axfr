@@ -131,4 +131,6 @@ W wyniku przeprowadzonych badań ustalono, że:
 \end{enumerate}
 Przypadek, gdy plik strefy zawiera więcej niż jeden wpis można utożsamić ze źle skonfigurowanym serwerem autorytatywnym domeny. Zwracanie samego wpisu SOA (czyli odpowiednik zbioru danych z jendym wpisem w pliku strefy) nie może być traktowane jako błąd, gdyż w dokładnie taki sam sposób zachowuje się serwer DNS w przypadku podania błędnego numeru serii w transferze IXFR. Tak zaprojektowany został inkrementalny transfer strefy DNS zaprezentowany w RFC1995\cite{RFC1995} i do tej pory nie zaprezentowano ewentualnych podatności, które mogłyby wykorzystywać ten protokół.
 
-Dla zbioru danych, który określa rozmiar pobranych stref wykreślony został histogram, z którego można odczytać, jak często spotykane są strefy DNS o określonych rozmiarach. W przypadku skanów polegających na transferze stref widoczna jest bardzo duża częstość występowania domen o wpisach do kilkudziesięciu rekordów.
+Dla zbioru danych, który określa rozmiar pobranych stref wykreślony został histogram, z którego można odczytać, jak często spotykane są strefy DNS o określonych rozmiarach. W przypadku skanów polegających na transferze stref widoczna jest bardzo duża częstość występowania domen o wpisach do kilkudziesięciu rekordów. Pierwszy z histogramów na których zaprezentowano opisane częstości (rysunek \ref{}) sugeruje, że dużo bardziej interesująca jest pierwsza część całego wykresu. Zaprezentowano ją, w powiększeniu, na kolejnym rysunku \ref{}.
+
+
