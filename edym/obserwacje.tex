@@ -76,7 +76,10 @@ Oprócz opisanych wcześniej względnych porównań pomiędzy pytaniami i odpowi
 	\label{cdf_tld_resp}
 \end{figure}
 
-\begin{table}[]
+
+Oprócz wykreślonych charakterystyk policzono również ile domen najwyższego poziomu gromadzi w sobie 99\% zapytań bądź odpowiedzi (w zależności od badanego zbioru). Wyniki zaprezentowano w tabeli \ref{cdf_table}. Warto zauważyć, że pomimo ponad dwukrotnie mniejszego zbioru różnych domen poziomu najwyższego, należy zgrupować dużo więcej TLD aby uzyskać zbiór 99\% wszystkich odpowiedzi. Można z tego wnioskować, że rozkład odpowiedzi jest bardziej jednostajny niż w przypadku danych wejściowych. Można także przypuszczać, że zbiór wejściowy zawierał pojedyncze domeny z różnych, rzadko spotykanych TLD. W momencie, kiedy jedna, czy jedynie kilka domen z takiego TLD są odpowiednio zabezpieczone przed nieuprawnionym transferem AXFR nie znajdziemy danego sufiksu w zbiorze odpowiedzi. Sytuacja taka może mieć miejsce, gdy wszystkie domeny z mało popularnego TLD znajdują się pod zarządem jednej osoby czy organizacji.
+
+\begin{table}[!hb]
 	\centering
 	\caption{Opis zbiorów zapytań/odpowiedzi}
 	\label{cdf_table}
@@ -96,9 +99,6 @@ Oprócz opisanych wcześniej względnych porównań pomiędzy pytaniami i odpowi
 		\hline\hline		
 	\end{tabular}
 \end{table}
-
-Oprócz wykreślonych charakterystyk policzono również ile domen najwyższego poziomu gromadzi w sobie 99\% zapytań bądź odpowiedzi (w zależności od badanego zbioru). Wyniki zaprezentowano w tabeli \ref{cdf_table}. Warto zauważyć, że pomimo ponad dwukrotnie mniejszego zbioru różnych domen poziomu najwyższego, należy zgrupować dużo więcej TLD aby uzyskać zbiór 99\% wszystkich odpowiedzi. Można z tego wnioskować, że rozkład odpowiedzi jest bardziej jednostajny niż w przypadku danych wejściowych. Można także przypuszczać, że zbiór wejściowy zawierał pojedyncze domeny z różnych, rzadko spotykanych TLD. W momencie, kiedy jedna, czy jedynie kilka domen z takiego TLD są odpowiednio zabezpieczone przed nieuprawnionym transferem AXFR nie znajdziemy danego sufiksu w zbiorze odpowiedzi. Sytuacja taka może mieć miejsce, gdy wszystkie domeny z mało popularnego TLD znajdują się pod zarządem jednej osoby czy organizacji.
-
 
 \section{Analiza AS}
 Podstawową informacją, którą uzyskać można wykorzystując pobrane dane z transferów AXFR jest przynależność otrzymanych adresów IP do konkretnych grup autonomicznych. Grupy te określają przynależność do sieci, które zarządzane są przed tego samego operatora sieciowego, a wykorzystuje się je głównie w protokołach routingu. Informacje związane z systemami autonomicznymi można, w głównej mierze, znaleźć w RFC1930\cite{RFC1930}. Zbiór danych został podzielony ze względu na wersję protokołu IP używanej przy adresacji konkretnych maszyn. Przeprowadzono analizę systemów autonomicznych w rozdzielnych grupach, dla wersji 4 protokołu IP oraz dla wersji 6.
@@ -131,7 +131,21 @@ W wyniku przeprowadzonych badań ustalono, że:
 \end{enumerate}
 Przypadek, gdy plik strefy zawiera więcej niż jeden wpis można utożsamić ze źle skonfigurowanym serwerem autorytatywnym domeny. Zwracanie samego wpisu SOA (czyli odpowiednik zbioru danych z jendym wpisem w pliku strefy) nie może być traktowane jako błąd, gdyż w dokładnie taki sam sposób zachowuje się serwer DNS w przypadku podania błędnego numeru serii w transferze IXFR. Tak zaprojektowany został inkrementalny transfer strefy DNS zaprezentowany w RFC1995\cite{RFC1995} i do tej pory nie zaprezentowano ewentualnych podatności, które mogłyby wykorzystywać ten protokół.
 
-Dla zbioru danych, który określa rozmiar pobranych stref wykreślony został histogram, z którego można odczytać, jak często spotykane są strefy DNS o określonych rozmiarach. W przypadku skanów polegających na transferze stref widoczna jest bardzo duża częstość występowania domen o wpisach do kilkudziesięciu rekordów. Pierwszy z histogramów na których zaprezentowano opisane częstości (rysunek \ref{}) sugeruje, że dużo bardziej interesująca jest pierwsza część całego wykresu. Zaprezentowano ją, w powiększeniu, na kolejnym rysunku \ref{}.
+Dla zbioru danych, który określa rozmiar pobranych stref wykreślony został histogram, z którego można odczytać, jak często spotykane są strefy DNS o określonych rozmiarach. W przypadku skanów polegających na transferze stref widoczna jest bardzo duża częstość występowania domen o wpisach do kilkudziesięciu rekordów. Pierwszy z histogramów na których zaprezentowano opisane częstości (rysunek \ref{fig:hist_zone_size}) sugeruje, że dużo bardziej interesująca jest pierwsza część całego wykresu. Zaprezentowano ją, w powiększeniu, na kolejnym rysunku \ref{fig:hist_zone_size_zoom}.
 
-Dodatkowo, można zauważyć, że histogram posiada bardzo dużo pozycji na osi X. Jest to ponownie następstwo własnej implementacji oprogramowania umożliwiającego transfer stref AXFR. Widocznie zauważalny jest prążek na wartości około 8 tysięcy wpisów. Dokładnie jest to 8244 wpisów w pliku strefy. Sprawdzono, czy rzeczywiście strefy te są tak duże. Odpytano kilka z serwerów, dla których otrzymano tak specyficzną odpowiedź. Pakiety, które wysłano oraz odebrano zostały przeanalizowane programem Wireshark. Okazuje się, że utworzenie opisanego wcześniej pliku jest następstwem otrzymania wiadomości HTTP o statusie 400 -- Bad request. Co ciekawe, odpowiedź tę otrzymujemy na mało standardowy port w kontekście protokołu HTTP -- port 53. Szczegóły otrzymanej wiadomości zostały przedstawione w lsitingu \ref{}. Innym wynikiem typu zachowania były odpowiedzi o liczbie linii ok. 11 tysięcy. Jest to wyraźnie mniej zauważalne, wnioskując choćby po histogramie \ref{}. Plik o około 11 tysiącach wpisów był tworzony w wyniku otrzymania niejako rozszerzonej wiadomości HTTP 400 -- została ona przedstawiona na listingu \ref{}.
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=1.0\textwidth]{image/hist_zone_size}
+	\caption{}
+	\label{fig:hist_zone_size}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=1.0\textwidth]{image/hist_zone_size_zoom}
+\caption{}
+\label{fig:hist_zone_size_zoom}
+\end{figure}
+
+Dodatkowo, można zauważyć, że histogram posiada bardzo dużo pozycji na osi X. Jest to ponownie następstwo własnej implementacji oprogramowania umożliwiającego transfer stref AXFR. Widocznie zauważalny jest prążek na wartości około 8 tysięcy wpisów. Dokładnie jest to 8244 wpisów w pliku strefy. Sprawdzono, czy rzeczywiście strefy te są tak duże. Odpytano kilka z serwerów, dla których otrzymano tak specyficzną odpowiedź. Pakiety, które wysłano oraz odebrano zostały przeanalizowane programem Wireshark. Okazuje się, że utworzenie opisanego wcześniej pliku jest następstwem otrzymania wiadomości HTTP o statusie 400 -- Bad request. Co ciekawe, odpowiedź tę otrzymujemy na mało standardowy port w kontekście protokołu HTTP -- port 53. Szczegóły otrzymanej wiadomości zostały przedstawione w lsitingu \ref{}. Innym wynikiem typu zachowania były odpowiedzi o liczbie linii ok. 11 tysięcy. Jest to wyraźnie mniej zauważalne, wnioskując choćby po histogramie \ref{}. Plik o około 11 tysiącach wpisów był tworzony w wyniku otrzymania rozszerzonej wiadomości HTTP 400 -- została ona przedstawiona na listingu \ref{}.
 
