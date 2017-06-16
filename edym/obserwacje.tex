@@ -170,6 +170,8 @@ movida-bar.pl.  14400   6        ns1.consultingteam.pl. hostmaster.movida-bar.pl
 
 Z listingu \ref{list:dns_zone_example} możemy dowiedzieć się, że domena obsługiwana przez odpytany serwer DNS udostępnia między innymi takie usługi jak serwery pocztowe smtp i pop, serwer FTP oraz serwer WWW. Wszystkie one są kierowane na jeden adres IP. Dodatkowo, na serwerze DNS został umieszczony wpis TXT (id 16). Zdefiniowano w nim rekord SPF gdzie określa się reguły dotyczące wymiany wiadomości e-mail w danej domenie. 
 
-Strefy tego typu są najczęściej spotykane w danych, które udało się zebrać podczas skanowania. 
+Strefy tego typu są najczęściej spotykane w danych, które udało się zebrać podczas skanowania. Można wnioskować, że transfer AXFR jest najczęściej możliwy dla domen zarejestrowanych głównie w celach informacyjnych czy marketingowych. Jak opisano wcześniej, są to najczęściej pojedyncze adresy IP z kilkoma usługami. Działalność organizacji, na potrzeby któych rejestowano takie niewielkie domeny, jest najczęściej mało związana z informatyką czy telekomunikacją. 
+
+To, na co warto zwrócić uwagę na histogramie \ref{fig:hist_zone_size_zoom} to również domeny o strefach o rozmiarze około 40-60 wpisów. Jest to reprezentacja tych stref, które wykorzystują mechanizm podpisywania rekordów DNS zaprezentowany w rozszerzedniu protokołu -- DNSSEC\cite{RFC4034, RFC4035}.
 
 
