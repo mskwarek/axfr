@@ -147,5 +147,29 @@ Dla zbioru danych, który określa rozmiar pobranych stref wykreślony został h
 \label{fig:hist_zone_size_zoom}
 \end{figure}
 
-Dodatkowo, można zauważyć, że histogram posiada bardzo dużo pozycji na osi X. Jest to ponownie następstwo własnej implementacji oprogramowania umożliwiającego transfer stref AXFR. Widocznie zauważalny jest prążek na wartości około 8 tysięcy wpisów. Dokładnie jest to 8244 wpisów w pliku strefy. Sprawdzono, czy rzeczywiście strefy te są tak duże. Odpytano kilka z serwerów, dla których otrzymano tak specyficzną odpowiedź. Pakiety, które wysłano oraz odebrano zostały przeanalizowane programem Wireshark. Okazuje się, że utworzenie opisanego wcześniej pliku jest następstwem otrzymania wiadomości HTTP o statusie 400 -- Bad request. Co ciekawe, odpowiedź tę otrzymujemy na mało standardowy port w kontekście protokołu HTTP -- port 53. Szczegóły otrzymanej wiadomości zostały przedstawione w lsitingu \ref{}. Innym wynikiem typu zachowania były odpowiedzi o liczbie linii ok. 11 tysięcy. Jest to wyraźnie mniej zauważalne, wnioskując choćby po histogramie \ref{}. Plik o około 11 tysiącach wpisów był tworzony w wyniku otrzymania rozszerzonej wiadomości HTTP 400 -- została ona przedstawiona na listingu \ref{}.
+Dodatkowo, można zauważyć, że histogram \ref{fig:hist_zone_size} posiada bardzo dużo pozycji na osi X. Jest to ponownie następstwo własnej implementacji oprogramowania umożliwiającego transfer stref AXFR. Widocznie zauważalny jest prążek na wartości około 8 tysięcy wpisów. Dokładnie jest to 8244 wpisów w pliku strefy. Sprawdzono, czy rzeczywiście strefy te są tak duże. Odpytano kilka z serwerów, dla których otrzymano tak specyficzną odpowiedź. Pakiety, które wysłano oraz odebrano zostały przeanalizowane programem Wireshark. Okazuje się, że utworzenie opisanego wcześniej pliku jest następstwem otrzymania wiadomości HTTP o statusie 400 -- Bad request. Co ciekawe, odpowiedź tę otrzymujemy na mało standardowy port w kontekście protokołu HTTP -- port 53. Szczegóły otrzymanej wiadomości zostały przedstawione w lsitingu \ref{}. Innym wynikiem typu zachowania były odpowiedzi o liczbie linii ok. 11 tysięcy. Jest to wyraźnie mniej zauważalne, wnioskując choćby po histogramie \ref{fig:hist_zone_size}, gdzie widoczny jest jedynie prążek na wartości około 8000 linijek w pliku strefy. Plik o około 11 tysiącach wpisów był tworzony w wyniku otrzymania rozszerzonej wiadomości HTTP 400 -- została ona przedstawiona na listingu \ref{}.
+
+Na rysunku \ref{fig:hist_zone_size_zoom} możemy obserwować w przybliżeniu rozkład wielkości plików stref. Zawężony został on do 60 wpisów z uwagi, że najbardziej interesujące wyniki zawierają się głównie w tym przedziale. Jak widać, najczęściej występującym rozmiarem strefy DNS jest 14 wpisów. Są to strefy pobrane najczęściej ze źle skonfigurowanych serwerów DNS, które obsługują usługi standardowe, często spotykane, takie jak serwery WWW, serwer pocztowe. Przykład odpowiedzi o takim rozmiarze został przedstawiony na listingu \ref{list:dns_zone_example}.  
+
+\begin{lstlisting}[label={list:dns_zone_example},captionpos=b,caption=Przykładowy plik strefy DNS.,language=bash]
+movida-bar.pl.  14400   6        ns1.consultingteam.pl. hostmaster.movida-bar.pl. 1952801133 3222735464 1869837421 1634956389 1925188727
+movida-bar.pl.  14400   15      mail.movida-bar.pl
+movida-bar.pl.  14400   16      v=spf1 a mx ip4:91.241.61.119 ~all
+movida-bar.pl.  14400   1       91.241.61.119
+movida-bar.pl.  14400   2       ns1.consultingteam.pl
+movida-bar.pl.  14400   2       ns2.consultingteam.pl
+ftp.movida-bar.pl.      14400   1       91.241.61.119
+localhost.movida-bar.pl.        14400   28      0000:0000:0000:0000:0000:0000:0000:0001
+localhost.movida-bar.pl.        14400   1       127.0.0.1
+mail.movida-bar.pl.     14400   1       91.241.61.119
+pop.movida-bar.pl.      14400   1       91.241.61.119
+smtp.movida-bar.pl.     14400   1       91.241.61.119
+www.movida-bar.pl.      14400   1       91.241.61.119
+movida-bar.pl.  14400   6        ns1.consultingteam.pl. hostmaster.movida-bar.pl. 2013010900 14400 3600 1209600 86400
+\end{lstlisting}
+
+Z listingu \ref{list:dns_zone_example} możemy dowiedzieć się, że domena obsługiwana przez odpytany serwer DNS udostępnia między innymi takie usługi jak serwery pocztowe smtp i pop, serwer FTP oraz serwer WWW. Wszystkie one są kierowane na jeden adres IP. Dodatkowo, na serwerze DNS został umieszczony wpis TXT (id 16). Zdefiniowano w nim rekord SPF gdzie określa się reguły dotyczące wymiany wiadomości e-mail w danej domenie. 
+
+Strefy tego typu są najczęściej spotykane w danych, które udało się zebrać podczas skanowania. 
+
 
