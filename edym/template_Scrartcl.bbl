@@ -85,6 +85,11 @@ Pierre-Alain Fouque, Gaëtan Leurent, and Phong~Q. Nguyen.
 \newblock Full key-recovery attacks on hmac/nmac-md4 and nmac-md5.
 \newblock \url{https://www.di.ens.fr/~fouque/pub/crypto07b.pdf}.
 
+\bibitem{Ipv6_deployment}
+Google.
+\newblock Google ipv6 statistics, 2017.
+\newblock \url{https://www.google.com/intl/en/ipv6/statistics.html}.
+
 \bibitem{RFC1930}
 J.~Hawkinson and T.~Bates.
 \newblock Guidelines for creation, selection, and registration of an autonomous
@@ -95,6 +100,12 @@ J.~Hawkinson and T.~Bates.
 Stephen Haywood.
 \newblock axfr, 2017.
 \newblock \url{https://github.com/averagesecurityguy/axfr}.
+
+\bibitem{RFC4291}
+R.~Hinden and S.~Deering.
+\newblock Ip version 6 addressing architecture.
+\newblock RFC 4291, RFC Editor, February 2006.
+\newblock \url{http://www.rfc-editor.org/rfc/rfc4291.txt}.
 
 \bibitem{incapsula}
 Imperva.
@@ -181,6 +192,13 @@ Masataka Ohta.
 \newblock Incremental zone transfer in dns.
 \newblock RFC 1995, RFC Editor, August 1996.
 \newblock \url{http://www.rfc-editor.org/rfc/rfc1995.txt}.
+
+\bibitem{RFC1918}
+Yakov Rekhter, Robert~G. Moskowitz, Daniel Karrenberg, Geert~Jan de~Groot, and
+  Eliot Lear.
+\newblock Address allocation for private internets.
+\newblock BCP~5, RFC Editor, February 1996.
+\newblock \url{http://www.rfc-editor.org/rfc/rfc1918.txt}.
 
 \bibitem{I-D.song-dnsop-ixfr-fallback}
 Davey Song.
