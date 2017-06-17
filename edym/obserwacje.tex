@@ -1,5 +1,7 @@
 \chapter{Obserwacje i wyniki}
-Przeprocesowanie dostarczonego zbioru danych zajęło 11 dni, co poskutkowało zebraniem około 30GB informacji na temat analizowanych domen.
+Przeprowadzenie skanowania domen z dostarczonego zbioru danych zajęło 11 dni, co poskutkowało zebraniem około 30GB informacji na temat analizowanych serwerów. Przeskanowano cały plik wejściowy liczący około 5 miliardów pozycji. Skanowanie przeprowadzone było w dniach od 21. kwietnia 2017 roku do 1. maja 2017 roku włącznie. 
+
+Obciążenie skanera zwiększano stoponiowo w ciągu kolejnych dni przeprowadzania skanowania. W ten sposób można było uniknąć przeciążenia skanera oraz uzyskać jednocześnie zadowalającą wydajność. Okazało sie, że możliwe jest uruchomienie większej liczby procesów niż przewidywano na etapie projektowania. Przełożoyło się to na krótszy czas skanowania.
 
 \section{Typy odebranych odpowiedzi}
 Wśród przeanalizowanych par domen i serwerów można zaobserwować kilka charakterystycznych typów odpowiedzi. Odpowiedzi mogą być dzielone na kategorie ze względu na różne kryteria. Pierwszym kryterium, które będzie brane pod uwagę w niniejszej pracy jest po prostu rozmiar pliku przechowującego informacje pobrane z serwera autorytatywnego. Jest to motywowane faktem, że w istocie im większy jest plik z odpowiedzią, tym spodziewamy się, że zawiera on więcej informacji na temat odpytywanej domeny. 
@@ -172,6 +174,6 @@ Z listingu \ref{list:dns_zone_example} możemy dowiedzieć się, że domena obs�
 
 Strefy tego typu są najczęściej spotykane w danych, które udało się zebrać podczas skanowania. Można wnioskować, że transfer AXFR jest najczęściej możliwy dla domen zarejestrowanych głównie w celach informacyjnych czy marketingowych. Jak opisano wcześniej, są to najczęściej pojedyncze adresy IP z kilkoma usługami. Działalność organizacji, na potrzeby któych rejestowano takie niewielkie domeny, jest najczęściej mało związana z informatyką czy telekomunikacją. 
 
-To, na co warto zwrócić uwagę na histogramie \ref{fig:hist_zone_size_zoom} to również domeny o strefach o rozmiarze około 40-60 wpisów. Jest to reprezentacja tych stref, które wykorzystują mechanizm podpisywania rekordów DNS zaprezentowany w rozszerzedniu protokołu -- DNSSEC\cite{RFC4034, RFC4035}.
+To, na co warto zwrócić uwagę na histogramie \ref{fig:hist_zone_size_zoom} to również domeny o strefach o rozmiarze około 40-60 wpisów. Jest to reprezentacja tych stref, które wykorzystują mechanizm podpisywania rekordów DNS zaprezentowany w rozszerzedniu protokołu -- DNSSEC\cite{RFC4034, RFC4035}. Zgodnie z tym, co zostało opisane w rozdziale \ref{}, Dla każdej pary rekordów przechowywanych w strefie DNS liczony jest podpis cyfrowy. 
 
 
