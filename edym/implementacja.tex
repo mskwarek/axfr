@@ -29,12 +29,12 @@ Niestety podobnie jak we wcześniej opisywanym punkcie, problemem okazały się 
 	\item dwukrotnie zawiesić maszynę na której wykonywano badania.
 \end{itemize}
 
-Pomimo, że implementacja w języku Python nie okazała się na tyle wydajna aby wykorzystać ją w badaniach przeprowadzonych w ramach tej pracy magisterskiej, jest to dobrze narzędzie dla pasjonatów bezpieczeństwa sieciowego, którzy chcą skanować wiele serwerów. Podejście takie zaprezentowane jest w kilku projektach, które można znaleźć w serwisie github na przykład Python-AXFR-test\cite{python_axfr_test} lub skanowanie domen z Alexy wraz z wstępną analizą wyników\cite{asg-axfr}. Liczba osób, które śledzą wymienione wyżej projekty znajduje się w przedziale kilkudziesięciu osób. Również na tej podstawie możemy zakładać, że temat bezpieczeństwa transferów stref cieszy się zainteresowaniem wśród pasjonatów bezpieczeństwa sieci.
+Pomimo, że implementacja w języku Python nie okazała się na tyle wydajna aby wykorzystać ją w badaniach przeprowadzonych w ramach tej pracy magisterskiej, jest to dobrze narzędzie dla pasjonatów bezpieczeństwa sieciowego, którzy chcą skanować wiele serwerów. Podejście takie zaprezentowane jest w kilku projektach, które można znaleźć w serwisie github na przykład Python-AXFR-test\cite{python-axfr-test} lub skanowanie domen z Alexy wraz z wstępną analizą wyników\cite{asg-axfr}. Liczba osób, które śledzą wymienione wyżej projekty znajduje się w przedziale kilkudziesięciu osób. Również na tej podstawie możemy zakładać, że temat bezpieczeństwa transferów stref cieszy się zainteresowaniem wśród pasjonatów bezpieczeństwa sieci.
 
-Można przypuszczać, że oba projekty zrealizowane w języku Python \cite{python_axfr_test, asg-axfr} oferują podobną wydajność do rozwiązania zaimplementowanego podczas realizacji pracy magisterskiej, jednak nie były prowadzone pomiary pod tym kątem. Brak bezpośredniego porównania wynika z faktu, że prace Stephena Haywooda\cite{asg-axfr} były prowadzone niemal równolegle z realizacją niniejszej pracy magisterskiej, zaś skrypt Python-AXFR-test\cite{python-axfr-test} jest jednowątkowy i nastawiony głównie na test pojedynczych serwerów, więc jego wykorzystanie wymagałoby implementacji bardzo podobnego mechanizmu, który opisywany był na początku tego rozdziału.
+Można przypuszczać, że oba projekty zrealizowane w języku Python \cite{python-axfr-test, asg-axfr} oferują podobną wydajność do rozwiązania zaimplementowanego podczas realizacji pracy magisterskiej, jednak nie były prowadzone pomiary pod tym kątem. Brak bezpośredniego porównania wynika z faktu, że prace Stephena Haywooda\cite{asg-axfr} były prowadzone niemal równolegle z realizacją niniejszej pracy magisterskiej, zaś skrypt Python-AXFR-test\cite{python-axfr-test} jest jednowątkowy i nastawiony głównie na test pojedynczych serwerów, więc jego wykorzystanie wymagałoby implementacji bardzo podobnego mechanizmu, który opisywany był na początku tego rozdziału.
 
 \subsection{Skaner C-AXFR}
-Ostatecznie zdecydowano się na napisanie własnego narzędzia umożliwiającego transfer strefy DNS. Wybór padł na język programowania C \cite{clanguage} w wersji standardu c03 \cite{c03std}. Oczywiście aplikacje pisane w języku C nie należą do rozwiązań prostych, jednak są bardzo dobrym kompromisem pomiędzy wysokim poziomem abstrakcji modeli programistycznych i łatwością dostępu do interfejsów sieciowych. Ponadto język C charakteryzuje się dość dobrą szybkością działania, ze względu na kompilację kodów źródłowych do kodu binarnego. Kryterium szybkości działania było jednym z kluczowych przy implementacji, co pokazały poprzednie próby implementacji.
+Ostatecznie zdecydowano się na napisanie własnego narzędzia umożliwiającego transfer strefy DNS. Wybór padł na język programowania C \cite{Kernighan:1988:CPL:576122} w wersji standardu C11 \cite{ISO9899}. Oczywiście aplikacje pisane w języku C nie należą do rozwiązań prostych, jednak są bardzo dobrym kompromisem pomiędzy wysokim poziomem abstrakcji modeli programistycznych i łatwością dostępu do interfejsów sieciowych. Ponadto język C charakteryzuje się dość dobrą szybkością działania, ze względu na kompilację kodów źródłowych do kodu binarnego. Kryterium szybkości działania było jednym z kluczowych przy implementacji, co pokazały poprzednie próby implementacji.
 
 Rolę danych wejściowych programu mogą pełnić odpowiednio:
 \begin{enumerate}
@@ -54,7 +54,18 @@ Algorytm postępowania w przypadku odebrania pakietu danych przedstawiony jest n
 	\item CNAME
 	\item HINFO
 	\item TXT
-	\item ... .
+	\item NS
+	\item SOA
+	\item PTR
+	\item MX
+	\item RP
+	\item AFSDB
+	\item LOC
+	\item SRV
+	\item NAPTR
+	\item RRSIG
+	\item NSEC
+	\item DNSKEY
 \end{enumerate} 
 
 Dodatkowo, jeśli zostanie odebrany typ który nie został przewidziany w implementacji parsera to wszystkie dane odczytane z socketa zostaną przeniesione w formie zapisu heksadecymalnego do pliku z odpowiedzią. Zapewnia ta kompatybilność z innymi rozszerzeniami protokołu DNS oraz zabezpiecza przed błędnym wykluczeniem niektórych informacji ze skanowania. Jeśli pojawi się nieznany wcześniej typ rekordu z bazy danych DNS, to będzie można interpretować go podczas analizy konkretnych odpowiedzi od serwera.
