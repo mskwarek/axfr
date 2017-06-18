@@ -76,6 +76,16 @@ D.~Eastlake and P.~Jones.
 \newblock RFC 3174, RFC Editor, September 2001.
 \newblock \url{http://www.rfc-editor.org/rfc/rfc3174.txt}.
 
+\bibitem{shuf}
+Paul Eggert.
+\newblock shuf make random permutation, 2017.
+\newblock \url{https://linux.die.net/man/1/shuf}.
+
+\bibitem{ISO9899}
+International~Organization for Standardization.
+\newblock {Programming languages — C (C11)}.
+\newblock Standard, International Organization for Standardization, April 2011.
+
 \bibitem{python}
 Python~Software Foundation.
 \newblock {\em Python Language Reference, version 2.7}.
@@ -114,6 +124,7 @@ Imperva.
 \bibitem{domain_tree_src}
 Google Inc.
 \newblock Google domains help, 2017.
+\newblock \url{https://support.google.com/domains/}.
 
 \bibitem{nask-tsig}
 NASK instytut badawczy.
@@ -125,6 +136,12 @@ NASK instytut badawczy.
 \newblock {\em BIND The most widely used Name Server Software}.
 \newblock Internatl. Seismol. Cent., Thatcham, United Kingdom, 2017.
 \newblock http://www.isc.org.
+
+\bibitem{Kernighan:1988:CPL:576122}
+Brian~W. Kernighan.
+\newblock The c programming language.
+\newblock In Dennis~M. Ritchie, editor, {\em The C Programming Language}.
+  Prentice Hall Professional Technical Reference, 2nd edition, 1988.
 
 \bibitem{RFC3645}
 S.~Kwan, P.~Garg, J.~Gilroy, L.~Esibov, J.~Westhead, and R.~Hall.
@@ -145,7 +162,7 @@ E.~Lewis and A.~Hoenes.
 
 \bibitem{nexusguard}
 Nexusguard Limited.
-\newblock Dns protection.
+\newblock Dns protection, 2017.
 
 \bibitem{RFC2743}
 J.~Linn.
@@ -181,6 +198,11 @@ P.~Mockapetris.
 \newblock Domain names - implementation and specification.
 \newblock STD~13, RFC Editor, November 1987.
 \newblock \url{http://www.rfc-editor.org/rfc/rfc1035.txt}.
+
+\bibitem{python-axfr-test}
+Sebastian Neef.
+\newblock Axfr-test.py, 2015.
+\newblock \url{https://github.com/internetwache/Python-AXFR-Test}.
 
 \bibitem{python_axfr_test}
 Sebastian Neef.
@@ -235,5 +257,10 @@ Xiaoyun Wang, Hongbo Yu, Wei Wang, Haina Zhang, and Tao Zhan.
 \newblock Cryptanalysis on hmac/nmac-md5 and md5-mac.
 \newblock
   \url{https://pdfs.semanticscholar.org/1cc5/63b1eca6695351783e97711b4455c1eca851.pdf}.
+
+\bibitem{zonetransfer}
+Robin Wood.
+\newblock Zonetransfer.me, 2017.
+\newblock \url{https://digi.ninja/projects/zonetransferme.php}.
 
 \end{thebibliography}
