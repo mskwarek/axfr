@@ -76,6 +76,16 @@ D.~Eastlake and P.~Jones.
 \newblock RFC 3174, RFC Editor, September 2001.
 \newblock \url{http://www.rfc-editor.org/rfc/rfc3174.txt}.
 
+\bibitem{shuf}
+Paul Eggert.
+\newblock shuf make random permutation, 2017.
+\newblock \url{https://linux.die.net/man/1/shuf}.
+
+\bibitem{ISO9899}
+International~Organization for Standardization.
+\newblock {Programming languages — C (C11)}.
+\newblock Standard, International Organization for Standardization, April 2011.
+
 \bibitem{python}
 Python~Software Foundation.
 \newblock {\em Python Language Reference, version 2.7}.
@@ -84,6 +94,11 @@ Python~Software Foundation.
 Pierre-Alain Fouque, Gaëtan Leurent, and Phong~Q. Nguyen.
 \newblock Full key-recovery attacks on hmac/nmac-md4 and nmac-md5.
 \newblock \url{https://www.di.ens.fr/~fouque/pub/crypto07b.pdf}.
+
+\bibitem{Ipv6_deployment}
+Google.
+\newblock Google ipv6 statistics, 2017.
+\newblock \url{https://www.google.com/intl/en/ipv6/statistics.html}.
 
 \bibitem{RFC1930}
 J.~Hawkinson and T.~Bates.
@@ -96,6 +111,12 @@ Stephen Haywood.
 \newblock axfr, 2017.
 \newblock \url{https://github.com/averagesecurityguy/axfr}.
 
+\bibitem{RFC4291}
+R.~Hinden and S.~Deering.
+\newblock Ip version 6 addressing architecture.
+\newblock RFC 4291, RFC Editor, February 2006.
+\newblock \url{http://www.rfc-editor.org/rfc/rfc4291.txt}.
+
 \bibitem{incapsula}
 Imperva.
 \newblock Incapsula name server (ns) protection, 2017.
@@ -103,6 +124,7 @@ Imperva.
 \bibitem{domain_tree_src}
 Google Inc.
 \newblock Google domains help, 2017.
+\newblock \url{https://support.google.com/domains/}.
 
 \bibitem{nask-tsig}
 NASK instytut badawczy.
@@ -114,6 +136,12 @@ NASK instytut badawczy.
 \newblock {\em BIND The most widely used Name Server Software}.
 \newblock Internatl. Seismol. Cent., Thatcham, United Kingdom, 2017.
 \newblock http://www.isc.org.
+
+\bibitem{Kernighan:1988:CPL:576122}
+Brian~W. Kernighan.
+\newblock The c programming language.
+\newblock In Dennis~M. Ritchie, editor, {\em The C Programming Language}.
+  Prentice Hall Professional Technical Reference, 2nd edition, 1988.
 
 \bibitem{RFC3645}
 S.~Kwan, P.~Garg, J.~Gilroy, L.~Esibov, J.~Westhead, and R.~Hall.
@@ -134,7 +162,7 @@ E.~Lewis and A.~Hoenes.
 
 \bibitem{nexusguard}
 Nexusguard Limited.
-\newblock Dns protection.
+\newblock Dns protection, 2017.
 
 \bibitem{RFC2743}
 J.~Linn.
@@ -171,6 +199,11 @@ P.~Mockapetris.
 \newblock STD~13, RFC Editor, November 1987.
 \newblock \url{http://www.rfc-editor.org/rfc/rfc1035.txt}.
 
+\bibitem{python-axfr-test}
+Sebastian Neef.
+\newblock Axfr-test.py, 2015.
+\newblock \url{https://github.com/internetwache/Python-AXFR-Test}.
+
 \bibitem{python_axfr_test}
 Sebastian Neef.
 \newblock Axfr-test, 2016.
@@ -181,6 +214,13 @@ Masataka Ohta.
 \newblock Incremental zone transfer in dns.
 \newblock RFC 1995, RFC Editor, August 1996.
 \newblock \url{http://www.rfc-editor.org/rfc/rfc1995.txt}.
+
+\bibitem{RFC1918}
+Yakov Rekhter, Robert~G. Moskowitz, Daniel Karrenberg, Geert~Jan de~Groot, and
+  Eliot Lear.
+\newblock Address allocation for private internets.
+\newblock BCP~5, RFC Editor, February 1996.
+\newblock \url{http://www.rfc-editor.org/rfc/rfc1918.txt}.
 
 \bibitem{I-D.song-dnsop-ixfr-fallback}
 Davey Song.
@@ -217,5 +257,10 @@ Xiaoyun Wang, Hongbo Yu, Wei Wang, Haina Zhang, and Tao Zhan.
 \newblock Cryptanalysis on hmac/nmac-md5 and md5-mac.
 \newblock
   \url{https://pdfs.semanticscholar.org/1cc5/63b1eca6695351783e97711b4455c1eca851.pdf}.
+
+\bibitem{zonetransfer}
+Robin Wood.
+\newblock Zonetransfer.me, 2017.
+\newblock \url{https://digi.ninja/projects/zonetransferme.php}.
 
 \end{thebibliography}
