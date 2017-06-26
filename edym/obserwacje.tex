@@ -1,10 +1,10 @@
 \chapter{Obserwacje i wyniki}
-Przeprowadzenie skanowania domen z dostarczonego zbioru danych zajęło 11 dni, co poskutkowało zebraniem około 30GB informacji na temat analizowanych serwerów. Przeskanowano cały plik wejściowy liczący około 5 miliardów pozycji. Skanowanie przeprowadzone było w dniach od 21. kwietnia 2017 roku do 1. maja 2017 roku włącznie. 
+Przeprowadzenie skanowania domen z dostarczonego zbioru danych zajęło 11 dni, co poskutkowało zebraniem około 30GB informacji na temat analizowanych serwerów. Przeskanowano cały plik wejściowy liczący około 5 miliardów pozycji. Skanowanie przeprowadzone było w dniach od 21. kwietnia 2017 roku do 1. maja 2017 roku włącznie.
 
 Obciążenie skanera zwiększano stoponiowo w ciągu kolejnych dni przeprowadzania skanowania. W ten sposób można było uniknąć przeciążenia skanera oraz uzyskać jednocześnie zadowalającą wydajność. Okazało sie, że możliwe jest uruchomienie większej liczby procesów niż przewidywano na etapie projektowania. Przełożoyło się to na krótszy czas skanowania.
 
 \section{Typy odebranych odpowiedzi}
-Wśród przeanalizowanych par domen i serwerów można zaobserwować kilka charakterystycznych typów odpowiedzi. Odpowiedzi mogą być dzielone na kategorie ze względu na różne kryteria. Pierwszym kryterium, które będzie brane pod uwagę w niniejszej pracy jest rozmiar pliku przechowującego informacje pobrane z serwera autorytatywnego. Jest to motywowane faktem, że w istocie im większy jest plik z odpowiedzią, tym spodziewamy się, że zawiera on więcej informacji na temat odpytywanej domeny. 
+Wśród przeanalizowanych par domen i serwerów można zaobserwować kilka charakterystycznych typów odpowiedzi. Odpowiedzi mogą być dzielone na kategorie ze względu na różne kryteria. Pierwszym kryterium, które będzie brane pod uwagę w niniejszej pracy jest rozmiar pliku przechowującego informacje pobrane z serwera autorytatywnego. Jest to motywowane faktem, że w istocie im większy jest plik z odpowiedzią, tym spodziewamy się, że zawiera on więcej informacji na temat odpytywanej domeny.
 
 Pierwszym typem jest odpowiedź, która zajmowała na dysku specyficzną ilość miejsca -- 25123 bajty. Zaobserwowano, że uzyskano 626288 odpowiedzi tego typu. Rozmiar pliku jest swego rodzaju skutkiem ubocznym uproszczonej implementacji skanera. Trudno było przewidzieć wszystkie specyficzne przypadki towarzyszące transferowi strefy DNS. Zaobserwowana sytuacja jest właśnie jednym z tych nietypowych sytuacji i nawet program dig nie odwzorowuje idealnie zachowania jakie powinno nastąpić w takiej sytuacji. Przyczyną utworzenia opisanego wcześniej pliku nie jest jednoznacznie określona. Zostały podjęte próby ustalenia czym spowodowane jest takie zachowanie. W takich samych przypadkach program dig zwraca jedynie rekord DNS SOA i komunikat o błędzie (ang. \textit{communications error: end of file}). Zachowanie programu dig w dużym stopniu przypomina przekierowanie zapytania IXFR na AXFR (ang. \textit{AXFR fallback}) opisane między innymi w RFC1995\cite{RFC1995}. Wywołanie mechanizmu AXFR fallback następuje w sytuacji, kiedy numer wersji pliku strefy przysłany do serwera jest wyższy niż numer wersji aktualnie na nim przechowywany. Na różnego rodzaju forach\cite{powerdns-forum} czy w serwisach internetowych\cite{powerdns-git}, problem który został opisany pojawia się najczęściej jako problem implementacji oprogramowania PowerDNS\cite{powerdns}. Niemniej jednak nie ustalono dokładnie jaki jest powód wysłania tak dużego pakietu w odpowiedzi na zwykłe zapytanie AXFR.
 
@@ -15,10 +15,10 @@ Kolejnymi specyficznymi grupami jeśli chodzi o rozmiar pliku z odpowiedzią są
 \section{Odebrane adresy IPv4 oraz IPv6}
 Częstym argumentem, który pojawia się podczas dyskusji na temat bezpieczeństwa transferów plików bazy danych DNS jest ujawnianie adresów IP. W niniejszym podrozdziale skupiono się głównie na adresach IP w wersji 4. ponieważ jest to wciąż dominujący typ adresacji w Internecie\cite{Ipv6_deployment}. Okazuje się, że pomimo obaw o wycieki adresów przez dokonywanie nieuprawnionego transferu nikt nie zbadał dokładnie jak duża może być skala tego zjawiska. Umożliwiły to badania przeprowadzone w tej pracy magisterskiej.
 
-Aby nie ograniczać się tylko do jednego typu adresacji urządzeń, zostały oddzielone i przeanalizowane dwa zbiory danych -- dla IPv4 oraz dla IPv6. Głównym celem analizy adresów IP było ustalenie systemów autonomicznych(ang. \texit{AS -- Autonomous System}), z których pochodzą określone maszyny. Następnie możliwe było, na podstawie numerów AS, określenie kraju w którym dane maszyny są zlokalizowane. 
+Aby nie ograniczać się tylko do jednego typu adresacji urządzeń, zostały oddzielone i przeanalizowane dwa zbiory danych -- dla IPv4 oraz dla IPv6. Głównym celem analizy adresów IP było ustalenie systemów autonomicznych(ang. \textit{AS -- Autonomous System}), z których pochodzą określone maszyny. Następnie możliwe było, na podstawie numerów AS, określenie kraju w którym dane maszyny są zlokalizowane. 
 
 \subsection{Analiza AS}
-Podstawową informacją, którą uzyskać można wykorzystując pobrane dane z transferów AXFR jest przynależność otrzymanych adresów IP do konkretnych grup autonomicznych. Grupy te określają przynależność do sieci, które zarządzane są przed tego samego operatora sieciowego, a wykorzystuje się je głównie w protokołach routingu. Informacje związane z systemami autonomicznymi można, w głównej mierze, znaleźć w RFC1930\cite{RFC1930}. Zbiór danych został podzielony ze względu na wersję protokołu IP używanej przy adresacji konkretnych maszyn. Przeprowadzono analizę systemów autonomicznych w rozdzielnych grupach, dla wersji 4 protokołu IP oraz dla wersji 6. 
+Podstawową informacją, którą uzyskać można wykorzystując pobrane dane z transferów AXFR jest przynależność otrzymanych adresów IP do konkretnych grup autonomicznych. Grupy te określają przynależność do sieci, które zarządzane są przed tego samego operatora sieciowego, a wykorzystuje się je głównie w protokołach routingu. Informacje związane z systemami autonomicznymi można, w głównej mierze, znaleźć w RFC1930\cite{RFC1930}. Zbiór danych został podzielony ze względu na wersję protokołu IP używanej przy adresacji konkretnych maszyn. Przeprowadzono analizę systemów autonomicznych w rozdzielnych grupach, dla wersji 4 protokołu IP oraz dla wersji 6.
 
 Jak już wcześniej wspomiano, wciąż dominującym sposobem adresacji urządzeń w sieci jest adresacja IP w wersji 4\cite{Ipv6_deployment}. Do podobnych wniosków można dojść analizując zbiór dannych zebranych podczas skanowania. Okazuje się bowiem, że znaczna większość adresów IP, które zostały pobrane w wyniku skanowania należy do zbioru adresów IP w wersji 4. Dane liczbowe prezentują się w następujący sposób:
 \begin{enumerate}
@@ -33,7 +33,7 @@ W celu określenia numerów systemów autonomicznych adresów IP pozyskanych pod
 	\item biblioteka języka Python pyasn \cite{pyasn}.
 \end{enumerate}
 
-Pierwszy ze sposobów jest prostszy w użyciu, gdyż wystarczy użyć narzędzia netcat\cite{netcat}, gdzie argumentami jest odpowiednia strona internetowa Team Cymru\cite{cymru} oraz ścieżka do pliku, w którym znajdują się w kolejnych liniach adresy IP. Każdy z plików rozpoczyna się słowem kluczowym ,,begin'' oraz kończy słowem kluczowym ,,end''. Sposób ten jest wygodny, jednak moze budzić pewne wątpliwości. Najbardziej istotną wydaje się być kwestia dotycząca głównie adresacji IP w wersji 4. -- dynamiczne przydzielanie adresów IP różnym operatorom \cite{}. Problem związany jest pośrednio z kończącą sie pulą adresów IPv4. Prowadzi to do zmian przynależności adresów IPv4 do systemów autonomicznych. Dynamikę tych zmian można obserwować między innymi pod adresem \cite{}. 
+Pierwszy ze sposobów jest prostszy w użyciu, gdyż wystarczy użyć narzędzia netcat\cite{netcat}, gdzie argumentami jest odpowiednia strona internetowa Team Cymru\cite{cymru} oraz ścieżka do pliku, w którym znajdują się w kolejnych liniach adresy IP. Każdy z plików rozpoczyna się słowem kluczowym ,,begin'' oraz kończy słowem kluczowym ,,end''. Sposób ten jest wygodny, jednak moze budzić pewne wątpliwości. Najbardziej istotną wydaje się być kwestia dotycząca głównie adresacji IP w wersji 4. -- dynamiczne przydzielanie adresów IP różnym operatorom \cite{}. Problem związany jest pośrednio z kończącą sie pulą adresów IPv4. Prowadzi to do zmian przynależności adresów IPv4 do systemów autonomicznych. Dynamikę tych zmian można obserwować między innymi pod adresem \cite{}.
 
 Wątpliwości, które wynikły z wykorzystania udostępnionego API były bezpośrednią przyczyną szukania innego, optymalnego rozwiązania. Takim okazało się wykorzystanie biblioteki \textit{pyasn} \cite{pyasn}. Umożliwia ona zaimplementowanie narzędzia, które uwzględnia datę, gdy dany adres IP został zeskanowany. Mapowanie adresu IP na AS w konkretnym dniu jest możliwe dzięki wykorzystaniu wielu baz danych. Okazuje się, że w praktyce, dla każdej z dat udostępniony jest oddzielny plik z bazą danych, dzięki której możliwe jest tłumaczenie adresów IP na ASy. Możliwe jest, aby pobrać bazę danych, która najlepiej odpowiada zebranym pomiarom. W przypadku tej pracy magisterskiej pobierane są pliki dla każdego dnia, w którym przeprowadzone zostało skanowanie. Pliki są dystrybuowane wraz z biblioteką. Jedyną akcją, którą musi podjąć jej użytkownik jest przygotownie pliku tekstowego z datami, dla których powinna zostać pobrana baza danych. Następnie bazy są przetwarzane na pliki w formacie odpowiednim dla biblioteki \textit{pyasn}. Aby zautomatyzować opisany proces, zaimplementowano odpowiednie narzędzie w języku skryptowym bash. Pobiera ono daty z odpowiednich katalogów z wynikami skanów, następnie tworzy odpowiedni plik tekstowy, który później wykorzystywany jest jako plik wejściowy dla biblioteki \textit{pyasn}. Na jego podstawie kopiowane są bazy danych dla konkretnych dni. Jest to najbardziej dokładna forma mapowania adresów IP na numery systemów autonomicznych. Pobrane bazy danych są następnie konwertowane do takiego formatu, którego wymaga narzędzie. W kolejnym kroku dokonuje się właściwego odwzorowania adresów IP na odpowiadające im ASy.
 
@@ -41,7 +41,7 @@ Wątpliwości, które wynikły z wykorzystania udostępnionego API były bezpoś
 \label{sec:ipv4_results}
 Analizując zbiór pod względem adresów IP jedynie w czwartej wersji, zaprezentowany na rysunku \ref{fig:ipv4_countries}, możemy zauważyć kilka interesująych faktów. Pierwszym, który jest natychmiast zauważalny, to bardzo wysoki współczynnik systemów autonomicznych ze Stanów Zjednoczonych w popoulacji adresów IPv4 które zostały zebrane w wyniku skanowania. Poziom ten jest około 3.5 raza wyższy, niż liczebność systemu autonomicznego z drugiego kraju w rankingu, czyli z Niemiec. Informacja ta jest interesująca w tym sensie, że TLD .de jest jedną z tych, które wymagają zabezpieczania stref DNS przed \textit{zone enumeration}\cite{}. Okazuje się natomiast, że w praktyce drugim najczęściej spotykanym krajem w zestawieniu adresów IP w skanowaniu AXFR są właśnie Niemcy, a transfer strefy jest w realizacji dużo łatwiejszym atakiem niż wspomniane wcześniej \textit{zone walking}.
 
-Dodatkowo, zastanawiające jest, że oprócz bardzo widocznej przewagi systemów autonomicznych ze Stanów Zjednoczonych, widoczna jest również duża różnica pomiędzy 9 pierwszymi krajami oraz resztą populacji (etykieta \textit{tk}(Turcja) na wykresie \ref{fig:ipv4_countries}). 
+Dodatkowo, zastanawiające jest, że oprócz bardzo widocznej przewagi systemów autonomicznych ze Stanów Zjednoczonych, widoczna jest również duża różnica pomiędzy 9 pierwszymi krajami oraz resztą populacji (etykieta \textit{tk}(Turcja) na wykresie \ref{fig:ipv4_countries}).
 
 \begin{figure}[ht]
 	\centering
@@ -69,7 +69,7 @@ Oprócz opisanego w poprzednim podpunkcie \ref{sec:ipv4_results} przeanalizowano
 \end{figure}
 
 \section{Analiza TLD}
-Jednym z podejść analizy zebranego zbioru danych było sprawdzenie, jak przedstawia się rozkład popularności domeny najwyższego poziomu dla serwerów podatnych na nieuprawiony transfer strefy. 
+Jednym z podejść analizy zebranego zbioru danych było sprawdzenie, jak przedstawia się rozkład popularności domeny najwyższego poziomu dla serwerów podatnych na nieuprawiony transfer strefy.
 
 W głównej mierze należy zastanowić się, czy rozkład ten jest w ogóle istotny, czy może nie różni się on niczym od ogólnego, całościowego rozkładu popularności TLD w internecie, bez uwzględnienia podatności czy innych czynników. W tym celu przeanalizowano i przedstawiono wykres popularności domen najwyższego poziomu w sieci internet\cite{TLD_popularity}. Jest on przedstawiony na rysunku \ref{TLD_all}.
 \begin{center}
@@ -77,7 +77,7 @@ W głównej mierze należy zastanowić się, czy rozkład ten jest w ogóle isto
 		\includegraphics[scale=0.75]{image/TLD_all}\label{TLD_all}
 		\caption{Popularność TLD w internecie (dostęp na dzień 15. maja 2017), źródło:  \cite{TLD_popularity}}
 	\end{figure}
-\end{center}  
+\end{center}
 
 Wykres przedstawia procentowy rozkład poszczególnych domen internetowych w zależności od używanej domeny najwyższego poziomu. Wynika z niego, że domena najwyższego poziomu \textit{.com} jest używana przez 47.5\% wszystkich domen. Wykres ograniczony został do 20 najbardziej popularnych TLD. Różnice pomiędzy kolejnymi rekordami są na tyle niskie, że ich umieszczenie wpływałoby negatywnie na ogólną reprezentację wyników. Wykres \ref{TLD_all} zostanie następnie zestawiony z popularnością TLD tych domen, których serwery autorytatywne umożliwiają nieuprawniony transfer AXFR. Rozkład popularności TLD domen odpowiadających na zapytanie AXFR przedstawiono na rysunku \ref{resp}.
 \begin{center}
@@ -85,7 +85,7 @@ Wykres przedstawia procentowy rozkład poszczególnych domen internetowych w zal
 		\includegraphics[width=1.0\textwidth]{image/resp}\label{resp}
 		\caption{Popularność TLD w odpowiedziach AXFR.}
 	\end{figure}
-\end{center} 
+\end{center}
 
 Dokonując porównania wykresów \ref{TLD_all} oraz \ref{resp} możemy dostrzec kilka prawidłowości. Zarówno w jednym jak i drugim przypadku, wyraźnie dominującą domeną najwyższego poziomu jest domena .com. Dodatkowo, nie można mówić tu o anomalii, ponieważ zarówno w jednym jak i drugim przypadku domena .com stanowi bardzo podobny procentowy udział wszystkich domen, czy to pytanych czy tych, które odpowiedziały. Następnie można dostrzec delikatne zmiany w procentowych udziałach kolejnych TLD, jednak nie na pierwszy rzut oka zmiany te nie są wyróżniające się czy nad wyraz zauważalne.
 
@@ -138,23 +138,23 @@ Oprócz wykreślonych charakterystyk policzono również ile domen najwyższego 
 	\label{cdf_table}
 	\begin{tabular}{|p{0.2\textwidth}|p{0.3\textwidth}|p{0.4\textwidth}|}
 		\hline
-		\textbf{Zbiór} & 
-		\textbf{Liczba różnych TLD w zbiorze} & 
+		\textbf{Zbiór} &
+		\textbf{Liczba różnych TLD w zbiorze} &
 		\textbf{Liczba różnych TLD zawierająca 99\% elementów zbioru} \\
 		\hline\hline
-		Zapytania & 
-		1521 & 
+		Zapytania &
+		1521 &
 		147\\
 		\hline
-		Odpowiedzi & 
-		751 & 
+		Odpowiedzi &
+		751 &
 		187\\
-		\hline\hline		
+		\hline\hline
 	\end{tabular}
 \end{table}
 
 \section{Liczba wpisów stref w odpowiedziach}
-Odpowiedzi pobrane w wyniku skanowania zostały poddane analizie uwzględniającej jak duże są strefy pobrane z serwerów przestrzeni nazw. 
+Odpowiedzi pobrane w wyniku skanowania zostały poddane analizie uwzględniającej jak duże są strefy pobrane z serwerów przestrzeni nazw.
 
 W tym przypadku zastosowano inne podejście niż podczas reszty przeprowadzonych badań. Z racji, że częstym przypadkiem odpowiedzi otrzymywanej od serwera był jedynie rekord SOA, postanowiono oddzielnie analizować pliki stref zawierające tylko jeden wpis, a oddzielnie pliki zawierające więcej niż jeden rekord.
 
@@ -183,7 +183,7 @@ Dla zbioru danych, który określa rozmiar pobranych stref wykreślony został h
 
 Dodatkowo, można zauważyć, że histogram \ref{fig:hist_zone_size} posiada bardzo dużo pozycji na osi X. Jest to ponownie następstwo własnej implementacji oprogramowania umożliwiającego transfer stref AXFR. Widocznie zauważalny jest prążek na wartości około 8 tysięcy wpisów. Dokładnie jest to 8244 wpisów w pliku strefy. Sprawdzono, czy rzeczywiście strefy te są tak duże. Odpytano kilka z serwerów, dla których otrzymano tak specyficzną odpowiedź. Pakiety, które wysłano oraz odebrano zostały przeanalizowane programem Wireshark. Okazuje się, że utworzenie opisanego wcześniej pliku jest następstwem otrzymania wiadomości HTTP o statusie 400 -- Bad request. Co ciekawe, odpowiedź tę otrzymujemy na mało standardowy port w kontekście protokołu HTTP -- port 53. Szczegóły otrzymanej wiadomości zostały przedstawione w lsitingu \ref{}. Innym wynikiem typu zachowania były odpowiedzi o liczbie linii ok. 11 tysięcy. Jest to wyraźnie mniej zauważalne, wnioskując choćby po histogramie \ref{fig:hist_zone_size}, gdzie widoczny jest jedynie prążek na wartości około 8000 linijek w pliku strefy. Plik o około 11 tysiącach wpisów był tworzony w wyniku otrzymania rozszerzonej wiadomości HTTP 400 -- została ona przedstawiona na listingu \ref{}.
 
-Na rysunku \ref{fig:hist_zone_size_zoom} możemy obserwować w przybliżeniu rozkład wielkości plików stref. Zawężony został on do 60 wpisów z uwagi, że najbardziej interesujące wyniki zawierają się głównie w tym przedziale. Jak widać, najczęściej występującym rozmiarem strefy DNS jest 14 wpisów. Są to strefy pobrane najczęściej ze źle skonfigurowanych serwerów DNS, które obsługują usługi standardowe, często spotykane, takie jak serwery WWW, serwer pocztowe. Przykład odpowiedzi o takim rozmiarze został przedstawiony na listingu \ref{list:dns_zone_example}.  
+Na rysunku \ref{fig:hist_zone_size_zoom} możemy obserwować w przybliżeniu rozkład wielkości plików stref. Zawężony został on do 60 wpisów z uwagi, że najbardziej interesujące wyniki zawierają się głównie w tym przedziale. Jak widać, najczęściej występującym rozmiarem strefy DNS jest 14 wpisów. Są to strefy pobrane najczęściej ze źle skonfigurowanych serwerów DNS, które obsługują usługi standardowe, często spotykane, takie jak serwery WWW, serwer pocztowe. Przykład odpowiedzi o takim rozmiarze został przedstawiony na listingu \ref{list:dns_zone_example}.
 
 \begin{lstlisting}[label={list:dns_zone_example},captionpos=b,caption=Przykładowy plik strefy DNS.,language=bash]
 movida-bar.pl.  14400   6        ns1.consultingteam.pl. hostmaster.movida-bar.pl. 1952801133 3222735464 1869837421 1634956389 1925188727
@@ -202,10 +202,8 @@ www.movida-bar.pl.      14400   1       91.241.61.119
 movida-bar.pl.  14400   6        ns1.consultingteam.pl. hostmaster.movida-bar.pl. 2013010900 14400 3600 1209600 86400
 \end{lstlisting}
 
-Z listingu \ref{list:dns_zone_example} możemy dowiedzieć się, że domena obsługiwana przez odpytany serwer DNS udostępnia między innymi takie usługi jak serwery pocztowe smtp i pop, serwer FTP oraz serwer WWW. Wszystkie one są kierowane na jeden adres IP. Dodatkowo, na serwerze DNS został umieszczony wpis TXT (id 16). Zdefiniowano w nim rekord SPF gdzie określa się reguły dotyczące wymiany wiadomości e-mail w danej domenie. 
+Z listingu \ref{list:dns_zone_example} możemy dowiedzieć się, że domena obsługiwana przez odpytany serwer DNS udostępnia między innymi takie usługi jak serwery pocztowe smtp i pop, serwer FTP oraz serwer WWW. Wszystkie one są kierowane na jeden adres IP. Dodatkowo, na serwerze DNS został umieszczony wpis TXT (id 16). Zdefiniowano w nim rekord SPF gdzie określa się reguły dotyczące wymiany wiadomości e-mail w danej domenie.
 
-Strefy tego typu są najczęściej spotykane w danych, które udało się zebrać podczas skanowania. Można wnioskować, że transfer AXFR jest najczęściej możliwy dla domen zarejestrowanych głównie w celach informacyjnych czy marketingowych. Jak opisano wcześniej, są to najczęściej pojedyncze adresy IP z kilkoma usługami. Działalność organizacji, na potrzeby któych rejestowano takie niewielkie domeny, jest najczęściej mało związana z informatyką czy telekomunikacją. 
+Strefy tego typu są najczęściej spotykane w danych, które udało się zebrać podczas skanowania. Można wnioskować, że transfer AXFR jest najczęściej możliwy dla domen zarejestrowanych głównie w celach informacyjnych czy marketingowych. Jak opisano wcześniej, są to najczęściej pojedyncze adresy IP z kilkoma usługami. Działalność organizacji, na potrzeby któych rejestowano takie niewielkie domeny, jest najczęściej mało związana z informatyką czy telekomunikacją.
 
-To, na co warto zwrócić uwagę na histogramie \ref{fig:hist_zone_size_zoom} to również domeny o strefach o rozmiarze około 40-60 wpisów. Jest to reprezentacja tych stref, które wykorzystują mechanizm podpisywania rekordów DNS zaprezentowany w rozszerzedniu protokołu -- DNSSEC\cite{RFC4034, RFC4035}. Zgodnie z tym, co zostało opisane w rozdziale \ref{}, Dla każdej pary rekordów przechowywanych w strefie DNS liczony jest podpis cyfrowy. 
-
-
+To, na co warto zwrócić uwagę na histogramie \ref{fig:hist_zone_size_zoom} to również domeny o strefach o rozmiarze około 40-60 wpisów. Jest to reprezentacja tych stref, które wykorzystują mechanizm podpisywania rekordów DNS zaprezentowany w rozszerzedniu protokołu -- DNSSEC\cite{RFC4034, RFC4035}. Zgodnie z tym, co zostało opisane w rozdziale \ref{}, Dla każdej pary rekordów przechowywanych w strefie DNS liczony jest podpis cyfrowy.

@@ -17,10 +17,10 @@ Rekonesans DNS jest częścią testu penetracyjnego polegającą na pozyskaniu j
 
 AXFR (\textit{ang. Asynchronous Xfer Full Range}) to mechanizm używany w protokole DNS (\textit{Domain Name System}) do transferowania strefy za którą odpowiada serwer nazw. Głównym przeznaczeniem opisywanego standardu był transfer informacji pomiędzy podstawowym i zapasowym serwerem przestrzeni nazw. Zasada jego działania jest bardzo prosta -- serwer podrzędny (\textit{ang. slave}) przesyła żądanie AXFR do serwera podstawowego (\textit{ang. primary, master}).
 
-Oczywiste jest, że AXFR został wykorzystywany w celach zupełnie innych niż te, do których go zaprojektowano. Mowa tu o sytuacji, w której serwer główny w żaden sposób nie weryfikuje po swojej stronie źródła takiego zapytania. Prowadzi to do sytuacji, w której każdy, kto jest w stanie utworzyć odpowiedni pakiet TCP może wejść w posiadanie informacji o całej strefie, za którą odpowiada odpytywany serwer DNS. Wspomniane przygotowanie pakietu DNS nie jest specjalnie trudne, ponieważ umożliwia to wiele narzędzi, na przykład dig, wchodzący w skład pakietu bind. 
+Oczywiste jest, że AXFR został wykorzystywany w celach zupełnie innych niż te, do których go zaprojektowano. Mowa tu o sytuacji, w której serwer główny w żaden sposób nie weryfikuje po swojej stronie źródła takiego zapytania. Prowadzi to do sytuacji, w której każdy, kto jest w stanie utworzyć odpowiedni pakiet TCP może wejść w posiadanie informacji o całej strefie, za którą odpowiada odpytywany serwer DNS. Wspomniane przygotowanie pakietu DNS nie jest specjalnie trudne, ponieważ umożliwia to wiele narzędzi, na przykład dig, wchodzący w skład pakietu bind.
 
 \section{Domain Name System}
-Głównym zadaniem protokołu DNS (\textit{Domain Name System}) jest translacja nazw przyswajalnych dla użytkowników (najczęściej alfanumerycznych) na nazwy sieciowe, czyli adresy IP. 
+Głównym zadaniem protokołu DNS (\textit{Domain Name System}) jest translacja nazw przyswajalnych dla użytkowników (najczęściej alfanumerycznych) na nazwy sieciowe, czyli adresy IP.
 
 DNS jest jednym z podstawowych elementów internetu. Z wystawionego przez niego interfejsu korzysta wiele usług sieciowych i innych protokołów. Można traktować go jako bazę danych, która jest rozproszona po wielu lokalizacjach. Ponadto, system powinien oraz cechuje się dużą niezawodnością. W tym przypadku została ona osiągnięta poprzez wprowadzenie dość prostego mechanizmu -- nadmiarowości serwerów. To właśnie dzięki tej redundancji DNS cechuje się wysokim wskaźnikiem niezawodności, gdyż w momencie gdy któryś z serwerów nie odpowiada informacja pobierana jest z innego serwera -- zapasowego, podrzędnego.
 
@@ -30,11 +30,11 @@ System DNS ma charakterystyczną, hierarchiczną strukturę, którą zaprezentow
 	\includegraphics[scale=1]{image/hierarchy_dns}\label{hierarchy_dns}
 \end{center}
 
-Dzięki tej hierarchii systemu możemy powiedzieć o DNS, że charakteryzuje go bardzo dobra skalowalność oraz elastyczność. 
+Dzięki tej hierarchii systemu możemy powiedzieć o DNS, że charakteryzuje go bardzo dobra skalowalność oraz elastyczność.
 
 Podział ze względu na położenie geograficzne jest oczywiście bardziej naturalny i łatwy zarówno do wdrożenia jak i zrozumienia. Każdemu z państw przydzielono dwu bądź trzyliterowy identyfikator, który reprezentują domenę najwyższego poziomu odpowiadającą danemu państwu. Powołując się na informacje przedstawione na grafice \ref{hierarchy_dns} TLD o identyfikatorze \textit{uk} odpowiada domenom utożsamianym z Wielką Brytanią, a \textit{fr} -- domenom francuskim.
 
-Hierarchia systemu DNS wynika z faktu, że domenami internetowymi każdego poziomu może zarządzać inna organizacja. Odnosi się to zarówno do domeny \textit{root}, jak i domen najwyższego poziomu niezależnie od przynależności grupowej. W Polsce identyfikatorem TLD jest sufiks \textit{pl}, a jednostką odpowiedzialną za nią jest CERT Polska \cite{cert}. Jeśli użytkownik chciałby dołączyć ze swoją siecią do internetu powinien zgłosić do odpowiedniej organizacji taką chęć oraz dostarczyć wszystkich niezbędnych informacji które są wymagane przez zarządcę. 
+Hierarchia systemu DNS wynika z faktu, że domenami internetowymi każdego poziomu może zarządzać inna organizacja. Odnosi się to zarówno do domeny \textit{root}, jak i domen najwyższego poziomu niezależnie od przynależności grupowej. W Polsce identyfikatorem TLD jest sufiks \textit{pl}, a jednostką odpowiedzialną za nią jest CERT Polska \cite{cert}. Jeśli użytkownik chciałby dołączyć ze swoją siecią do internetu powinien zgłosić do odpowiedniej organizacji taką chęć oraz dostarczyć wszystkich niezbędnych informacji które są wymagane przez zarządcę.
 
 Bardzo ważnym punktem jest wspomniana w poprzednim akapicie ,,chęć'' dołączenia do internetu. Jeśli użytkownik czy organizacja chcą używać protokołu DNS jedynie do użytku wewnętrznego, to nie ma rystrykcyjnych ograniczeń co do używanych nazw. Jeśli natomiast oczekuje się wystawienia domen w taki sposób, aby były widoczne z zewnątrz, to należy odpowiednio:
 \begin{enumerate}
@@ -59,7 +59,7 @@ Jeśli chodzi o podział domen pierwszego poziomu ze względu na przynależnoś�
 \begin{table}[]
 	\centering
 	\caption{Podział domen najwyższego poziomu ze względu na działalność.}
-	\label{podział_tld}
+	\label{podzial_tld}
 	\begin{tabular}{|r|p{10.5cm}|}
 		\hline
 		\textbf{TLD} & \textbf{Opis jednostki} \\
@@ -77,7 +77,7 @@ Jeśli chodzi o podział domen pierwszego poziomu ze względu na przynależnoś�
 		org & Organizacje nonprofit i inne (ang. \textit{nonprofit organizations}) \\
 		\hline
 		int & Organizacje międzynarodowe (ang. \textit{international organizations}) \\
-		\hline 
+		\hline
 	\end{tabular}
 \end{table}
 
@@ -90,22 +90,22 @@ Domeną określa się dany podzbiór hierarchii DNS. Są to wszystkie poddomeny 
 Strefa DNS jest pojęciem, które określa zbiór domen za które odpowiedzialny jest konkretny serwer przestrzeni nazw. Jeśli wyobrazimy sobie hierarchię DNS jako drzewo, w którym węzłami są kolejne nazwy domen, to strefą DNS będzie zbiór węzłów tego drzewa. Zbiór węzłów wyznaczany jest na podstawie informacji o serwerze autorytatywnym odpowiedzialnym za daną domenę. Te węzły (domeny) których nazwami zarządza ten sam serwer znajdują się w jednej strefie DNS. Przykładowy podział systemu na konkretne strefy został zaprezentowany na rysunku \ref{dns_zone_example}.
 
 \subsection{Strefa DNS a domena DNS}
-System DNS danej domeny jest zrealizowany w oparciu o zbiór serwerów przestrzeni nazw (ang. \textit{nameserver}). Każdy z serwerów może być serwerem autorytatywnym dla pojedynczej domeny, wielu domen bądź domen wraz z odpowiadającymi im poddomenami. Wycinek przestrzeni zarządzany przez określony serwer nazywany jest strefą DNS. 
+System DNS danej domeny jest zrealizowany w oparciu o zbiór serwerów przestrzeni nazw (ang. \textit{nameserver}). Każdy z serwerów może być serwerem autorytatywnym dla pojedynczej domeny, wielu domen bądź domen wraz z odpowiadającymi im poddomenami. Wycinek przestrzeni zarządzany przez określony serwer nazywany jest strefą DNS.
 
 
 \subsection{Kompletne nazwy domen}
-Określeniem pełne, kompletne lub zupełne nazwy domen (ang \textit{Fully Qualified Domain Names (FQDNs)}) nazywane są te domeny, których nazwy zawierają domenę każdego poziomu, począwszy od lokalnej, aż po domenę główną, czyli root. Łatwo dostrzec analogię do wcześniej wspomnianego systemu pliku w systemach operacyjnych UNIX pomiędzy FQDN a bezpośrednią ścieżką do pliku. Różnicą jest tu jednak sposób odczytywania takiej ścieżki. W systemach DNS najbardziej ogólny węzeł znajduje się na skrajnie prawej pozycji a poruszając się w stronę lewą dochodzimy do kolejnych lokalnych domen. 
+Określeniem pełne, kompletne lub zupełne nazwy domen (ang \textit{Fully Qualified Domain Names (FQDNs)}) nazywane są te domeny, których nazwy zawierają domenę każdego poziomu, począwszy od lokalnej, aż po domenę główną, czyli root. Łatwo dostrzec analogię do wcześniej wspomnianego systemu pliku w systemach operacyjnych UNIX pomiędzy FQDN a bezpośrednią ścieżką do pliku. Różnicą jest tu jednak sposób odczytywania takiej ścieżki. W systemach DNS najbardziej ogólny węzeł znajduje się na skrajnie prawej pozycji a poruszając się w stronę lewą dochodzimy do kolejnych lokalnych domen.
 
 \subsection{Mapowanie nazw na adres IP}\label{mapping}
 Mapowanie nazw domeny na jej adres IP jest możliwe dzięki plikom strefy DNS, które znajdują się na autorytatywnym serwerze przestrzeni nazw, tzw. \textit{zone files}. Jeden z typów tych plików przechowuje nazwy domen wraz z odpowiadającymi im adresami IP. Gdy klient chce dowiedzieć się pod jaki adres kierować swoje zapytanie, kieruje informacje do serwera autorytatywnego. On odpowiada za znalezienie i przedstawienie mapowania nazwy na adres IP, dokonując przeszukania plików strefy.
 
 \subsection{Mapowanie odwrotne}\label{revmapping}
-Baza danych DNS może także zawierać pliki, które umożliwiają mapowania odwrotne, tj. adresu IP na nazwę domeny/hosta. Mechanizm ten może być użyty przy próbie weryfikacji pochodzenia wiadomości. Chcąc wykluczyć próbę oszustwa ze strony prawdziwego nadawcy możemy posiłkować się właśnie odwrotnym mapowaniem. Możemy zweryfikować, czy adres IP mapowania odwrotnego zgadza się z adresem IP z którego nadano wiadomość. Mechanizm ten może być również wykorzystywany do autoryzacji operacji wykonywanych zdalnie. 
+Baza danych DNS może także zawierać pliki, które umożliwiają mapowania odwrotne, tj. adresu IP na nazwę domeny/hosta. Mechanizm ten może być użyty przy próbie weryfikacji pochodzenia wiadomości. Chcąc wykluczyć próbę oszustwa ze strony prawdziwego nadawcy możemy posiłkować się właśnie odwrotnym mapowaniem. Możemy zweryfikować, czy adres IP mapowania odwrotnego zgadza się z adresem IP z którego nadano wiadomość. Mechanizm ten może być również wykorzystywany do autoryzacji operacji wykonywanych zdalnie.
 
 Odwrotne mapowanie wykorzystuje specjalną domenę \textit{in-addr.arpa}. Z założenia domena ta wykorzystuje adresy IP zamiast adresów domen.  Wspomniana domena jest częścią strefy DNS, która umożliwia takie właśnie odwzorowanie. Istotne jest, że adresy w domenie \textit{in-addr.arpa} są zapisywane w specyficzny dla siebie sposób -- od najniższego do najbardziej istotnego poziomu. Wynika z tego, że adresy IP w opisywanej domenie są w pewnym sensie zapisywane ,,od końca''. Powołując się na przykład, załóżmy, że maszyna ma przypisany adres 10.8.0.32. W plikach strefy dla domeny in-addr.arpa adres ten będzie zapisany jako 32.0.8.10.in-addr.arpa. oczywiście z kropką po członie \textit{in-addr.arpa}, która reprezentuje domenę \textit{root}.
 
 \subsection{Wpisy plików strefy}
-Tak jak wspomniano we wcześniejszych punktach \ref{mapping} oraz \ref{revmapping} działanie całego mechanizmu mapowana (czy to właściwego czy odwrotnego) może zachodzić dzięki serwerom autorytatywnym oraz przechowywanym przez nie plikom strefy DNS. 
+Tak jak wspomniano we wcześniejszych punktach \ref{mapping} oraz \ref{revmapping} działanie całego mechanizmu mapowana (czy to właściwego czy odwrotnego) może zachodzić dzięki serwerom autorytatywnym oraz przechowywanym przez nie plikom strefy DNS.
 
 Z racji, że system DNS dostarcza administratorom wielu funkcji poza standardowym mapowaniem adresów na IP, wpisy w bazach danych mogą być różnych typów. Najpopularniejsze typy to oczywiście te, z którymi można zetknąć się każdego dnia, na przykład wpis typu \textit{A} -- tłumaczący nazwę hosta na adres IP w wersji 4, \textit{AAAA} -- mapujący nazwę hosta na adres IP w wersji 6, rekordy \textit{CNAME} służące do aliasów, czy MX -- specyfikujące serwer wymiany wiadomości elektronicznych dla danej domeny. Oprócz wspomnianych podstawowych typów twórcy standardu dla systemu DNS wprowadzili także mniej znane typy. Opis zbioru najbardziej istotnych wpisów określonych w dokumencie RFC 1035 \cite{RFC1035} wraz z ich przeznaczeniem umieszczono w tabeli \ref{typyRekordowDns}.
 
@@ -115,39 +115,39 @@ Z racji, że system DNS dostarcza administratorom wielu funkcji poza standardowy
 	\label{typyRekordowDns}
 	\begin{tabular}{|r|p{3cm}|p{8cm}|}
 		\hline
-			\textbf{Rekord} & 
-			\textbf{Pełna nazwa} & 
+			\textbf{Rekord} &
+			\textbf{Pełna nazwa} &
 			\textbf{Pełniona funkcja(opis zawartości)} \\
 		\hline\hline
-			A & 
-			Wpis mapowania adresów(ang. \textit{Address mapping record}) & 
+			A &
+			Wpis mapowania adresów(ang. \textit{Address mapping record}) &
 			Określa adres IP wersji 4 dla danego hosta. Służą do konwersji nazwy domen do odpowiednich adresów IP.\\
 		\hline
-			CNAME & 
-			Nazwa kanoniczna (ang. \textit{Canonical Name)} & 
+			CNAME &
+			Nazwa kanoniczna (ang. \textit{Canonical Name)} &
 			\\
 		\hline
-			MX & 
-			Wymiana wiadomości elektronicznych (ang. \textit{Mail exchange)} & 
+			MX &
+			Wymiana wiadomości elektronicznych (ang. \textit{Mail exchange)} &
 			\\
 		\hline
-			NS & 
-			Serwer nazw (ang. \textit{Name server)} & 
-			\\		
-		\hline
-			SOA & 
-			Początek (ang. \textit{Start of Authority)} & 
+			NS &
+			Serwer nazw (ang. \textit{Name server)} &
 			\\
 		\hline
-			TXT & 
-			Tekst & 
+			SOA &
+			Początek (ang. \textit{Start of Authority)} &
+			\\
+		\hline
+			TXT &
+			Tekst &
 		\\
 		\hline
-		
+
 	\end{tabular}
 \end{table}
 
-Oczywiście na przestrzeni lat protokół rozszerzano o kolejne funkcje. Jednym z istotnych wydarzeń było zaproponowanie zmian spisanych w dokumencie RFC 4034 \cite{RFC4034}. Opisano tam rozszerzenia protokołu DNS, które podnoszą jego bezpieczeństwo. W tabeli \ref{typyRekordowDnsExt} przedstawiono najważniejsze z punktu widzenia niniejszej pracy typy rekordów, które zostały wprowadzone w kolejnych dokumentach RFC, których dokładne numery zostały wspomniane przy konkretnych wpisach w tabeli. 
+Oczywiście na przestrzeni lat protokół rozszerzano o kolejne funkcje. Jednym z istotnych wydarzeń było zaproponowanie zmian spisanych w dokumencie RFC 4034 \cite{RFC4034}. Opisano tam rozszerzenia protokołu DNS, które podnoszą jego bezpieczeństwo. W tabeli \ref{typyRekordowDnsExt} przedstawiono najważniejsze z punktu widzenia niniejszej pracy typy rekordów, które zostały wprowadzone w kolejnych dokumentach RFC, których dokładne numery zostały wspomniane przy konkretnych wpisach w tabeli.
 
 \begin{table}[]
 	\centering
@@ -155,12 +155,12 @@ Oczywiście na przestrzeni lat protokół rozszerzano o kolejne funkcje. Jednym 
 	\label{typyRekordowDnsExt}
 	\begin{tabular}{|r|p{3cm}|p{8cm}|}
 		\hline
-		\textbf{Rekord} & 
-		\textbf{Pełna nazwa} & 
+		\textbf{Rekord} &
+		\textbf{Pełna nazwa} &
 		\textbf{Pełniona funkcja(opis zawartości)} \\
 		\hline\hline
-			AAAA & 
-			Wpis mapowania adresów IPv6 & 
+			AAAA &
+			Wpis mapowania adresów IPv6 &
 			Określa adres IP wersji 6 dla danego hosta. Zasada działania jest taka jak w przypadku rekordu A z jedyną różnicą w wersji adresu IP. \\
 		\hline
 	\end{tabular}
@@ -174,19 +174,19 @@ Specyficzną domeną najwyższego rzędu jest domena \textit{ARPA}.
 \subsection{Domena 2LD in-addr}
 
 \section{Transfer strefy DNS}
-Transfer strefy DNS jest typem transakcji DNS, która jest podstawowym elementem mechanizmu odtwarzania bazy danych DNS pomiędzy serwerami systemu. Transfer jako protokołu warstwy 4 używa TCP i przybiera formę komunikacji typu klient-serwer. Zgodnie z założeniem projektantów klient jest podrzędnym lub zapasowym serwerem DNS a serwer, który odpytuje to nadrzędny bądź główny serwer DNS. To, co wysyłane jest w odpowiedzi od serwera głównego jest strefa DNS -- część bazy danych przechowywanych na głównym serwerze. 
+Transfer strefy DNS jest typem transakcji DNS, która jest podstawowym elementem mechanizmu odtwarzania bazy danych DNS pomiędzy serwerami systemu. Transfer jako protokołu warstwy 4 używa TCP i przybiera formę komunikacji typu klient-serwer. Zgodnie z założeniem projektantów klient jest podrzędnym lub zapasowym serwerem DNS a serwer, który odpytuje to nadrzędny bądź główny serwer DNS. To, co wysyłane jest w odpowiedzi od serwera głównego jest strefa DNS -- część bazy danych przechowywanych na głównym serwerze.
 
 Transfer może odbywać się za pośrednictwem dwóch wyspecyfikowanych rodzajów zapytań -- AXFR\cite{RFC1034, RFC5936} bądź IXFR\cite{RFC1995}. To pierwsze definiuje transfer całej strefy, niezależnie od jej wersji czy zmian które zostały naniesione, zaś drugie transfer ,,inkrementalny'' czyli na podstawie informacji zawartych w otrzymanym zapytaniu klienckim potrafi wydzielić tylko tę część strefy która się zmieniła i przesłać tylko te rekordy w odpowiedzi.
 
 Niezależnie od wybranego sposobu przesyłania informacji o strefie protokół można określić jako inicjowany przez klienta. Oznacza to, że każda próba pobrania informacji będzie rozpoczynała się od klienta, który wystosuje do serwera odpowiednie zapytanie. Można wyobrazić sobie sytuację, kiedy klient potrzebuje pobrania najbardziej aktualnej informacji o strefie DNS, na przykład jego baza danych jest pusta bądź ,,wygasła'' ważność rekordu SOA określona przez poprzedni transfer strefy. Oczywiście z uwagi na inicjację komunikacji przez klienta, możliwe jest pobieranie bazy danych DNS cyklicznie czy w interwałach narzuconych przez administratora serwera podrzędnego. Określone zostały także mechanizmy, które pozwalają powiadamiać klientów o zaistnieniu zmian w bazie danych na serwerze podstawowym\cite{RFC5936, RFC1996}, jednak wciąż odpowiedzialność za rozpoczęcie transferu spoczywa na kliencie.
 
 \subsection{Transfer AXFR}
-Pierwszym wymienionym sposobem dokonania transferu danych jest wystosowanie do serwera zapytania typu 252. -- AXFR\cite{RFC5936} używając do tego celu między innymi połączenia TCP. Serwer odpowiada na zapytanie kolejnymi wiadomościami, które niosą informację o rekordach zapisanych w strefie DNS. Istotnym faktem jest, że w tym przypadku serwer przesyła wszystkie rekordy jakie są zawarte w podgrupie określanej strefą DNS. Transfer zawsze zaczyna się od rekordu typu SOA, gdzie widnieje między innymi wersja przechowywanej strefy oraz inne informacje, które opisane zostały szerzej w podpunkcie \ref{SOA}. Następnie przesyłane są wszystkie informacje przechowywane na serwerze podstawowym, zaś całość kończy ponownie rekord SOA co sygnalizuje, że cały transfer został zakończony pomyślnie. 
+Pierwszym wymienionym sposobem dokonania transferu danych jest wystosowanie do serwera zapytania typu 252. -- AXFR\cite{RFC5936} używając do tego celu między innymi połączenia TCP. Serwer odpowiada na zapytanie kolejnymi wiadomościami, które niosą informację o rekordach zapisanych w strefie DNS. Istotnym faktem jest, że w tym przypadku serwer przesyła wszystkie rekordy jakie są zawarte w podgrupie określanej strefą DNS. Transfer zawsze zaczyna się od rekordu typu SOA, gdzie widnieje między innymi wersja przechowywanej strefy oraz inne informacje, które opisane zostały szerzej w podpunkcie \ref{SOA}. Następnie przesyłane są wszystkie informacje przechowywane na serwerze podstawowym, zaś całość kończy ponownie rekord SOA co sygnalizuje, że cały transfer został zakończony pomyślnie.
 
-Zawarty w rekordzie SOA numer seryjny pozwala na stwierdzenie, czy kopia strefy, która przechowywana jest na maszynie klienckiej wymaga aktualizacji. Dzięki temu możliwe jest ustalenie, czy warto w ogóle wysłać żądanie przesłania części bazy DNS. Pozwala to w wielu przypadkach oszczędzić zbędnej wymiany informacji między serwerami. 
+Zawarty w rekordzie SOA numer seryjny pozwala na stwierdzenie, czy kopia strefy, która przechowywana jest na maszynie klienckiej wymaga aktualizacji. Dzięki temu możliwe jest ustalenie, czy warto w ogóle wysłać żądanie przesłania części bazy DNS. Pozwala to w wielu przypadkach oszczędzić zbędnej wymiany informacji między serwerami.
 
 \subsection{Transfer IXFR}
-Drugą możliwością pobrania informacji na temat strefy DNS jest tak zwany transfer inkrementalny IXFR, którego wartość pola QTYPE wynosi 251. Od zapytania AXFR różni się tym, że przesyłane informacje są tylko różnicą pomiędzy kolejnymi wersjami przechowywanymi na serwerze podstawowym. Wymaga to podania w wystosowanym zapytaniu wersji pliku, który przechowywany jest aktualnie na komputerze-kliencie. W odpowiedzi uzyskiwana jest lista zmian, które zostały wprowadzone w kolejnych wersjach danej strefy DNS. Zawarte w niej są informacje dwóch rodzajów. Pierwszym rodzajem są rekordy dodane do strefy DNS w danej wersji bazy danych, zaś drugim typem -- te, które zostały usunięte. 
+Drugą możliwością pobrania informacji na temat strefy DNS jest tak zwany transfer inkrementalny IXFR, którego wartość pola QTYPE wynosi 251. Od zapytania AXFR różni się tym, że przesyłane informacje są tylko różnicą pomiędzy kolejnymi wersjami przechowywanymi na serwerze podstawowym. Wymaga to podania w wystosowanym zapytaniu wersji pliku, który przechowywany jest aktualnie na komputerze-kliencie. W odpowiedzi uzyskiwana jest lista zmian, które zostały wprowadzone w kolejnych wersjach danej strefy DNS. Zawarte w niej są informacje dwóch rodzajów. Pierwszym rodzajem są rekordy dodane do strefy DNS w danej wersji bazy danych, zaś drugim typem -- te, które zostały usunięte.
 
 Istotną informacją w kontekście transferu inkrementalnego jest fakt, że odpowiedzią na zapytanie IXFR może być odpowiedź AXFR a przekierowanie takie nosi nazwę \textit{AXFR fallback}. W implementacji serwera BIND\cite{bind} możliwe jest zablokowanie takiego przekierowania. AXFR fallback następuje najczęściej w sytuacji, kiedy serwer nie wie jak odpowiedzieć na otrzymane zapytanie IXFR. Może to następować po otrzymaniu wersji strefy wyższej niż ta przechowywana na serwerze podstawowym, albo w momencie, kiedy na serwerze podrzędnym nie ma dostępnej żadnej bazy danych\cite{I-D.song-dnsop-ixfr-fallback}.
 
@@ -209,9 +209,9 @@ Generowanie podpisanej odpowiedzi może mieć miejsce tylko po odebraniu podpisa
 Użycie mechanizmu podpisywania wiadomości eliminuje może eliminować problem nieuprawnionego transferu danych. Z pewnością wyklucza użycie algorytmu wykorzystywanego w niniejszej pracy magisterskiej, gdyż łamanie nawet prostych kluczy wielokrotnie zwiększa czas procesowania pojedynczej domeny\cite{nask-tsig}. Oczywiście zabezpieczenie kluczy używanych do podpisywania wiadomości a także ich długość i jakoś są bardzo ważne w kwestii poziomu bezpieczeństwa protokołu. Zaleca się, aby długość generowanego skrótu była mniejsza bądź równa długości klucza użytego do podpisania wiadomości.
 
 \subsection{Wady TSIG}\label{wady-tsig}
-Problemem związanym z wykorzystaniem rekordów TSIG jest przede wszystkim dystrybucja kluczy. Ponadto w systemie DNS rzadko zdarza się, że tylko jeden klient będzie korzystał z interfejsu serwera, więc każdy z klientów powinien posiadać swój klucz, co ponownie prowadzi do problemu ich dystrybucji, przechowywania i zarządzania\cite{nask-tsig}. 
+Problemem związanym z wykorzystaniem rekordów TSIG jest przede wszystkim dystrybucja kluczy. Ponadto w systemie DNS rzadko zdarza się, że tylko jeden klient będzie korzystał z interfejsu serwera, więc każdy z klientów powinien posiadać swój klucz, co ponownie prowadzi do problemu ich dystrybucji, przechowywania i zarządzania\cite{nask-tsig}.
 
-Inną istotną wadą protokołu jest rodzaj zaproponowanej funkcji skrótu HMAC-MD5. Algorytm ten nie jest uważany w dzisiejszych czasach za bezpieczny. Ataki na HMAC-MD5 zaprezentowano między innymi w pracach \cite{hmac-md5-attack, hmac-md5-cryptoanalisys}. 
+Inną istotną wadą protokołu jest rodzaj zaproponowanej funkcji skrótu HMAC-MD5. Algorytm ten nie jest uważany w dzisiejszych czasach za bezpieczny. Ataki na HMAC-MD5 zaprezentowano między innymi w pracach \cite{hmac-md5-attack, hmac-md5-cryptoanalisys}.
 
 Kolejnym problemem a raczej niedoskonałością zaproponowanego rozwiązania jest zupełnie płaska struktura. Oznacza to tyle, że na poziomie podpisanych wiadomości przy użyciu TSIG nie mamy dostępnych żadnych poziomów hierarchii. Jeśli wiadomość spełnia wymogi formalne, czyli ma poprawne stemple czasowe oraz dobrze wyznaczoną wartość funkcji skrótu to traktowana jest dokładnie tak samo jak inna poprawna wiadomość, bez rozróżnienia z jakiego źródła pochodzi. Gdy mówimy o protokole DNS, gdzie jednym z kluczowych elementów jest hierarchiczna struktura musimy liczyć się z faktem, że mechanizm TSIG może być nieodpowiedni.
 

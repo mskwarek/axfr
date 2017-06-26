@@ -1,13 +1,29 @@
 \documentclass[a4paper,onecolumn,oneside,12pt]{mwrep}
-%\renewcommand{\baselinestretch}{1.2}
 
+
+
+\usepackage{textpos}
+\usepackage{times}
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
 \usepackage{polski}
+\usepackage{setspace}
+\usepackage{color}
 \usepackage{graphicx}
-%\usepackage{fontspec}
-\usepackage{lipsum}
-\usepackage{afterpage}
 \usepackage{url}
-\usepackage{textcomp}
+\usepackage[usenames,dvipsnames,svgnames]{xcolor}
+\usepackage{graphbox}
+\usepackage{tikz}
+\usepackage{varwidth}
+
+\usepackage{lipsum}
+\usepackage{caption}
+\usepackage{fancyhdr}
+\usepackage{pgf}
+\usepackage{pgfpages}
+\usepackage{wrapfig}
+
+
 \input{listings}
 
 
@@ -17,11 +33,23 @@
 
 \begin{document}
 
-%\input{0intro}
-%\tableofcontents
+\makeatletter
+\def\ps@plain{%
+  \let\@mkboth\@gobbletwo
+  \let\ps@normal\hf@plain
+  \let\ps@opening\hf@plain
+  \let\ps@closing\hf@plain
+  \let\ps@blank\hf@empty
+  \ps@normal}
+\makeatother
 
-%\pagenumbering{arabic}
-%\setcounter{page}{4}
+\pagestyle{plain}
+
+%\input{0intro}
+\tableofcontents
+
+\pagenumbering{arabic}
+\setcounter{page}{4}
 \input{1teoria}
 \input{implementacja}
 \input{innePrace}
