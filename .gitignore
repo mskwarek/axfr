@@ -36,3 +36,7 @@ python_module/*.pyc
 */Makefile*
 */*/Makefile*
 */*/*/Makefile*
+.DS_Store
+/edym/.DS_Store
+*/*.log
+*.log
