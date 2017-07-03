@@ -1,18 +1,19 @@
 #!/bin/bash
 processDir(){
-    array=`find /media/marcin/home/marcin/output3/$1 -type f`
+    array=`find $3/$1 -type f`
     sufix=`echo $1 | sed 's/test_//g'`
     for file in ${array[@]}; do
 	fileLines=`cat $file | wc -l`
+        baseResultDir=$2
 	if [ "$fileLines" -eq "1" ]
 	then
-	    dir=/media/marcin/results/oneLines
-	    tld=/media/marcin/results/oneTlds_${sufix}.result
-	    nsIp=/media/marcin/results/oneNsIp_${sufix}.result
+	    dir=${baseResultDir}/oneLines
+	    tld=${baseResultDir}/oneTlds_${sufix}.result
+	    nsIp=${baseResultDir}/oneNsIp_${sufix}.result
 	else
-	    dir=/media/marcin/results/manyLines
-	    tld=/media/marcin/results/manyTlds_${sufix}.result
-	    nsIp=/media/marcin/results/manyNsIp_${sufix}.result
+	    dir=${baseResultDir}/manyLines
+	    tld=${baseResultDir}/manyTlds_${sufix}.result
+	    nsIp=${baseResultDir}/manyNsIp_${sufix}.result
 	fi
 	filename=`basename $file`
 	cp $file $dir/$filename
@@ -26,5 +27,7 @@ processDir(){
 #mkdir /home/marcin/zone_size_result
 #for dir in ${dirs[@]}; do
 dirToAnalyze=$1
+outputDir=`readlink -f $2`
+measuresDir=`readlink -f $3`
 
-processDir ${dirToAnalyze}
+processDir ${dirToAnalyze} ${outputDir} ${measuresDir}
