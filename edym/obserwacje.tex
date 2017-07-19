@@ -3,7 +3,7 @@ Przeprowadzenie skanowania domen z dostarczonego zbioru danych zajęło 11 dni, 
 
 Obciążenie skanera zwiększano stoponiowo w ciągu kolejnych dni przeprowadzania skanowania. W ten sposób można było uniknąć przeciążenia skanera oraz uzyskać jednocześnie zadowalającą wydajność. Okazało sie, że możliwe jest uruchomienie większej liczby procesów niż przewidywano na etapie projektowania. Przełożoyło się to na krótszy czas skanowania.
 
-\section{Typy odebranych odpowiedzi}
+\section{Typy odebranych odpowiedzi}\label{sec:typy}
 Wśród przeanalizowanych par domen i serwerów można zaobserwować kilka charakterystycznych typów odpowiedzi. Odpowiedzi mogą być dzielone na kategorie ze względu na różne kryteria. Pierwszym kryterium, które będzie brane pod uwagę w niniejszej pracy jest rozmiar pliku przechowującego informacje pobrane z serwera autorytatywnego. Jest to motywowane faktem, że w istocie im większy jest plik z odpowiedzią, tym spodziewamy się, że zawiera on więcej informacji na temat odpytywanej domeny.
 
 Pierwszym typem jest odpowiedź, która zajmowała na dysku specyficzną ilość miejsca -- 25123 bajty. Zaobserwowano, że uzyskano 626288 odpowiedzi tego typu. Rozmiar pliku jest swego rodzaju skutkiem ubocznym uproszczonej implementacji skanera. Trudno było przewidzieć wszystkie specyficzne przypadki towarzyszące transferowi strefy DNS. Zaobserwowana sytuacja jest właśnie jednym z tych nietypowych sytuacji i nawet program dig nie odwzorowuje idealnie zachowania jakie powinno nastąpić w takiej sytuacji. Przyczyną utworzenia opisanego wcześniej pliku nie jest jednoznacznie określona. Zostały podjęte próby ustalenia czym spowodowane jest takie zachowanie. W takich samych przypadkach program dig zwraca jedynie rekord DNS SOA i komunikat o błędzie (ang. \textit{communications error: end of file}). Zachowanie programu dig w dużym stopniu przypomina przekierowanie zapytania IXFR na AXFR (ang. \textit{AXFR fallback}) opisane między innymi w RFC1995\cite{RFC1995}. Wywołanie mechanizmu AXFR fallback następuje w sytuacji, kiedy numer wersji pliku strefy przysłany do serwera jest wyższy niż numer wersji aktualnie na nim przechowywany. Na różnego rodzaju forach\cite{powerdns-forum} czy w serwisach internetowych\cite{powerdns-git}, problem który został opisany pojawia się najczęściej jako problem implementacji oprogramowania PowerDNS\cite{powerdns}. Niemniej jednak nie ustalono dokładnie jaki jest powód wysłania tak dużego pakietu w odpowiedzi na zwykłe zapytanie AXFR.
@@ -15,7 +15,7 @@ Kolejnymi specyficznymi grupami jeśli chodzi o rozmiar pliku z odpowiedzią są
 \section{Odebrane adresy IPv4 oraz IPv6}
 Częstym argumentem, który pojawia się podczas dyskusji na temat bezpieczeństwa transferów plików bazy danych DNS jest ujawnianie adresów IP. W niniejszym podrozdziale skupiono się głównie na adresach IP w wersji 4. ponieważ jest to wciąż dominujący typ adresacji w Internecie\cite{Ipv6_deployment}. Okazuje się, że pomimo obaw o wycieki adresów przez dokonywanie nieuprawnionego transferu nikt nie zbadał dokładnie jak duża może być skala tego zjawiska. Umożliwiły to badania przeprowadzone w tej pracy magisterskiej.
 
-Aby nie ograniczać się tylko do jednego typu adresacji urządzeń, zostały oddzielone i przeanalizowane dwa zbiory danych -- dla IPv4 oraz dla IPv6. Głównym celem analizy adresów IP było ustalenie systemów autonomicznych(ang. \textit{AS -- Autonomous System}), z których pochodzą określone maszyny. Następnie możliwe było, na podstawie numerów AS, określenie kraju w którym dane maszyny są zlokalizowane. 
+Aby nie ograniczać się tylko do jednego typu adresacji urządzeń, zostały oddzielone i przeanalizowane dwa zbiory danych -- dla IPv4 oraz dla IPv6. Głównym celem analizy adresów IP było ustalenie systemów autonomicznych(ang. \textit{AS -- Autonomous System}), z których pochodzą określone maszyny. Następnie możliwe było, na podstawie numerów AS, określenie kraju w którym dane maszyny są zlokalizowane.
 
 \subsection{Analiza AS}
 Podstawową informacją, którą uzyskać można wykorzystując pobrane dane z transferów AXFR jest przynależność otrzymanych adresów IP do konkretnych grup autonomicznych. Grupy te określają przynależność do sieci, które zarządzane są przed tego samego operatora sieciowego, a wykorzystuje się je głównie w protokołach routingu. Informacje związane z systemami autonomicznymi można, w głównej mierze, znaleźć w RFC1930\cite{RFC1930}. Zbiór danych został podzielony ze względu na wersję protokołu IP używanej przy adresacji konkretnych maszyn. Przeprowadzono analizę systemów autonomicznych w rozdzielnych grupach, dla wersji 4 protokołu IP oraz dla wersji 6.
@@ -207,3 +207,44 @@ Z listingu \ref{list:dns_zone_example} możemy dowiedzieć się, że domena obs�
 Strefy tego typu są najczęściej spotykane w danych, które udało się zebrać podczas skanowania. Można wnioskować, że transfer AXFR jest najczęściej możliwy dla domen zarejestrowanych głównie w celach informacyjnych czy marketingowych. Jak opisano wcześniej, są to najczęściej pojedyncze adresy IP z kilkoma usługami. Działalność organizacji, na potrzeby któych rejestowano takie niewielkie domeny, jest najczęściej mało związana z informatyką czy telekomunikacją.
 
 To, na co warto zwrócić uwagę na histogramie \ref{fig:hist_zone_size_zoom} to również domeny o strefach o rozmiarze około 40-60 wpisów. Jest to reprezentacja tych stref, które wykorzystują mechanizm podpisywania rekordów DNS zaprezentowany w rozszerzedniu protokołu -- DNSSEC\cite{RFC4034, RFC4035}. Zgodnie z tym, co zostało opisane w rozdziale \ref{}, Dla każdej pary rekordów przechowywanych w strefie DNS liczony jest podpis cyfrowy.
+
+\section{Odpowiedzi niestandardowe}
+Jak wspomniano w podpunkcie \ref{sec:typy}, wyjątkową sytuacją, którą udało się zaobserwować, był odpowiedzi o nietypowym rozmiarze 25123 bajtów. Postanowiono sprawdzić, czy domeny oraz serwery autorytatywne powiązane z takimi przypadkami mają wspólne cechy. Pierszym kryterium porównania wspomnianych przypadków była analiza systemów autonomicznych do których przynależą dane serwery przestrzeni nazwy. Wyniki zaprezentowano w tabeli \ref{tab:unused}.
+\begin{table}[!hb]
+	\centering
+	\caption{Tabela liczebności AS w opisywanym przypadku}
+	\label{tab:unused}
+	\begin{tabular}{|p{0.2\textwidth}|p{0.3\textwidth}|p{0.4\textwidth}|}
+		\hline
+		\textbf{Numer AS} &
+		\textbf{Nazwa AS} &
+		\textbf{Liczba wystąpień} \\
+		\hline\hline
+		63949 & LINODE-APLinode,LLC,US & 324483
+		\hline
+		32181 & ASN-GIGENET-GigeNET,US & 168263
+		\hline
+		2516 & KDDIKDDICORPORATION,JP & 133523
+		\hline
+		4837 & & 290
+		\hline
+		29676 & GRADWELL,GB & 8
+		\hline
+		263632 & & 6
+		\hline
+		46844 & ST-BGP-Sharktech,US & 2
+		\hline
+		44682 & TELECOMROMANIAStradaPeroninr.45,RO & 2
+		\hline
+		12876 & AS12876,FR & 2
+		\hline
+		701 & UUNET-MCICommunicationsServices,Inc.d/b/aVerizonBusiness,US & 1
+		\hline
+		45413 & SERVENET-AS-TH-APServeNETSolutionLimitedPartnership,TH & 1
+		\hline
+		12374 & LFNET-AS01,DE & 1
+		\hline\hline
+	\end{tabular}
+\end{table}
+
+Niewątpliwie interesującym zjawiskiem jest fakt, że znaczna większość tych specyficznych plików pochodzi z kilku ASów. Może to sugerować, że właśnie w tych systemach autonomicznych operatorzy wykorzystują oprogramowanie specjlanie modyfikowane pod swoje potrzeby, jednak nie zawsze zgodne ze specyfikacją ustalaną w kolejnych dokumentach RFC.
