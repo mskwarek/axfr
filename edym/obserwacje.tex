@@ -209,42 +209,84 @@ Strefy tego typu są najczęściej spotykane w danych, które udało się zebra�
 To, na co warto zwrócić uwagę na histogramie \ref{fig:hist_zone_size_zoom} to również domeny o strefach o rozmiarze około 40-60 wpisów. Jest to reprezentacja tych stref, które wykorzystują mechanizm podpisywania rekordów DNS zaprezentowany w rozszerzedniu protokołu -- DNSSEC\cite{RFC4034, RFC4035}. Zgodnie z tym, co zostało opisane w rozdziale \ref{}, Dla każdej pary rekordów przechowywanych w strefie DNS liczony jest podpis cyfrowy.
 
 \section{Odpowiedzi niestandardowe}
-Jak wspomniano w podpunkcie \ref{sec:typy}, wyjątkową sytuacją, którą udało się zaobserwować, był odpowiedzi o nietypowym rozmiarze 25123 bajtów. Postanowiono sprawdzić, czy domeny oraz serwery autorytatywne powiązane z takimi przypadkami mają wspólne cechy. Pierszym kryterium porównania wspomnianych przypadków była analiza systemów autonomicznych do których przynależą dane serwery przestrzeni nazwy. Wyniki zaprezentowano w tabeli \ref{tab:unused}.
+Jak wspomniano w podpunkcie \ref{sec:typy}, wyjątkową sytuacją, którą udało się zaobserwować, był odpowiedzi o nietypowym
+rozmiarze 25123 bajtów. Przykładowa komunikacja z serwerem odpowiadającym w ten sposób została zaprezentowana na listingu
+\ref{list:unused}.
+
+\begin{lstlisting}[label={list:unused},captionpos=b,caption=Przykładowy odpowiedź serwera.,language=bash]
+mskwarek\$ dig tnttelivision.com @173.255.218.70 axfr
+
+; <<>> DiG 9.8.3-P1 <<>> tnttelivision.com @173.255.218.70 axfr
+;; global options: +cmd
+tnttelivision.com.	86400	IN	SOA	ns1.parklogic.com. hostmaster.tnttelivision.com. 2017061500 16384 2048 1048576 2560
+;; communications error to 173.255.218.70#53: end of file
+\end{lstlisting}
+
+W tym samym czasie ustawiono nasłuchiwanie programu Wireshark\cite{wireshark} na odpowiednim interfejsie oraz odfiltrowano ruch sieciowy
+nie związany z komunikacją z serwerem przestrzeni nazw o adresie 173.255.218.70. Ogólny przebieg komunikacji można zobaczyć na
+zrzucie ekranu \ref{fig:unused_wireshark}.
+\begin{figure}[ht]
+\centering
+\includegraphics[width=1.0\textwidth]{image/unuserd_wireshark}
+\caption{}
+\label{fig:unused_wireshark}
+\end{figure}
+
+
+Postanowiono sprawdzić, czy domeny oraz serwery autorytatywne powiązane z takimi przypadkami mają
+wspólne cechy. Pierszym kryterium porównania wspomnianych przypadków była analiza systemów autonomicznych do których przynależą
+dane serwery przestrzeni nazwy. Wyniki zaprezentowano w tabeli \ref{tab:unused}.
 \begin{table}[!hb]
 	\centering
 	\caption{Tabela liczebności AS w opisywanym przypadku}
 	\label{tab:unused}
-	\begin{tabular}{|p{0.2\textwidth}|p{0.3\textwidth}|p{0.4\textwidth}|}
+	\begin{tabular}{|p{0.2\textwidth}|p{0.5\textwidth}|p{0.2\textwidth}|}
 		\hline
 		\textbf{Numer AS} &
 		\textbf{Nazwa AS} &
 		\textbf{Liczba wystąpień} \\
 		\hline\hline
-		63949 & LINODE-APLinode,LLC,US & 324483
+		63949 & LINODE-APLinode, LLC, US & 324483 \\
 		\hline
-		32181 & ASN-GIGENET-GigeNET,US & 168263
+		32181 & ASN-GIGENET-GigeNET, US & 168263 \\
 		\hline
-		2516 & KDDIKDDICORPORATION,JP & 133523
+		2516 & KDDI KDDI CORPORATION, JP & 133523 \\
 		\hline
-		4837 & & 290
+		4837 &  CN & 290 \\
 		\hline
-		29676 & GRADWELL,GB & 8
+		29676 & GRADWELL, GB & 8 \\
 		\hline
-		263632 & & 6
+		263632 & BR & 6 \\
 		\hline
-		46844 & ST-BGP-Sharktech,US & 2
+		46844 & ST-BGP-Sharktech, US & 2 \\
 		\hline
-		44682 & TELECOMROMANIAStradaPeroninr.45,RO & 2
+		44682 & TELECOMROMANIA Strada Peroninr.45, RO & 2 \\
 		\hline
-		12876 & AS12876,FR & 2
+		12876 & AS12876, FR & 2 \\
 		\hline
-		701 & UUNET-MCICommunicationsServices,Inc.d/b/aVerizonBusiness,US & 1
+		701 & UUNET-MCI Communications Services, Inc. d/b/a VerizonBusiness, US & 1 \\
 		\hline
-		45413 & SERVENET-AS-TH-APServeNETSolutionLimitedPartnership,TH & 1
+		45413 & SERVENET-AS-TH-AP Serve NET Solution Limited Partnership, TH & 1 \\
 		\hline
-		12374 & LFNET-AS01,DE & 1
+		12374 & LFNET-AS01, DE & 1 \\
 		\hline\hline
 	\end{tabular}
 \end{table}
 
-Niewątpliwie interesującym zjawiskiem jest fakt, że znaczna większość tych specyficznych plików pochodzi z kilku ASów. Może to sugerować, że właśnie w tych systemach autonomicznych operatorzy wykorzystują oprogramowanie specjlanie modyfikowane pod swoje potrzeby, jednak nie zawsze zgodne ze specyfikacją ustalaną w kolejnych dokumentach RFC.
+Niewątpliwie interesującym zjawiskiem jest fakt, że znaczna większość tych specyficznych plików pochodzi z kilku ASów.
+Może to sugerować, że właśnie w tych systemach autonomicznych operatorzy wykorzystują oprogramowanie specjlanie modyfikowane
+pod swoje potrzeby, jednak nie zawsze zgodne ze specyfikacją ustalaną w kolejnych dokumentach RFC.
+
+Na wykresie \ref{fig:unusedPieChart} pokazano procentowy rozkład krajów z których pochodziły serwery przestrzeni nazw. Jak widać,
+serwery z jedynie dwóch krajów (Japonii oraz Stanów Zjednoczonych) stanowią liczną grupę w tym zestawieniu. Pozostałe kraje, nawet
+zebrane we wspólną grupę stanowią zaledwie 0,5\textperthousand.
+
+Przedstawiona proporcja jest ciekawa w kontekście analizy domen najwyższego poziomu, które obsługują serwery nazw opisane
+w poprzednim akapicie. Jeśli chodzi o ten zbiór, to różnorodność jest zdecydowanie większa. Wciąż najbardziej popularną domeną
+jest .com, kojarzona w głównej mierze ze Stanami Zjednoczonymi. Pojawiają się jednak domeny
+\begin{figure}[ht]
+\centering
+\includegraphics[width=1.0\textwidth]{image/unuserd_wireshark}
+\caption{}
+\label{fig:unused_pie}
+\end{figure}
