@@ -1,12 +1,26 @@
 \chapter{Implementacja}
-Przeanalizowanie problemu postawionego w niniejszej pracy magisterskiej wymagało implementacji własnych narzędzi. Jak wcześniej wspomniano, programy dostępne w sieci są bardzo dobre (dig \cite{dig}, axfr-tool \cite{git_axfr_tool}, robotex \cite{robotex}) jednak nie zapewniają oczekiwanej wydajności. Wynika to z faktu, że są one nastawione głównie na analizę konkretnego przypadku. Narzędzia są używane głównie przez pentesterów, których typowym zadaniem jest przetestowanie pod kątem bezpieczeństwa pewnej aplikacji, gdzie liczba serwerów DNS jak i testowanych domen jest mocno ograniczona. Proces ten sam w sobie jest niezwykle złożony i często wymaga nawet tygodni pracy, dlatego czas w jakim wykonywał się będzie program sprawdzający podatności DNS nie jest aż tak istotny. Oczywiście mówimy o różnicy w czasie w granicach do kilku minut. W podejściu prezentowanym w tej pracy założono, że przeanalizuje się możliwie jak najwięcej domen dostępnych w sieci internet. Dlatego też różnica procesowania jednej pary domena -- adres IP serwera autorytatywnego już nawet na poziomie kilku sekund pozwala zaobserwować bardzo duży skok wydajności. 
+Przeanalizowanie problemu postawionego w niniejszej pracy magisterskiej wymagało implementacji własnych narzędzi. Jak wcześniej
+wspomniano, programy dostępne w sieci są bardzo dobre (dig \cite{dig}, axfr-tool \cite{python_axfr_test}, robotex \cite{robotex})
+jednak nie zapewniają oczekiwanej wydajności. Wynika to z faktu, że są one nastawione głównie na analizę konkretnego przypadku.
+Narzędzia są używane głównie przez pentesterów, których typowym zadaniem jest przetestowanie pod kątem bezpieczeństwa pewnej
+aplikacji, gdzie liczba serwerów DNS jak i testowanych domen jest mocno ograniczona. Proces ten sam w sobie jest niezwykle złożony
+i często wymaga nawet tygodni pracy, dlatego czas w jakim wykonywał się będzie program sprawdzający podatności DNS nie jest aż tak
+istotny. Oczywiście mówimy o różnicy w czasie w granicach do kilku minut. W podejściu prezentowanym w tej pracy założono, że
+przeanalizuje się możliwie jak najwięcej domen dostępnych w sieci internet. Dlatego też różnica procesowania jednej pary
+domena -- adres IP serwera autorytatywnego już nawet na poziomie kilku sekund pozwala zaobserwować bardzo duży skok wydajności.
 
-Dojście do rozwiązania optymalnego nie było zbyt oczywiste. Początkowe rozwiązania opierały się na próbach nabudowania managera zarządzającego procesami w których uruchamiane były zewnętrzne narzędzia -- głównie dig. Rozwiązanie takie miało szereg zalet, na przykład było bardzo skalowalne i łatwe do zrealizowania. Niestety okazało się, że menedżer zarządzający procesami wymaga zbyt dużej ilości zasobów, a głównie pamięci RAM, dlatego wymuszone zostało zrezygnowanie z tego podejścia. 
+Dojście do rozwiązania optymalnego nie było zbyt oczywiste. Początkowe rozwiązania opierały się na próbach nabudowania managera
+zarządzającego procesami w których uruchamiane były zewnętrzne narzędzia -- głównie dig. Rozwiązanie takie miało szereg zalet,
+na przykład było bardzo skalowalne i łatwe do zrealizowania. Niestety okazało się, że menedżer zarządzający procesami wymaga
+zbyt dużej ilości zasobów, a głównie pamięci RAM, dlatego wymuszone zostało zrezygnowanie z tego podejścia.
 
 \section{Zaimplementowane narzędzia}
-Przeprowadzenie globalnego skanu niosło za sobą szereg konsekwencji. Zakładając, że średnio należy przeznaczyć na skanowanie jednej pary (adres WWW, adres IP) około 3 sekund okazało się, że przeprocesowanie całego zbioru danych wejściowych (ok. 5 miliardów par) zajęłoby odpowiednio:
+Przeprowadzenie globalnego skanu niosło za sobą szereg konsekwencji. Zakładając, że średnio należy przeznaczyć na skanowanie
+jednej pary (adres WWW, adres IP) około 3 sekund okazało się, że przeprocesowanie całego zbioru danych wejściowych (ok. 5 miliardów
+par) zajęłoby odpowiednio:
 $$3(s) * 5 * 10^{9} = 25 * 10^{8}(min) = \frac{25}{60} * 10^{8}(h) = 41.67 * 10^{6} (dni)\label{obliczenia}$$.
-Opierając się na opisanym wyżej rozumowaniu, podjęto decyzję, że należy procesować pary (adres WWW, adres IP) równolegle. Podjętych zostało kilka prób implementacji odpowiedniego narzędzia umożliwiającego przeprowadzenie badań w zadowalającym czasie:
+Opierając się na opisanym wyżej rozumowaniu, podjęto decyzję, że należy procesować pary (adres WWW, adres IP) równolegle.
+Podjętych zostało kilka prób implementacji odpowiedniego narzędzia umożliwiającego przeprowadzenie badań w zadowalającym czasie:
 \begin{itemize}
 	\item narzędzie oparte na programie dig skryptach powłoki bash,
 	\item menadżer procesów programu dig oparty na skryptach języka Python,
@@ -15,39 +29,77 @@ Opierając się na opisanym wyżej rozumowaniu, podjęto decyzję, że należy p
 Szczegółowo zostaną one opisane w kolejnych punktach tego rozdziału.
 
 \subsection{Program dig zarządzany skryptami powłoki}
-Pierwszym rozwiązaniem, które powstało w ramach pracy nad opisywanym problemem był skaner AXFR oparty na programie dig\cite{isc}. Program skupia się wokół protokołu DNS i umożliwia wykonywanie zapytań różnych typów\cite{Liu:2006:DB:1197828}. Ponadto, jest prosty w obsłudze, daje duże możliwości jeśli chodzi o budowanie zapytań DNS oraz bardzo często dostępny jest domyślnie w wielu dystrybucjach systemów operacyjnych Linux. 
+Pierwszym rozwiązaniem, które powstało w ramach pracy nad opisywanym problemem był skaner AXFR oparty na programie
+dig\cite{isc}. Program skupia się wokół protokołu DNS i umożliwia wykonywanie zapytań różnych typów\cite{Liu:2006:DB:1197828}.
+Ponadto, jest prosty w obsłudze, daje duże możliwości jeśli chodzi o budowanie zapytań DNS oraz bardzo często dostępny jest
+domyślnie w wielu dystrybucjach systemów operacyjnych Linux.
 
-Odpowiedzi uzyskane dzięki programowi miały być zapisywane do plików tekstowych. Każda, potencjalnie uzyskana odpowiedź miała być zapisywana do oddzielnego pliku tekstowego, aby wykluczyć równoczesne użycie tego samego zasobu przez wiele procesów. Rozwiązanie tego typu działa oraz z powodzeniem przeskanowano kilka tysięcy domen, jednak okazało się zbyt wolne do zastosowania na szerszą skalę a także występowały kłopoty z zapotrzebowaniem na zasoby (mowa tu głównie o pamięci operacyjnej). Bliźniacze podejście zostało zastosowane w opisywanym wcześniej projekcie skanowania domen z listy \textit{Alexa 1 Milion}\cite{scans.io}.
+Odpowiedzi uzyskane dzięki programowi miały być zapisywane do plików tekstowych. Każda, potencjalnie uzyskana odpowiedź miała
+być zapisywana do oddzielnego pliku tekstowego, aby wykluczyć równoczesne użycie tego samego zasobu przez wiele procesów.
+Rozwiązanie tego typu działa oraz z powodzeniem przeskanowano kilka tysięcy domen, jednak okazało się zbyt wolne do zastosowania
+na szerszą skalę a także występowały kłopoty z zapotrzebowaniem na zasoby (mowa tu głównie o pamięci operacyjnej). Bliźniacze
+podejście zostało zastosowane w opisywanym wcześniej projekcie skanowania domen z listy \textit{Alexa 1 Milion}\cite{scans.io}.
 
 \subsection{Menedżer procesów zarządzany skryptami języka Python}
-Kolejną próbą rozwiązania problemu ogromej liczby danych do przeskanowania była implementacja skanera w języku skryptowym Python. Próba ta podyktowana była kilkoma istotnymi aspektami. Pierwszym z nich jest implementacja tak zwanych ,,programowych'' wątków w standardowej bibliotece tego języka. Umożliwiło to implementację mechanizmu, który pozwolił sprawdzić, czy maszyna dysponuje takimi zasobami, które pozwolą na uruchomienie kolejnego wątku skanującego. Dodatkowym atutem jest tu także możliwość wywoływania poleceń powłoki systemu Linux ze skryptu języka Python, a więc możliwe było wykorzystanie istniejącej już implementacji programu dig\cite{isc}.
+Kolejną próbą rozwiązania problemu ogromej liczby danych do przeskanowania była implementacja skanera w języku skryptowym Python.
+Próba ta podyktowana była kilkoma istotnymi aspektami. Pierwszym z nich jest implementacja tak zwanych ,,programowych'' wątków w
+standardowej bibliotece tego języka. Umożliwiło to implementację mechanizmu, który pozwolił sprawdzić, czy maszyna dysponuje
+takimi zasobami, które pozwolą na uruchomienie kolejnego wątku skanującego. Dodatkowym atutem jest tu także możliwość wywoływania
+poleceń powłoki systemu Linux ze skryptu języka Python, a więc możliwe było wykorzystanie istniejącej już implementacji programu
+dig\cite{isc}.
 
-Niestety podobnie jak we wcześniej opisywanym punkcie, problemem okazały się ograniczenia czasowe spowodowane niewystarczającą ilością zasobów. Program został przetestowany podczas kilkudniowego skanowania i zdołano odpowiednio:
+Niestety podobnie jak we wcześniej opisywanym punkcie, problemem okazały się ograniczenia czasowe spowodowane niewystarczającą
+ilością zasobów. Program został przetestowany podczas kilkudniowego skanowania i zdołano odpowiednio:
 \begin{itemize}
 	\item przeanalizować kilka milionów par (adres WWW, adres IP),
 	\item pozyskać dane do wstępnej analizy podatności w skali globalnej,
 	\item dwukrotnie zawiesić maszynę na której wykonywano badania.
 \end{itemize}
 
-Pomimo, że implementacja w języku Python nie okazała się na tyle wydajna aby wykorzystać ją w badaniach przeprowadzonych w ramach tej pracy magisterskiej, jest to dobrze narzędzie dla pasjonatów bezpieczeństwa sieciowego, którzy chcą skanować wiele serwerów. Podejście takie zaprezentowane jest w kilku projektach, które można znaleźć w serwisie github na przykład Python-AXFR-test\cite{python-axfr-test} lub skanowanie domen z Alexy wraz z wstępną analizą wyników\cite{asg-axfr}. Liczba osób, które śledzą wymienione wyżej projekty znajduje się w przedziale kilkudziesięciu osób. Również na tej podstawie możemy zakładać, że temat bezpieczeństwa transferów stref cieszy się zainteresowaniem wśród pasjonatów bezpieczeństwa sieci.
+Pomimo, że implementacja w języku Python nie okazała się na tyle wydajna aby wykorzystać ją w badaniach przeprowadzonych w
+ramach tej pracy magisterskiej, jest to dobrze narzędzie dla pasjonatów bezpieczeństwa sieciowego, którzy chcą skanować wiele
+serwerów. Podejście takie zaprezentowane jest w kilku projektach, które można znaleźć w serwisie github na przykład
+Python-AXFR-test\cite{python_axfr_test} lub skanowanie domen z Alexy wraz z wstępną analizą wyników\cite{asg-axfr}. Liczba osób,
+które śledzą wymienione wyżej projekty znajduje się w przedziale kilkudziesięciu osób. Również na tej podstawie możemy zakładać,
+że temat bezpieczeństwa transferów stref cieszy się zainteresowaniem wśród pasjonatów bezpieczeństwa sieci.
 
-Można przypuszczać, że oba projekty zrealizowane w języku Python \cite{python-axfr-test, asg-axfr} oferują podobną wydajność do rozwiązania zaimplementowanego podczas realizacji pracy magisterskiej, jednak nie były prowadzone pomiary pod tym kątem. Brak bezpośredniego porównania wynika z faktu, że prace Stephena Haywooda\cite{asg-axfr} były prowadzone niemal równolegle z realizacją niniejszej pracy magisterskiej, zaś skrypt Python-AXFR-test\cite{python-axfr-test} jest jednowątkowy i nastawiony głównie na test pojedynczych serwerów, więc jego wykorzystanie wymagałoby implementacji bardzo podobnego mechanizmu, który opisywany był na początku tego rozdziału.
+Można przypuszczać, że oba projekty zrealizowane w języku Python \cite{python_axfr_test, asg-axfr} oferują podobną wydajność do
+rozwiązania zaimplementowanego podczas realizacji pracy magisterskiej, jednak nie były prowadzone pomiary pod tym kątem. Brak
+bezpośredniego porównania wynika z faktu, że prace Stephena Haywooda\cite{asg-axfr} były prowadzone niemal równolegle z realizacją
+niniejszej pracy magisterskiej, zaś skrypt Python-AXFR-test\cite{python_axfr_test} jest jednowątkowy i nastawiony głównie na test
+pojedynczych serwerów, więc jego wykorzystanie wymagałoby implementacji bardzo podobnego mechanizmu, który opisywany był na
+początku tego rozdziału.
 
 \subsection{Skaner C-AXFR}
-Ostatecznie zdecydowano się na napisanie własnego narzędzia umożliwiającego transfer strefy DNS. Wybór padł na język programowania C \cite{Kernighan:1988:CPL:576122} w wersji standardu C11 \cite{ISO9899}. Oczywiście aplikacje pisane w języku C nie należą do rozwiązań prostych, jednak są bardzo dobrym kompromisem pomiędzy wysokim poziomem abstrakcji modeli programistycznych i łatwością dostępu do interfejsów sieciowych. Ponadto język C charakteryzuje się dość dobrą szybkością działania, ze względu na kompilację kodów źródłowych do kodu binarnego. Kryterium szybkości działania było jednym z kluczowych przy implementacji, co pokazały poprzednie próby implementacji.
+Ostatecznie zdecydowano się na napisanie własnego narzędzia umożliwiającego transfer strefy DNS. Wybór padł na język
+programowania C \cite{Kernighan:1988:CPL:576122} w wersji standardu C11 \cite{ISO9899}. Oczywiście aplikacje pisane w języku
+C nie należą do rozwiązań prostych, jednak są bardzo dobrym kompromisem pomiędzy wysokim poziomem abstrakcji modeli programistycznych
+i łatwością dostępu do interfejsów sieciowych. Ponadto język C charakteryzuje się dość dobrą szybkością działania, ze względu na
+kompilację kodów źródłowych do kodu binarnego. Kryterium szybkości działania było jednym z kluczowych przy implementacji, co
+pokazały poprzednie próby implementacji.
 
 Rolę danych wejściowych programu mogą pełnić odpowiednio:
 \begin{enumerate}
 	\item plik tekstowy w formacie \textit{adres\_domeny}|\textit{IP\_serwera\_autorytatywnego},
-	\item para parametrów wejściowych podanych w odpowiedniej kolejności - \textit{adres\_domeny IP\_serwera\_autorytatywnego}. 
+	\item para parametrów wejściowych podanych w odpowiedniej kolejności - \textit{adres\_domeny IP\_serwera\_autorytatywnego}.
 \end{enumerate}
-Zdecydowano się na takie rozróżnienie z prostego powodu. Autor rozwiązania chciał zachować podobieństwo tworzonego rozwiązania do programu dig, który jest wykorzystywany przez wiele osób. Dodatkowo, dużo łatwiej można testować logikę programu na małych porcjach danych i opcja numer 2. została w pewnym sensie funkcją debugową. Jako wspomniane dane testowe najczęściej wykorzystywana była domena \textit{zonetransfer.me}\cite{zonetransfer}, której autor specjalnie umożliwia transfer strefy, aby uzmysłowić innym ludziom zagrożenie wynikające z niepowołanego korzystania.
+Zdecydowano się na takie rozróżnienie z prostego powodu. Autor rozwiązania chciał zachować podobieństwo tworzonego rozwiązania
+do programu dig, który jest wykorzystywany przez wiele osób. Dodatkowo, dużo łatwiej można testować logikę programu na małych
+porcjach danych i opcja numer 2. została w pewnym sensie funkcją debugową. Jako wspomniane dane testowe najczęściej wykorzystywana
+była domena \textit{zonetransfer.me}\cite{zonetransfer}, której autor specjalnie umożliwia transfer strefy, aby uzmysłowić innym
+ludziom zagrożenie wynikające z niepowołanego korzystania.
 
-Logika programu jest bardzo prosta. Początkowo budowana jest jednostka APDU protokołu DNS z odpowiednimi danymi, a w szczególności z poprawnie ustawioną flagą \textit{qtype} odpowiedzialną za identyfikację rodzaju zapytania DNS. Co ważne, mechanizm AXFR wymaga używania nietypowego dla DNS protokołu TCP.
+Logika programu jest bardzo prosta. Początkowo budowana jest jednostka APDU protokołu DNS z odpowiednimi danymi, a w szczególności
+z poprawnie ustawioną flagą \textit{qtype} odpowiedzialną za identyfikację rodzaju zapytania DNS. Co ważne, mechanizm AXFR wymaga
+używania nietypowego dla DNS protokołu TCP.
 
-Komunikacja z serwerami autorytatywnymi została oparta na blokujących socketach. Dodatkowo, zaimplementowany został autorski mechanizm pozwalający na wykorzystywanie timeoutów podczas łączenia się z serwerem. Wymagało to przełączania socketu na tryb pracy nieblokujący. Dokładny algorytm działania został przedstawiony na rysunku \ref{}.
+Komunikacja z serwerami autorytatywnymi została oparta na blokujących socketach. Dodatkowo, zaimplementowany został autorski
+mechanizm pozwalający na wykorzystywanie timeoutów podczas łączenia się z serwerem. Wymagało to przełączania socketu na tryb
+pracy nieblokujący. Dokładny algorytm działania został przedstawiony na rysunku \ref{}.
 
-Algorytm postępowania w przypadku odebrania pakietu danych przedstawiony jest na rysunku\ref{}. Dane odbierane z interfejsu sieciowego są zapisane w systemie szesnastkowym, zgodnie z zaleceniami znanymi z dokumentu RFC 1035\cite{RFC1035}. Program umożliwia parsowanie najbardziej popularny i najczęściej używanych rekordów RR, czyli:
+Algorytm postępowania w przypadku odebrania pakietu danych przedstawiony jest na rysunku\ref{}. Dane odbierane z interfejsu
+sieciowego są zapisane w systemie szesnastkowym, zgodnie z zaleceniami znanymi z dokumentu RFC 1035\cite{RFC1035}. Program
+umożliwia parsowanie najbardziej popularny i najczęściej używanych rekordów RR, czyli:
 \begin{enumerate}
 	\item A
 	\item AAAA
@@ -66,33 +118,73 @@ Algorytm postępowania w przypadku odebrania pakietu danych przedstawiony jest n
 	\item RRSIG
 	\item NSEC
 	\item DNSKEY
-\end{enumerate} 
+\end{enumerate}
 
-Dodatkowo, jeśli zostanie odebrany typ który nie został przewidziany w implementacji parsera to wszystkie dane odczytane z socketa zostaną przeniesione w formie zapisu heksadecymalnego do pliku z odpowiedzią. Zapewnia ta kompatybilność z innymi rozszerzeniami protokołu DNS oraz zabezpiecza przed błędnym wykluczeniem niektórych informacji ze skanowania. Jeśli pojawi się nieznany wcześniej typ rekordu z bazy danych DNS, to będzie można interpretować go podczas analizy konkretnych odpowiedzi od serwera.
+Dodatkowo, jeśli zostanie odebrany typ który nie został przewidziany w implementacji parsera to wszystkie dane odczytane z
+socketa zostaną przeniesione w formie zapisu heksadecymalnego do pliku z odpowiedzią. Zapewnia ta kompatybilność z innymi
+rozszerzeniami protokołu DNS oraz zabezpiecza przed błędnym wykluczeniem niektórych informacji ze skanowania. Jeśli pojawi
+się nieznany wcześniej typ rekordu z bazy danych DNS, to będzie można interpretować go podczas analizy konkretnych odpowiedzi
+od serwera.
 
-Tak jak wcześniej wspomniano, transfer strefy DNS wykorzystuje protokół TCP, który nie jest tak powszechnie stosowany jeśli chodzi o Doman Name System. Wpływa to pośrednio na to, jakie wyniki możemy uzyskać przy próbie odpytania serwera o jego strefę. Mowa tu o trzech charakterystycznych sytuacjach, mianowicie:
+Tak jak wcześniej wspomniano, transfer strefy DNS wykorzystuje protokół TCP, który nie jest tak powszechnie stosowany jeśli chodzi
+o Doman Name System. Wpływa to pośrednio na to, jakie wyniki możemy uzyskać przy próbie odpytania serwera o jego strefę. Mowa tu o
+trzech charakterystycznych sytuacjach, mianowicie:
 \begin{enumerate}
 	\item brak możliwości nawiązania połączenia na warstwie 4 (TCP) na porcie 53,
 	\item uzyskanie połączenia w rozumieniu protokołu TCP na porcie 53 i brak możliwości transferu danych,
 	\item uzyskanie połączenia TCP na porcie 53 i pomyślny transfer danych.
 \end{enumerate}
 
-Początkowo założono, że uzyskanie już samego połączenia TCP z serwerem może być ciekawym przedmiotem badania. Interfejs serwera autorytatywnego danej domeny powinien umożliwiać swoim klientom tylko kilka podstawowych operacji, jak na przykład rozwiązanie nazwy domenowej komputera ze swojej strefy. Do takich działań połączenie TCP nie powinno być potrzebne. Dodatkowo, port 53 na którym działa DNS jest zarezerwowany tylko dla tego protokołu, więc nie powinno udostępniać się na nim innych usług. Dowodzi to temu, że sytuacja, gdy możliwe jest nawiązanie połączenia TCP na porcie 53 jest nienaturalna i niezgodna z panującymi dobrymi praktykami. Właśnie dlatego, w pierwszej implementacji skanera założono, że program będzie tworzył puste pliki w przypadku opisanym w tym akapicie. Niestety, zjawisko to okazało się tak powszechne, że powstały duże problemy związane z wydajnością skanera. Mowa tu o dostępie poszczególnych procesów do dysku twardego maszyny na której były one uruchomione. Dlatego też zdecydowano się na zapisywanie informacji jedynie o domenach, które odpowiedziały na zapytanie AXFR a sytuację umożliwiania nawiązywania sesji TCP na porcie 53 pozostawia się do analizy podczas przyszłych badań.
+Początkowo założono, że uzyskanie już samego połączenia TCP z serwerem może być ciekawym przedmiotem badania. Interfejs serwera
+autorytatywnego danej domeny powinien umożliwiać swoim klientom tylko kilka podstawowych operacji, jak na przykład rozwiązanie nazwy
+domenowej komputera ze swojej strefy. Do takich działań połączenie TCP nie powinno być potrzebne. Dodatkowo, port 53 na którym działa
+DNS jest zarezerwowany tylko dla tego protokołu, więc nie powinno udostępniać się na nim innych usług. Dowodzi to temu, że sytuacja,
+gdy możliwe jest nawiązanie połączenia TCP na porcie 53 jest nienaturalna i niezgodna z panującymi dobrymi praktykami. Właśnie dlatego,
+w pierwszej implementacji skanera założono, że program będzie tworzył puste pliki w przypadku opisanym w tym akapicie. Niestety,
+zjawisko to okazało się tak powszechne, że powstały duże problemy związane z wydajnością skanera. Mowa tu o dostępie poszczególnych
+procesów do dysku twardego maszyny na której były one uruchomione. Dlatego też zdecydowano się na zapisywanie informacji jedynie o
+domenach, które odpowiedziały na zapytanie AXFR a sytuację umożliwiania nawiązywania sesji TCP na porcie 53 pozostawia się do analizy
+podczas przyszłych badań.
 
-Ostatecznie przyjęto rozwiązanie, które ignoruje fakt nawiązywania połączenia TCP oraz odpowiedzi od serwerów, w których nie ma żadnych rekordów. Pozwoliło to na niemal dwukrotny wzrost wydajności zaimplementowanego skanera.
+Ostatecznie przyjęto rozwiązanie, które ignoruje fakt nawiązywania połączenia TCP oraz odpowiedzi od serwerów, w których nie ma
+żadnych rekordów. Pozwoliło to na niemal dwukrotny wzrost wydajności zaimplementowanego skanera.
 
 \section{Dane wejściowe}
-Dane wejściowe programu zostały pozyskane od grupy naukowców z TU Delft\cite{delft} w formie par (adres WWW, adres IP serwera autorytarnego). Lista w takim formacie przechowywana była w pliku tekstowym. Zgromadzono w nim, zgodnie z tym co zostało przyjęte w obliczeniach\ref{obliczenia}, ponad 5 miliardów wpisów uporządkowanych w kolejności alfabetycznej, a ich łączny rozmiar przekraczał 130 gigabajtów. Powoduje to oczywiście szereg problemów związanych z procesowaniem takich plików. 
+Dane wejściowe programu zostały pozyskane od grupy naukowców z TU Delft\cite{delft} w formie par (adres WWW, adres IP serwera
+autorytarnego). Lista w takim formacie przechowywana była w pliku tekstowym. Zgromadzono w nim, zgodnie z tym co zostało przyjęte
+w obliczeniach\ref{obliczenia}, ponad 5 miliardów wpisów uporządkowanych w kolejności alfabetycznej, a ich łączny rozmiar przekraczał
+130 gigabajtów. Powoduje to oczywiście szereg problemów związanych z procesowaniem takich plików.
 
-Jedną z niedogodności, które wiążą się z rozmiarem danych wejściowych był problem z wyborem losowej próby do kolejnych procesów skanera. Pożądane jest, aby plik wejściowy do każdego z procesów skanujących nie był w żaden sposób uporządkowany, a najlepiej gdyby dane w nim zawarte były wybrane losowo. Nie można założyć, że wszystkie procesy skanowania zakończą się bez żadnych błędów. Jeśli więc dane wejściowe byłyby uporządkowane a proces zakończył się błędem wprowadzona zostanie dodatkowa, błędna korelacja między brakiem odpowiedzi od serwera a nazwą domeny.
+Jedną z niedogodności, które wiążą się z rozmiarem danych wejściowych był problem z wyborem losowej próby do kolejnych procesów
+skanera. Pożądane jest, aby plik wejściowy do każdego z procesów skanujących nie był w żaden sposób uporządkowany, a najlepiej
+gdyby dane w nim zawarte były wybrane losowo. Nie można założyć, że wszystkie procesy skanowania zakończą się bez żadnych błędów.
+Jeśli więc dane wejściowe byłyby uporządkowane a proces zakończył się błędem wprowadzona zostanie dodatkowa, błędna korelacja między
+brakiem odpowiedzi od serwera a nazwą domeny.
 
-W systemach Linux dostępny jest domyślnie program \textit{shuf}\cite{shuf}, który dokonuje permutacji na konkretnych liniach w pliku, jednak niemożliwe było wykorzystanie go wraz z plikiem z danymi wejściowymi z powodów ograniczeń wydajnościowych. Program nie był w stanie zaalokować odpowiedniej liczby komórek w pamięci komputera. Aby zasymulować element losowości zastosowano algorytm zaprezentowany na diagramie na rysunku \ref{shufAlgorithm} oparty na dzieleniu całego zbioru danych wejściowych oraz permutowaniu kolejnych linii w podgrupach o różnej wielkości.
+W systemach Linux dostępny jest domyślnie program \textit{shuf}\cite{shuf}, który dokonuje permutacji na konkretnych liniach w pliku,
+jednak niemożliwe było wykorzystanie go wraz z plikiem z danymi wejściowymi z powodów ograniczeń wydajnościowych. Program nie był w
+stanie zaalokować odpowiedniej liczby komórek w pamięci komputera. Aby zasymulować element losowości zastosowano algorytm zaprezentowany
+na diagramie na rysunku \ref{shufAlgorithm} oparty na dzieleniu całego zbioru danych wejściowych oraz permutowaniu kolejnych linii
+w podgrupach o różnej wielkości.
 
-Następnie, plik został podzielony na mniejsze, po 25000 linii w każdym. Liczba linii w pojedynczym pliku została ustalona arbitralnie, tak aby widoczny był postęp w skanowaniu. Przeprocesowanie 25 tysięcy linii odpowiada maksymalnie około 28 godzinom przy założeniu, że dla każdej domeny upłynie limit czasu żądania.
+Następnie, plik został podzielony na mniejsze, po 25000 linii w każdym. Liczba linii w pojedynczym pliku została ustalona arbitralnie,
+tak aby widoczny był postęp w skanowaniu. Przeprocesowanie 25 tysięcy linii odpowiada maksymalnie około 28 godzinom przy założeniu,
+że dla każdej domeny upłynie limit czasu żądania.
 
 \section{System powiadomień}
-W ramach badań przeprowadzonych podczas realizacji niniejszej pracy magisterskiej został zaimplementowany i uruchomiony system powiadamiania administratorów domen. System bazuje na informacjach pobranych podczas skanowania podatności serwerów na zapytania typu AXFR. W rekordzie SOA przesyłanym na początku i na końcu wiadomości przesyłany jest adres osoby odpowiedzialnej za daną domenę. Jego miejscem jest pozycja numer 2. w rekordzie SOA z tą różnicą, że pierwszy znak ,,.'' napotkany w adresie jest zamieniany na znak ,,@''. W wyniku tej zamiany uzyskiwany jest adres mailowy, przypisany do administratora domeny. 
+W ramach badań przeprowadzonych podczas realizacji niniejszej pracy magisterskiej został zaimplementowany i uruchomiony system
+powiadamiania administratorów domen. System bazuje na informacjach pobranych podczas skanowania podatności serwerów na zapytania
+typu AXFR. W rekordzie SOA przesyłanym na początku i na końcu wiadomości przesyłany jest adres osoby odpowiedzialnej za daną domenę.
+Jego miejscem jest pozycja numer 2. w rekordzie SOA z tą różnicą, że pierwszy znak ,,.'' napotkany w adresie jest zamieniany na
+znak ,,@''. W wyniku tej zamiany uzyskiwany jest adres mailowy, przypisany do administratora domeny.
 
-System powiadomień zaimplementowano w systemie operacyjnym z rodziny systemów UNIX. Opiera się on głównie na skryptach powłoki \textit{bash}. Algorytm wyodrębnia rekordy SOA i wypisuje je do pliku. Następnie plik sortowany jest ze względu na adres mailowy administratora domeny, po czym grupuje się te domeny, za które odpowiada ten sam adres pocztowy. Kolejnym krokiem jest pogrupowanie domen oraz utworzenie odpowiedniego pliku tekstowego. Zawarte są w nim domeny oraz adresy serwerów które umożliwiają transfer strefy dla danej domeny. Nazwa pliku odpowiada adresowi mailowemu zarządcy domeny. 
+System powiadomień zaimplementowano w systemie operacyjnym z rodziny systemów UNIX. Opiera się on głównie na skryptach powłoki
+\textit{bash}. Algorytm wyodrębnia rekordy SOA i wypisuje je do pliku. Następnie plik sortowany jest ze względu na adres mailowy
+administratora domeny, po czym grupuje się te domeny, za które odpowiada ten sam adres pocztowy. Kolejnym krokiem jest pogrupowanie
+domen oraz utworzenie odpowiedniego pliku tekstowego. Zawarte są w nim domeny oraz adresy serwerów które umożliwiają transfer
+strefy dla danej domeny. Nazwa pliku odpowiada adresowi mailowemu zarządcy domeny.
 
-Po otrzymaniu zbioru plików opisanych powyżej uruchamiany jest proces, którego zadaniem jest wysłanie wiadomości pod określone adresy. Skrypt, który automatyzuje opisaną czynność napisano w języku Python\cite{python}. Wysyłane wiadomości podpisywane są kluczem PGP\cite{}, aby odbiorca mógł zweryfikować, że wiadomość została odebrana dokładnie w takiej formie jak ją przygotowano i wysłano.
+Po otrzymaniu zbioru plików opisanych powyżej uruchamiany jest proces, którego zadaniem jest wysłanie wiadomości pod określone
+adresy. Skrypt, który automatyzuje opisaną czynność napisano w języku Python\cite{python}. Wysyłane wiadomości podpisywane są
+kluczem PGP\cite{}, aby odbiorca mógł zweryfikować, że wiadomość została odebrana dokładnie w takiej formie jak ją przygotowano
+i wysłano.

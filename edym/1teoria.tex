@@ -27,7 +27,8 @@ DNS jest jednym z podstawowych elementów internetu. Z wystawionego przez niego 
 System DNS ma charakterystyczną, hierarchiczną strukturę, którą zaprezentowano na rysunku \ref{hierarchy_dns}. Na rysunku przedstawiono węzeł główny (ang. \textit{root}) reprezentowany jako znak pojedynczej kropki oraz przykład dwóch typów domen pierwszego poziomu.
 
 \begin{center}
-	\includegraphics[scale=1]{image/hierarchy_dns}\label{hierarchy_dns}
+	\includegraphics[scale=1]{image/hierarchy_dns}
+	\label{hierarchy_dns}
 \end{center}
 
 Dzięki tej hierarchii systemu możemy powiedzieć o DNS, że charakteryzuje go bardzo dobra skalowalność oraz elastyczność.
@@ -46,8 +47,9 @@ Bardzo trafne jest tu porównanie całego systemu Domain Name System do struktur
 
 \begin{center}
 	\begin{figure}
-	\includegraphics[scale=1]{image/domain_tree}\label{example_domain_tree}
+	\includegraphics[scale=1]{image/domain_tree}
 	\caption{Położenie domeny w przestrzeni nazw. \cite{domain_tree_src}}
+	\label{example_domain_tree}
 	\end{figure}
 \end{center}
 
@@ -94,12 +96,15 @@ System DNS danej domeny jest zrealizowany w oparciu o zbiór serwerów przestrze
 
 
 \subsection{Kompletne nazwy domen}
+\label{sec:FQDN}
 Określeniem pełne, kompletne lub zupełne nazwy domen (ang \textit{Fully Qualified Domain Names (FQDNs)}) nazywane są te domeny, których nazwy zawierają domenę każdego poziomu, począwszy od lokalnej, aż po domenę główną, czyli root. Łatwo dostrzec analogię do wcześniej wspomnianego systemu pliku w systemach operacyjnych UNIX pomiędzy FQDN a bezpośrednią ścieżką do pliku. Różnicą jest tu jednak sposób odczytywania takiej ścieżki. W systemach DNS najbardziej ogólny węzeł znajduje się na skrajnie prawej pozycji a poruszając się w stronę lewą dochodzimy do kolejnych lokalnych domen.
 
-\subsection{Mapowanie nazw na adres IP}\label{mapping}
+\subsection{Mapowanie nazw na adres IP}
+\label{mapping}
 Mapowanie nazw domeny na jej adres IP jest możliwe dzięki plikom strefy DNS, które znajdują się na autorytatywnym serwerze przestrzeni nazw, tzw. \textit{zone files}. Jeden z typów tych plików przechowuje nazwy domen wraz z odpowiadającymi im adresami IP. Gdy klient chce dowiedzieć się pod jaki adres kierować swoje zapytanie, kieruje informacje do serwera autorytatywnego. On odpowiada za znalezienie i przedstawienie mapowania nazwy na adres IP, dokonując przeszukania plików strefy.
 
-\subsection{Mapowanie odwrotne}\label{revmapping}
+\subsection{Mapowanie odwrotne}
+\label{revmapping}
 Baza danych DNS może także zawierać pliki, które umożliwiają mapowania odwrotne, tj. adresu IP na nazwę domeny/hosta. Mechanizm ten może być użyty przy próbie weryfikacji pochodzenia wiadomości. Chcąc wykluczyć próbę oszustwa ze strony prawdziwego nadawcy możemy posiłkować się właśnie odwrotnym mapowaniem. Możemy zweryfikować, czy adres IP mapowania odwrotnego zgadza się z adresem IP z którego nadano wiadomość. Mechanizm ten może być również wykorzystywany do autoryzacji operacji wykonywanych zdalnie.
 
 Odwrotne mapowanie wykorzystuje specjalną domenę \textit{in-addr.arpa}. Z założenia domena ta wykorzystuje adresy IP zamiast adresów domen.  Wspomniana domena jest częścią strefy DNS, która umożliwia takie właśnie odwzorowanie. Istotne jest, że adresy w domenie \textit{in-addr.arpa} są zapisywane w specyficzny dla siebie sposób -- od najniższego do najbardziej istotnego poziomu. Wynika z tego, że adresy IP w opisywanej domenie są w pewnym sensie zapisywane ,,od końca''. Powołując się na przykład, załóżmy, że maszyna ma przypisany adres 10.8.0.32. W plikach strefy dla domeny in-addr.arpa adres ten będzie zapisany jako 32.0.8.10.in-addr.arpa. oczywiście z kropką po członie \textit{in-addr.arpa}, która reprezentuje domenę \textit{root}.
@@ -188,10 +193,11 @@ Zawarty w rekordzie SOA numer seryjny pozwala na stwierdzenie, czy kopia strefy,
 \subsection{Transfer IXFR}
 Drugą możliwością pobrania informacji na temat strefy DNS jest tak zwany transfer inkrementalny IXFR, którego wartość pola QTYPE wynosi 251. Od zapytania AXFR różni się tym, że przesyłane informacje są tylko różnicą pomiędzy kolejnymi wersjami przechowywanymi na serwerze podstawowym. Wymaga to podania w wystosowanym zapytaniu wersji pliku, który przechowywany jest aktualnie na komputerze-kliencie. W odpowiedzi uzyskiwana jest lista zmian, które zostały wprowadzone w kolejnych wersjach danej strefy DNS. Zawarte w niej są informacje dwóch rodzajów. Pierwszym rodzajem są rekordy dodane do strefy DNS w danej wersji bazy danych, zaś drugim typem -- te, które zostały usunięte.
 
-Istotną informacją w kontekście transferu inkrementalnego jest fakt, że odpowiedzią na zapytanie IXFR może być odpowiedź AXFR a przekierowanie takie nosi nazwę \textit{AXFR fallback}. W implementacji serwera BIND\cite{bind} możliwe jest zablokowanie takiego przekierowania. AXFR fallback następuje najczęściej w sytuacji, kiedy serwer nie wie jak odpowiedzieć na otrzymane zapytanie IXFR. Może to następować po otrzymaniu wersji strefy wyższej niż ta przechowywana na serwerze podstawowym, albo w momencie, kiedy na serwerze podrzędnym nie ma dostępnej żadnej bazy danych\cite{I-D.song-dnsop-ixfr-fallback}.
+Istotną informacją w kontekście transferu inkrementalnego jest fakt, że odpowiedzią na zapytanie IXFR może być odpowiedź AXFR a przekierowanie takie nosi nazwę \textit{AXFR fallback}. W implementacji serwera BIND\cite{isc} możliwe jest zablokowanie takiego przekierowania. AXFR fallback następuje najczęściej w sytuacji, kiedy serwer nie wie jak odpowiedzieć na otrzymane zapytanie IXFR. Może to następować po otrzymaniu wersji strefy wyższej niż ta przechowywana na serwerze podstawowym, albo w momencie, kiedy na serwerze podrzędnym nie ma dostępnej żadnej bazy danych\cite{I-D.song-dnsop-ixfr-fallback}.
 
 
-\section{Podpisy TSIG}\label{TSIG}
+\section{Podpisy TSIG}
+\label{TSIG}
 Istotnym typem rekordu jest również typ 250. -- rekord TSIG(ang. \textit{Secret Key Transaction Authentication for DNS/Transaction Signature}) zdefiniowany w dokumencie RFC 2845\cite{RFC2845}. Używany jest przede wszystkim w protokole DNS aby zapewnić, że informacja przesyłana pomiędzy obiema komunikującymi się stronami faktycznie pochodzi od nadawcy oraz że nie była modyfikowana w trakcie komunikacji. System uzywany jest przede wszystkim do dynamicznych aktualizacji baz DNS oraz do transferów stref pomiędzy serwerem głównym a podrzędnym. Aby komunikacja była kryptograficznie bezpieczna, w protokole wykorzystywane są klucze tajne oraz bezkolizyjne funkcje skrótu.
 
 \subsection{Opis działania TSIG}
@@ -208,7 +214,8 @@ Generowanie podpisanej odpowiedzi może mieć miejsce tylko po odebraniu podpisa
 
 Użycie mechanizmu podpisywania wiadomości eliminuje może eliminować problem nieuprawnionego transferu danych. Z pewnością wyklucza użycie algorytmu wykorzystywanego w niniejszej pracy magisterskiej, gdyż łamanie nawet prostych kluczy wielokrotnie zwiększa czas procesowania pojedynczej domeny\cite{nask-tsig}. Oczywiście zabezpieczenie kluczy używanych do podpisywania wiadomości a także ich długość i jakoś są bardzo ważne w kwestii poziomu bezpieczeństwa protokołu. Zaleca się, aby długość generowanego skrótu była mniejsza bądź równa długości klucza użytego do podpisania wiadomości.
 
-\subsection{Wady TSIG}\label{wady-tsig}
+\subsection{Wady TSIG}
+\label{wady-tsig}
 Problemem związanym z wykorzystaniem rekordów TSIG jest przede wszystkim dystrybucja kluczy. Ponadto w systemie DNS rzadko zdarza się, że tylko jeden klient będzie korzystał z interfejsu serwera, więc każdy z klientów powinien posiadać swój klucz, co ponownie prowadzi do problemu ich dystrybucji, przechowywania i zarządzania\cite{nask-tsig}.
 
 Inną istotną wadą protokołu jest rodzaj zaproponowanej funkcji skrótu HMAC-MD5. Algorytm ten nie jest uważany w dzisiejszych czasach za bezpieczny. Ataki na HMAC-MD5 zaprezentowano między innymi w pracach \cite{hmac-md5-attack, hmac-md5-cryptoanalisys}.
@@ -223,6 +230,10 @@ Niektóre propozycje skupiały się jedynie na zabezpieczaniu dynamicznych aktua
 Powstawały także rozwiązania rozszerzające TSIG jak na przykład algorytm zaproponowany w RFC3645\cite{RFC3645}. Wykorzystuje się w nim GSS\cite{RFC2743}(ang. \textit{Generic Security Service}) aby zapewnić bezpieczną u automatyczną dystrybucję kluczy do klientów protokołu TSIG. Bardziej generyczna metoda wymiany kluczy była opisana w RFC2930\cite{RFC2930}, gdzie wykorzystanie GSS-API było tylko jedną z możliwości rozwiązania postawionego problemu.
 
 Innym kierunkiem rozwoju protokołu TSIG jest wykorzystywanie innych algorytmów implementujących funkcje skrótu. Spowodowane jest to faktem, że RFC2845\cite{RFC2845} definiuje wykorzystanie jedynie funkcji HMAC-MD5. Jedną z takich prób opisano w dokumencie RFC4635\cite{RFC4635} gdzie zaproponowano zastąpienie przestarzałej funkcji MD5 funkcjami z rodziny SHA. Opisano odpowiednio użycie SHA1\cite{RFC3174} lub algorytmów zaproponowane w projekcie FIPS PUB 180-2, znane później jako SHA-2\cite{RFC4634}.
+
+\section{Parkowanie domen}
+Parkowanie domen to określenie, które odnosi się do przypisywania kompletnych nazw domen \ref{sec:FQDN} do niepoprawnych lokalizacji.
+
 
 \chapter{Przegląd dostępnych narzędzi}
 Społeczność internetu oferuje bardzo szeroką gamę narzędzi umożliwiających pozyskiwanie informacji na podstawie protokołu DNS. Bardzo użytecznym i przydatnym narzędziem jest w tym przypadku program dig. Wspomniany program ma jednak znaczącą wadę -- jest wydajny jedynie przy niewielkiej liczbie odpytywanych domen. Dodatkową niedogodnością jest, wbrew pozorom, fakt, że program wchodzi w skład pakietu Open Source bind. Ten, jak każde oprogramowanie na wolnej licencji, cierpi na szereg niedogodności z tym związanych. Najbardziej prozaicznym problemem jest fakt, że oprogramowanie jest tworzone przez wiele osób, więc bardzo trudno zastosować jeden standard kodowania, gdyż każda z osób ma swój preferowany. Poza tym, dużą wadą jest trudność wprowadzania zmian w tego typu oprogramowaniu, wynikająca zarówno z punktu poprzedniego jak i ze złożoności programu, którą cechuje się dig w tym momencie.
