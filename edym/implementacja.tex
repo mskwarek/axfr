@@ -179,8 +179,15 @@ brakiem odpowiedzi od serwera a nazwą domeny.
 W systemach Linux dostępny jest domyślnie program \textit{shuf}\cite{shuf}, który dokonuje permutacji na konkretnych liniach w pliku,
 jednak niemożliwe było wykorzystanie go wraz z plikiem z danymi wejściowymi z powodów ograniczeń wydajnościowych. Program nie był w
 stanie zaalokować odpowiedniej liczby komórek w pamięci komputera. Aby zasymulować element losowości zastosowano algorytm zaprezentowany
-na diagramie na rysunku \ref{shufAlgorithm} oparty na dzieleniu całego zbioru danych wejściowych oraz permutowaniu kolejnych linii
+na diagramie na rysunku \ref{fig:shufAlgorithm} oparty na dzieleniu całego zbioru danych wejściowych oraz permutowaniu kolejnych linii
 w podgrupach o różnej wielkości.
+
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=0.6\textwidth]{image/sfuh}
+	\caption{Algorytm mieszania linii w dużym pliku wejściowym.}
+	\label{fig:shufAlgorithm}
+\end{figure}
 
 Następnie, plik został podzielony na mniejsze, po 25000 linii w każdym. Liczba linii w pojedynczym pliku została ustalona arbitralnie,
 tak aby widoczny był postęp w skanowaniu. Przeprocesowanie 25 tysięcy linii odpowiada maksymalnie około 28 godzinom przy założeniu,
