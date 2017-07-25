@@ -93,13 +93,19 @@ Logika programu jest bardzo prosta. Początkowo budowana jest jednostka APDU pro
 z poprawnie ustawioną flagą \textit{qtype} odpowiedzialną za identyfikację rodzaju zapytania DNS. Co ważne, mechanizm AXFR wymaga
 używania nietypowego dla DNS protokołu TCP.
 
-Komunikacja z serwerami autorytatywnymi została oparta na blokujących socketach. Dodatkowo, zaimplementowany został autorski
-mechanizm pozwalający na wykorzystywanie timeoutów podczas łączenia się z serwerem. Wymagało to przełączania socketu na tryb
-pracy nieblokujący. Dokładny algorytm działania został przedstawiony na rysunku \ref{}.
+Komunikacja z serwerami autorytatywnymi została oparta na blokujących gniazdach TCP. Dodatkowo, zaimplementowany został autorski
+mechanizm pozwalający na wykorzystywanie własnych limitów czasu żądania przed wysłaniem pakietu TCP. Wymagało to przełączania
+gniazda na tryb pracy nieblokujący. Następnie wykorzystano funkcję \textit{select()}, która zwraca informację o tym, czy możliwe jest
+rozpoczęcie pisania/czytania danych z instancji gniazda TCP. Dokładny algorytm działania został przedstawiony na rysunku \ref{fig:socketAlg}.
 
-Algorytm postępowania w przypadku odebrania pakietu danych przedstawiony jest na rysunku\ref{}. Dane odbierane z interfejsu
-sieciowego są zapisane w systemie szesnastkowym, zgodnie z zaleceniami znanymi z dokumentu RFC 1035\cite{RFC1035}. Program
-umożliwia parsowanie najbardziej popularny i najczęściej używanych rekordów RR, czyli:
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=1.0\textwidth]{image/socketAlg}
+	\caption{Algorytm dynamicznego ustawiania limitu czasu żądania dla gniazda TCP w blokującym trybie pracy.}
+	\label{fig:socketAlg}
+\end{figure}
+
+Program umożliwia parsowanie najbardziej popularny i najczęściej używanych rekordów RR, czyli:
 \begin{enumerate}
 	\item A
 	\item AAAA
@@ -119,6 +125,15 @@ umożliwia parsowanie najbardziej popularny i najczęściej używanych rekordów
 	\item NSEC
 	\item DNSKEY
 \end{enumerate}
+Algorytm postępowania w przypadku odebrania pakietu danych przedstawiony jest na rysunku \ref{fig:receiving}. Dane odbierane z interfejsu
+sieciowego są zapisane w systemie szesnastkowym, zgodnie z zaleceniami znanymi dokumentu RFC 1035\cite{RFC1035}.
+
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=1.0\textwidth]{image/receiving}
+	\caption{Algorytm postępowania w przypadku odebrania APDU protokołu DNS.}
+	\label{fig:receiving}
+\end{figure}
 
 Dodatkowo, jeśli zostanie odebrany typ który nie został przewidziany w implementacji parsera to wszystkie dane odczytane z
 socketa zostaną przeniesione w formie zapisu heksadecymalnego do pliku z odpowiedzią. Zapewnia ta kompatybilność z innymi
@@ -186,5 +201,5 @@ strefy dla danej domeny. Nazwa pliku odpowiada adresowi mailowemu zarządcy dome
 
 Po otrzymaniu zbioru plików opisanych powyżej uruchamiany jest proces, którego zadaniem jest wysłanie wiadomości pod określone
 adresy. Skrypt, który automatyzuje opisaną czynność napisano w języku Python\cite{python}. Wysyłane wiadomości podpisywane są
-kluczem PGP\cite{}, aby odbiorca mógł zweryfikować, że wiadomość została odebrana dokładnie w takiej formie jak ją przygotowano
+kluczem PGP\cite{RFC4880}, aby odbiorca mógł zweryfikować, że wiadomość została odebrana dokładnie w takiej formie jak ją przygotowano
 i wysłano.
