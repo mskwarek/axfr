@@ -211,11 +211,11 @@ istotnych wpisów określonych w dokumencie RFC 1035 \cite{RFC1035} wraz z ich p
 	\caption{Rodzaje rekordów w bazach danych serwerów przestrzeni nazw. Opis na podstawie \cite{RFC1035}}\\
 	\label{typyRekordowDns}
 	\begin{tabular}{|r|p{3cm}|p{8cm}|}
-		\hline
+		\toprule
 			\textbf{Rekord} &
 			\textbf{Pełna nazwa} &
 			\textbf{Pełniona funkcja(opis zawartości)} \\
-		\hline\hline
+		\midrule
 			A &
 			Wpis mapowania adresów(ang. \textit{Address mapping record}) &
 			Określa adres IP wersji 4 dla danego hosta. Służą do konwersji nazwy domen do odpowiednich adresów IP.\\
@@ -255,10 +255,8 @@ istotnych wpisów określonych w dokumencie RFC 1035 \cite{RFC1035} wraz z ich p
 			TXT &
 			Tekst &
 			Wpis przeznaczony do umieszczania dodatkowych informacji dla klienta. Jest to niesformatowany tekst, może być informacją
-			zarówno dla człowieka jak i maszyny.
-		\\
-		\hline
-
+			zarówno dla człowieka jak i maszyny.\\
+		\bottomrule
 	\end{tabular}
 \end{longtable}
 
@@ -286,11 +284,29 @@ wprowadzone w kolejnych dokumentach RFC, których dokładne numery zostały wspo
 \end{table}
 
 \subsection{TLD ARPA}
-Specyficzną domeną najwyższego rzędu jest domena \textit{ARPA}.
+Specyficzną domeną najwyższego rzędu jest domena \textit{ARPA}. Jest to jedna z nielicznych domen ściśle powiązana z dokładnie jedną
+instytucją. Skrót ARPA wywodzi się historycznie od nazwy jednostki (ang. \textit{Advanced Research Projects Agency (ARPA)}), która
+brała czynny udział w propagowaniu oraz rozwijaniu sieci Internet. Dzięki tej jednostce powstał między innymi prekursor dzisiejszego
+Internetu -- ARPANET. Aktualnie TLD ARPA jest wykorzystywane jedynie w celach dotykających infrastruktury internetu. Skrót rozwijany jest
+jako Address and Routing Parameter Area.
 
-\subsection{Domena 2LD e164}
+Tę domenę wykorzystuje się również w przypadku protokołu RevDNS a konkretniej do tłumaczenia
+odwrotnego adresów IP na nazwy domen. Każdy z adresów znajduje się w poddomenie .arpa. Są to odpowiednio poddomeny in-addr.arpa dla
+adresów IPv4 orad ip6.arpa dla adresów IPv6.
 
-\subsection{Domena 2LD in-addr}
+Innym z zastosowań domeny .arpa jest mapowanie numerów telefonów. Sposób integracji sieci internet wraz z siecią telefoniczną również
+wykorzystuje zalety systemu DNS oraz pozwala na identyfikację odpowiednich przestrzeni nazw. Aby odróżnić przestrzeń nazw sieci
+internet od sieci telefonicznej wydzielona została domena drugiego poziomu w TLD arpa. Otrzymała ona nazwę e164. Jest to nawiązanie
+do standardu organizacji, czy też przydzielania numerów telefonów. Integracja z protokołem DNS opiera się na prostym schemacie:
+\begin{enumerate}
+	\item z numeru telefonu w formacie E.164 usuwane są znaki nie będące liczbami, na przykład +44-20-79-46-01-48 na 442079460148,
+	\item między każde dwie cyfry wstawiane są kropki 4.4.2.0.7.9.4.6.0.1.4.8,
+	\item zamieniana jest kolejność cyfr 8.4.1.0.6.4.9.7.0.2.4.4.
+\end{enumerate}
+
+W wyżej opisany sposób otrzymaliśmy odpowiednik numeru telefonu w domenie .e164.arpa. Mechanizm mapowania numerów tradycyjnej sieci
+PSTN na adresy internetowe ma szczególne znaczenie w integracji dwóch technik wykonywania połączenia, a konkretnie PSTN oraz VoIP.
+Mapowanie numerów na adresy internetowe zostało opisane między innymi w RFC3761\cite{RFC3761}.
 
 \section{Transfer strefy DNS}
 Transfer strefy DNS jest typem transakcji DNS, która jest podstawowym elementem mechanizmu odtwarzania bazy danych DNS pomiędzy
@@ -316,7 +332,7 @@ Pierwszym wymienionym sposobem dokonania transferu danych jest wystosowanie do s
 używając do tego celu między innymi połączenia TCP. Serwer odpowiada na zapytanie kolejnymi wiadomościami, które niosą informację o
 rekordach zapisanych w strefie DNS. Istotnym faktem jest, że w tym przypadku serwer przesyła wszystkie rekordy jakie są zawarte w
 podgrupie określanej strefą DNS. Transfer zawsze zaczyna się od rekordu typu SOA, gdzie widnieje między innymi wersja przechowywanej
-strefy oraz inne informacje, które opisane zostały szerzej w podpunkcie \ref{SOA}. Następnie przesyłane są wszystkie informacje
+strefy oraz inne informacje, które opisane zostały szerzej w tabeli \ref{typyRekordowDns}. Następnie przesyłane są wszystkie informacje
 przechowywane na serwerze podstawowym, zaś całość kończy ponownie rekord SOA co sygnalizuje, że cały transfer został zakończony pomyślnie.
 
 Zawarty w rekordzie SOA numer seryjny pozwala na stwierdzenie, czy kopia strefy, która przechowywana jest na maszynie klienckiej
