@@ -91,7 +91,7 @@ Analizując zbiór pod względem adresów IP jedynie w czwartej wersji, zaprezen
 zauważyć kilka interesująych faktów. Pierwszym, który jest natychmiast zauważalny, to bardzo wysoki współczynnik systemów autonomicznych
 ze Stanów Zjednoczonych w popoulacji adresów IPv4 które zostały zebrane w wyniku skanowania. Poziom ten jest około 3.5 raza wyższy,
 niż liczebność systemu autonomicznego z drugiego kraju w rankingu, czyli z Niemiec. Informacja ta jest interesująca w tym sensie, że
-TLD .de jest jedną z tych, które wymagają zabezpieczania stref DNS przed \textit{zone enumeration}\cite{}. Okazuje się natomiast,
+TLD .de jest jedną z tych, które wymagają zabezpieczania stref DNS przed \textit{zone enumeration}\cite{euLaw, zoneEnumeration}. Okazuje się natomiast,
 że w praktyce drugim najczęściej spotykanym krajem w zestawieniu adresów IP w skanowaniu AXFR są właśnie Niemcy, a transfer strefy
 jest w realizacji dużo łatwiejszym atakiem niż wspomniane wcześniej \textit{zone walking}.
 
@@ -296,10 +296,31 @@ wpisów. Dokładnie jest to 8244 wpisów w pliku strefy. Sprawdzono, czy rzeczyw
 dla których otrzymano tak specyficzną odpowiedź. Pakiety, które wysłano oraz odebrano zostały przeanalizowane programem Wireshark.
 Okazuje się, że utworzenie opisanego wcześniej pliku jest następstwem otrzymania wiadomości HTTP o statusie 400 -- Bad request.
 Co ciekawe, odpowiedź tę otrzymujemy na mało standardowy port w kontekście protokołu HTTP -- port 53. Szczegóły otrzymanej wiadomości
-zostały przedstawione w lsitingu \ref{}. Innym wynikiem typu zachowania były odpowiedzi o liczbie linii ok. 11 tysięcy.
+zostały przedstawione w lsitingu \ref{list:dnsHTTPstd}. Innym wynikiem typu zachowania były odpowiedzi o liczbie linii ok. 11 tysięcy.
 Jest to wyraźnie mniej zauważalne, wnioskując choćby po histogramie \ref{fig:hist_zone_size}, gdzie widoczny jest jedynie prążek na
-wartości około 8000 linijek w pliku strefy. Plik o około 11 tysiącach wpisów był tworzony w wyniku otrzymania rozszerzonej wiadomości
-HTTP 400 -- została ona przedstawiona na listingu \ref{}.
+wartości około 8000 linijek w pliku strefy. Plik o około 11 tysiącach wpisów był tworzony w wyniku otrzymania rozszerzonej, głównie o tagi HTML
+ wiadomości HTTP 400 -- została ona przedstawiona na listingu \ref{list:dnsHTTPmore}.
+
+\begin{lstlisting}[label={list:dnsHTTPstd},captionpos=b,caption=Odpowiedź HTTP 400 na zapytanie DNS.,language=xml]
+HTTP/1.0 400 Bad request
+Cache-Control: no-cache
+Connection: close
+Content-Type: text/html
+
+<html><body><h1>400 Bad request</h1>
+Your browser sent an invalid request.
+</body></html>
+\end{lstlisting}
+
+\begin{lstlisting}[label={list:dnsHTTPmore},captionpos=b,caption=Rozszerzona odpowiedź HTTP 400 na zapytanie DNS.,language=xml]
+<html>
+<head><title>400 Bad Request</title></head>
+<body bgcolor="white" >
+<center><h1>400 Bad Request</h1></center>
+<hr><center>nginx/1.4.0</center>
+</body>
+</html>
+\end{lstlisting}
 
 Na rysunku \ref{fig:hist_zone_size_zoom} możemy obserwować w przybliżeniu rozkład wielkości plików stref. Zawężony został on do 60
 wpisów z uwagi, że najbardziej interesujące wyniki zawierają się głównie w tym przedziale. Jak widać, najczęściej występującym
@@ -336,7 +357,7 @@ domeny, jest najczęściej mało związana z informatyką czy telekomunikacją.
 
 To, na co warto zwrócić uwagę na histogramie \ref{fig:hist_zone_size_zoom} to również domeny o strefach o rozmiarze około 40-60 wpisów.
 Jest to reprezentacja tych stref, które wykorzystują mechanizm podpisywania rekordów DNS zaprezentowany w rozszerzedniu
-protokołu -- DNSSEC\cite{RFC4034, RFC4035}. Zgodnie z tym, co zostało opisane w rozdziale \ref{}, Dla każdej pary rekordów
+protokołu -- DNSSEC\cite{RFC4034, RFC4035}. Zgodnie z tym, co zostało opisane w rozdziale \ref{tsig}, Dla każdej pary rekordów
 przechowywanych w strefie DNS liczony jest podpis cyfrowy.
 
 \section{Odpowiedzi niestandardowe}

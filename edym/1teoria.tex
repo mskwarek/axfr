@@ -1,4 +1,7 @@
-\chapter{Wstęp}
+\chapter{Wprowadzenie}
+
+\section{Wstęp}
+
 
 \section{Ataki rekonesansowe}
 Ataki rekonesansowe są typem ataków komputerowych których głównym celem jest pozyskanie informacji na temat atakowanego systemu bądź
@@ -133,14 +136,30 @@ Domeną określa się dany podzbiór hierarchii DNS. Są to wszystkie poddomeny 
 się do wcześniej przywołanego porównania do systemu plików -- domena to odpowiednik folderu. Może zawierać kolejne domeny, może być
 określana zarówno na bardzo wysokim (domeny poziomu TLD) jak i bardzo szczegółowym(domeny 2-3 LD) poziomie abstrakcji. Jeśli
 chcielibyśmy reprezentować system DNS jako drzewo, to domeną DNS nazwiemy węzeł drzewa i wszystkie węzły które są jego potomkami.
-Pojęcie domeny i elementy które ono określa przedstawiono na rysunku \ref{domain_dns_example}.
+Pojęcie domeny i elementy które ono określa przedstawiono na rysunku \ref{fig:domain_dns_example}.
+
+\begin{center}
+	\begin{figure}
+	\includegraphics[scale=0.8]{image/domain_example}
+	\caption{Zakres drzewa hierarchii DNS wchodzący w skład domeny. \cite{domain_example}}
+	\label{fig:domain_dns_example}
+	\end{figure}
+\end{center}
 
 \subsection{Strefa DNS}
 Strefa DNS jest pojęciem, które określa zbiór domen za które odpowiedzialny jest konkretny serwer przestrzeni nazw. Jeśli wyobrazimy
 sobie hierarchię DNS jako drzewo, w którym węzłami są kolejne nazwy domen, to strefą DNS będzie zbiór węzłów tego drzewa. Zbiór
 węzłów wyznaczany jest na podstawie informacji o serwerze autorytatywnym odpowiedzialnym za daną domenę. Te węzły (domeny)
 których nazwami zarządza ten sam serwer znajdują się w jednej strefie DNS. Przykładowy podział systemu na konkretne strefy został
-zaprezentowany na rysunku \ref{dns_zone_example}.
+zaprezentowany na rysunku \ref{fig:dns_zone_example}.
+
+\begin{center}
+	\begin{figure}
+	\includegraphics[scale=0.8]{image/zone_example}
+	\caption{Zakres drzewa DNS określany terminem strefy DNS. \cite{zone_example}}
+	\label{fig:dns_zone_example}
+	\end{figure}
+\end{center}
 
 \subsection{Strefa DNS a domena DNS}
 System DNS danej domeny jest zrealizowany w oparciu o zbiór serwerów przestrzeni nazw (ang. \textit{nameserver}). Każdy z serwerów
@@ -188,9 +207,8 @@ mogą być różnych typów. Najpopularniejsze typy to oczywiście te, z którym
 wspomnianych podstawowych typów twórcy standardu dla systemu DNS wprowadzili także mniej znane typy. Opis zbioru najbardziej
 istotnych wpisów określonych w dokumencie RFC 1035 \cite{RFC1035} wraz z ich przeznaczeniem umieszczono w tabeli \ref{typyRekordowDns}.
 
-\begin{table}[]
-	\centering
-	\caption{Rodzaje rekordów w bazach danych serwerów przestrzeni nazw. Opis na podstawie \cite{RFC1035}}
+\begin{longtable}{ccc}
+	\caption{Rodzaje rekordów w bazach danych serwerów przestrzeni nazw. Opis na podstawie \cite{RFC1035}}\\
 	\label{typyRekordowDns}
 	\begin{tabular}{|r|p{3cm}|p{8cm}|}
 		\hline
@@ -204,10 +222,15 @@ istotnych wpisów określonych w dokumencie RFC 1035 \cite{RFC1035} wraz z ich p
 		\hline
 			CNAME &
 			Nazwa kanoniczna (ang. \textit{Canonical Name)} &
+			Określa alias. Ruch kierowany do domeny o takiej nazwie przekierowywany jest do domeny wyspecyfikowanej
+			w rekordzie CNAME.
 			\\
 		\hline
 			MX &
 			Wymiana wiadomości elektronicznych (ang. \textit{Mail exchange)} &
+			Na podstawie nazwy domeny znajdującej się w adresie poczty wskazuje serwer poczty elektronicznej, który odpowiedzialny jest
+			za przyjmowanie tych wiadomości. We wpisie znajduje się również priorytet używany wówczas, gdy dostępnych jest więcej serwerów
+			pocztowych. Ponadto, zbiór rekordów w domenie wykorzystywany jest do trasowania wiadomości w protokole SMTP.
 			\\
 		\hline
 			NS &
@@ -216,15 +239,28 @@ istotnych wpisów określonych w dokumencie RFC 1035 \cite{RFC1035} wraz z ich p
 		\hline
 			SOA &
 			Początek (ang. \textit{Start of Authority)} &
+			Wpis SOA zawiera informacje dotyczące zarządzania strefą. Jest istotny głównie z punktu widzenia transferu strefy DNS.
+			Składa się z odpowiednich wpisów:
+			\begin{itemize}
+				\item primary -- adres serwera głównego (ang. \textit{primary}) dla danej strefy,
+				\item adres poczty administratora,
+				\item numer seryjny -- uaktualniany przy każdej zmianie informacji w pliku strefy,
+				\item czas życia -- czas w sekundach określający okres odpytywania serwera głównego przez serwer podrzędny o numer seryjny pliku strefy; zapewnia spójność danych na serwerach podrzędnych,
+				\item ponowienie żądania -- czas, który odczekać powinien serwer podrzędny jeśli serwer główny nie odpowiedział na żądanie (w sekundach); po jego upłynięciu możliwe jest ponowne wysłanie żądania,
+				\item czas przedawnienia -- czas w sekundach, po którym serwer podrzędny powinien przestać odpytywać serwer podstawowy,
+				\item TTL czas przechowywania niegatywnych odpowiedzi od serwera autorytatywnego (ang. \textit{negative caching}).
+			\end{itemize}
 			\\
 		\hline
 			TXT &
 			Tekst &
+			Wpis przeznaczony do umieszczania dodatkowych informacji dla klienta. Jest to niesformatowany tekst, może być informacją
+			zarówno dla człowieka jak i maszyny.
 		\\
 		\hline
 
 	\end{tabular}
-\end{table}
+\end{longtable}
 
 Oczywiście na przestrzeni lat protokół rozszerzano o kolejne funkcje. Jednym z istotnych wydarzeń było zaproponowanie zmian
 spisanych w dokumencie RFC 4034 \cite{RFC4034}. Opisano tam rozszerzenia protokołu DNS, które podnoszą jego bezpieczeństwo.
@@ -312,6 +348,7 @@ serwerem głównym a podrzędnym. Aby komunikacja była kryptograficznie bezpiec
 bezkolizyjne funkcje skrótu.
 
 \subsection{Opis działania TSIG}
+\label{tsig}
 Rekord TSIG pozwala na wykorzystywanie mechanizmów znanych z protokołu DNSSEC\cite{nask-tsig} w protokole DNS zaproponowanych w
 RFC 1035\cite{RFC1035}. Praktyka taka została zaproponowana z powodu częstych problemów z używaniem protokołu
 DNSSEC\cite{RFC4033, RFC4035}. Wprowadzenie korzystania z rekordów TSIG pozwala między innymi na:
