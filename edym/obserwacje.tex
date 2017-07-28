@@ -14,7 +14,7 @@ Pierwszym typem jest odpowiedź, która zajmowała na dysku specyficzną ilość
 przewidzieć wszystkie specyficzne przypadki towarzyszące transferowi strefy DNS. Zaobserwowana sytuacja jest właśnie jednym z
 tych nietypowych sytuacji i nawet program dig nie odwzorowuje idealnie zachowania jakie powinno nastąpić w takiej sytuacji.
 Przyczyną utworzenia opisanego wcześniej pliku nie jest jednoznacznie określona. Zostały podjęte próby ustalenia czym spowodowane
-jest takie zachowanie. W takich samych przypadkach program dig zwraca jedynie rekord DNS SOA i komunikat o błędzie (ang.
+	jest takie zachowanie. W takich samych przypadkach program dig zwraca jedynie rekord DNS SOA i komunikat o błędzie (ang.
 \textit{communications error: end of file}). Zachowanie programu dig w dużym stopniu przypomina przekierowanie zapytania IXFR na
 AXFR (ang. \textit{AXFR fallback}) opisane między innymi w RFC1995\cite{RFC1995}. Wywołanie mechanizmu AXFR fallback następuje
 w sytuacji, kiedy numer wersji pliku strefy przysłany do serwera jest wyższy niż numer wersji aktualnie na nim przechowywany.
@@ -433,12 +433,64 @@ Na wykresie \ref{fig:unused_pie} pokazano procentowy rozkład krajów z których
 serwery z jedynie dwóch krajów (Japonii oraz Stanów Zjednoczonych) stanowią liczną grupę w tym zestawieniu. Pozostałe kraje, nawet
 zebrane we wspólną grupę stanowią zaledwie 0,5\textperthousand.
 
-Przedstawiona proporcja jest ciekawa w kontekście analizy domen najwyższego poziomu, które obsługują serwery nazw opisane
-w poprzednim akapicie. Jeśli chodzi o ten zbiór, to różnorodność jest zdecydowanie większa. Wciąż najbardziej popularną domeną
-jest .com, kojarzona w głównej mierze ze Stanami Zjednoczonymi. Pojawiają się również domeny
 \begin{figure}[ht]
 \centering
 \includegraphics[width=1.0\textwidth]{image/unused_pie}
 \caption{}
 \label{fig:unused_pie}
 \end{figure}
+
+Przedstawiona proporcja jest ciekawa w kontekście analizy domen najwyższego poziomu, które obsługują serwery nazw opisane
+w poprzednim akapicie. Jeśli chodzi o ten zbiór, to różnorodność jest zdecydowanie większa. Wciąż najbardziej popularną domeną
+jest .com, kojarzona w głównej mierze ze Stanami Zjednoczonymi. Pojawiają się również domeny
+
+\section{Geograficzna lokalizacja serwerów}
+Biorąc pod uwagę poprzednie rozważania postanowiono, że warto przeanalizować geograficzne rozmieszczenie serwerów przestrzeni nazw,
+które odpowiedziały na zapytanie AXFR. Podział zaprezentowany w tym punkcie jest już bardziej szczegółowym rozbiciem konkrentych
+wyników. Najważniejszym kryterium podziały domen było przede wszystkim rozdzielenie plików stref oraz odpowiadających im serwerów
+przestrzeni nazw w zależności od tego jak duży plik strefy udało się dla nich pozyskać.
+
+Pierwszym wykresem który zaprezentowano jest mapa adresów IP serwerów przestrzeni nazw, które odpowiedziały plikiem strefy zawierającym
+więcej niż jeden rekord DNS. Należy dodać, że pliki ,,sztuczne'', takie, które powstały w wyniku niedoskonałości napisanego oprogramowania
+nie zostały uwzględnione podczas niniejszej analizy. Wyniki zaprezentowano na rysunku \ref{fig:many_lines_map}.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=1.0\textwidth]{image/many_lines_map}
+\caption{}
+\label{fig:many_lines_map}
+\end{figure}
+
+Zbiór adresów IP serwerów przestrzeni nazw który zaprezentowano na mapie \ref{fig:many_lines_map} liczył 87091 unikalnych adresów, podczas
+gdy zbiór wszystkich plików stref danego typu dla analizowanego zbioru wynosił 2132448. Oznacza to, że na jeden serwer autorytatywny
+przypada ponad 24 domen.
+
+\section{Usługi}
+Przeprowadzone skanowanie umożliwiło również sprawdzenie jakie usługi uruchamiane są wewnątrz organizacji, których serwery DNS
+były odpytywane. Zdecydowano się na sprawdzanie usług typowych dla branży ICT. Poszukiwano w zebranych danych informacji o serwerach
+systemów kontroli wersji (git, svn) oraz systemów automatycznego budowania oprogramowania i zapewniania ciągłej integracji (jenkins).
+W niniejszej pracy magisterskiej zdecydowano się głównie na te usługi ze względu na dużą wrażliwość takich danych jak kody źródłowe
+przechowywane na serwerach git czy svn a także ze względu na istotę elementów środowiska pracy jak systemy CI typu Jenkins.
+
+Z zeskanowanych danych można również pozyskiwać informacje o wielu innych usługach. Popularne jest poszukiwanie serwerów z prefiksem
+\textit{owa}. Odpowiadają one najczęściej systemom firmy Microsoft (ang. \textit{Outlook Web Access}). Niemniej jednak, w tej pracy
+magisterskiej zrezygnowano z dodawania poszukiwania kolejnych usług ze względu na rosnący czas analizy zebranych danych.
+
+Jeśli chodzi o usługi, które zostały wymienione w pierwszym akapicie tego rozdziału, to na podstawie samego adresu URL udało się
+uzyskać informacje o ponad 3 tysiącach serwerach systemu git oraz ponad 3.5 tysiącach systemów svn. W odniesieniu do skali
+przeprowadzonych badań jest to nieduża liczba, co dobrze świadczy o społeczności. Niemniej jednak, liczba około 7 tysięcy systemów
+kontroli wersji o których informacje uzyskano jedynie poprzez skanowanie AXFR jest wysoką liczbą. Szczególnie, jeśli uwzględniony
+zostanie fakt, że systemy te najczęściej wykorzystywane są przez osoby techniczne, świadome istoty bezpieczeństwa sieciowego.
+
+Kolejną z wymienionych usług był serwer CI Jenkins. Jest to jeden z najpopoularniejszych systemów ciągłej integracji. Filtrując
+wyniki po adresach URL zdobyto informacje o 1.5 tysiąca serwerów tego typu.
+
+\section{Wpisy SPF}
+Wpisy SPF zostały zdefiniowane w celu ochrony użytkowników domeny przed spamem. Pozwalają na określanie reguł, czy wiadomość
+elektroniczna powinna zostać przyjęta przez serwer czy nie.
+
+Istotnym elementem wpisów SPF są między innymi kwalifikatory. Wyróżniamy kwalifikatory: ,,+'', ,,-'', ,,?'', ,,~''. Szczególnie
+interesujący jest kwalifikator +all, który mówi, że reguły SPF pozwalają na odebranie wszystkich wiadomości ze wszystkich domen.
+Wśród danych pobranych podczas skanowania znaleziono 1.8 miliona wpisów SPF. Co ciekawsze, 3.5 tysiąca z nich było opatrzonych
+klauzulą ,,+all''. Daje to między innymi bardzo ciekawą informację dla osób wysyłających niechcianą pocztę (tzw. spam). Wiedząc,
+że reguły SPF nie odfiltrują danej wiadomości warto jest próbować wysyłac ją do użytkowników mających adres w danych domenach.

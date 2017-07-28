@@ -436,22 +436,6 @@ dokumencie RFC4635\cite{RFC4635} gdzie zaproponowano zastąpienie przestarzałej
 odpowiednio użycie SHA1\cite{RFC3174} lub algorytmów zaproponowane w projekcie FIPS PUB 180-2, znane później jako SHA-2\cite{RFC4634}.
 
 \section{Parkowanie domen}
-Parkowanie domen to określenie, które odnosi się do przypisywania kompletnych nazw domen \ref{sec:FQDN} do niepoprawnych lokalizacji.
-
-
-\chapter{Przegląd dostępnych narzędzi}
-Społeczność internetu oferuje bardzo szeroką gamę narzędzi umożliwiających pozyskiwanie informacji na podstawie protokołu DNS.
-Bardzo użytecznym i przydatnym narzędziem jest w tym przypadku program dig. Wspomniany program ma jednak znaczącą wadę -- jest
-wydajny jedynie przy niewielkiej liczbie odpytywanych domen. Dodatkową niedogodnością jest, wbrew pozorom, fakt, że program
-wchodzi w skład pakietu Open Source bind. Ten, jak każde oprogramowanie na wolnej licencji, cierpi na szereg niedogodności z
-tym związanych. Najbardziej prozaicznym problemem jest fakt, że oprogramowanie jest tworzone przez wiele osób, więc bardzo
-trudno zastosować jeden standard kodowania, gdyż każda z osób ma swój preferowany. Poza tym, dużą wadą jest trudność wprowadzania
-zmian w tego typu oprogramowaniu, wynikająca zarówno z punktu poprzedniego jak i ze złożoności programu, którą cechuje się dig
-w tym momencie.
-
-Istnieją także inne pakiety implementujące w dość wydajny sposób klienta systemu DNS jak np. pjlib \cite{pjlib}. Również w tym
-przypadku można borykać się z problemami wynikającymi z założeń przyjętych przez twórców tego oprogramowania. Konkretyzując to
-stwierdzenie - wspomniana biblioteka z założenia miała być wykorzystywana do protokołu SIP, a więc implementacja klienta DNS
-weszła w jej skład tylko i wyłączenie dlatego, że twórcy jej potrzebowali jako narzędzia do zrealizowania innych celów.
-Implikuje to fakt, że pobieranie wiadomości jest niekompletne na płaszczyźnie typów wiadomości. Jednym z nich jest typ nr 252,
-czyli AXFR, który jest jednym z kluczowych elementów rekonesansu na podstawie protokołu DNS.
+Parkowanie domen to określenie, które odnosi się do przypisywania kompletnych nazw domen (FQDN opisane w podpunkcie \ref{sec:FQDN})
+do niepoprawnych lokalizacji. Niepoprawne lokalizacje rozumiane są jako serwery, które nie potrafią obsłużyć ruchu, czy zagwarantować
+usług które powinny znajdować się pod danym adresem. (TODO)
