@@ -1,36 +1,37 @@
 \chapter{Powiązane prace}
-Pomimo faktu, że problem ,,wycieku'' danych z serwerów DNS jest dość powszechnie poruszany zarówno w różnego rodzaju publikacjach\cite{uscert}
-jak i na blogach bądź forach dotyczących testowania infrastruktury pod kątem bezpieczeństwa\cite{stackexchange, zonetransfer}, to nie udało dotrzeć
+Pomimo faktu, że problem ,,wycieku'' danych z serwerów DNS jest dość powszechnie poruszany zarówno w różnego rodzaju publikacjach \cite{uscert}
+jak i na blogach bądź forach dotyczących testowania infrastruktury pod kątem bezpieczeństwa \cite{stackexchange, zonetransfer}, to nie udało dotrzeć
 się do żadnych globalnych badań na temat bezpieczeństwa transferu strefy DNS. To właśnie skala badania przeprowadzonego w ramach
-niniejszej pracy magisterskiej jest główną różnicą w stosunku do badań już przeprowadzonych. Ponadto, bardzo ważnym założeniem
+niniejszej pracy magisterskiej jest główną różnicą w stosunku do wykonanych już analiz. Ponadto, bardzo ważnym założeniem
 przedstawionym w tej pracy jest chęć nakreślenia skali zjawiska nieuprawnionego transferu danych DNS. Określenie jak duży jest to
 problem jest konieczne do wydania ewentualnych zaleceń oraz przyporządkowania priorytetu bądź rangi tej podatności. W poniższym
-rozdziale przedstawiono powiązane prace oraz ich różnice w stosunku do opisywanych badań.
+rozdziale przedstawiono istniejące, powiązane prace oraz ich różnice w stosunku do opisywanych badań zawartych w niniejszej pracy
+dyplomowej.
 
 \section{DNS Response Policy Zone}
 
 
 \section{Internet-Wide Scan Data Repository}
-\textit{Internet-Wide Scan Data Repository} jest to publiczne archiwum danych dostępne głównie pod adresem scans.io\cite{scans.io}.
+\textit{Internet-Wide Scan Data Repository} jest to publiczne archiwum danych dostępne głównie pod adresem scans.io \cite{scans.io}.
 Gromadzone są tam dane badawcze zebrane podczas aktywnych skanów przeprowadzonych w internecie. Repozytorium prowadzone jest przez
-badaczy z Uniwersytetu z Michigan\cite{censys}. Cel pobierania danych nie jest wyraźnie określony przez naukowców, to co zostanie z
+badaczy z Uniwersytetu z Michigan \cite{censys}. Cel pobierania danych nie jest wyraźnie określony przez naukowców, to co zostanie z
 nich wywnioskowane pozostawia się osobom trzecim. Z punktu widzenia niniejszej pracy, \textit{Internet-Wide Scan Data Repository}
 może posłużyć jako punkt odniesienia na przestrzeni skanowania AXFR. Na stronie możemy znaleźć wyniki aktywnego skanowania domen z
-listy Alexa Top 1 Milion\cite{alexa} pod kątem podatności na nieuprawniony transfer strefy DNS.
+listy Alexa Top 1 Milion \cite{alexa} pod kątem podatności na nieuprawniony transfer strefy DNS.
 
-Jednym z udogodnień ze strony pracowników Uniwersytetu z Michigan jest udostępnienie wygodnego interfejsu dla ludzi. Zarządcy
+Jednym z udogodnień ze strony pracowników Uniwersytetu z Michigan jest udostępnienie wygodnego interfejsu. Zarządcy
 opisywanego repozytorium danych udostępniają również aplikację, wyszukiwarkę informacji na temat domen przeskanowanych pod różnym
-kątem w ich badaniach. Cały projekt nosi tę samą nazwę co zespół -- Censys\cite{censys} i pozwala wyszukiwać informacje zarówno po
+kątem w ich badaniach. Cały projekt nosi tę samą nazwę co zespół -- Censys \cite{censys} i pozwala wyszukiwać informacje zarówno po
 adresach URL/IP jak i po zawartości odpowiedzi uzyskanych ze skanów.
 
-Różnicą która jest pomiędzy pracami opisanymi w tym punkcie a niniejszą pracą magisterką jest oczywiście zasięg prowadzonych badań.
-Ograniczenie się jedynie do miliona najpopularniejszych domen, tak jak to zrobił zespół Censys\cite{censys} jest bardzo dużym
+Różnicą, która jest pomiędzy pracami opisanymi w tym punkcie a niniejszą pracą magisterką jest oczywiście zasięg prowadzonych badań.
+Ograniczenie się jedynie do miliona najpopularniejszych domen, tak jak to zrobił zespół Censys \cite{censys} jest bardzo dużym
 uproszczeniem. Ponadto, naturalne jest, że najpopularniejsze strony będą przykładały dużo uwagi do odpowiedniego zabezpieczenia
 swoich zasobów, dlatego można się spodziewać, że wyników takiego skanowania będzie mniej niż na równej ilościowo, losowo wybranej próbie.
 
 \section{DNS as a service}
-DNS as service to pojęcie wykorzystywane do opisywania usług świadczonych w obrębie protokołu DNS. Dosłownym tłumaczeniem tego
-terminu jest \textit{DNS jako usługa}. W rozumieniu protokołu DNS jest to ograniczone do wystawienia interfejsów klientowi, tak,
+\textit{DNS as service} to pojęcie wykorzystywane do opisywania usług świadczonych w obrębie protokołu DNS. Dosłownym tłumaczeniem tego
+terminu jest \textit{DNS jako usługa}. W rozumieniu protokołu DNS jest to wystawienie interfejsów klientowi, tak,
 aby mógł on dodać interesujące go rekordy.
 
 \textit{DNS as a service} spotykane jest najczęściej w kontekście unikania ataków DDoS jednak mimo to można przyjrzeć się temu
@@ -40,7 +41,7 @@ bezpieczeństwo systemów DNS to nie tylko unikanie ataków DDoS.
 
 Tym, co faktycznie sprzedają firmy oferujące usługi \textit{DNS as a service} jest przede wszystkim infrastruktura, ale także
 pewnego rodzaju bezpieczeństwo informacji oraz pewność dostępności systemu DNS. Dobrym przykładem jest w tym przypadku oferta firmy
-Nexusguard\cite{nexusguard}. Oferuje ona obsługę oraz zabezpieczenie systemu DNS swojego klienta. Wprowadzenie danych na temat strefy
+Nexusguard \cite{nexusguard}. Oferuje ona obsługę oraz zabezpieczenie systemu DNS swojego klienta. Wprowadzenie danych na temat strefy
 DNS klienta może odbywać się na dwa sposoby:
 \begin{enumerate}
 	\item poprzez panel klienta,
@@ -50,19 +51,19 @@ W kontekście tej pracy magisterskiej pierwszy przypadek nie jest nadzwyczaj int
 swojej domeny czy też strefy i cała odpowiedzialność za rozwiązywanie kolejnych zapytań jest przeniesiona na maszyny działające
 pod nadzorem firmy oferującej usługę. Dużo bardziej interesującym przypadkiem jest wymieniony jako drugi transfer strefy z serwera
 klienta. Wydzielona część infrastruktury firmy jest wtedy traktowana jako zapasowy serwer DNS(\textit{ang. slave}) podczas gdy
-serwerem podstawowym (\textit{ang. primary}) jest maszyna klienta. Transfer strefy DNS jest dużo bardziej bezpieczny. Wynika to
+serwerem podstawowym (\textit{ang. primary}) jest maszyna klienta. W takiej sytuacji transfer strefy DNS jest dużo bardziej bezpieczny. Wynika to
 z wymagań narzuconych przez organizację, mowa między innymi o mechanizmie TSIG (\textit{ang. Transaction Signature})  opisanym w
 rozdziale \ref{tsig} oraz wykorzystaniu połączenia szyfrowanego opartego na SSL pomiędzy serwerem podstawowym a podrzędnym. Jeśli
 chodzi o bezpieczeństwo dostępu do rekordów DNS poprzez panel kliencki, to możliwe jest wykorzystanie dwuetapowej weryfikacji użytkownika.
 
-Warto dodać, że \textit{DNS as a service} jest również w ofercie kilku innych, na przykład Akamai\cite{akamai},
-CloudFlare\cite{cloudflare} czy Imperva\cite{incapsula}. Obecność usług takich jak DNS as service sugeruje, że jest to bardzo
+Warto dodać, że \textit{DNS as a service} jest również w ofercie kilku innych, na przykład Akamai \cite{akamai},
+CloudFlare \cite{cloudflare} czy Imperva \cite{incapsula}. Obecność usług takich jak \textit{DNS as service} sugeruje, że jest to bardzo
 istotne, aby odpowiednio zabezpieczać nie tylko główne maszyny i usługi w swojej sieci ale i niemal każdy element, który działa
 w naszym systemie. Dodatkowo sugeruje to, że często administratorzy czy klienci wolą przenieść odpowiedzialność za utrzymywanie
 takiego systemu na firmę trzecią w zamian za odpowiednie ich wynagrodzenie.
 
 \section{DNS Enumeration}\label{zone_enumeration}
-Rozszerzenie DNSSEC \textit{DNS Security Extentions} zostało zaprezentowane w roku 1997\cite{RFC2065} jako odpowiedź na poważne
+Rozszerzenie DNSSEC (\textit{DNS Security Extentions}) zostało zaprezentowane w roku 1997 \cite{RFC2065} jako odpowiedź na poważne
 luki w bezpieczeństwie systemów DNS opisane w dokumencie \cite{DNSsecurityProblem}. W dużym uproszczeniu rozszerzenie to pozwala
 na zweryfikowanie, czy odpowiedź na zapytanie wysłane do serwera pochodzi na pewno od niego a nie od atakującego system.
 Wyspecyfikowanie standardu DNSSEC było problematyczne, a organizacje pracujące nad nim wielokrotnie go zmieniały. Podyktowane to
@@ -74,41 +75,43 @@ znajdujące się w danej strefie. Zjawisko nie jest luką krytyczną, jednak mo�
 Problem listowania strefy DNS wynika z różnego traktowania odpowiedzi pozytywnej oraz negatywnej od serwera. Odpowiedź pozytywna
 jest wysyłana w przypadku, gdy dana domena istnieje oraz przypisano jej adres IP. Przykładowo:
 \begin{enumerate}
+	\item rysunek
 	\item Klient: Jaki jest adres domeny www.przyklad.pl?
 	\item Serwer: Domena www.przyklad.pl ma adres 1.2.3.4.
 \end{enumerate}
 Jeśli chodzi o odpowiedź negatywną, to przykład podano poniżej:
 \begin{enumerate}
+	\item rysunek
 	\item Klient: Jaki jest adres dla domeny nieistnieje.przyklad.pl?
 	\item Serwer: Domena nieistnieje.przykład.pl nie istnieje.
 \end{enumerate}
 
-Oba przytoczone powyżej przypadki są w pewnym stopniu inaczej traktowane w protokole DNSSEC. Dla przykładu, gdy odpowiedzią jest
+Oba przytoczone powyżej przypadki są inaczej traktowane w protokole DNSSEC. Dla przykładu, gdy odpowiedzią jest
 adres IP istniejącej domeny, serwer autorytatywny przechowuje określony, skończony zbiór podpisanych rekordów. Podpisy są tworzone
 przy użyciu klucza prywatnego danej domeny. Istotny jest fakt, że podpisy rekordów nie są obliczane w czasie rzeczywistym, a jedynie
 przechowywane razem z innymi rekordami w bazie danych DNS. Zaletą takiego rozwiązania jest oczywiście redukcja obliczeń wykonywanych
 przez serwer autorytatywny a poza tym, tylko jeden z serwerów musi być w posiadaniu klucza prywatnego, więc dystrybucja klucza jest w
 dużym stopniu uproszczona. Dodatkowo w przedstawionym wcześniej modelu nie ma potrzeby, aby weryfikować tożsamość każdego z serwerów
-w systemie DNS, co ponownie upraszcza komunikację, zmniejsza obciążenie w sieci oraz ilość informacji.
+w systemie DNS, co ponownie upraszcza komunikację, zmniejsza obciążenie zasobów w sieci oraz ilość wymienianych informacji.
 
 Problem listowania strefy DNS pojawia się wraz z charakterystyczną, negatywną odpowiedzią (w specyfikacji określaną jako NXDOMAIN).
 Nie jest możliwe, aby odpowiadać na pytanie o niepoprawną domenę wcześniej przygotowaną wiadomością z obliczonym skrótem, ponieważ
-może to prowadzić do skutecznego ataku odtworzeniowego (ang. \textit{reply attack}). Nie jest możliwe obliczenie wszystkich skrótów,
+może to prowadzić do skutecznego ataku powtórzeniowego (ang. \textit{reply attack}). Nie jest możliwe obliczenie wszystkich skrótów,
 dla każdej z poddomen, bo takich przypadków jest zbyt wiele. Ciężko także zrezygnować z niewątpliwej zalety przytoczonej w poprzednim
-akapicie -- braku konieczności obliczania skrótów w czasie rzeczywistym. Pomysłodawcy rozwiązania opisanego w RFC4034\cite{RFC4034}
+akapicie -- braku konieczności obliczania skrótów w czasie rzeczywistym. Pomysłodawcy rozwiązania opisanego w RFC4034 \cite{RFC4034}
 zaproponowali algorytm, dzięki któremu możliwe będzie utrzymanie substytutu podpisanej wiadomości NXDOMAIN. Cały system zachowuje
 również zalety przedstawione w poprzednim akapicie. Rozwiązanie zakłada, że rekordy w strefie są uporządkowane, każda para rekordów
-jest podpisana i tworzy rekord NSEC a każdy rekord podpisany kluczem prywatnym. Jeśli serwer odbierze zapytanie o domenę, która
-nie istnieje, odpowiada rekordem NSEC pary domen które w uporządkowanej liście znajdują się odpowiednio przed i po odpytywanej
+jest podpisana i tworzy rekord NSEC, a każdy rekord podpisany kluczem prywatnym. Jeśli serwer odbierze zapytanie o domenę, która
+nie istnieje, odpowiada rekordem NSEC pary domen, które w uporządkowanej liście znajdują się odpowiednio przed i po odpytywanej
 domenie oraz związane z nimi podpisy. Rozwiązanie zapewnia, że tylko serwer autorytatywny powinien być obdarzony zaufaniem oraz
 umożliwia wstępną generację podpisów. Niestety wprowadza dodatkowo efekt uboczny, w postaci umożliwienia \textit{zone enumeration},
 czyli wylistowania strefy.
 
 Zagadnienie listowania stref DNS samo w sobie często było podmiotem dyskusji. Początkowo wydano dokument, że nie jest to błędem,
-że umożliwia się wypisanie bazy danych DNS\cite{RFC4033}. Później jednak wypracowany został kompromis\cite{RFC5155}, że w pewnych
-przypadkach znajomość wszystkich domen może powodować dodatkowe niebezpieczeństwa. Przykłady, które przytoczono w RFC5155\cite{RFC5155}
+że umożliwia się wypisanie bazy danych DNS \cite{RFC4033}. Później jednak wypracowany został kompromis \cite{RFC5155}, że w pewnych
+przypadkach znajomość wszystkich domen może powodować dodatkowe niebezpieczeństwa. Przykłady, które przytoczono w RFC5155 \cite{RFC5155}
 to na przykład dobre źródło danych wejściowych, które mogą posłużyć jako prawdopodobne adresy mailowe w kampaniach spamowych bądź
 jako informacje o infrastrukturze wykorzystywane podczas rekonesansu DNS. Ponadto podatność nazywana \textit{zone enumeration}
-może afektować na organizacje zajmujące się rejestrami DNS. Często są one zobowiązane do nieujawniania danych przechowywanych w
+może wpływać negatywnie na organizacje zajmujące się rejestrami DNS. Często są one zobowiązane do nieujawniania danych przechowywanych w
 swoich rejestrach. Rekord NSEC umożliwia przeprowadzenie \textit{DNS enumeration} na strefach tych organizacji a następnie wykonanie
-zapytań whois\cite{RFC3912} w celu pozyskania informacji o osobie rejestrującej domenę.
+zapytań whois \cite{RFC3912} w celu pozyskania informacji o osobie rejestrującej domenę.
