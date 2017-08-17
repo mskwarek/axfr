@@ -48,7 +48,7 @@ Szczegółowo zostaną one opisane w kolejnych punktach tego rozdziału.
 
 \subsection{Program dig zarządzany skryptami powłoki}
 Pierwszym rozwiązaniem, które powstało w ramach pracy nad opisywanym problemem był skaner AXFR oparty na programie
-dig\cite{isc}. Program skupia się wokół protokołu DNS i umożliwia wykonywanie zapytań różnych typów\cite{Liu:2006:DB:1197828}.
+dig \cite{isc}. Program skupia się wokół protokołu DNS i umożliwia wykonywanie zapytań różnych typów \cite{Liu:2006:DB:1197828}.
 Ponadto, jest prosty w obsłudze, daje duże możliwości jeśli chodzi o budowanie zapytań DNS oraz bardzo często dostępny jest
 domyślnie w wielu dystrybucjach systemów operacyjnych Linux.
 
@@ -56,7 +56,7 @@ Odpowiedzi uzyskane dzięki programowi miały być zapisywane do plików tekstow
 być zapisywana do oddzielnego pliku tekstowego, aby wykluczyć równoczesne użycie tego samego zasobu przez wiele procesów.
 Rozwiązanie tego typu działa oraz z powodzeniem przeskanowano kilka tysięcy domen, jednak okazało się zbyt wolne do zastosowania
 na szerszą skalę a także występowały kłopoty z zapotrzebowaniem na zasoby (mowa tu głównie o pamięci operacyjnej). Bliźniacze
-podejście zostało zastosowane w opisywanym wcześniej projekcie skanowania domen z listy \textit{Alexa 1 Milion}\cite{scans.io}.
+podejście zostało zastosowane w opisywanym wcześniej projekcie skanowania domen z listy \textit{Alexa 1 Milion} \cite{scans.io}.
 
 \subsection{Menedżer procesów zarządzany skryptami języka Python}
 Kolejną próbą rozwiązania problemu ogromnej liczby danych do przeskanowania była implementacja skanera w języku skryptowym Python.
@@ -64,7 +64,7 @@ Próba ta podyktowana była kilkoma istotnymi aspektami. Pierwszym z nich jest i
 standardowej bibliotece tego języka. Umożliwiło to implementację mechanizmu, który pozwolił sprawdzić, czy maszyna dysponuje
 takimi zasobami, które pozwolą na uruchomienie kolejnego wątku skanującego. Dodatkowym atutem jest tu także możliwość wywoływania
 poleceń powłoki systemu Linux ze skryptu języka Python, a więc możliwe było wykorzystanie istniejącej już implementacji programu
-dig\cite{isc}.
+dig \cite{isc}.
 
 Niestety podobnie jak we wcześniej opisywanym przypadku, problemem okazały się ograniczenia czasowe spowodowane niewystarczającą
 ilością zasobów. Program został przetestowany podczas kilkudniowego skanowania i zdołano odpowiednio:
@@ -77,14 +77,14 @@ ilością zasobów. Program został przetestowany podczas kilkudniowego skanowan
 Pomimo, że implementacja w języku Python nie okazała się na tyle wydajna aby wykorzystać ją w badaniach przeprowadzonych w
 ramach tej pracy magisterskiej, jest to dobrze narzędzie dla pasjonatów bezpieczeństwa sieciowego, którzy chcą skanować wiele
 serwerów. Podejście takie zaprezentowane jest w kilku projektach, które można znaleźć w serwisie github na przykład
-Python-AXFR-test\cite{python_axfr_test} lub skanowanie domen z Alexy wraz ze wstępną analizą wyników\cite{asg-axfr}. Liczba osób,
+Python-AXFR-test \cite{python_axfr_test} lub skanowanie domen z Alexy wraz ze wstępną analizą wyników \cite{asg-axfr}. Liczba osób,
 które śledzą wymienione wyżej projekty znajduje się w przedziale kilkudziesięciu osób. (?? Sporne) Również na tej podstawie możemy zakładać,
 że temat bezpieczeństwa transferów strefy cieszy się zainteresowaniem wśród pasjonatów bezpieczeństwa sieci. (??)
 
 Można przypuszczać, że oba projekty zrealizowane w języku Python \cite{python_axfr_test, asg-axfr} oferują podobną wydajność do
 rozwiązania zaimplementowanego podczas realizacji pracy magisterskiej, jednak nie były prowadzone pomiary pod tym kątem. Brak
-bezpośredniego porównania wynika z faktu, że prace Stephena Haywooda\cite{asg-axfr} były prowadzone niemal równolegle z realizacją
-niniejszej pracy magisterskiej, zaś skrypt Python-AXFR-test\cite{python_axfr_test} jest jednowątkowy i nastawiony głównie na test
+bezpośredniego porównania wynika z faktu, że prace Stephena Haywooda \cite{asg-axfr} były prowadzone niemal równolegle z realizacją
+niniejszej pracy magisterskiej, zaś skrypt Python-AXFR-test \cite{python_axfr_test} jest jednowątkowy i nastawiony głównie na test
 pojedynczych serwerów, więc jego wykorzystanie wymagałoby implementacji bardzo podobnego mechanizmu, który opisywany był na
 początku tego rozdziału.
 
@@ -104,7 +104,7 @@ Rolę danych wejściowych programu mogą pełnić odpowiednio:
 Zdecydowano się na takie rozróżnienie z prostego powodu. Autor rozwiązania chciał zachować podobieństwo tworzonego rozwiązania
 do programu dig, który jest wykorzystywany przez wiele osób. Dodatkowo, dużo łatwiej można testować logikę programu na małych
 porcjach danych i opcja numer 2. została w pewnym sensie funkcją debugową. Jako wspomniane dane testowe najczęściej wykorzystywana
-była domena \textit{zonetransfer.me}\cite{zonetransfer}, której autor specjalnie umożliwia transfer strefy, aby uzmysłowić innym
+była domena \textit{zonetransfer.me} \cite{zonetransfer}, której autor specjalnie umożliwia transfer strefy, aby uzmysłowić innym
 ludziom zagrożenie wynikające z niepowołanego korzystania.
 
 Logika programu jest bardzo prosta. Początkowo budowana jest jednostka APDU protokołu DNS z odpowiednimi danymi, a w szczególności
@@ -144,7 +144,7 @@ Program umożliwia parsowanie najbardziej popularnych i najczęściej używanych
 	\item DNSKEY
 \end{enumerate}
 Algorytm postępowania w przypadku odebrania pakietu danych przedstawiony jest na rysunku \ref{fig:receiving}. Dane odbierane z interfejsu
-sieciowego są zapisane w systemie szesnastkowym, zgodnie z zaleceniami znanymi dokumentu RFC 1035\cite{RFC1035}.
+sieciowego są zapisane w systemie szesnastkowym, zgodnie z zaleceniami znanymi dokumentu RFC 1035 \cite{RFC1035}.
 
 \begin{figure}[ht]
 	\centering
@@ -194,7 +194,7 @@ gdyby dane w nim zawarte były wybrane losowo. Nie można założyć, że wszyst
 Jeśli więc dane wejściowe byłyby uporządkowane a proces zakończył się błędem wprowadzona zostanie dodatkowa, błędna korelacja między
 brakiem odpowiedzi od serwera a nazwą domeny.
 
-W systemach Linux dostępny jest domyślnie program \textit{shuf}\cite{shuf}, który dokonuje permutacji na konkretnych liniach w pliku,
+W systemach Linux dostępny jest domyślnie program \textit{shuf} \cite{shuf}, który dokonuje permutacji na konkretnych liniach w pliku,
 jednak niemożliwe było wykorzystanie go wraz z plikiem z danymi wejściowymi z powodów ograniczeń wydajnościowych. Program nie był w
 stanie zaalokować odpowiedniej liczby komórek w pamięci komputera. Aby zasymulować element losowości zastosowano algorytm zaprezentowany
 na diagramie na rysunku \ref{fig:shufAlgorithm} oparty na dzieleniu całego zbioru danych wejściowych oraz permutowaniu kolejnych linii
@@ -225,6 +225,6 @@ domen oraz utworzenie odpowiedniego pliku tekstowego. Zawarte są w nim domeny o
 strefy dla danej domeny. Nazwa pliku odpowiada adresowi mailowemu zarządcy domeny.
 
 Po otrzymaniu zbioru plików opisanych powyżej uruchamiany jest proces, którego zadaniem jest wysłanie wiadomości pod określone
-adresy. Skrypt, który automatyzuje opisaną czynność napisano w języku Python\cite{python}. Wysyłane wiadomości podpisywane są
-kluczem PGP\cite{RFC4880}, aby odbiorca mógł zweryfikować, że wiadomość została odebrana dokładnie w takiej formie jak ją przygotowano
+adresy. Skrypt, który automatyzuje opisaną czynność napisano w języku Python \cite{python}. Wysyłane wiadomości podpisywane są
+kluczem PGP \cite{RFC4880}, aby odbiorca mógł zweryfikować, że wiadomość została odebrana dokładnie w takiej formie jak ją przygotowano
 i wysłano.
