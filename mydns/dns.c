@@ -1,6 +1,6 @@
 #include<stdio.h> //printf
 #include<string.h>    //strlen
-#include<stdlib.h>    
+#include<stdlib.h>
 #include<sys/socket.h>    //you know what this is for
 #include<arpa/inet.h> //inet_addr , inet_ntoa , ntohs etc
 #include<netinet/in.h>
@@ -42,7 +42,7 @@ enum
     T_RRSIG = 46,
     T_NSEC = 47,
     T_DNSKEY = 48
-    
+
   };//Mail server
 
 
@@ -51,20 +51,20 @@ struct DNS_HEADER
 {
     unsigned short len;
     unsigned short id; // identification number
- 
+
     unsigned char rd :1; // recursion desired
     unsigned char tc :1; // truncated message
     unsigned char aa :1; // authoritive answer
     unsigned char opcode :4; // purpose of message
     unsigned char qr :1; // query/response flag
- 
+
     unsigned char rcode :4; // response code
     unsigned char cd :1; // checking disabled
     unsigned char ad :1; // authenticated data
     unsigned char z :1; // its z! reserved
     unsigned char ra :1; // recursion available
   //    unsigned char adbit :1;
-  
+
     unsigned short q_count; // number of question entries
     unsigned short ans_count; // number of answer entries
     unsigned short auth_count; // number of authority entries
@@ -77,7 +77,7 @@ struct QUESTION
     unsigned short qtype;
     unsigned short qclass;
 };
- 
+
 //Constant sized fields of the resource record structure
 #pragma pack(push, 1)
 struct R_DATA
@@ -88,7 +88,7 @@ struct R_DATA
     unsigned short data_len;
 };
 #pragma pack(pop)
- 
+
 //Pointers to resource record contents
 struct RES_RECORD
 {
@@ -96,7 +96,7 @@ struct RES_RECORD
     struct R_DATA *resource;
     unsigned char *rdata;
 };
- 
+
 //Structure of a Query
 typedef struct
 {
@@ -149,9 +149,9 @@ void ngethostbyname(const char *que , const char *server, const char *dst_log_pa
     unsigned char buf[65536] = {0};
     struct hostent *he = NULL;
     struct sockaddr_in dest = {0};
- 
+
     DNS_H *dns = NULL;
- 
+
     printf("%s %s\n", que, server);
     s = socket(AF_INET , SOCK_STREAM , IPPROTO_TCP);
     if(s<0)
@@ -260,7 +260,7 @@ void ngethostbyname(const char *que , const char *server, const char *dst_log_pa
 
     unsigned char *qname = NULL;
     struct QUESTION *qinfo = NULL;
-    unsigned char host[128] = {0}; 
+    unsigned char host[128] = {0};
       //Set the DNS structure to standard queries
 
     snprintf(host, 128, "%s", que);
@@ -292,7 +292,7 @@ void ngethostbyname(const char *que , const char *server, const char *dst_log_pa
     qinfo->qtype = htons( query_type ); //type of the query , A , MX , CNAME , NS etc
     qinfo->qclass = htons(1);
     dns->len = htons((unsigned int)sizeof(struct DNS_HEADER) + (strlen((const char*)qname)+1) + sizeof(struct QUESTION)-2);
-    
+
     int len = (unsigned int)sizeof(struct DNS_HEADER) + (strlen((const char*)qname)+1) + sizeof(struct QUESTION);
     int n = write(s, (char*)buf, len);
     if (n < 0) {
@@ -320,7 +320,7 @@ void ngethostbyname(const char *que , const char *server, const char *dst_log_pa
 	    close(s);
 	    return;
 	  }
-	memcpy(buf+off, replyMessage, numBytesRecv);    
+	memcpy(buf+off, replyMessage, numBytesRecv);
 	off+=numBytesRecv;
 	// printf("%ld\n", numBytesRecv);
 	if(off>=data_length+2 && off != 0)
@@ -351,7 +351,7 @@ void ngethostbyname(const char *que , const char *server, const char *dst_log_pa
       {
 	return;
       }
-    
+
 
     FILE *f = fopen(filename, "w");
     if (f == NULL)
@@ -359,18 +359,22 @@ void ngethostbyname(const char *que , const char *server, const char *dst_log_pa
         printf("Error opening file!\n");
         return;
     }
-    
+
     // printf("\nThe response contains : ");
     // printf("\n %d Answers.",ntohs(dns->ans_count));
 
 
     answers = (struct RES_RECORD*)calloc(ntohs(dns->ans_count), sizeof(struct RES_RECORD));
+    if(answers == NULL)
+    {
+        return;
+    }
 
     //move ahead of the dns header and the query field
     reader = &buf[sizeof(struct DNS_HEADER) + (strlen((const char*)qname)+1) + sizeof(struct QUESTION)];
-    
+
     //Start reading answers
- 
+
 
     for(i=0;i<ntohs(dns->ans_count);i++)
       {
@@ -389,6 +393,10 @@ void ngethostbyname(const char *que , const char *server, const char *dst_log_pa
 
 	fprintf(f, "%s\t%d\t%d\t", na, ttl, type);
 	answers[i].rdata = (unsigned char*)malloc(name_size);
+    if(answersi].rdata == NULL)
+    {
+        i--;
+    }
 	ReadName(reader, name_size, type, buf + 2, f);
 	reader+=name_size;
       }
@@ -402,13 +410,13 @@ void ngethostbyname(const char *que , const char *server, const char *dst_log_pa
 }
 
 /*
- * 
+ *
  * */
 
 void ReadName(unsigned char* reader,size_t data_len, unsigned short type, unsigned char* dns, FILE* f)
 {
   switch(type)
-    {      
+    {
     case T_A:
       parse_ip(reader, f);
       break;
@@ -553,14 +561,18 @@ void parse_naptr(unsigned char* data, unsigned short data_len, FILE* f)
 
     unsigned char *txt3= NULL;
     unsigned char *txt4= NULL;
-        
+
     int i =0;
 
     txt = (unsigned char*)calloc(flags_length+1, sizeof(unsigned char));
+    if(txt==NULL)
+    {
+        return;
+    }
     while(i<flags_length)
     {
         txt[i++]=*data++;
-        
+
     }
     txt[i]='\0';
 
@@ -568,6 +580,10 @@ void parse_naptr(unsigned char* data, unsigned short data_len, FILE* f)
     ++data;
     i=0;
     txt2 = (unsigned char*)calloc(service_len+1, sizeof(unsigned char));
+    if(txt2 == NULL)
+    {
+        return;
+    }
     while(i<service_len)
     {
         txt2[i++]=*data++;
@@ -578,17 +594,25 @@ void parse_naptr(unsigned char* data, unsigned short data_len, FILE* f)
     ++data;
     i=0;
     txt3 = (unsigned char*)calloc(regex_len+1, sizeof(unsigned char));
+    if(txt3 == NULL )
+    {
+        return;
+    }
     while(i<regex_len)
     {
         txt3[i++]=*data++;
     }
     txt3[i]='\0';
-    
+
     i=0;
     int rep_len = data_len - 5 - 1 -1 - 1 -service_len-regex_len;
     // ++data;
-//printf("\n\n\n DUPA : %d\n\n", rep_len);
+
     txt4 = (unsigned char*)calloc(rep_len+1, sizeof(unsigned char));
+    if(txt4 == NULL)
+    {
+        return;
+    }
     while(i<rep_len)
     {
       txt4[i++]=*data++;
@@ -598,12 +622,12 @@ void parse_naptr(unsigned char* data, unsigned short data_len, FILE* f)
     convert_name(txt4);
 
     fprintf(f,"%u %u %d %d %s %s %s %s\n", order, preference, flags_length, service_len, txt, txt2, txt3, txt4);
-    
+
     free(txt);
     free(txt2);
     free(txt3);
     free(txt4);
-    
+
 }
 
 void parse_ip(unsigned char* data, FILE* f)
@@ -647,7 +671,7 @@ void parse_soa(unsigned char* data, unsigned short data_len, unsigned char* dns,
     memset(name, 0, 1024);
     p = readSOA(data+p+1, dns, name);
     fprintf(f,"%s ", name);
-    
+
     unsigned int serial_no = parse_to_uint(data+p+3);
     unsigned int refresh = parse_to_uint(data+p+7);
     unsigned int retry = parse_to_uint(data+p+11);
@@ -729,7 +753,7 @@ void parse_nsec(unsigned char* data, unsigned char* dns, FILE* f)
   readSOA(data, dns, name);
     fprintf(f,"%s\n", name);
 }
- 
+
 int getName(unsigned char* data, unsigned char* dns_packet_resp, FILE* f)
 {
     unsigned char name[1024] = {0};
@@ -757,7 +781,7 @@ unsigned int readString(unsigned char* data, unsigned char* dns_packet_resp, uns
 {
     unsigned int p = 0;
     //printf("name data: %02x %02x  ", *data, *(data+1));
-  
+
     while(*data != 0x00)
     {
         if((uint8_t)(*data) >= 192)
@@ -820,20 +844,20 @@ void convert_name(unsigned char *name)
 
 
 /*
- * This will convert www.google.com to 3www6google3com 
+ * This will convert www.google.com to 3www6google3com
  * got it :)
  * */
-void ChangetoDnsNameFormat(unsigned char* dns,unsigned char* host) 
+void ChangetoDnsNameFormat(unsigned char* dns,unsigned char* host)
 {
     int lock = 0 , i = 0;
     strcat((char*)host,".");
-     
-    for(i = 0 ; i < strlen((char*)host) ; i++) 
+
+    for(i = 0 ; i < strlen((char*)host) ; i++)
     {
-        if(host[i]=='.') 
+        if(host[i]=='.')
         {
             *dns++ = i-lock;
-            for(;lock<i;lock++) 
+            for(;lock<i;lock++)
             {
                 *dns++=host[lock];
             }
