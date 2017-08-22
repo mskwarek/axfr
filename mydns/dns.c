@@ -493,6 +493,11 @@ unsigned short parse_to_ushort(unsigned char* data)
 void parse_default(unsigned char* data, unsigned short data_len, FILE* f)
 {
   int i = 0;
+  if(data_len ==0)
+  {
+      return;
+  }
+
   printf("%d\n", data_len);
   while(i < data_len)
     {
