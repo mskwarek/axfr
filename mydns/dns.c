@@ -426,6 +426,10 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
 
 dns_result ReadName(unsigned char* reader,size_t data_len, unsigned short type, unsigned char* dns, FILE* f)
 {
+    if(type < 1 || type > 256)
+    {
+        return DNS_RESULT_ERR;
+    }
   switch(type)
     {
     case T_A:
@@ -481,7 +485,6 @@ dns_result ReadName(unsigned char* reader,size_t data_len, unsigned short type, 
       break;
     default:
       parse_default(reader, (unsigned short) data_len, f);
-      printf("%d\n", type);
       break;
     }
     return DNS_RESULT_OK;
