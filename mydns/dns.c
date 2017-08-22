@@ -113,7 +113,7 @@ static int parse_name(char* cp,char* qname, unsigned int qname_maxlen);/* analyz
 //Function Prototypes
 void convert_name(unsigned char *name);
 void ChangetoDnsNameFormat (unsigned char*,unsigned char*);
-void ReadName(unsigned char* reader, size_t data_len, unsigned short type, unsigned char* dns, FILE* f);
+dns_result ReadName(unsigned char* reader, size_t data_len, unsigned short type, unsigned char* dns, FILE* f);
 int hostname_to_ip(const char *hostname , char *ip);
 void parse_ip(unsigned char* data, FILE* f);
 void parse_ptr(unsigned char* data, unsigned short data_len, unsigned char* dns, FILE* f);
@@ -420,7 +420,7 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
  *
  * */
 
-void ReadName(unsigned char* reader,size_t data_len, unsigned short type, unsigned char* dns, FILE* f)
+dns_result ReadName(unsigned char* reader,size_t data_len, unsigned short type, unsigned char* dns, FILE* f)
 {
   switch(type)
     {
