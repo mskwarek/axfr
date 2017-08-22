@@ -383,7 +383,7 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
         unsigned int name_offset = readSOA(reader, buf+2, na) + 1;
         unsigned short dnsIdFromPacket = ((*(buf) << 8) &0xFF00) | (*(buf+1) & 0xFF);
 
-        printf("%d, %d", dns_id, dnsIdFromPacket);
+        printf("%d, %d\n", dns_id, dnsIdFromPacket);
 
     	unsigned short class = ((*(reader+2 + name_offset) << 8) &0xFF00) | (*(reader+3 + name_offset) & 0xFF);
     	unsigned short type = ((*(reader+name_offset) << 8) &0xFF00) | (*(reader+1 +name_offset) & 0xFF);
