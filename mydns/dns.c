@@ -481,6 +481,7 @@ dns_result ReadName(unsigned char* reader,size_t data_len, unsigned short type, 
       break;
     default:
       parse_default(reader, (unsigned short) data_len, f);
+      printf("%d\n", type);
       break;
     }
     return DNS_RESULT_OK;
