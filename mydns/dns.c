@@ -366,6 +366,7 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
     answers = (struct RES_RECORD*)calloc(ntohs(dns->ans_count), sizeof(struct RES_RECORD));
     if(answers == NULL)
     {
+        fclose(f);
         return DNS_RESULT_NO_MEMORY;
     }
 
@@ -389,13 +390,16 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
 
     	reader+=10 + name_offset;
 
-    	fprintf(f, "%s\t%d\t%d\t", na, ttl, type);
     	answers[i].rdata = (unsigned char*)malloc(name_size);
         if(answers[i].rdata == NULL && mallocRetry < 4)
         {
             mallocRetry++;
         }
-    	if(DNS_RESULT_NO_MEMORY != ReadName(reader, name_size, type, buf + 2, f) || noMemory > 2)
+        else
+        {
+            fprintf(f, "%s\t%d\t%d\t", na, ttl, type);
+        }
+    	if((DNS_RESULT_NO_MEMORY != ReadName(reader, name_size, type, buf + 2, f)) || noMemory > 2)
         {
            reader+=name_size;
            noMemory = 0;
@@ -489,6 +493,7 @@ unsigned short parse_to_ushort(unsigned char* data)
 void parse_default(unsigned char* data, unsigned short data_len, FILE* f)
 {
   int i = 0;
+  printf("%d", data_len);
   while(i < data_len)
     {
       fprintf(f, "%02x", *(data+i));
