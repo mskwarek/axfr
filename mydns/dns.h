@@ -2,11 +2,18 @@
 #include <stdio.h>
 
 
-void ngethostbyname (const char* , const char*, const char *dst_log_path, int, int);
+typedef enum
+{
+	DNS_RESULT_ERR,
+	DNS_RESULT_NO_MEMORY,
+	DNS_RESULT_OK
+} dns_result;
+
+dns_result ngethostbyname (const char* , const char*, const char *dst_log_path, int, int);
 
 /**
    @filedns.h
-   @brief Implement Simple Domain Name System Protocol 
+   @brief Implement Simple Domain Name System Protocol
 */
 
 #ifndef __DNS_H
@@ -19,10 +26,10 @@ void ngethostbyname (const char* , const char*, const char *dst_log_path, int, i
     +---------------------+
     |       Question      | the question for the name server
     +---------------------+
-    |        Answer       | Resource Records answering the question            
-    +---------------------+                                        
-    |      Authority      | Resource Records pointing toward an authority      
-    +---------------------+                                        
+    |        Answer       | Resource Records answering the question
+    +---------------------+
+    |      Authority      | Resource Records pointing toward an authority
+    +---------------------+
     |      Additional     | Resource Records holding additional information
     +---------------------+
 
@@ -57,7 +64,7 @@ void ngethostbyname (const char* , const char*, const char *dst_log_path, int, i
 /*QCLASS values
 
 CLASS fields appear in resource records.  The following CLASS mnemonics
-and values are defined: 
+and values are defined:
 */
 /* CLASS */
 #define CLASS_IN 1 /**< the Internet */
@@ -147,7 +154,7 @@ TYPE fields are used in resource records.  Note that these types are a subset of
 #define RC_SERVER_FAIL 2/**< Server failure - The name server was unable to process this query due to a problem with the name server. */
 #define RC_NAME_ERROR 3/**< Name Error - Meaningful only for responses from an authoritative name server, this code signifies that the domain name referenced in the query does not exist.*/
 #define RC_NOT_IMPL 4/**< Not Implemented - The name server does not support the requested kind of query.*/
-#define RC_REFUSED 5/**< Refused - The name server refuses to perform the specified operation for policy reasons. 
+#define RC_REFUSED 5/**< Refused - The name server refuses to perform the specified operation for policy reasons.
 		     For example, a name server may not wish to provide the information to the particular requester,
 		     or a name server may not wish to perform a particular operation (e.g., zone */
 
@@ -228,7 +235,7 @@ Each resource record has the following format:
       0  1  2  3  4  5  6  7  8  9  0  1  2  3  4  5
     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
     |                                               |
-    /                                               /        
+    /                                               /
     /                      NAME                     /
     |                                               |
     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
@@ -333,4 +340,3 @@ Each resource record has the following format:
 
 
 										      #endif
-										      
