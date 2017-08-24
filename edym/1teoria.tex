@@ -53,16 +53,20 @@ przedstawiono węzeł główny (ang. \textit{root}) reprezentowany jako znak poj
 pierwszego poziomu.
 
 \begin{center}
+	\begin{figure}
 	\includegraphics[scale=1]{image/hierarchy_dns}
+	\caption{Heriarchia systemu DNS \cite{hierarchy_dns}.}
 	\label{hierarchy_dns}
+	\end{figure}
 \end{center}
 
 Dzięki tej hierarchii systemu możemy powiedzieć o DNS, że charakteryzuje go bardzo dobra skalowalność oraz elastyczność.
 
 Podział ze względu na położenie geograficzne jest oczywiście bardziej naturalny i łatwy zarówno do wdrożenia jak i zrozumienia.
-Każdemu z państw przydzielono dwu bądź trzyliterowy identyfikator, który reprezentują domenę najwyższego poziomu odpowiadającą
-danemu państwu. Powołując się na informacje przedstawione na grafice \ref{hierarchy_dns} TLD o identyfikatorze \textit{uk}
-odpowiada domenom utożsamianym z Wielką Brytanią, a \textit{fr} -- domenom francuskim.
+Każdemu z państw przydzielono dwuliterowy identyfikator, który reprezentuje domenę najwyższego poziomu odpowiadającą
+danemu państwu. Dozwolone są także trzyliterowe identyfikatory domen najwyższego poziomu (np com, net, org), które z reguły
+przypisywane są różnego rodzaju organizacjom. Powołując się na informacje przedstawione na grafice \ref{hierarchy_dns}
+TLD o identyfikatorze \textit{uk} odpowiada domenom utożsamianym z Wielką Brytanią, a \textit{fr} -- domenom francuskim.
 
 Hierarchia systemu DNS wynika z faktu, że domenami internetowymi każdego poziomu może zarządzać inna organizacja. Odnosi się to
 zarówno do domeny \textit{root}, jak i domen najwyższego poziomu niezależnie od przynależności grupowej. W Polsce identyfikatorem
@@ -91,7 +95,7 @@ razem z jej poddomenami i odpowiednimi miejscami w hierarchii systemu przedstawi
 	\end{figure}
 \end{center}
 
-Serwer autorytatywny (ang. \textit{domain authority}) posiada odgórne przyzwolenie na zarządzanie nazwami swoich hostów
+Serwer autorytatywny (ang. \textit{authoritative name server}) posiada odgórne przyzwolenie na zarządzanie nazwami swoich hostów
 (kto przyznaje(?) \cite{toDoWarning}). Ze względu na drzewiastą strukturę systemu można oczekiwać, że kolejne domeny oraz ich serwery
 autorytatywne będą delegować odpowiedzialność za kolejne strefy do serwerów niższego poziomu. W ten sposób, powołując się na przykład
 przedstawiony na rysunku \ref{example_domain_tree} serwer autorytatywny .com zarządza nazwami w domenie .com, natomiast zarządzanie
@@ -205,58 +209,56 @@ mogą być różnych typów. Najpopularniejsze typy to oczywiście te, z którym
 wspomnianych podstawowych typów twórcy standardu dla systemu DNS wprowadzili także mniej znane typy. Opis zbioru najbardziej
 istotnych wpisów określonych w dokumencie RFC 1035 \cite{RFC1035} wraz z ich przeznaczeniem umieszczono w tabeli \ref{typyRekordowDns}.
 
-\begin{longtable}{ccc}
-	\caption{Rodzaje rekordów w bazach danych serwerów przestrzeni nazw. Opis na podstawie \cite{RFC1035}.}\\
+\begin{longtable}{|l|p{3cm}|p{8cm}|}
+
+	\hline
+	\textbf{Rekord} &
+	\textbf{Pełna nazwa} &
+	\textbf{Pełniona funkcja(opis zawartości)} \\ \hline\hline
+	A &
+	Wpis mapowania adresów (ang. \textit{Address mapping record}) &
+	Określa adres IP wersji 4 dla danego hosta. Służą do konwersji nazwy domen do odpowiednich adresów IP.\\
+	\hline
+	CNAME &
+	Nazwa kanoniczna (ang. \textit{Canonical Name)} &
+	Określa alias. Ruch kierowany do domeny o takiej nazwie przekierowywany jest do domeny wyspecyfikowanej
+	w rekordzie CNAME.
+	\\
+	\hline
+	MX &
+	Wymiana wiadomości elektronicznych (ang. \textit{Mail exchange)} &
+	Na podstawie nazwy domeny znajdującej się w adresie poczty wskazuje serwer poczty elektronicznej, który odpowiedzialny jest
+	za przyjmowanie tych wiadomości. We wpisie znajduje się również priorytet używany wówczas, gdy dostępnych jest więcej serwerów
+	pocztowych. Ponadto, zbiór rekordów w domenie wykorzystywany jest do trasowania wiadomości w protokole SMTP.
+	\\
+	\hline
+	NS &
+	Serwer nazw (ang. \textit{Name server)} &
+	Określa nazwę serwera, który został oddelegowany do obsługi danej domeny.
+	\\
+	\hline
+	SOA &
+	Wskaźnik na początkowy węzeł hierarchii (ang. \textit{Start of Authority)} &
+	Wpis SOA zawiera informacje dotyczące zarządzania strefą. Jest istotny głównie z punktu widzenia transferu strefy DNS.
+	Składa się z odpowiednich wpisów:
+	\begin{itemize}
+		\item primary -- adres serwera głównego (ang. \textit{primary}) dla danej strefy,
+		\item adres poczty administratora,
+		\item numer seryjny -- uaktualniany przy każdej zmianie informacji w pliku strefy,
+		\item czas życia -- czas w sekundach określający okres odpytywania serwera głównego przez serwer podrzędny o numer seryjny pliku strefy; zapewnia spójność danych na serwerach podrzędnych,
+		\item ponowienie żądania -- czas, który powinien odczekać serwer podrzędny jeśli serwer główny nie odpowiedział na żądanie (w sekundach); po jego upłynięciu możliwe jest ponowne wysłanie żądania,
+		\item czas przedawnienia -- czas w sekundach, po którym serwer podrzędny powinien przestać odpytywać serwer podstawowy,
+		\item TTL czas przechowywania odpowiedzi typu NXDOMAIN od serwera autorytatywnego (ang. \textit{negative caching}).
+	\end{itemize}
+	\\
+	\hline
+	TXT &
+	Tekst &
+	Wpis przeznaczony do umieszczania dodatkowych informacji dla klienta. Jest to niesformatowany tekst, może być informacją
+	zarówno dla człowieka jak i maszyny.\\
+	\hline
+	\caption{Rodzaje rekordów w bazach danych serwerów przestrzeni nazw. Opis na podstawie \cite{RFC1035}.}
 	\label{typyRekordowDns}
-	\begin{tabular}{|r|p{3cm}|p{8cm}|}
-		\toprule
-			\textbf{Rekord} &
-			\textbf{Pełna nazwa} &
-			\textbf{Pełniona funkcja(opis zawartości)} \\
-		\midrule
-			A &
-			Wpis mapowania adresów (ang. \textit{Address mapping record}) &
-			Określa adres IP wersji 4 dla danego hosta. Służą do konwersji nazwy domen do odpowiednich adresów IP.\\
-		\hline
-			CNAME &
-			Nazwa kanoniczna (ang. \textit{Canonical Name)} &
-			Określa alias. Ruch kierowany do domeny o takiej nazwie przekierowywany jest do domeny wyspecyfikowanej
-			w rekordzie CNAME.
-			\\
-		\hline
-			MX &
-			Wymiana wiadomości elektronicznych (ang. \textit{Mail exchange)} &
-			Na podstawie nazwy domeny znajdującej się w adresie poczty wskazuje serwer poczty elektronicznej, który odpowiedzialny jest
-			za przyjmowanie tych wiadomości. We wpisie znajduje się również priorytet używany wówczas, gdy dostępnych jest więcej serwerów
-			pocztowych. Ponadto, zbiór rekordów w domenie wykorzystywany jest do trasowania wiadomości w protokole SMTP.
-			\\
-		\hline
-			NS &
-			Serwer nazw (ang. \textit{Name server)} &
-			Określa nazwę serwera, który został oddelegowany do obsługi danej domeny.
-			\\
-		\hline
-			SOA &
-			Wskaźnik na początkowy węzeł hierarchii (ang. \textit{Start of Authority)} &
-			Wpis SOA zawiera informacje dotyczące zarządzania strefą. Jest istotny głównie z punktu widzenia transferu strefy DNS.
-			Składa się z odpowiednich wpisów:
-			\begin{itemize}
-				\item primary -- adres serwera głównego (ang. \textit{primary}) dla danej strefy,
-				\item adres poczty administratora,
-				\item numer seryjny -- uaktualniany przy każdej zmianie informacji w pliku strefy,
-				\item czas życia -- czas w sekundach określający okres odpytywania serwera głównego przez serwer podrzędny o numer seryjny pliku strefy; zapewnia spójność danych na serwerach podrzędnych,
-				\item ponowienie żądania -- czas, który powinien odczekać serwer podrzędny jeśli serwer główny nie odpowiedział na żądanie (w sekundach); po jego upłynięciu możliwe jest ponowne wysłanie żądania,
-				\item czas przedawnienia -- czas w sekundach, po którym serwer podrzędny powinien przestać odpytywać serwer podstawowy,
-				\item TTL czas przechowywania odpowiedzi typu NXDOMAIN od serwera autorytatywnego (ang. \textit{negative caching}).
-			\end{itemize}
-			\\
-		\hline
-			TXT &
-			Tekst &
-			Wpis przeznaczony do umieszczania dodatkowych informacji dla klienta. Jest to niesformatowany tekst, może być informacją
-			zarówno dla człowieka jak i maszyny.\\
-		\bottomrule
-	\end{tabular}
 \end{longtable}
 
 Oczywiście na przestrzeni lat protokół rozszerzano o kolejne funkcje. Jednym z istotnych wydarzeń było zaproponowanie zmian
@@ -306,6 +308,37 @@ do standardu organizacji, czy też przydzielania numerów telefonów. Integracja
 W wyżej opisany sposób otrzymaliśmy odpowiednik numeru telefonu w domenie .e164.arpa. Mechanizm mapowania numerów tradycyjnej sieci
 PSTN na adresy internetowe ma szczególne znaczenie w integracji dwóch technik wykonywania połączenia, a konkretnie PSTN oraz VoIP.
 Mapowanie numerów na adresy internetowe zostało opisane między innymi w RFC3761 \cite{RFC3761}.
+
+\subsection{Plik strefy DNS}
+Strefy DNS są przechowywane na serwerach w formie specjalnie sformatowanych plików. To w nich definiuje się oraz umieszcza kolejne
+wpisy, rekordy, które będą zwracane dla różnego rodzaju zapytań. Plik strefy jest jednym z kluczowych jeśli chodzi o konfigurację
+serwera DNS. Na listingu \ref{list:dns_zone_file} zaprezentowano przykładowy plik strefy DNS wraz z kilkoma wpisami. Przedstawiony
+plik jest zformatowany zgodnie z wymaganiami stawianymi przez implementację serwera DNS zawartą w pakiecie
+BIND \cite{Liu:2006:DB:1197828, isc, domain_example}.
+
+\begin{lstlisting}[label={list:dns_zone_file},captionpos=b,caption=Przykładowy plik strefy DNS.,language=bash]
+	$TTL 2d
+	$ORIGIN example.com.
+	@              IN      SOA   ns1.example.com. hostmaster.example.com. (
+	               2003080800
+	               2h
+	               15M
+	               3W12h
+	               2h20M
+	               )
+	              IN      NS     ns1.example.com.
+	              IN      NS     ns2.example.com.
+	              IN      MX     10 mail.example.com.
+	ns1           IN      A      192.168.0.3
+	ns2           IN      A      192.168.0.4
+	mail          IN      A      192.168.0.5
+
+	$ORIGIN us.example.com.
+	@             IN      NS     ns3.us.example.com.
+	              IN      NS     ns1.example.com.
+	ns3           IN      A      10.10.0.24
+	$
+\end{lstlisting}
 
 \section{Transfer strefy DNS}
 Transfer strefy DNS jest typem transakcji DNS, która jest podstawowym elementem mechanizmu odtwarzania bazy danych DNS pomiędzy
@@ -384,7 +417,7 @@ obliczona przez funkcję skrótu jest różna od wartości odebranej w rekordzie
 odrzucić oraz powiadomić o tym fakcie nadawcę wiadomości. Rekord TSIG niesie także informacje o dwóch czasach: pierwszy -- kiedy
 utworzono skrót oraz drugi -- jak długo skrót zachowuje swoją ważność. Weryfikacja odebranego pakietu obejmuje nie tylko wartość
 funkcji skrótu, ale także opisany czas. Jeśli czas odebrania wiadomości nie zawiera się w okresie jej ważności odsyłany jest komunikat
-o błędzie. Dodanie czasu utworzenia pakietu było konieczne, aby zabezpieczyć się przed atakami typu powtórzeniowego (ang. \texit{reply attacks}),
+o błędzie. Dodanie czasu utworzenia pakietu było konieczne, aby zabezpieczyć się przed atakami typu powtórzeniowego (ang. \textit{reply attacks}),
 gdzie atakujący wykorzystuje informacje z podsłuchanego pakiet ponownie. Wykorzystywanie stempli czasowych wymaga użycia
 odpowiedniego zegara. Nie jest to problem jeśli maszyna jest podłączona do internetu, ponieważ może
 być wykorzystany wtedy protokół NTP (ang. \textit{Network Time Protocol}) \cite{RFC5905}.

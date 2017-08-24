@@ -1,7 +1,11 @@
 \chapter{Badania eksperymentalne i uzyskane wyniki}
-Przeprowadzenie skanowania domen z dostarczonego zbioru danych zajęło 11 dni, co poskutkowało zebraniem około 30GB informacji na temat analizowanych serwerów. Przeskanowano cały plik wejściowy liczący około 5 miliardów pozycji. Skanowanie przeprowadzone było w dniach od 21. kwietnia 2017 roku do 1. maja 2017 roku włącznie.
+Przeprowadzenie skanowania domen z dostarczonego zbioru danych zajęło 11 dni, co poskutkowało zebraniem około 30GB informacji na
+temat analizowanych serwerów. Przeskanowano cały plik wejściowy liczący około 5 miliardów pozycji. Skanowanie przeprowadzone było
+w dniach od 21. kwietnia 2017 roku do 1. maja 2017 roku włącznie.
 
-Obciążenie skanera zwiększano stopniowo w ciągu kolejnych dni przeprowadzania skanowania. W ten sposób można było uniknąć przeciążenia skanera oraz uzyskać jednocześnie zadowalającą wydajność. Okazało sie, że możliwe jest uruchomienie większej liczby procesów niż przewidywano na etapie projektowania. Przełożyło się to na krótszy czas skanowania.
+Obciążenie skanera zwiększano stopniowo w ciągu kolejnych dni przeprowadzania skanowania. W ten sposób można było uniknąć przeciążenia
+skanera oraz uzyskać jednocześnie zadowalającą wydajność. Okazało sie, że możliwe jest uruchomienie większej liczby procesów niż
+przewidywano na etapie projektowania. Przełożyło się to na krótszy czas skanowania.
 
 \section{Typy odebranych odpowiedzi}\label{sec:typy}
 Wśród przeanalizowanych par domen i serwerów można zaobserwować kilka charakterystycznych typów odpowiedzi. Odpowiedzi mogą być
@@ -22,7 +26,12 @@ Na różnego rodzaju forach\cite{powerdns-forum} czy w serwisach internetowych\c
 pojawia się najczęściej jako problem implementacji oprogramowania PowerDNS\cite{powerdns}. Niemniej jednak nie ustalono dokładnie
 jaki jest powód wysłania tak dużego pakietu w odpowiedzi na zwykłe zapytanie AXFR.
 
-Kolejnym przykładem odpowiedzi, która powodowała powstanie dużego pliku na dysku, było odebranie od serwera autorytatywnego pakietu TCP RST(ang. \textit{TCP reset packet}). Sytuacja taka wynika również z pewnego uproszczenia, które zostało przyjęte w implementacji skanera. Założono, że zawsze zostanie odebrany pakiet DNS. Podyktowane było to ograniczonym czasem w którym implementowano skaner oraz faktem, że problem ten można w łatwy sposób obejść poprzez odfiltrowanie odpowiednich plików w katalogu z wynikami. Dodatkowo sytuacje tego typu były bardzo sporadyczne, więc nie wpływało to w znaczącym stopniu ani na czas przeanalizowania pobranych danych ani na wynik tej analizy.
+Kolejnym przykładem odpowiedzi, która powodowała powstanie dużego pliku na dysku, było odebranie od serwera autorytatywnego pakietu
+TCP RST(ang. \textit{TCP reset packet}). Sytuacja taka wynika również z pewnego uproszczenia, które zostało przyjęte w implementacji
+skanera. Założono, że zawsze zostanie odebrany pakiet DNS. Podyktowane było to ograniczonym czasem w którym implementowano skaner
+oraz faktem, że problem ten można w łatwy sposób obejść poprzez odfiltrowanie odpowiednich plików w katalogu z wynikami. Dodatkowo
+sytuacje tego typu były bardzo sporadyczne, więc nie wpływało to w znaczącym stopniu ani na czas przeanalizowania pobranych danych
+ani na wynik tej analizy.
 
 Kolejnymi specyficznymi grupami jeśli chodzi o rozmiar pliku z odpowiedzią są już typowe odpowiedzi na zapytania AXFR. Najmniejszy rozmiar mają oczywiście odpowiedzi, które zawierają jedynie rekord SOA i jest to dopuszczalna odpowiedź na zapytanie AXFR. Następnie, wraz ze zwiększającą się liczbą wpisów w pliku strefy DNS, zwiększa się rozmiar odpowiedzi. Nie przekłada się to jednak bezpośrednio na informacje, które można wyodrębnić z takich plików strefy. Zdarza się bowiem sytuacja, w której znaczną część pliku strefy DNS zajmują wpisy podpisów cyfrowych RRSIG, których długość przekłada się na rozmiar plików. Dodatkowo, podpisy generowane mogą być dla każdego rekordu oddzielnie (co szerzej opisano w podpunkcie \ref{TSIG}), dlatego też wpływa to bardzo znacząco na rozmiar otrzymywanej odpowiedzi.
 
@@ -91,12 +100,13 @@ Analizując zbiór pod względem adresów IP jedynie w czwartej wersji, zaprezen
 zauważyć kilka interesująych faktów. Pierwszym, który jest natychmiast zauważalny, to bardzo wysoki współczynnik systemów autonomicznych
 ze Stanów Zjednoczonych w popoulacji adresów IPv4 które zostały zebrane w wyniku skanowania. Poziom ten jest około 3.5 raza wyższy,
 niż liczebność systemu autonomicznego z drugiego kraju w rankingu, czyli z Niemiec. Informacja ta jest interesująca w tym sensie, że
-TLD .de jest jedną z tych, które wymagają zabezpieczania stref DNS przed \textit{zone enumeration}\cite{euLaw, zoneEnumeration}. Okazuje się natomiast,
+TLD .de jest jedną z tych, które wymagają zabezpieczania stref DNS przed \textit{zone enumeration}\cite{euLaw, zoneEnumeration}.
+Okazuje się natomiast,
 że w praktyce drugim najczęściej spotykanym krajem w zestawieniu adresów IP w skanowaniu AXFR są właśnie Niemcy, a transfer strefy
 jest w realizacji dużo łatwiejszym atakiem niż wspomniane wcześniej \textit{zone walking}.
 
 Dodatkowo, zastanawiające jest, że oprócz bardzo widocznej przewagi systemów autonomicznych ze Stanów Zjednoczonych, widoczna jest
-również duża różnica pomiędzy 9 pierwszymi krajami oraz resztą populacji (etykieta \textit{tk}(Turcja) na wykresie \ref{fig:ipv4_countries}).
+również duża różnica pomiędzy 9 pierwszymi krajami oraz resztą populacji (etykieta \textit{tr}(Turcja) na wykresie \ref{fig:ipv4_countries}).
 
 \begin{figure}[ht]
 	\centering
@@ -328,7 +338,7 @@ rozmiarem strefy DNS jest 14 wpisów. Są to strefy pobrane najczęściej ze źl
 standardowe, często spotykane, takie jak serwery WWW, serwer pocztowe. Przykład odpowiedzi o takim rozmiarze został przedstawiony na
 listingu \ref{list:dns_zone_example}.
 
-\begin{lstlisting}[label={list:dns_zone_example},captionpos=b,caption=Przykładowy plik strefy DNS.,language=bash]
+\begin{lstlisting}[label={list:dns_zone_example},captionpos=b,caption=Przykładowa odpowiedź na żądanie strefy DNS.,language=bash]
 movida-bar.pl.  14400   6        ns1.consultingteam.pl. hostmaster.movida-bar.pl. 1952801133 3222735464 1869837421 1634956389 1925188727
 movida-bar.pl.  14400   15      mail.movida-bar.pl
 movida-bar.pl.  14400   16      v=spf1 a mx ip4:91.241.61.119 ~all
