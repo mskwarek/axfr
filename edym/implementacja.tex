@@ -34,10 +34,10 @@ czyli AXFR, który jest jednym z kluczowych elementów rekonesansu na podstawie 
 
 \section{Zaimplementowane narzędzia}
 Przeprowadzenie globalnego skanu niosło za sobą szereg konsekwencji. Zakładając, że średnio należy przeznaczyć na skanowanie
-jednej pary (adres WWW, adres IP) około 3 sekund okazało się, że przeprocesowanie całego zbioru danych wejściowych (ok. 5 miliardów
+jednej pary (domena, adres IP) około 3 sekund okazało się, że przeprocesowanie całego zbioru danych wejściowych (ok. 5 miliardów
 par) zajęłoby odpowiednio:
 $$3(s) * 5 * 10^{9} = 25 * 10^{8}(min) = \frac{25}{60} * 10^{8}(h) = 41.67 * 10^{6} (dni)\label{obliczenia}$$
-Opierając się na opisanym wyżej rozumowaniu, podjęto decyzję, że należy procesować pary (adres WWW, adres IP) równolegle.
+Opierając się na opisanym wyżej rozumowaniu, podjęto decyzję, że należy procesować pary (domena, adres IP) równolegle.
 Podjętych zostało kilka prób implementacji odpowiedniego narzędzia umożliwiającego przeprowadzenie badań w zadowalającym czasie:
 \begin{itemize}
 	\item narzędzie oparte na programie dig skryptach powłoki bash,
@@ -69,7 +69,7 @@ dig \cite{isc}.
 Niestety podobnie jak we wcześniej opisywanym przypadku, problemem okazały się ograniczenia czasowe spowodowane niewystarczającą
 ilością zasobów. Program został przetestowany podczas kilkudniowego skanowania i zdołano odpowiednio:
 \begin{itemize}
-	\item przeanalizować kilka milionów par (adres WWW, adres IP),
+	\item przeanalizować kilka milionów par (domena, adres IP),
 	\item pozyskać dane do wstępnej analizy podatności w skali globalnej,
 	\item dwukrotnie zawiesić maszynę, na której wykonywano badania.
 \end{itemize}
@@ -101,8 +101,9 @@ Rolę danych wejściowych programu mogą pełnić odpowiednio:
 	\item plik tekstowy w formacie \textit{adres\_domeny}|\textit{IP\_serwera\_autorytatywnego},
 	\item para parametrów wejściowych podanych w odpowiedniej kolejności - \textit{adres\_domeny IP\_serwera\_autorytatywnego}.
 \end{enumerate}
-Zdecydowano się na takie rozróżnienie z prostego powodu. Autor rozwiązania chciał zachować podobieństwo tworzonego rozwiązania
-do programu dig, który jest wykorzystywany przez wiele osób. Dodatkowo, dużo łatwiej można testować logikę programu na małych
+Zdecydowano się na takie rozróżnienie z prostego powodu. Najistotniejszą kwestią prezentowanego rozwiązania było
+zachowanie podobieństwa do programu dig, który jest wykorzystywany przez wiele osób. Dodatkowo, dużo łatwiej można testować
+logikę programu na małych
 porcjach danych i opcja numer 2. została w pewnym sensie funkcją debugową. Jako wspomniane dane testowe najczęściej wykorzystywana
 była domena \textit{zonetransfer.me} \cite{zonetransfer}, której autor specjalnie umożliwia transfer strefy, aby uzmysłowić innym
 ludziom zagrożenie wynikające z niepowołanego korzystania.
@@ -123,26 +124,35 @@ rozpoczęcie pisania/czytania danych z instancji gniazda TCP. Dokładny algorytm
 	\label{fig:socketAlg}
 \end{figure}
 
-Program umożliwia parsowanie najbardziej popularnych i najczęściej używanych rekordów RR, czyli:
-\begin{enumerate}
-	\item A
-	\item AAAA
-	\item CNAME
-	\item HINFO
-	\item TXT
-	\item NS
-	\item SOA
-	\item PTR
-	\item MX
-	\item RP
-	\item AFSDB
-	\item LOC
-	\item SRV
-	\item NAPTR
-	\item RRSIG
-	\item NSEC
-	\item DNSKEY
-\end{enumerate}
+Program umożliwia parsowanie najbardziej popularnych i najczęściej używanych rekordów RR. Zostały one spisane w tabeli \ref{records}
+wraz z identyfikatorami, które rezprezentują je w protokole DNS.
+
+\begin{longtable}{|c|c|}
+	\hline
+	\textbf{Typ rekordu} &
+	\textbf{ID rekordu} \\ \hline\hline
+	A & 1 \\
+	AAAA & \\
+    CNAME & \\
+	HINFO & \\
+	TXT & \\
+	NS & \\
+	SOA & \\
+	PTR & \\
+	MX & 15 \\
+	RP & \\
+	AFSDB & \\
+	LOC & \\
+	SRV & \\
+	NAPTR & \\
+	RRSIG & \\
+	NSEC & \\
+	DNSKEY & \\
+	\hline
+	\caption{Rekordy DNS obsługiwane w skanerze wraz z identyfikatorami.}
+	\label{records}
+\end{longtable}
+
 Algorytm postępowania w przypadku odebrania pakietu danych przedstawiony jest na rysunku \ref{fig:receiving}. Dane odbierane z interfejsu
 sieciowego są zapisane w systemie szesnastkowym, zgodnie z zaleceniami znanymi dokumentu RFC 1035 \cite{RFC1035}.
 
@@ -183,7 +193,7 @@ Ostatecznie przyjęto rozwiązanie, które ignoruje fakt nawiązywania połącze
 żadnych rekordów. Pozwoliło to na niemal dwukrotny wzrost wydajności zaimplementowanego skanera.
 
 \section{Dane wejściowe}
-Dane wejściowe programu zostały pozyskane od grupy naukowców z TU Delft \cite{delft} w formie par (adres WWW, adres IP serwera
+Dane wejściowe programu zostały pozyskane od grupy naukowców z TU Delft \cite{delft} w formie par (domena, adres IP serwera
 autorytarnego). Lista w takim formacie przechowywana była w pliku tekstowym. Zgromadzono w nim, zgodnie z tym co zostało przyjęte
 w obliczeniach \ref{obliczenia}, ponad 5 miliardów wpisów uporządkowanych w kolejności alfabetycznej, a ich łączny rozmiar przekraczał
 130 gigabajtów. Powoduje to oczywiście szereg problemów związanych z procesowaniem takich plików. (?? skad dane)

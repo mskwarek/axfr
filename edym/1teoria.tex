@@ -340,6 +340,26 @@ BIND \cite{Liu:2006:DB:1197828, isc, domain_example}.
 	$
 \end{lstlisting}
 
+Na listingu \ref{list:dns_zone_file} zaprezentowano definicję domeny \textit{example.com} oraz poddomeny \textit{us.example.com}.
+Plik rozpoczyna się od definicji czasu aktywności każdego z rekordów (linia 1), który wynosi 2 dni. Kolejnym poleceniem jest
+wskazanie dla jakiej domeny definiowane są wpisy DNS. Pierwszym wpisem jest rekord SOA. Kolejne pola zawarte w tym rekordzie
+zostały już opisane w tabeli \ref{typyRekordowDns}. Kolejne wpisy (linie 10 oraz 11) dostarczają informacji o serwerach przestrzeni
+nazw, które obsługują daną domenę. Następnie umieszczona jest informacja o głównym serwerze pocztowym w domenie. Linie 13--15
+zawierają informację o adresach IP przypisanych do usług zdefiniowanych w poprzednich rekordach DNS. Są to odpowiednio dwa serwery
+przestrzeni nazw (ns1 oraz ns2) oraz jeden serwer poczty elektronicznej (mail).
+
+W linii 17 zapoczątkowana została kolejna logiczna część pliku strefy. Jest to początek definiowania wpisów dla domeny
+\textit{us.example.com} czyli domeny niższego poziomu wcześniej zdefiniowanej \textit{example.com}. Zaprezentowany przypadek jest
+przykładem delegacji odpowiedzialności za translację nazw do innego serwera DNS. Jest to zrealizowane poprzez umieszczenie wpisu
+\textit{IN NS ns3.us.example.com}. Informuje on o tym, że serwerem przestrzeni nazw w danej poddomenie jest serwer z prefiksem
+\textit{ns3}. Dodatkowo umieszczono również informację o serwerze dla domeny wyższego poziomu (\textit{ns1}). Ostatni rekord
+zaprezentowany na listingu wskazuje adres IP wersji 4. wypunktowanego wcześniej serwera \textit{ns3}.
+
+Zaprezentowana notacja jest tylko jedną z kilku, których można użyć do definiowania plików strefy DNS. W przypadku pakietu BIND
+istotne jest, że fraza \$ORIGIN <domena> obowiązuje od miejsca, gdzie została użyta aż do kolejnej definicji domeny bądź do końca
+pliku.
+
+
 \section{Transfer strefy DNS}
 Transfer strefy DNS jest typem transakcji DNS, która jest podstawowym elementem mechanizmu odtwarzania bazy danych DNS pomiędzy
 serwerami systemu. Transfer jako protokołu warstwy 4 używa TCP i przybiera formę komunikacji typu klient-serwer. Zgodnie z założeniem
