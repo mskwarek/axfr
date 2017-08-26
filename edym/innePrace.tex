@@ -82,9 +82,9 @@ jest wysyłana w przypadku, gdy dana domena istnieje oraz przypisano jej adres I
 Odpowiedź pozytywną na zapytanie DNS wraz z podziałem na strony komunikacji zaprezentowano na diagramie \ref{fig:dns_exists_domain}.
 \begin{center}
 	\begin{figure}
-	\includegraphics[scale=1]{image/nx}
-	\caption{Położenie domeny w przestrzeni nazw \cite{domain_tree_src}.}
-	\label{example_domain_tree}
+	\includegraphics[scale=1]{image/exists_domain}
+	\caption{Przepływ informacji podczas odpytywania o istniejącą domenę.}
+	\label{fig:dns_exists_domain}
 	\end{figure}
 \end{center}
 
@@ -94,6 +94,13 @@ Jeśli chodzi o odpowiedź negatywną, to przykład opisano na diagramie \ref{fi
 	\item Klient: Jaki jest adres dla domeny nieistnieje.przyklad.pl?
 	\item Serwer: Domena nieistnieje.przykład.pl nie istnieje.
 \end{enumerate}
+\begin{center}
+	\begin{figure}
+	\includegraphics[scale=1]{image/nx_domain}
+	\caption{Przepływ informacji podczas odpytywania o istniejącą domenę.}
+	\label{fig:dns_exists_domain}
+	\end{figure}
+\end{center}
 
 Oba przytoczone powyżej przypadki są inaczej traktowane w protokole DNSSEC. Dla przykładu, gdy odpowiedzią jest
 adres IP istniejącej domeny, serwer autorytatywny przechowuje określony, skończony zbiór podpisanych rekordów. Podpisy są tworzone
