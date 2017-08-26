@@ -117,7 +117,7 @@ umożliwia wstępną generację podpisów. Niestety wprowadza dodatkowo efekt ub
 czyli wylistowania strefy. Przykładowa odpowiedź na zapytanie o nieistniejącą poddomenę została zaprezentwoana na listingu
 \ref{list:dnssec_nx_domain}.
 
-\begin{lstlisting}[label={list:dnssec_nx_domain},captionpos=b,caption=Odpowiedź na zapytanie o nieistniejącą domenę (DNSSEC).,language=bash]
+\begin{lstlisting}[label={list:dnssec_nx_domain},captionpos=b,caption=Odpowiedź na zapytanie DNSSEC o nieistniejącą domenę (na podstawie \cite{dnssec_nxdomain}).,language=bash]
 $ kdig +dnssec +multiline ddadasds.example.com
 ;; ->>HEADER<<- opcode: QUERY; status: NXDOMAIN; id: 22793
 ;; Flags: qr aa rd; QUERY: 1; ANSWER: 0; AUTHORITY: 8; ADDITIONAL: 1
