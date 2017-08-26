@@ -18,13 +18,64 @@ Obie wersje ataków rekonesansowych są również częścią tak zwanego etyczne
 tym się zajmują (określani po angielsku jako \textit{white hat}) starają się wytknąć błędy i podatności w systemach przy czym starają
 się nie ingerować w ich działanie.
 
-<Opisac rodzaje rekonesansu i przejsc do rekonesansu dns -- z racji ze to glowny temat pracy>
+Innym podziałem, który pojawia się w kontekście ataków rekonesansowych, jest podział na 4 grupy. Każda z nich określa atak
+przeprowadzany w innych warunkach, środowisku. Zaproponowany podział uwzględnia nie tylko techniczne aspekty pozyskiwania informacji
+o systemie, ale również kwestie społeczne, jak na przykład próby uzyskania danych od pracowników firm, bądź ogólnie użytkowników
+systemów. Kompletną listę grup wyróżnionych w tym podziale zaprezentowano oraz krótko opisano w tabeli \ref{tab:rekonesans}.
 
-Rekonesans DNS jest częścią testu penetracyjnego polegającą na pozyskaniu jak największej ilości informacji na temat badanej domeny.
+\begin{longtable}{|c|p{4cm}|p{8cm}|}
+
+	\hline
+	\textbf{Lp.} &
+	\textbf{Obszar pozyskiwania informacji} &
+	\textbf{Opis} \\ \hline\hline
+	1 & Profil sieci &
+	Pozyskiwanie informacji na temat infrastruktury sieciowej: adresy IP, domeny, poddomeny; informacje na temat topologii
+	systemu.\\
+	\hline
+  	2 & Profil środowiska &
+	Pozyskiwanie informacji na temat przypadków użycia systemu, aktorów, grup, nazw użytkowników, wykorzystanego sprzętu, architektury,
+	portów na których uruchomione są usługi.
+  	\\
+	\hline
+	3 & Profil użytkowników systemu &
+	Informacje ,,społeczne'' -- imiona, nazwiska, numery telefonów, plotki, określenie poziomu wiedzy na temat systemów
+	telekomunikacyjnych, informatycznych, zabezpieczeń.
+	\\
+	\hline
+	4 & Profil zabezpieczeń &
+	Określenie poziomu, profilu zabezpieczeń fizycznych (np. konroli dostępu), złożoności haseł wymaganych przez system, pozyskanie
+	informacji na temat systemów wykrywania włamań.\\
+	\hline
+	\capiton{Typy rekonesansu, opis na podstawie \cite{rekonesans}}
+	\label{tab:rekonesans}
+\end{longtable}
+
+Z uwagi na techniczny charakter niniejszej pracy magisterskiej w kolejnych rozdziałach skupiono się głównie na rekonesansie odnoszącym
+się do infrastruktury systemów. Mowa tu zarówno o infrastrukturze sieciowej jak i profilu sprzętowym odpytywanych maszyn. Ataki tego typu
+są najczęsciej przeprowadzane poprzez wykonanie kilku testów, jednak nie są to jedyne sposoby pozyskiwania informacji o infrastrukturze.
+Jednym z podstawowych, powszechnie spotykanych przykładów aktywnego rekonesansu jest skanowanie portów. Proces ten jest zaliczany
+do ataku aktywnego, ponieważ atakujący próbuje dowiedzieć się, na których portach danego systemu uruchomione są usługi (np. FTP, www,
+serwer pocztowy, SSH). Uzyskanie takich danych pozwala w późniejszym etapie na wykorzystanie podatności danych usług, wynikających
+głównie z błędnej implementacji bądź konfiguracji. Prowadzi to następnie do eskalacji uprawnień na maszynie na rzecz atakującego.
+Przykładowe wykorzytanie danych podatności na podstawie usługi SSH opisane zostało w dokumencie \cite{ssh_podatnosci}.
+
+Inną formą rekonesansu dotyczącego infrastruktury systemu jest rekonesans DNS. Jest to część testu penetracyjnego polegającą na pozyskaniu jak największej ilości informacji na temat badanej domeny.
 Dane uzyskiwane podczas jego przeprowadzania odnoszą się zarówno do serwera DNS jak i wpisów, które przechowuje. Zebrane informacje mogą
 kompromitować infrastrukturę sieciową firmy nie powodując przy tym generowania zbyt podejrzanego ruchu. Między innymi dlatego
 ważne jest, aby przywiązywać znaczną uwagę do tego kto i w jaki sposób próbuje łączyć się z serwerami autorytatywnymi odpowiedzialnymi
-za domenę.
+za domenę. W sytuacji, gdy badana jest jedna domena, bądź zbiór kilku domen pod zarządem jednej organizacji wykorzystywane są najczęściej
+narzędzia dostępne w różnego rodzaju pakietach, na przykłąd BIND \cite{isc}. Przykładami takich programów są dig \cite{dig} czy
+nslookup \cite{domain_example}. Oba pozwalają na wysyłanie zapytań DNS do serwerów. Największą zaletą wspomnianych narzędzi jest
+możliwość dostosowywania pól w wiadomościach do potrzeb użytkownika. Dodatkowo nslookup umożliwia również pracę w trybie serwera,
+jednak bardziej istotna dla atakujących jest sama generacja zapytań, dzięki którym można uzyskać informację na temat testowanego
+systemu.
+
+Jednym z największych błędów, które można popełnić przy konfiguracji serwera DNS jest umożliwienie przeprowadzenia transferu strefy
+DNS przez nieautoryzowane serwery. Jest to istotna kwestia dla każdego z serwerów do których można kierować zapytania z sieci zewnętrznej.
+W takim przypadku atakujący otrzymuje informacje o całej strefie przechowywanej na serwerze. Problem ten staje się jeszcze bardziej
+poważny w momencie, gdy serwer DNS obsługuje zarówno sieć wewnętrzną jak i zewnętrzną. Ujawnienie danych systemu DNS sieci
+wewnętrznej jest równoznaczny z udostępnieniem planu sieci, która jest przez niego obsługiwana.
 
 
 AXFR (\textit{ang. Asynchronous Xfer Full Range}) \cite{RFC1034, RFC1035} to mechanizm używany w protokole DNS (\textit{Domain Name System}) do
@@ -297,15 +348,8 @@ adresów IPv4 oraz ip6.arpa dla adresów IPv6.
 
 Innym z zastosowań domeny .arpa jest mapowanie numerów telefonów. Sposób integracji sieci Internet wraz z siecią telefoniczną również
 wykorzystuje zalety systemu DNS oraz pozwala na identyfikację odpowiednich przestrzeni nazw. Aby odróżnić przestrzeń nazw sieci
-Internet od sieci telefonicznej wydzielona została domena drugiego poziomu w TLD arpa. Otrzymała ona nazwę e164. Jest to nawiązanie
-do standardu organizacji, czy też przydzielania numerów telefonów. Integracja z protokołem DNS opiera się na prostym schemacie:
-\begin{enumerate}
-	\item z numeru telefonu w formacie E.164 usuwane są znaki nie będące liczbami, na przykład +44-20-79-46-01-48 na 442079460148,
-	\item między każde dwie cyfry wstawiane są kropki 4.4.2.0.7.9.4.6.0.1.4.8,
-	\item zamieniana jest kolejność cyfr 8.4.1.0.6.4.9.7.0.2.4.4.
-\end{enumerate}
-
-W wyżej opisany sposób otrzymaliśmy odpowiednik numeru telefonu w domenie .e164.arpa. Mechanizm mapowania numerów tradycyjnej sieci
+Internet od sieci telefonicznej wydzielona została domena drugiego poziomu w TLD arpa. Otrzymała ona nazwę e164. Mechanizm mapowania
+numerów tradycyjnej sieci
 PSTN na adresy internetowe ma szczególne znaczenie w integracji dwóch technik wykonywania połączenia, a konkretnie PSTN oraz VoIP.
 Mapowanie numerów na adresy internetowe zostało opisane między innymi w RFC3761 \cite{RFC3761}.
 
