@@ -75,32 +75,25 @@ znajdujące się w danej strefie. Zjawisko nie jest luką krytyczną, jednak mo�
 Problem listowania strefy DNS wynika z różnego traktowania odpowiedzi pozytywnej oraz negatywnej od serwera. Odpowiedź pozytywna
 jest wysyłana w przypadku, gdy dana domena istnieje oraz przypisano jej adres IP. Przykładowo:
 \begin{enumerate}
-	\item rysunek
 	\item Klient: Jaki jest adres domeny www.przyklad.pl?
 	\item Serwer: Domena www.przyklad.pl ma adres 1.2.3.4.
 \end{enumerate}
-Odpowiedź pozytywną na zapytanie DNS wraz z podziałem na strony komunikacji zaprezentowano na diagramie \ref{fig:dns_exists_domain}.
-\begin{center}
-	\begin{figure}
-	\includegraphics[scale=1]{image/exists_domain}
-	\caption{Przepływ informacji podczas odpytywania o istniejącą domenę.}
-	\label{fig:dns_exists_domain}
-	\end{figure}
-\end{center}
-
-Jeśli chodzi o odpowiedź negatywną, to przykład opisano na diagramie \ref{fig:dns_nxdomain} oraz poniżej:
+Jeśli chodzi o odpowiedź negatywną, to przykład opisano poniżej:
 \begin{enumerate}
-	\item rysunek
 	\item Klient: Jaki jest adres dla domeny nieistnieje.przyklad.pl?
 	\item Serwer: Domena nieistnieje.przykład.pl nie istnieje.
 \end{enumerate}
 \begin{center}
 	\begin{figure}
-	\includegraphics[scale=1]{image/nx_domain}
-	\caption{Przepływ informacji podczas odpytywania o istniejącą domenę.}
-	\label{fig:dns_exists_domain}
+	\centering
+	\includegraphics[scale=0.7]{image/nxdomain}
+	\caption{Przepływ informacji podczas odpytywania serwera przestrzeni nazw o domenę.}
+	\label{fig:dns_nxdomain}
 	\end{figure}
 \end{center}
+
+Zarówno przypadek odpytywania o domenę istniejącą, jak i przypadek przeciwny zostały pokazane na schemacie \ref{fig:dns_nxdomain}.
+Wyróżniono na nim stronę serwera oraz klienta oraz zaprezentowano części wiadomości, które są istotne dla konkretnego przypadku
 
 Oba przytoczone powyżej przypadki są inaczej traktowane w protokole DNSSEC. Dla przykładu, gdy odpowiedzią jest
 adres IP istniejącej domeny, serwer autorytatywny przechowuje określony, skończony zbiór podpisanych rekordów. Podpisy są tworzone
@@ -121,7 +114,37 @@ jest podpisana i tworzy rekord NSEC, a każdy rekord podpisany kluczem prywatnym
 nie istnieje, odpowiada rekordem NSEC pary domen, które w uporządkowanej liście znajdują się odpowiednio przed i po odpytywanej
 domenie oraz związane z nimi podpisy. Rozwiązanie zapewnia, że tylko serwer autorytatywny powinien być obdarzony zaufaniem oraz
 umożliwia wstępną generację podpisów. Niestety wprowadza dodatkowo efekt uboczny, w postaci umożliwienia \textit{zone enumeration},
-czyli wylistowania strefy.
+czyli wylistowania strefy. Przykładowa odpowiedź na zapytanie o nieistniejącą poddomenę została zaprezentwoana na listingu
+\ref{list:dnssec_nx_domain}.
+
+\begin{lstlisting}[label={list:dnssec_nx_domain},captionpos=b,caption=Odpowiedź na zapytanie o nieistniejącą domenę (DNSSEC).,language=bash]
+$ kdig +dnssec +multiline ddadasds.example.com
+;; ->>HEADER<<- opcode: QUERY; status: NXDOMAIN; id: 22793
+;; Flags: qr aa rd; QUERY: 1; ANSWER: 0; AUTHORITY: 8; ADDITIONAL: 1
+;; QUESTION SECTION:
+;; ddadasds.example.com. IN A
+;; AUTHORITY SECTION:
+example.com. 3600 IN SOA dns1.example.com.
+example.com. 3600 IN RRSIG SOA 13 2 3600 20170128184611
+    ( 5134 example.com. nqiEgM+kVBDeBI== )
+;; Matching record for hash of example.com;
+0sc7qshrek878fcmnag1.example.com. 3600 IN NSEC3 1 0 0 AABB
+    ( CPDHD7GK40NGDKRU8CQ8 NS SOA MX RRSIG DNSKEY NSEC3PARAM )
+0sc7qshrek878fcmnag1.example.com. 3600 IN RRSIG NSEC3 13 3 3600
+    ( 5134 example.com. 2JicIoTH3WkgAjbP/ehmTv== )
+;; Covering record for hash of ddadasds.example.com;
+jftj44t4kqppke20mukr.example.com. 3600 IN NSEC3 1 0 0 AABB
+    ( MSC7QSHREK878FCM8GD7 A AAAA RRSIG )
+jftj44t4kqppke20mukr.example.com. 3600 IN RRSIG NSEC3 13 3 3600
+    ( 5134 example.com. VfFQfho5sQ8QVWOqsrXyN6== )
+;; Covering record for hash of *.ddadasds.example.com;
+cpdhd7gk40ngdkru8cq8n.example.com. 3600 IN NSEC3 1 0 0 AABB
+    ( J1VSBFDBU38SMLNJPIMM A AAAA RRSIG )
+cpdhd7gk40ngdkru8cq8n.example.com. 3600 IN RRSIG NSEC3 13 3 3600
+    ( 5134 example.com. lcDsoeVGuq3rvezN2oW74x== )
+;; Received 773 B
+$
+\end{lstlisting}
 
 Zagadnienie listowania stref DNS samo w sobie często było podmiotem dyskusji. Początkowo wydano dokument, że nie jest to błędem,
 że umożliwia się wypisanie bazy danych DNS \cite{RFC4033}. Później jednak wypracowany został kompromis \cite{RFC5155}, że w pewnych
