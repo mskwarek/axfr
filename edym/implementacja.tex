@@ -127,27 +127,28 @@ rozpoczęcie pisania/czytania danych z instancji gniazda TCP. Dokładny algorytm
 Program umożliwia parsowanie najbardziej popularnych i najczęściej używanych rekordów RR. Zostały one spisane w tabeli \ref{records}
 wraz z identyfikatorami, które rezprezentują je w protokole DNS.
 
-\begin{longtable}{|c|c|}
+\begin{longtable}{|c|c|c|}
 	\hline
+	\textbf{Lp.} &
 	\textbf{Typ rekordu} &
 	\textbf{ID rekordu} \\ \hline\hline
-	A & 1 \\
-	AAAA & \\
-    CNAME & \\
-	HINFO & \\
-	TXT & \\
-	NS & \\
-	SOA & \\
-	PTR & \\
-	MX & 15 \\
-	RP & \\
-	AFSDB & \\
-	LOC & \\
-	SRV & \\
-	NAPTR & \\
-	RRSIG & \\
-	NSEC & \\
-	DNSKEY & \\
+	1 & A & 1 \\
+	2 & AAAA & 28 \\
+    3 & CNAME & 5 \\
+	4 & HINFO & 13 \\
+	5 & TXT & 16 \\
+	6 & NS & 2 \\
+	7 & SOA & 5 \\
+	8 & PTR & 12 \\
+	9 & MX & 15 \\
+	10 & RP & 17 \\
+	11 & AFSDB & 18 \\
+	12 & LOC & 29 \\
+	13 & SRV & 33 \\
+	14 & NAPTR & 35 \\
+	15 & RRSIG & 46 \\
+	16 & NSEC & 47 \\
+	17 & DNSKEY & 48 \\
 	\hline
 	\caption{Rekordy DNS obsługiwane w skanerze wraz z identyfikatorami.}
 	\label{records}
