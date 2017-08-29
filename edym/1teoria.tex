@@ -317,23 +317,53 @@ spisanych w dokumencie RFC 4034 \cite{RFC4034}. Opisano tam rozszerzenia protoko
 W tabeli \ref{typyRekordowDnsExt} przedstawiono najważniejsze z punktu widzenia niniejszej pracy typy rekordów, które zostały
 wprowadzone w kolejnych dokumentach RFC, których dokładne numery zostały wspomniane przy konkretnych wpisach w tabeli.
 
-\begin{table}[]
-	\centering
-	\caption{Rodzaje rekordów w bazach danych serwerów przestrzeni nazw określonych w rozszerzeniach dokumentu RFC 1035 \cite{RFC1035}.}
-	\label{typyRekordowDnsExt}
-	\begin{tabular}{|r|p{3cm}|p{8cm}|}
+
+\begin{longtable}{|l|p{0.7cm}|p{2.5cm}|p{7.5cm}|}
+	\hline
+	\textbf{Rekord} &
+	\textbf{RFC} &
+	\textbf{Pełna nazwa} &
+	\textbf{Pełniona funkcja(opis zawartości)} \\ \hline\hline
+		AAAA & 3596 \cite{RFC3596} &
+		Wpis mapowania adresów IPv6 &
+		Określa adres IP wersji 6 dla danego hosta. Zasada działania jest taka jak w przypadku rekordu A z jedyną różnicą
+		w wersji adresu IP. \\ \hline
+
+		DNSKEY & 4034 \cite{RFC4034} & Klucz publiczny strefy & Przechowuje klucz publiczny strefy. Pozwala klientowi na
+		weryfikację odpowiedzi od serwera,
+		które są podpisane kluczem prywatnym. \\ \hline
+
+		RRSIG & 4034 \cite{RFC4034} & Podpis rekordu (ang. \textit{Resource Record Signature}) &
+		Przechowuje podpis grupy RRset wygenerowany przy użyciu klucza prywatnego strefy, który odpowiada kluczowi publicznemu. W
+		rozszerzeniu DNSSEC przyjęto założenie, że każdej zabezpieczonej grupie odpowiadał będzie odpowiedni rekord RRSIG. RRSIG
+		nie jest podpisany.\\ \hline
+
+		NSEC & 3845 \cite{RFC3845} & Ang. \textit{next secure} &
+		W protokole DNSSEC rekord NSEC jest używany do wskazania kolejnego rekordu, który znajduje się w strefie. Między innymi
+		dzięki niemu jest możliwe zapewnienie spójności danych. Wprowadzony głównie ze względu na umożliwienie sprawdzenia
+		autentyczności odpowiedzi negatywnych. \\ \hline
+
+		SPF & 4408 \cite{RFC4408} & Ang. \textit{Sender policy framework} & Definiuje, które z wiadomości elektronicznych mogą być
+		dostarczane do danej strefy. Odbywa się to poprzez weryfikację adresów poczty. Rekordy te są wykorzystywane do odflitrowywania
+		spamu oraz wiadomości niebezpiecznych dla odbiorców. \\ \hline
+
+		RP & 1183 \cite{RFC1183} & Osoba odpowiedzialna za domenę & W odróżnieniu od osoby odpowiedzialnej za całą strefę DNS, której adres zawarty jest
+		w rekordzie SOA, wskazuje adres poczty osoby odpowiedzialnej za daną nazwę domenową. \\ \hline
+
+		LOC & 1876 \cite{RFC1876} & Informacje lokalizacyjne & Pozwala na umieszczenie informacji o geograficznym położeniu maszyn
+		bądź sieci. \\ \hline
+
+		SRV & 2782 \cite{RFC2782} & Lokalizacja usług (ang. \textit{service location}) &
+		Wpis zaprojektowany w celu ułatwienia klientom lokalizowania serwisów, których poszukują w danej domenie.
+		Wpis jest wykorzystywany najczęściej w odniesieniu do protokołów SIP \cite{RFC3261} bądź XMPP \cite{RFC3921}.
+		Jeśli klient chce sprawdzić, czy na danym serwerze uruchomiona jest usługa protokołu SIP, wystosuje do serwera zapytanie o
+		domenę \_sip.\_tcp.somedomain.com. Nietypowy format zaiwerający znaki ,,\_'' został zastosowany ze względu na uniknięcie kolizji
+		nazw domen wykorzystywanych w rekordach SRV z adresami, pod którymi dostępne są ,,rzeczywiste'' usługi. \\
+
 		\hline
-		\textbf{Rekord} &
-		\textbf{Pełna nazwa} &
-		\textbf{Pełniona funkcja(opis zawartości)} \\
-		\hline\hline
-			AAAA &
-			Wpis mapowania adresów IPv6 &
-			Określa adres IP wersji 6 dla danego hosta. Zasada działania jest taka jak w przypadku rekordu A z jedyną różnicą
-			w wersji adresu IP. \\
-		\hline
-	\end{tabular}
-\end{table}
+\caption{Rodzaje rekordów w bazach danych serwerów przestrzeni nazw określonych w rozszerzeniach dokumentu RFC 1035 \cite{RFC1035}.}
+\label{typyRekordowDnsExt}
+\end{longtable}
 
 \subsection{TLD ARPA}
 Specyficzną domeną najwyższego rzędu jest domena \textit{ARPA}. Jest to jedna z nielicznych domen ściśle powiązana z dokładnie jedną
