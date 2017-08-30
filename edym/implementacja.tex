@@ -223,7 +223,26 @@ tak aby widoczny był postęp w skanowaniu. Przeprocesowanie 25 tysięcy linii o
 że dla każdej domeny upłynie limit czasu żądania.
 
 \section{Środowisko uruchomieniowe}
+Każda z aplikacji była rozwijana w podobny sposób. Cały proces można podzielić na 3 główne etapy:
+\begin{enumerate}
+	\item rozwijanie oprogramowania -- dodawanie nowych funkcji do skanera oraz proste testy funkcjonalne,
+	\item uruchomienie w warunkach testowych -- sprawdzanie poprawności działania systemu w dłuższej perspektywie (do kilkunastu godzin),
+	\item uruchomienie w środowisku docelowym -- właściwe skanowanie maksymalizujące wydajność.
+\end{enumerate}
+Ze względu na wygodę, każdy z etapów był uruchamiany na innej maszynie. Dostępność sprzętu była ograniczona, dlatego nie udało się
+zapewnić, że każda z faz zostanie uruchomiona na takim samym urządzeniu. Faza pierwsza realizowana była na komputerze z procesorem
+dwurdzeniowym Intel Core i3-4150, 8GB pamięci RAM oraz 1TB dyskiem twardym w zestawieniu ze 120GB dyskiem SSD. Etap uruchomienia systemu w
+środowisku testowym przebiegał na maszynie z procesorem Intel Core2Duo E6420 z dwoma rdzeniami, 4GB pamięci RAM oraz 320GB dyskiem twardym. Etap ostatni,
+właściwe skanowanie domen odbywało się na serwerze dedykowanym wypożyczonym od firmy OVH. Zaopatrzony był on w czterordzeniowy
+procesor Intel Xeon E3-1230v6, 16GB pamięci RAM oraz 2x4TB dysk twardym.
 
+Każda z maszyn działała pod kontrolą systemu operacyjnego opartego na dystrybucji systemu Debian. Podejście do problemu
+w zaprezentowany sposób pozwoliło na szereg udogodnień. Pierwszy etap jest dość oczywisty -- nie ma sensu uruchamiać całego systemu
+na serwerze, jeśli nie mamy pewności, że poszczególne komponenty w samym skanerze nie są odpowiednio zaimplementowane. Mylące może
+być wprowadzenie etapu uruchomienia systemu w środowisku testowym. Powodem przyjęcia takiego rozwiązania były kwestie finansowe.
+Nie mając pewności, że system działa dobrze w długiej perspektywie, nie warto było wypożyczać dedykowanego serwera jedynie do testowania.
+W momencie, gdy można było domniemywać, że system działa stabilnie przez dłuższy okres, można było wypożyczyć serwer i skupić się
+na uzyskaniu jak największej wydajności skanera.
 
 \section{Metodyka badań}
 
