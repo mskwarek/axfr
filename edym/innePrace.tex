@@ -40,11 +40,32 @@ Dodatkowo możliwe będzie porównanie wyników uzyskanych w obu skanowaniach. P
 w ilości uzyskanych odpowiedzi. Wynikać powinna ona nie tylko z powodu dużo szerszego skanowania. Można się spodziewać, że
 najczęściej odwiedzane domeny, z racji na swoją popularność oraz generowane zyski, nie pozwalają na transfer strefy DNS osobom trzecim.
 
-<jeszcze drugi projekt>
+Drugim projektem jest również implementacja znaleziona w serwisie GitHub o roboczej nazwie Python-AXFR-Test \cite{python_axfr_test}.
+W tym projekcie autor skupił się na dostarczeniu implementacji skanera domen ukierunkowanego na poszukiwanie domen umożliwiających
+transfer strefy DNS. Został zaimplementowany również prosty mechanizm wielowątkowości i właśnie ta cecha jest największą korzyścią
+względem programu dig \cite{dig}, który oferuje bardzo podobną funkcjonalność do zaprezentowanego programu. Niestety, autor udostępnił
+jedynie program umożliwiający testowanie domen. Nie zostały opublikowane żadne wyniki czy dyskusja tego, co udało się przeskanować.
+Projekt miał istotny wpływ na początkowe etapy tej pracy magisterskiej. Możliwe było wykorzystanie części zaprezentowanej implementacji
+w jednym ze skanerów zrealizowanych podczas prac. Niemniej jednak, zakres niniejszej pracy magisterskiej jest dużo szerszy od zakresu
+prac nad Python-AXFR-Test, a program ostatecznie uzyskany podczas realizacji pracy magisterskiej zapewnia lepszą wydajność oraz
+więcej funkcji.
 
 \section{DNS Response Policy Zone}
 DNS Response Policy Zone jest metodą zarządzania odpowiedziami na konkretne zapytania DNS. Funkcja ta została wprowadzona w wersji
-9.10 pakietu BIND oraz od tamtego wydania znajduje się w każdym kolejnym. 
+9.10 pakietu BIND oraz od tamtego wydania funkcjonalność dostępna jest w każdym kolejnym. DNS RPZ jest często nazywane Firewallem DNS.
+Nazwa ta jest dobrym określeniem działania całego systemu. Dzięki niemu, można definiować reguły odpowiedzi, na przykład na podstawie
+źródła żądania bądź informacji, które ono zaiwera. Administratorzy podejmują się definiowania reguł odpowiedzi między innymi
+ze względu na obawy dotyczące udostępniania
+informacji niezaufanym maszynom. Innymi powodami, dla których zarządcy chcą definiować reguły odpowiedzi protokołu DNS to na przykład
+próba ograniczenia ruchu (na przykład ruchu wychodzącego) pewnym grupom użytkowników. Innym przykładem zastosowania DNS RZP
+jest ograniczenie dostarczania informacji o wystawionej usłudze tylko zaufanej grupie użytkowników. Przykłady te można mnożyć,
+wiele przypadków znanych z klasycznych usług firewalli ma uzasadnienie także dla firewalla DNS. Dokładne wymagania odnoszące się do
+zarządzania regułami odpowiedzi na zapytania DNS spisano oraz udostępniono w dokumencie \cite{I-D.ietf-dnsop-dns-rpz}. Publikacja ta
+potwierdza, że istnieje potrzeba posiadania usługi czy mechanizmu, dzięki któremu możliwa będzie dokładniejsza kontrola przepływu
+informacji w protokole DNS. DNS RPZ to tylko jedno z możliwych rozwiązań, dzięki któremu
+możliwa jest ochrona danych zawartych w strefach DNS. W odróżnieniu od prezentowanej pracy magisterskiej, temat niebezpieczeństw
+wynikających z powszechnego udostępniania informacji
+strefowych nie został tam szeroko zaprezentowany, a jednynie wspomniany jako jeden z powodów propozycji danego rozwiązania.
 
 \section{DNS as a service}
 \textit{DNS as service} to pojęcie wykorzystywane do opisywania usług świadczonych w obrębie protokołu DNS. Dosłownym tłumaczeniem tego
