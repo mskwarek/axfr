@@ -47,6 +47,7 @@ Podjętych zostało kilka prób implementacji odpowiedniego narzędzia umożliwi
 Szczegółowo zostaną one opisane w kolejnych punktach tego rozdziału.
 
 \subsection{Program dig zarządzany skryptami powłoki}
+\label{dig_sh}
 Pierwszym rozwiązaniem, które powstało w ramach pracy nad opisywanym problemem był skaner AXFR oparty na programie
 dig \cite{isc}. Program skupia się wokół protokołu DNS i umożliwia wykonywanie zapytań różnych typów \cite{Liu:2006:DB:1197828}.
 Ponadto, jest prosty w obsłudze, daje duże możliwości jeśli chodzi o budowanie zapytań DNS oraz bardzo często dostępny jest
@@ -194,6 +195,7 @@ Ostatecznie przyjęto rozwiązanie, które ignoruje fakt nawiązywania połącze
 żadnych rekordów. Pozwoliło to na niemal dwukrotny wzrost wydajności zaimplementowanego skanera.
 
 \section{Dane wejściowe}
+\label{inputData}
 Dane wejściowe programu zostały pozyskane od grupy naukowców z TU Delft \cite{delft} w formie par (domena, adres IP serwera
 autorytarnego). Lista w takim formacie przechowywana była w pliku tekstowym. Zgromadzono w nim, zgodnie z tym co zostało przyjęte
 w obliczeniach \ref{obliczenia}, ponad 5 miliardów wpisów uporządkowanych w kolejności alfabetycznej, a ich łączny rozmiar przekraczał
@@ -245,6 +247,24 @@ W momencie, gdy można było domniemywać, że system działa stabilnie przez d�
 na uzyskaniu jak największej wydajności skanera.
 
 \section{Metodyka badań}
+Skaner został zaprojektowany w takie sposób, aby potrafił przeskanować kilka domen podczas jednego uruchomienia. Założenie wynika z
+ograniczeń wydajnościowych, które zauważono przy próbie implementacji skanera, którą opisano w punkcie \ref{dig_sh}.
+
+Skanera nie zaprojektowano tak, aby wspierał wielowątkowość. Może się okazać, że implementacja uruchamiania wielu wątków już w programie
+będzie jeszcze bardziej wydajna niż proponowana w niniejszej pracy. Mimo to, opisywana propozycja zakłada realizację wielowątkowości
+poprzez uruchomienie wielu procesów programu w systemie linux, każdy z inną listą domen do przeskanowania jako argumentem wejściowym.
+Generacja poszczególnych list została opisana we wcześniejszym podpunkcie \ref{inputData}.
+
+Pełen scenariusz skanowania zaprezentowano poniżej.
+\begin{eumerate}
+	\item Pobierz listę do skanowania.
+	\item Wygeneruj N podzbiorów rozłącznych dla listy.
+	\item Dla każdego podzbioru uruchom proces skanera z odpowiadającą mu listą.
+\end{eumerate}
+
+W prezentowanym przypadku liczba podzbiorów była bardzo duża, więc zdecydowano się na ograniczenie liczby uruchamianych procesów
+skanera jednocześnie. Eksperymentalnie ustalono, że liczba instancji skanera na poziomie 15000 jest akceptowalna zarówno ze względu
+na wydajność jak i stabilność. 
 
 \section{System powiadomień}
 W ramach badań przeprowadzonych podczas realizacji niniejszej pracy magisterskiej został zaimplementowany i uruchomiony system
