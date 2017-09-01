@@ -256,15 +256,21 @@ poprzez uruchomienie wielu procesów programu w systemie linux, każdy z inną l
 Generacja poszczególnych list została opisana we wcześniejszym podpunkcie \ref{inputData}.
 
 Pełen scenariusz skanowania zaprezentowano poniżej.
-\begin{eumerate}
+\begin{enumerate}
 	\item Pobierz listę do skanowania.
 	\item Wygeneruj N podzbiorów rozłącznych dla listy.
 	\item Dla każdego podzbioru uruchom proces skanera z odpowiadającą mu listą.
-\end{eumerate}
+\end{enumerate}
 
 W prezentowanym przypadku liczba podzbiorów była bardzo duża, więc zdecydowano się na ograniczenie liczby uruchamianych procesów
 skanera jednocześnie. Eksperymentalnie ustalono, że liczba instancji skanera na poziomie 15000 jest akceptowalna zarówno ze względu
-na wydajność jak i stabilność.
+na wydajność jak i stabilność. Ustalone ograniczenie zostało zrealizowane dzięki skryptom powłoki bash -- cyklicznie sprawdzano ile
+uruchomionych jest aktualnie instancji skanera, jeśli liczba była mniejsza od 15000, to uruchamiano procesy w liczbie takiej,
+aby suma uruchomionych procesów skanera osiągała liczbę 15000. Aby uniknąć konfliktów zapisu do plików ustalono, że każdy z uruchomionych
+procesów będzie zapisywał odebrane informacje do oddzielnych katalogów. Katalogi były indeksowane, ich nazwa byla postaci
+,,iter\_{numer\_iteracji}''. Umożliwioło to wyeliminowanie dzielenia zasobów pomiędzy procesami, co przełożyło się na wydajność całego
+rozwiązania.
+
 
 \section{System powiadomień}
 W ramach badań przeprowadzonych podczas realizacji niniejszej pracy magisterskiej został zaimplementowany i uruchomiony system
