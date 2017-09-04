@@ -1,8 +1,10 @@
 \chapter{Implementacja}
-Przeanalizowanie problemu postawionego w niniejszej pracy magisterskiej wymagało implementacji własnych narzędzi. Jak wcześniej
-wspomniano, programy dostępne w sieci są bardzo dobre (dig \cite{dig}, axfr-tool \cite{python_axfr_test}, robotex \cite{robotex})
-jednak nie zapewniają oczekiwanej wydajności. Wynika to z faktu, że są one nastawione głównie na analizę konkretnego przypadku.
-Narzędzia są używane głównie przez pentesterów, których typowym zadaniem jest przetestowanie pod kątem bezpieczeństwa na przykład pewnej
+Przeanalizowanie problemu postawionego w niniejszej pracy magisterskiej wymagało implementacji własnych narzędzi. Dostępne są w sieci
+programy umożliwiające przeprowadzenie rekonesansu DNS i są bardzo dobre (dig \cite{dig}, axfr-tool \cite{python_axfr_test}, robotex \cite{robotex})
+jednak nie są to skanery, które umożliwiają globalne skanowanie, a więc nie zapewniają oczekiwanej wydajności dla dużych zbiorów
+danych. Wynika to z faktu, że są one nastawione głównie na analizę konkretnego przypadku. Temat ten został szerzej opisany w punkcie
+\ref{narzedzia}.
+Narzędzia te są używane głównie przez pentesterów, których typowym zadaniem jest przetestowanie pod kątem bezpieczeństwa na przykład pewnej
 aplikacji, gdzie liczba serwerów DNS jak i testowanych domen jest mocno ograniczona. Proces ten sam w sobie jest niezwykle złożony
 i często wymaga nawet tygodni pracy, dlatego czas w jakim wykonywał się będzie program sprawdzający podatności DNS nie jest aż tak
 istotny. Oczywiście mówimy o różnicy w czasie w granicach do kilku minut. W podejściu prezentowanym w tej pracy założono, że
@@ -16,6 +18,7 @@ na przykład było bardzo skalowalne i łatwe do zrealizowania. Niestety okazał
 zbyt dużej ilości zasobów, a głównie pamięci RAM, dlatego wymuszone zostało zrezygnowanie z tego podejścia.
 
 \section{Przegląd dostępnych narzędzi}
+\label{narzedzia}
 Społeczność internetu oferuje bardzo szeroką gamę narzędzi umożliwiających pozyskiwanie informacji na podstawie protokołu DNS.
 Bardzo użytecznym i przydatnym narzędziem jest w tym przypadku program dig. Wspomniany program ma jednak znaczącą wadę -- jest
 wydajny jedynie przy niewielkiej liczbie odpytywanych domen. Dodatkową niedogodnością jest, wbrew pozorom, fakt, że program
@@ -31,6 +34,76 @@ stwierdzenie - wspomniana biblioteka z założenia miała być wykorzystywana do
 weszła w jej skład tylko i wyłączenie dlatego, że twórcy jej potrzebowali jako narzędzia do zrealizowania innych celów.
 Implikuje to fakt, że pobieranie wiadomości jest niekompletne na płaszczyźnie typów wiadomości. Jednym z nich jest typ nr 252,
 czyli AXFR, który jest jednym z kluczowych elementów rekonesansu na podstawie protokołu DNS.
+
+Innymi narzędziami, które można wykorzystać przy rekonesansie DNS są skrypt języka Python zrealizowane przy okazji hobbystycznych
+projektów. Mowa tu o projektach o nazwach AXFR \cite{asg-axfr} oraz Python-AXFR-Test \cite{python_axfr_test}.
+Ich kod źródłowy można znaleźć w serwisie GitHub. Mimo, że prezentowana przez nie wydajność wciąż nie pozwalała na wykorzystanie
+ich w ostatecznej implementacji serwera, to pomogły one w zrozumieniu jak technicznie wygląda transfer strefy AXFR. Dzięki temu
+możliwe było szybsze nakreślenie specyfiki implementowanych narzędzi oraz późniejsze wykorzystanie pierwszego poziomu
+abstrakcji do napisania rozwiązania docelowego.
+
+Projekt robotex \cite{robotex} jest natomiast rozwiązaniem dostępnym przez przeglądarkę stron WWW i nie udało się uzyskać informacji
+na temat ewentualnego interfejsu, który można byłoby wykorzystać na potrzeby pracy magisterskiej. Narzędzie umożliwia dostęp do
+wielu informacji na temat domeny, głównie z punktu widzenia protokołu DNS, jednak jedyną formą uzyskania ich jest wpisanie
+adresu domeny, która jest poddawana rekonesansowi. Rozwiązanie jest przez to bardzo dobre dla różnego rodzaju testerów, jednak
+ma niską wartość jeśli chodzi o skanowanie większego zbioru domen.
+
+Krótkie podsumowanie każdego z narzędzi zawarto w tabeli \ref{tab:narzedzia}. Opisano w niej krótko ich zalety oraz wady, skupiając
+się głównie na kwestiach wykorzystania tych rozwiązań w przeprowadzonych badaniach.
+\begin{longtable}{|p{1.8cm}|p{5cm}|p{5cm}|}
+	\hline
+	\textbf{Narzędzie} &
+	\textbf{Zalety} &
+	\textbf{Wady} \\ \hline\hline
+	dig &
+	\begin{itemize}
+		\item łatwo dostępny
+		\item przejrzysty dla użytkownika
+		\item dobrze przemyślany interfejs jak i prezentacja danych wyjściowych
+	\end{itemize} &
+	\begin{itemize}
+		\item brak jednolitej struktury kodu źródłowego
+		\item duży, trudny do modyfikacji projekt
+		\item zapewnienie wyższej wydajności możliwe niemal tylko poprzez skrypty powłoki
+		\item brak możliwości zapisu danych wyjściowych do pliku bezpośrednio przez program
+	\end{itemize}  \\
+	\hline
+	AXFR oraz Python -AXFR-Test &
+	\begin{itemize}
+		\item implementacja w całości w Pythonie
+		\item łatwo rozszerzalny
+		\item w projekcie AXFR \cite{asg-axfr} dokonano prostych analiz stref pobranych w wyniku skanowania
+		\item obsługa plików -- lista domen czytana z plików oraz zapisywanie pobranych danych
+	\end{itemize} &
+	\begin{itemize}
+		\item niska wydajność
+		\item ograniczenie wielowątkowości wynikające ze specyfiki języka Python
+	\end{itemize}  \\
+	\hline
+	Robotex &
+	\begin{itemize}
+		\item pozyskiwanych jest wiele informacji na temat skanowanej domeny
+		\item ciekawa prezentacja zależności między elementami (domain tree)
+	\end{itemize} &
+	\begin{itemize}
+		\item ręczne rozpoczynanie skanowania
+		\item brak możliwości automatyzacji skanowania
+		\item przydatny tylko do skanowania kilku domen
+	\end{itemize}  \\
+	\hline
+	Biblioteka pjlib &
+	\begin{itemize}
+		\item wydajna implementacja w języku C
+		\item projekt w dużym stopniu jednolity w kwestii standardów kodowania
+	\end{itemize} &
+	\begin{itemize}
+		\item specyficzne mechanizmy wykorzystane w projekcie
+		\item brak obsługi wszystkich przypadków użycia protokołu DNS
+	\end{itemize}  \\
+	\hline
+	\caption{Podsumowanie istniejących narzędzi.}
+	\label{tab:narzedzia}
+\end{longtable}
 
 \section{Zaimplementowane narzędzia}
 Przeprowadzenie globalnego skanu niosło za sobą szereg konsekwencji. Zakładając, że średnio należy przeznaczyć na skanowanie
@@ -79,8 +152,8 @@ Pomimo, że implementacja w języku Python nie okazała się na tyle wydajna aby
 ramach tej pracy magisterskiej, jest to dobrze narzędzie dla pasjonatów bezpieczeństwa sieciowego, którzy chcą skanować wiele
 serwerów. Podejście takie zaprezentowane jest w kilku projektach, które można znaleźć w serwisie github na przykład
 Python-AXFR-test \cite{python_axfr_test} lub skanowanie domen z Alexy wraz ze wstępną analizą wyników \cite{asg-axfr}. Liczba osób,
-które śledzą wymienione wyżej projekty znajduje się w przedziale kilkudziesięciu osób. (?? Sporne) Również na tej podstawie możemy zakładać,
-że temat bezpieczeństwa transferów strefy cieszy się zainteresowaniem wśród pasjonatów bezpieczeństwa sieci. (??)
+które śledzą wymienione wyżej projekty znajduje się w przedziale kilkudziesięciu osób, więc można wnioskować, że nawet małe
+projekty realizowane z zakresu tej tematyki są w pewnym stopniu interesujące dla społeczności. 
 
 Można przypuszczać, że oba projekty zrealizowane w języku Python \cite{python_axfr_test, asg-axfr} oferują podobną wydajność do
 rozwiązania zaimplementowanego podczas realizacji pracy magisterskiej, jednak nie były prowadzone pomiary pod tym kątem. Brak
@@ -273,7 +346,7 @@ aby suma uruchomionych procesów skanera osiągała zdefiniowaną górną granic
 procesów będzie zapisywał odebrane informacje do oddzielnych katalogów. Katalogi były indeksowane, ich nazwa byla postaci
 ,,iter\_{numer\_iteracji}''. Umożliwioło to wyeliminowanie dzielenia zasobów pomiędzy procesami, co przełożyło się na wydajność całego
 rozwiązania. Pogrupowanie danych wyjściowych w katalogach umożliwiło też prostsze analizowanie zebranych informacji. Możliwa była
-analiza wielu folderów jednocześnie, co pozytywnie przełożyło się na czas wykonywania się poszczególnych operacji. 
+analiza wielu folderów jednocześnie, co pozytywnie przełożyło się na czas wykonywania się poszczególnych operacji.
 
 \section{System powiadomień}
 W ramach badań przeprowadzonych podczas realizacji niniejszej pracy magisterskiej został zaimplementowany i uruchomiony system
