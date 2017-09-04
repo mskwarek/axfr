@@ -238,7 +238,9 @@ dwurdzeniowym Intel Core i3-4150, 8GB pamięci RAM oraz 1TB dyskiem twardym w ze
 właściwe skanowanie domen odbywało się na serwerze dedykowanym wypożyczonym od firmy OVH. Zaopatrzony był on w czterordzeniowy
 procesor Intel Xeon E3-1230v6, 16GB pamięci RAM oraz 2x4TB dysk twardym.
 
-Każda z maszyn działała pod kontrolą systemu operacyjnego opartego na dystrybucji systemu Debian. Podejście do problemu
+Każda z maszyn działała pod kontrolą systemu operacyjnego opartego na dystrybucji systemu Debian. Rozwijanie oprogramowania prowadzono
+na systemie operacyjnym Linux Mint w wersji 17.2. Środowisko testowe działało pod kontrolą systemu Debian 9 ,,Stretch'' zaś docelowo
+wykorzystano dystrybucję Ubuntu 16.04. Każdy z wykorzystanych systemów operacyjnych był jego 64 bitową wersją. Podejście do problemu
 w zaprezentowany sposób pozwoliło na szereg udogodnień. Pierwszy etap jest dość oczywisty -- nie ma sensu uruchamiać całego systemu
 na serwerze, jeśli nie mamy pewności, że poszczególne komponenty w samym skanerze nie są odpowiednio zaimplementowane. Mylące może
 być wprowadzenie etapu uruchomienia systemu w środowisku testowym. Powodem przyjęcia takiego rozwiązania były kwestie finansowe.
@@ -266,11 +268,12 @@ W prezentowanym przypadku liczba podzbiorów była bardzo duża, więc zdecydowa
 skanera jednocześnie. Eksperymentalnie ustalono, że liczba instancji skanera na poziomie 15000 jest akceptowalna zarówno ze względu
 na wydajność jak i stabilność. Ustalone ograniczenie zostało zrealizowane dzięki skryptom powłoki bash -- cyklicznie sprawdzano ile
 uruchomionych jest aktualnie instancji skanera, jeśli liczba była mniejsza od 15000, to uruchamiano procesy w liczbie takiej,
-aby suma uruchomionych procesów skanera osiągała liczbę 15000. Aby uniknąć konfliktów zapisu do plików ustalono, że każdy z uruchomionych
+aby suma uruchomionych procesów skanera osiągała zdefiniowaną górną granicę. Aby uniknąć konfliktów zapisu do plików ustalono,
+że każdy z uruchomionych
 procesów będzie zapisywał odebrane informacje do oddzielnych katalogów. Katalogi były indeksowane, ich nazwa byla postaci
 ,,iter\_{numer\_iteracji}''. Umożliwioło to wyeliminowanie dzielenia zasobów pomiędzy procesami, co przełożyło się na wydajność całego
-rozwiązania.
-
+rozwiązania. Pogrupowanie danych wyjściowych w katalogach umożliwiło też prostsze analizowanie zebranych informacji. Możliwa była
+analiza wielu folderów jednocześnie, co pozytywnie przełożyło się na czas wykonywania się poszczególnych operacji. 
 
 \section{System powiadomień}
 W ramach badań przeprowadzonych podczas realizacji niniejszej pracy magisterskiej został zaimplementowany i uruchomiony system
