@@ -20,10 +20,10 @@ tych nietypowych sytuacji i nawet program dig nie odwzorowuje idealnie zachowani
 Przyczyną utworzenia opisanego wcześniej pliku nie jest jednoznacznie określona. Zostały podjęte próby ustalenia czym spowodowane
 	jest takie zachowanie. W takich samych przypadkach program dig zwraca jedynie rekord DNS SOA i komunikat o błędzie (ang.
 \textit{communications error: end of file}). Zachowanie programu dig w dużym stopniu przypomina przekierowanie zapytania IXFR na
-AXFR (ang. \textit{AXFR fallback}) opisane między innymi w RFC1995\cite{RFC1995}. Wywołanie mechanizmu AXFR fallback następuje
+AXFR (ang. \textit{AXFR fallback}) opisane między innymi w RFC1995 \cite{RFC1995}. Wywołanie mechanizmu AXFR fallback następuje
 w sytuacji, kiedy numer wersji pliku strefy przysłany do serwera jest wyższy niż numer wersji aktualnie na nim przechowywany.
-Na różnego rodzaju forach\cite{powerdns-forum} czy w serwisach internetowych\cite{powerdns-git}, problem który został opisany
-pojawia się najczęściej jako problem implementacji oprogramowania PowerDNS\cite{powerdns}. Niemniej jednak nie ustalono dokładnie
+Na różnego rodzaju forach \cite{powerdns-forum} czy w serwisach internetowych \cite{powerdns-git}, problem który został opisany
+pojawia się najczęściej jako problem implementacji oprogramowania PowerDNS \cite{powerdns}. Niemniej jednak nie ustalono dokładnie
 jaki jest powód wysłania tak dużego pakietu w odpowiedzi na zwykłe zapytanie AXFR.
 
 Kolejnym przykładem odpowiedzi, która powodowała powstanie dużego pliku na dysku, było odebranie od serwera autorytatywnego pakietu
@@ -38,7 +38,7 @@ Kolejnymi specyficznymi grupami jeśli chodzi o rozmiar pliku z odpowiedzią są
 \section{Odebrane adresy IPv4 oraz IPv6}
 Częstym argumentem, który pojawia się podczas dyskusji na temat bezpieczeństwa transferów plików bazy danych DNS jest ujawnianie
 adresów IP. W niniejszym podrozdziale skupiono się głównie na adresach IP w wersji 4. ponieważ jest to wciąż dominujący typ adresacji
-w Internecie\cite{Ipv6_deployment}. Okazuje się, że pomimo obaw o wycieki adresów przez dokonywanie nieuprawnionego transferu nikt nie
+w Internecie \cite{Ipv6_deployment}. Okazuje się, że pomimo obaw o wycieki adresów przez dokonywanie nieuprawnionego transferu nikt nie
 zbadał dokładnie jak duża może być skala tego zjawiska. Umożliwiły to badania przeprowadzone w tej pracy magisterskiej.
 
 Aby nie ograniczać się tylko do jednego typu adresacji urządzeń, zostały oddzielone i przeanalizowane dwa zbiory danych -- dla IPv4
@@ -50,18 +50,18 @@ zlokalizowane.
 Podstawową informacją, którą uzyskać można wykorzystując pobrane dane z transferów AXFR jest przynależność otrzymanych adresów IP
 do konkretnych grup autonomicznych. Grupy te określają przynależność do sieci, które zarządzane są przed tego samego operatora
 sieciowego, a wykorzystuje się je głównie w protokołach routingu. Informacje związane z systemami autonomicznymi można, w głównej
-mierze, znaleźć w RFC1930\cite{RFC1930}. Zbiór danych został podzielony ze względu na wersję protokołu IP używanej przy adresacji
+mierze, znaleźć w RFC1930 \cite{RFC1930}. Zbiór danych został podzielony ze względu na wersję protokołu IP używanej przy adresacji
 konkretnych maszyn. Przeprowadzono analizę systemów autonomicznych w rozdzielnych grupach, dla wersji 4 protokołu IP oraz dla wersji 6.
 
-Jak już wcześniej wspomiano, wciąż dominującym sposobem adresacji urządzeń w sieci jest adresacja IP w wersji 4\cite{Ipv6_deployment}.
+Jak już wcześniej wspomiano, wciąż dominującym sposobem adresacji urządzeń w sieci jest adresacja IP w wersji 4 \cite{Ipv6_deployment}.
 Do podobnych wniosków można dojść analizując zbiór dannych zebranych podczas skanowania. Okazuje się bowiem, że znaczna większość
 adresów IP, które zostały pobrane w wyniku skanowania należy do zbioru adresów IP w wersji 4. Dane liczbowe prezentują się w
 następujący sposób:
 \begin{enumerate}
 	\item znaleziono 1695653 adresów publicznych adresów IPv4 -- oznacza to, że odflitrowano te adresy, które zostały określone
-	jako adresy sieci prywatnych w RFC1918\cite{RFC1918},
+	jako adresy sieci prywatnych w RFC1918 \cite{RFC1918},
 	\item odflitrowano 127424 adresów IPv6, które są różne od adresu ,,localhost'' (:::::::1) -- zgodnie z wymaganiami postawionymi
-	w RFC4291\cite{RFC4291}.
+	w RFC4291 \cite{RFC4291}.
 \end{enumerate}
 
 \subsection{Sposób określenia AS}
@@ -69,12 +69,12 @@ W celu określenia numerów systemów autonomicznych adresów IP pozyskanych pod
 narzędzie umożliwiające takie mapowanie. Społeczność udostępnia kilka sposobów dopasowania adresów IP do odpowiadających im
 systemów autonomicznych. Podczas badań zapoznano się z dwoma z nich, które opisano poniżej:
 \begin{enumerate}
-	\item API udostępnione przez Team Cymru\cite{cymru},
+	\item API udostępnione przez Team Cymru \cite{cymru},
 	\item biblioteka języka Python pyasn \cite{pyasn}.
 \end{enumerate}
 
-Pierwszy ze sposobów jest prostszy w użyciu, gdyż wystarczy użyć narzędzia netcat\cite{netcat}, gdzie argumentami jest odpowiednia
-strona internetowa Team Cymru\cite{cymru} oraz ścieżka do pliku, w którym znajdują się w kolejnych liniach adresy IP. Każdy z plików
+Pierwszy ze sposobów jest prostszy w użyciu, gdyż wystarczy użyć narzędzia netcat \cite{netcat}, gdzie argumentami jest odpowiednia
+strona internetowa Team Cymru \cite{cymru} oraz ścieżka do pliku, w którym znajdują się w kolejnych liniach adresy IP. Każdy z plików
 rozpoczyna się słowem kluczowym ,,begin'' oraz kończy słowem kluczowym ,,end''. Sposób ten jest wygodny, jednak moze budzić pewne
 wątpliwości. Najbardziej istotną wydaje się być kwestia dotycząca głównie adresacji IP w wersji 4. -- dynamiczne przydzielanie adresów
 IP różnym operatorom \cite{}. Problem związany jest pośrednio z kończącą sie pulą adresów IPv4. Prowadzi to do zmian przynależności
@@ -106,19 +106,19 @@ Okazuje się natomiast,
 jest w realizacji dużo łatwiejszym atakiem niż wspomniane wcześniej \textit{zone walking}.
 
 Dodatkowo, zastanawiające jest, że oprócz bardzo widocznej przewagi systemów autonomicznych ze Stanów Zjednoczonych, widoczna jest
-również duża różnica pomiędzy 9 pierwszymi krajami oraz resztą populacji (etykieta \textit{tr}(Turcja) na wykresie \ref{fig:ipv4_countries}).
+również duża różnica pomiędzy 9 pierwszymi krajami oraz resztą populacji (etykieta \textit{tr} (Turcja) na wykresie \ref{fig:ipv4_countries}).
 
 \begin{figure}[ht]
 	\centering
-	\includegraphics[width=1.0\textwidth]{image/ipv4_as_countries}
-	\caption{}
+	\includegraphics[width=1.0\textwidth]{image/ipv4_as_countries_no_title}
+	\caption{Pochodzenie geograficzne adresów IPv4 z podziałem na państwa. Adresy określane na podstawie numerów AS.}
 	\label{fig:ipv4_countries}
 \end{figure}
 
 \begin{figure}[ht]
 	\centering
-	\includegraphics[width=1.0\textwidth]{image/asn_all}
-	\caption{}
+	\includegraphics[width=1.0\textwidth]{image/asn_all_no_title}
+	\caption{Zestawienie systemów autonomicznych, z których domeny najczęściej odpowiadają na zapytania AXFR.}
 	\label{fig:asn_all}
 \end{figure}
 
@@ -133,8 +133,8 @@ wykresie \ref{fig:ipv6_countries} stanowią już bardzo małą część wszystki
 
 \begin{figure}[ht]
 	\centering
-	\includegraphics[width=1.0\textwidth]{image/ipv6_countries}
-	\caption{}
+	\includegraphics[width=1.0\textwidth]{image/ipv6_countries_no_title}
+	\caption{Pochodzenie geograficzne adresów IPv6 z podziałem na państwa. Adresy określane na podstawie numerów AS.}
 	\label{fig:ipv6_countries}
 \end{figure}
 
@@ -144,12 +144,13 @@ dla serwerów podatnych na nieuprawiony transfer strefy.
 
 W głównej mierze należy zastanowić się, czy rozkład ten jest w ogóle istotny, czy może nie różni się on niczym od ogólnego,
 całościowego rozkładu popularności TLD w internecie, bez uwzględnienia podatności czy innych czynników. W tym celu przeanalizowano
-i przedstawiono wykres popularności domen najwyższego poziomu w sieci internet\cite{TLD_popularity}. Jest on przedstawiony na
+i przedstawiono wykres popularności domen najwyższego poziomu w sieci internet \cite{TLD_popularity}. Jest on przedstawiony na
 rysunku \ref{fig:TLD_all}.
 \begin{center}
 	\begin{figure}
+		\centering
 		\includegraphics[scale=0.75]{image/TLD_all}
-		\caption{Popularność TLD w internecie (dostęp na dzień 15. maja 2017), źródło:  \cite{TLD_popularity}}
+		\caption{Popularność TLD w internecie (dostęp na dzień 15. maja 2017), źródło:  \cite{TLD_popularity}.}
 		\label{fig:TLD_all}
 	\end{figure}
 \end{center}
@@ -162,7 +163,7 @@ autorytatywne umożliwiają nieuprawniony transfer AXFR. Rozkład popularności 
 na rysunku \ref{fig:resp}.
 \begin{center}
 	\begin{figure}
-		\includegraphics[width=1.0\textwidth]{image/resp}
+		\includegraphics[width=1.0\textwidth]{image/resp_no_title}
 		\caption{Popularność TLD w odpowiedziach AXFR.}
 		\label{fig:resp}
 	\end{figure}
@@ -187,15 +188,18 @@ danych. Zostały odpowiednio wykreślone:
 
 \begin{figure}[ht]
 	\centering
-	\includegraphics[width=1.0\textwidth]{image/req_to_resp}
-	\caption{}
+	\includegraphics[width=1.0\textwidth]{image/req_to_resp_no_title}
+	\caption{Zestawienie odpowiedzi ze względu na rozkład danych wejściowych. Rozkład odpowiedzi znormalizowano do całkowitej liczby
+	odpowiedzi, zaś rozkład zapytań do całkowitej ich liczby.}
 	\label{req_to_resp}
 \end{figure}
 
 \begin{figure}[ht]
 	\centering
-	\includegraphics[width=1.0\textwidth]{image/resp_to_req}
-	\caption{}
+	\includegraphics[width=1.0\textwidth]{image/resp_to_req_no_title}
+	\caption{Zestawienie częstości występowania domen najwyższego poziomu dla domen, dla których możliwy jest AXFR z ich populacją
+	w zbiorze danych wejściowych. Rozkład odpowiedzi znormalizowano do całkowitej liczby
+	odpowiedzi, zaś rozkład zapytań do całkowitej ich liczby.}
 	\label{resp_to_req}
 \end{figure}
 
@@ -220,15 +224,15 @@ dotyczących odpowiedzi AXFR można było ocenić ile różnych TLD pojawia się
 
 \begin{figure}[ht]
 	\centering
-	\includegraphics[width=1.0\textwidth]{image/cdf_tld_req}
-	\caption{}
+	\includegraphics[width=1.0\textwidth]{image/cdf_tld_req_no_title}
+	\caption{Dystrybuanta domeny najwyższego poziomu w odpytywanych domenach.}
 	\label{cdf_tld_req}
 \end{figure}
 
 \begin{figure}[ht]
 	\centering
-	\includegraphics[width=1.0\textwidth]{image/cdf_tld_resp}
-	\caption{}
+	\includegraphics[width=1.0\textwidth]{image/cdf_tld_resp_no_title}
+	\caption{Dystrybuanta domeny najwyższego poziomu w zbiorze domen odpowiadających strefą DNS na zapytanie AXFR.}
 	\label{cdf_tld_resp}
 \end{figure}
 
@@ -258,7 +262,7 @@ Sytuacja taka może mieć miejsce, gdy wszystkie domeny z mało popularnego TLD 
 		Odpowiedzi &
 		751 &
 		187\\
-		\hline\hline
+		\hline
 	\end{tabular}
 \end{table}
 
@@ -271,13 +275,13 @@ oddzielnie pliki zawierające więcej niż jeden rekord.
 
 W wyniku przeprowadzonych badań ustalono, że:
 \begin{enumerate}
-	\item 6179845 z 8985154 plików stref zawiera jedynie jeden wpis (rekord SOA),
+	\item 6179845 z 8985154 plików stref zawiera jedynie jeden wpis (rekord SOA bądź rekord CNAME),
 	\item 2803902 z 8985154 plików stref zawiera więcej niż jeden wpis.
 \end{enumerate}
 Przypadek, gdy plik strefy zawiera więcej niż jeden wpis można utożsamić ze źle skonfigurowanym serwerem autorytatywnym domeny.
 Zwracanie samego wpisu SOA (czyli odpowiednik zbioru danych z jendym wpisem w pliku strefy) nie może być traktowane jako błąd,
 gdyż w dokładnie taki sam sposób zachowuje się serwer DNS w przypadku podania błędnego numeru serii w transferze IXFR. Tak
-zaprojektowany został inkrementalny transfer strefy DNS zaprezentowany w RFC1995\cite{RFC1995} i do tej pory nie zaprezentowano
+zaprojektowany został inkrementalny transfer strefy DNS zaprezentowany w RFC1995 \cite{RFC1995} i do tej pory nie zaprezentowano
 ewentualnych podatności, które mogłyby wykorzystywać ten protokół.
 
 Dla zbioru danych, który określa rozmiar pobranych stref wykreślony został histogram, z którego można odczytać, jak często spotykane
@@ -288,15 +292,15 @@ w powiększeniu, na kolejnym rysunku \ref{fig:hist_zone_size_zoom}.
 
 \begin{figure}[ht]
 	\centering
-	\includegraphics[width=1.0\textwidth]{image/hist_zone_size}
-	\caption{}
+	\includegraphics[width=1.0\textwidth]{image/hist_zone_size_no_title}
+	\caption{Rozkład liczby rekordów w odpowiedziach AXFR.}
 	\label{fig:hist_zone_size}
 \end{figure}
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=1.0\textwidth]{image/hist_zone_size_zoom}
-\caption{}
+\includegraphics[width=1.0\textwidth]{image/hist_zone_size_zoom_no_title}
+\caption{Rozkład liczby rekordów w odpowiedziach AXFR, widok powiększony.}
 \label{fig:hist_zone_size_zoom}
 \end{figure}
 
@@ -367,7 +371,7 @@ domeny, jest najczęściej mało związana z informatyką czy telekomunikacją.
 
 To, na co warto zwrócić uwagę na histogramie \ref{fig:hist_zone_size_zoom} to również domeny o strefach o rozmiarze około 40-60 wpisów.
 Jest to reprezentacja tych stref, które wykorzystują mechanizm podpisywania rekordów DNS zaprezentowany w rozszerzedniu
-protokołu -- DNSSEC\cite{RFC4034, RFC4035}. Zgodnie z tym, co zostało opisane w rozdziale \ref{tsig}, Dla każdej pary rekordów
+protokołu -- DNSSEC \cite{RFC4034, RFC4035}. Zgodnie z tym, co zostało opisane w rozdziale \ref{tsig}, Dla każdej pary rekordów
 przechowywanych w strefie DNS liczony jest podpis cyfrowy.
 
 \section{Odpowiedzi niestandardowe}
@@ -384,7 +388,7 @@ tnttelivision.com.	86400	IN	SOA	ns1.parklogic.com. hostmaster.tnttelivision.com.
 ;; communications error to 173.255.218.70#53: end of file
 \end{lstlisting}
 
-W tym samym czasie ustawiono nasłuchiwanie programu Wireshark\cite{wireshark} na odpowiednim interfejsie oraz odfiltrowano ruch sieciowy
+W tym samym czasie ustawiono nasłuchiwanie programu Wireshark \cite{wireshark} na odpowiednim interfejsie oraz odfiltrowano ruch sieciowy
 nie związany z komunikacją z serwerem przestrzeni nazw o adresie 173.255.218.70. Ogólny przebieg komunikacji można zobaczyć na
 zrzucie ekranu \ref{fig:unused_wireshark}.
 \begin{figure}[ht]
@@ -445,8 +449,8 @@ zebrane we wspólną grupę stanowią zaledwie 0,5\textperthousand.
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=1.0\textwidth]{image/unused_pie}
-\caption{}
+\includegraphics[width=1.0\textwidth]{image/unused_pie_no_title}
+\caption{Lokalizacja serwerów nazw odpowiadających pakietem TCP z flagą RST.}
 \label{fig:unused_pie}
 \end{figure}
 
@@ -466,8 +470,8 @@ nie zostały uwzględnione podczas niniejszej analizy. Wyniki zaprezentowano na 
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=1.0\textwidth]{image/many_lines_map}
-\caption{}
+\includegraphics[width=1.0\textwidth]{image/many_lines_map_no_title}
+\caption{Lokalizacja serwerów DNS, które odpowiedziały więcej niż jednym rekordem.}
 \label{fig:many_lines_map}
 \end{figure}
 

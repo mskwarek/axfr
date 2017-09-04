@@ -55,33 +55,31 @@ się głównie na kwestiach wykorzystania tych rozwiązań w przeprowadzonych ba
 	\textbf{Narzędzie} &
 	\textbf{Zalety} &
 	\textbf{Wady} \\ \hline\hline
-	dig &
-	\begin{itemize}
+	dig
+	&\begin{itemize}
 		\item łatwo dostępny
 		\item przejrzysty dla użytkownika
 		\item dobrze przemyślany interfejs jak i prezentacja danych wyjściowych
-	\end{itemize} &
-	\begin{itemize}
+	\end{itemize}
+	&\begin{itemize}
 		\item brak jednolitej struktury kodu źródłowego
 		\item duży, trudny do modyfikacji projekt
 		\item zapewnienie wyższej wydajności możliwe niemal tylko poprzez skrypty powłoki
 		\item brak możliwości zapisu danych wyjściowych do pliku bezpośrednio przez program
 	\end{itemize}  \\
 	\hline
-	AXFR oraz Python -AXFR-Test &
-	\begin{itemize}
+	AXFR oraz Python -AXFR-Test & \begin{itemize}
 		\item implementacja w całości w Pythonie
 		\item łatwo rozszerzalny
 		\item w projekcie AXFR \cite{asg-axfr} dokonano prostych analiz stref pobranych w wyniku skanowania
 		\item obsługa plików -- lista domen czytana z plików oraz zapisywanie pobranych danych
-	\end{itemize} &
-	\begin{itemize}
+	\end{itemize}
+	&\begin{itemize}
 		\item niska wydajność
 		\item ograniczenie wielowątkowości wynikające ze specyfiki języka Python
 	\end{itemize}  \\
 	\hline
-	Robotex &
-	\begin{itemize}
+	Robotex &\begin{itemize}
 		\item pozyskiwanych jest wiele informacji na temat skanowanej domeny
 		\item ciekawa prezentacja zależności między elementami (domain tree)
 	\end{itemize} &
@@ -91,8 +89,7 @@ się głównie na kwestiach wykorzystania tych rozwiązań w przeprowadzonych ba
 		\item przydatny tylko do skanowania kilku domen
 	\end{itemize}  \\
 	\hline
-	Biblioteka pjlib &
-	\begin{itemize}
+	Biblioteka pjlib &\begin{itemize}
 		\item wydajna implementacja w języku C
 		\item projekt w dużym stopniu jednolity w kwestii standardów kodowania
 	\end{itemize} &
@@ -153,7 +150,7 @@ ramach tej pracy magisterskiej, jest to dobrze narzędzie dla pasjonatów bezpie
 serwerów. Podejście takie zaprezentowane jest w kilku projektach, które można znaleźć w serwisie github na przykład
 Python-AXFR-test \cite{python_axfr_test} lub skanowanie domen z Alexy wraz ze wstępną analizą wyników \cite{asg-axfr}. Liczba osób,
 które śledzą wymienione wyżej projekty znajduje się w przedziale kilkudziesięciu osób, więc można wnioskować, że nawet małe
-projekty realizowane z zakresu tej tematyki są w pewnym stopniu interesujące dla społeczności. 
+projekty realizowane z zakresu tej tematyki są w pewnym stopniu interesujące dla społeczności.
 
 Można przypuszczać, że oba projekty zrealizowane w języku Python \cite{python_axfr_test, asg-axfr} oferują podobną wydajność do
 rozwiązania zaimplementowanego podczas realizacji pracy magisterskiej, jednak nie były prowadzone pomiary pod tym kątem. Brak

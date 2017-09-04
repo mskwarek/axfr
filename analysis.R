@@ -1,4 +1,5 @@
 library(ggplot2)
+library(pracma)
 responded<-read.csv("tld_cnt.result", header=FALSE)
 asked<-read.csv("tld_cnt_all.input", header=FALSE)
 
@@ -16,9 +17,9 @@ density=15
 x <- cbind(head(asked, density)$V2, head(asked, density)$V3)
 barplot(t(x), las=2, col=c("darkblue", "red"), beside = T, 
           cex.names = 0.8, names.arg = head(asked, density)$V1, 
-          ylim=c(0, 0.45), xlab="Domena najwy¿szego poziomu(TLD)", 
-          ylab = "Czêœæ wszystkich domen", 
-          main = "Zestawienie odpowiedzi ze wzglêdu\nna rozk³ad danych wejœciowych")
+          ylim=c(0, 0.45), xlab="Domena najwy?szego poziomu(TLD)", 
+          ylab = "Cz??? wszystkich domen", 
+          main = "Zestawienie odpowiedzi ze wzgl?du\nna rozk?ad danych wej?ciowych")
 legend("topright", 
        legend = c("zapytania", "odpowiedzi"), 
        fill = c("darkblue", "red"), cex=0.8)
@@ -27,9 +28,9 @@ grid()
 y <- cbind(head(responded, density)$V2, head(responded, density)$V3)
 barplot(t(y), las=2, col=c("red", "darkblue"), beside = T, 
         cex.names = 0.8, names.arg = head(responded, density)$V1, 
-        ylim=c(0, 0.45), xlab="Domena najwy¿szego poziomu(TLD)", 
-        ylab = "Czêœæ wszystkich domen", 
-        main = "Porównanie czêstoœci odpowiedzi\nwzglêdem danych wejœciowych")
+        ylim=c(0, 0.45), xlab="Domena najwy?szego poziomu(TLD)", 
+        ylab = "Cz??? wszystkich domen", 
+        main = "Por?wnanie cz?sto?ci odpowiedzi\nwzgl?dem danych wej?ciowych")
 
 legend("topright", 
        legend = c("zapytania", "odpowiedzi"), 
@@ -45,8 +46,8 @@ for(a in 2:length(input$c))
   input[a, 2] <- (input[a-1,2]+input[a, 2])
 }
 plot(input, pch=" ", 
-     main="Dystrybuanta TLD w domenach umo¿liwiaj¹cych AXFR",
-     xlab="Lp. domeny najwy¿szego poziomu",
+     main="Dystrybuanta TLD w domenach umo?liwiaj?cych AXFR",
+     xlab="Lp. domeny najwy?szego poziomu",
      ylab="CDF"
      )
 lines(input)
@@ -68,8 +69,8 @@ countries$V2<-countries$V2/sum(countries$V2)
 x <- cbind(head(countries, density)$V2)
 barplot(t(x), las=2, col=c("darkblue"), beside = T, 
         cex.names = 0.8, names.arg = head(countries, density)$V1, 
-        ylim=c(0, 0.4), xlab="Kod pañstwa", 
-        ylab = "Czêœæ wyodrêbnionych ASów", 
+        ylim=c(0, 0.4), xlab="Kod pa?stwa", 
+        ylab = "Cz??? wyodr?bnionych AS?w", 
         main = "Adresy IPv6 (na podstawie AS)")
 #legend("topright", 
 #       legend = c("zapytania", "odpowiedzi"), 
