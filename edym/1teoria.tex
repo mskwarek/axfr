@@ -146,8 +146,11 @@ razem z jej poddomenami i odpowiednimi miejscami w hierarchii systemu przedstawi
 	\end{figure}
 \end{center}
 
-Serwer autorytatywny (ang. \textit{authoritative name server}) posiada odgórne przyzwolenie na zarządzanie nazwami swoich hostów
-(kto przyznaje(?) \cite{toDoWarning}). Ze względu na drzewiastą strukturę systemu można oczekiwać, że kolejne domeny oraz ich serwery
+Serwer autorytatywny (ang. \textit{authoritative name server}) posiada odgórne przyzwolenie na zarządzanie nazwami swoich hostów.
+Wymagania dotyczące technicznych kwestii serwerów autorytatywnych zaprezentowano na stronie organizacji IANA \cite{iana},
+która w znacznym
+stopniu zajmuje się definiowaniem zasad obowiązujących w sieci Internet. Ze względu na drzewiastą strukturę systemu można oczekiwać,
+że kolejne domeny oraz ich serwery
 autorytatywne będą delegować odpowiedzialność za kolejne strefy do serwerów niższego poziomu. W ten sposób, powołując się na przykład
 przedstawiony na rysunku \ref{example_domain_tree} serwer autorytatywny .com zarządza nazwami w domenie .com, natomiast zarządzanie
 nazwami w domenie google.com przekazuje do niższego szczeblem serwera przestrzeni nazw. W ten sposób serwer domeny google.com ma
