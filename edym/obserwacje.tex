@@ -124,18 +124,27 @@ również duża różnica pomiędzy 9 pierwszymi krajami oraz resztą populacji 
 
 \subsection{Zbiór adresów IPv6}
 Oprócz opisanego w poprzednim podpunkcie \ref{sec:ipv4_results} przeanalizowano zebrane dane pod względem zawartości adresów IP
-w wersji 6. Rozpatrując przypadek adresów IPv6 widzimy na rysunku \ref{fig:ipv6_countries} wyraźną przewagę systemów autonomicznych
+w wersji 6. Rozpatrując przypadek adresów IPv6 widzimy na rysunku \ref{fig:ipv6_as_countries} wyraźną przewagę systemów autonomicznych
 z trzech państw -- Niemiec, Turcji oraz Holandii. Z pewnością wpływ na zaprezentowane wyniki miał również stopień zaawansowania
 wdrożenia IPv6 w poszczególnych państwach. Zastanawiająca jest stosunkowo niska pozycja systemów autonomicznych ze Stanów Zjednoczonych,
 jednak można przypuszczać, że jest to właśnie konsekwencja stanu wdrożenia protokołu IPv6. Kolejne z państw przestawione na
-wykresie \ref{fig:ipv6_countries} stanowią już bardzo małą część wszystkich systemów autonomicznych -- nawet poniżej 1\textperthousand.
-
-
+wykresie \ref{fig:ipv6_as_countries} stanowią już bardzo małą część wszystkich systemów autonomicznych -- nawet poniżej 1\textperthousand.
 \begin{figure}[ht]
 	\centering
 	\includegraphics[width=1.0\textwidth]{image/ipv6_countries_no_title}
 	\caption{Pochodzenie geograficzne adresów IPv6 z podziałem na państwa. Adresy określane na podstawie numerów AS.}
-	\label{fig:ipv6_countries}
+	\label{fig:ipv6_as_countries}
+\end{figure}
+
+Analogicznie jak w przypadku opisanym w rozdziale \ref{sec:ipv4_results} zaprezentowano bardziej szczegółowy wykres, na podstawie
+którego możliwa jest analiza adresów ze wzlęgu na numery poszczególnych systemów autonomicznych. Widać dość wyraźną różnicę pomiędzy
+dwoma najbardziej licznymi zbiorami AS, a całą resztą znalezionych adresów. Co więcej, są to systemy autonomiczne stosunkowo młode,
+na co wskazują ich wysokie indeksy (20081 i 197328).
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=1.0\textwidth]{image/Ipv6_as_count_no_title}
+	\caption{Pochodzenie geograficzne adresów IPv6 z podziałem na państwa. Adresy określane na podstawie numerów AS.}
+	\label{fig:ipv6_co}
 \end{figure}
 
 \section{Analiza TLD}
