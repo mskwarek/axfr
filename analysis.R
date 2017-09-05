@@ -63,15 +63,14 @@ while(input[x, 2] < 0.99)
 
 
 
-countries<-read.csv("ipv6_country.result", header=FALSE, sep = ' ')
+countries<-read.csv("ipv6_asn_cnt_formatted.result", header=FALSE, sep = ' ')
 density=15
-countries$V2<-countries$V2/sum(countries$V2)
+countries$V2<-countries$V2/sum(countries$V2)*100
 x <- cbind(head(countries, density)$V2)
 barplot(t(x), las=2, col=c("darkblue"), beside = T, 
         cex.names = 0.8, names.arg = head(countries, density)$V1, 
-        ylim=c(0, 0.4), xlab="Kod pa?stwa", 
-        ylab = "Cz??? wyodr?bnionych AS?w", 
-        main = "Adresy IPv6 (na podstawie AS)")
+        ylim=c(0, 40), xlab="Numer systemu autonomicznego", 
+        ylab = "Część znalezionych adresów IPv6")
 #legend("topright", 
 #       legend = c("zapytania", "odpowiedzi"), 
 #       fill = c("darkblue", "red"), cex=0.8)

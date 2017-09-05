@@ -77,8 +77,8 @@ Pierwszy ze sposobów jest prostszy w użyciu, gdyż wystarczy użyć narzędzia
 strona internetowa Team Cymru \cite{cymru} oraz ścieżka do pliku, w którym znajdują się w kolejnych liniach adresy IP. Każdy z plików
 rozpoczyna się słowem kluczowym ,,begin'' oraz kończy słowem kluczowym ,,end''. Sposób ten jest wygodny, jednak moze budzić pewne
 wątpliwości. Najbardziej istotną wydaje się być kwestia dotycząca głównie adresacji IP w wersji 4. -- dynamiczne przydzielanie adresów
-IP różnym operatorom \cite{}. Problem związany jest pośrednio z kończącą sie pulą adresów IPv4. Prowadzi to do zmian przynależności
-adresów IPv4 do systemów autonomicznych. Dynamikę tych zmian można obserwować między innymi pod adresem \cite{}.
+IP różnym operatorom \cite{RFC2050}. Problem związany jest pośrednio z kończącą sie pulą adresów IPv4. Prowadzi to do zmian przynależności
+adresów IPv4 do systemów autonomicznych. Dynamikę tych zmian można obserwować między innymi pod adresem \cite{cidr_report}.
 
 Wątpliwości, które wynikły z wykorzystania udostępnionego API były bezpośrednią przyczyną szukania innego, optymalnego rozwiązania.
 Takim okazało się wykorzystanie biblioteki \textit{pyasn} \cite{pyasn}. Umożliwia ona zaimplementowanie narzędzia, które uwzględnia
@@ -100,7 +100,7 @@ Analizując zbiór pod względem adresów IP jedynie w czwartej wersji, zaprezen
 zauważyć kilka interesująych faktów. Pierwszym, który jest natychmiast zauważalny, to bardzo wysoki współczynnik systemów autonomicznych
 ze Stanów Zjednoczonych w popoulacji adresów IPv4 które zostały zebrane w wyniku skanowania. Poziom ten jest około 3.5 raza wyższy,
 niż liczebność systemu autonomicznego z drugiego kraju w rankingu, czyli z Niemiec. Informacja ta jest interesująca w tym sensie, że
-TLD .de jest jedną z tych, które wymagają zabezpieczania stref DNS przed \textit{zone enumeration}\cite{euLaw, zoneEnumeration}.
+TLD .de jest jedną z tych, które wymagają zabezpieczania stref DNS przed \textit{zone enumeration} \cite{euLaw, zoneEnumeration}.
 Okazuje się natomiast,
 że w praktyce drugim najczęściej spotykanym krajem w zestawieniu adresów IP w skanowaniu AXFR są właśnie Niemcy, a transfer strefy
 jest w realizacji dużo łatwiejszym atakiem niż wspomniane wcześniej \textit{zone walking}.
