@@ -188,7 +188,7 @@ mechanizm pozwalający na wykorzystywanie własnych limitów czasu żądania prz
 gniazda na nieblokujący tryb pracy. Następnie wykorzystano funkcję \textit{select()}, która zwraca informację o tym, czy możliwe jest
 rozpoczęcie pisania/czytania danych z instancji gniazda TCP. Dokładny algorytm działania został przedstawiony na rysunku \ref{fig:socketAlg}.
 
-\begin{figure}[ht]
+\begin{figure}[h]
 	\centering
 	\includegraphics[width=1.0\textwidth]{image/socketAlg}
 	\caption{Algorytm dynamicznego ustawiania limitu czasu żądania dla gniazda TCP w blokującym trybie pracy.}
@@ -228,7 +228,7 @@ wraz z identyfikatorami, które rezprezentują je w protokole DNS.
 Algorytm postępowania w przypadku odebrania pakietu danych przedstawiony jest na rysunku \ref{fig:receiving}. Dane odbierane z interfejsu
 sieciowego są zapisane w systemie szesnastkowym, zgodnie z zaleceniami znanymi dokumentu RFC 1035 \cite{RFC1035}.
 
-\begin{figure}[ht]
+\begin{figure}[h]
 	\centering
 	\includegraphics[width=1.0\textwidth]{image/receiving}
 	\caption{Algorytm postępowania w przypadku odebrania APDU protokołu DNS.}
@@ -283,7 +283,7 @@ stanie zaalokować odpowiedniej liczby komórek w pamięci komputera. Aby zasymu
 na diagramie na rysunku \ref{fig:shufAlgorithm} oparty na dzieleniu całego zbioru danych wejściowych oraz permutowaniu kolejnych linii
 w podgrupach o różnej wielkości.
 
-\begin{figure}[ht]
+\begin{figure}[h]
 	\centering
 	\includegraphics[width=0.6\textwidth]{image/sfuh}
 	\caption{Algorytm mieszania linii w dużym pliku wejściowym.}

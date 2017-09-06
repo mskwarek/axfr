@@ -114,7 +114,8 @@ Wyspecyfikowanie standardu DNSSEC było problematyczne, a organizacje pracujące
 było różnego rodzaju ograniczeniami technicznymi. Jednym z takich ograniczeń technicznych jest zjawisko \textit{DNS Enumeration}
 (lub \textit{Zone Enumeration}). Jest to podatność w sieci polegająca na wypisaniu wszystkich urządzeń, które do tej sieci należą.
 W standardzie DNSSEC umożliwiono \textit{zone enumeration}, którego wynikiem były nawet urządzenia sieciowe (na przykład rutery)
-znajdujące się w danej strefie. Zjawisko nie jest luką krytyczną, jednak może prowadzić do bardziej złożonych ataków.
+znajdujące się w danej strefie. Zjawisko nie jest luką krytyczną, jednak może prowadzić do bardziej złożonych ataków. Cały
+proces ataku na daną strefę zabezpieczoną rozszerzeniem DNSSEC określane jest jako \textit{zone walking}.
 
 Problem listowania strefy DNS wynika z różnego traktowania odpowiedzi pozytywnej oraz negatywnej od serwera. Odpowiedź pozytywna
 jest wysyłana w przypadku, gdy dana domena istnieje oraz przypisano jej adres IP. Przykładowo:
@@ -128,7 +129,7 @@ Jeśli chodzi o odpowiedź negatywną, to przykład opisano poniżej:
 	\item Serwer: Domena nieistnieje.przykład.pl nie istnieje.
 \end{enumerate}
 \begin{center}
-	\begin{figure}
+	\begin{figure}[h]
 	\centering
 	\includegraphics[scale=0.7]{image/nxdomain}
 	\caption{Przepływ informacji podczas odpytywania serwera przestrzeni nazw o domenę.}

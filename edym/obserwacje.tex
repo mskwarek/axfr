@@ -92,7 +92,7 @@ Wątpliwości, które wynikły z wykorzystania udostępnionego API były bezpoś
 Takim okazało się wykorzystanie biblioteki \textit{pyasn} \cite{pyasn}. Umożliwia ona zaimplementowanie narzędzia, które uwzględnia
 datę, gdy dany adres IP został zeskanowany. Mapowanie adresu IP na AS w konkretnym dniu jest możliwe dzięki wykorzystaniu wielu baz
 danych. Okazuje się, że w praktyce, dla każdej z dat udostępniony jest oddzielny plik z bazą danych, dzięki której możliwe jest
-tłumaczenie adresów IP na ASy. Możliwe jest, aby pobrać bazę danych, która najlepiej odpowiada zebranym pomiarom. W przypadku tej
+tłumaczenie adresów IP na ASy. Możliwe jest pobranie bazy danych, która najlepiej odpowiada zebranym pomiarom. W przypadku niniejszej
 pracy magisterskiej pobierane są pliki dla każdego dnia, w którym przeprowadzone zostało skanowanie. Pliki są dystrybuowane wraz z
 biblioteką. Użytkownik musi przygotować pliku tekstowego z datami, dla których powinna zostać
 pobrana baza danych. Następnie bazy są przetwarzane na pliki w formacie odpowiednim dla biblioteki \textit{pyasn}. Aby zautomatyzować
@@ -101,7 +101,7 @@ opisany proces, zaimplementowano odpowiednie narzędzie w języku skryptowym bas
 skanów, następnie tworzy odpowiedni plik tekstowy, który później wykorzystywany jest jako plik wejściowy dla biblioteki \textit{pyasn}.
 Na jego podstawie kopiowane są bazy danych dla konkretnych dni. Pobrane bazy danych są następnie konwertowane do takiego formatu,
 którego wymaga narzędzie. W kolejnym kroku dokonuje się właściwego odwzorowania adresów IP na odpowiadające im ASy.
-\begin{figure}[ht]
+\begin{figure}[h]
 	\centering
 	\includegraphics[width=1.0\textwidth]{image/netcat}
 	\caption{Zasada działania narzędzia mapującego adresy IP na numery AS.}
@@ -117,26 +117,27 @@ już w dniu przeprowadzania skanowania, co dodatkowo obciążyłoby serwer i prz
 
 \subsection{Zbiór adresów IPv4}
 \label{sec:ipv4_results}
-Analizując zbiór pod względem adresów IP jedynie w czwartej wersji, zaprezentowany na rysunku \ref{fig:ipv4_countries}, możemy
+Analizując zbiór pod kątem adresów IP jedynie w czwartej wersji, zaprezentowany na rysunku \ref{fig:ipv4_countries}, możemy
 zauważyć kilka interesująych faktów. Pierwszym, który jest natychmiast zauważalny, to bardzo wysoki współczynnik systemów autonomicznych
-ze Stanów Zjednoczonych w popoulacji adresów IPv4 które zostały zebrane w wyniku skanowania. Poziom ten jest około 3.5 raza wyższy,
+ze Stanów Zjednoczonych w populacji adresów IPv4 które zostały zebrane w wyniku skanowania. Poziom ten jest około 3.5 raza wyższy,
 niż liczebność systemu autonomicznego z drugiego kraju w rankingu, czyli z Niemiec. Informacja ta jest interesująca w tym sensie, że
 TLD .de jest jedną z tych, które wymagają zabezpieczania stref DNS przed \textit{zone enumeration} \cite{euLaw, zoneEnumeration}.
 Okazuje się natomiast,
 że w praktyce drugim najczęściej spotykanym krajem w zestawieniu adresów IP w skanowaniu AXFR są właśnie Niemcy, a transfer strefy
-jest w realizacji dużo łatwiejszym atakiem niż wspomniane wcześniej \textit{zone walking}.
+jest w realizacji dużo łatwiejszym atakiem niż wspomniane wcześniej \textit{zone walking} \label{zone_enumeration}.
 
 Dodatkowo, zastanawiające jest, że oprócz bardzo widocznej przewagi systemów autonomicznych ze Stanów Zjednoczonych, widoczna jest
-również duża różnica pomiędzy 9 pierwszymi krajami oraz resztą populacji (etykieta \textit{tr} (Turcja) na wykresie \ref{fig:ipv4_countries}).
+również duża różnica pomiędzy 9 pierwszymi krajami oraz resztą populacji (etykieta \textit{tr} (Turcja) na
+wykresie \ref{fig:ipv4_countries}).
 
-\begin{figure}[ht]
+\begin{figure}[h]
 	\centering
 	\includegraphics[width=1.0\textwidth]{image/ipv4_as_countries_no_title}
 	\caption{Pochodzenie geograficzne adresów IPv4 z podziałem na państwa. Adresy określane na podstawie numerów AS.}
 	\label{fig:ipv4_countries}
 \end{figure}
 
-\begin{figure}[ht]
+\begin{figure}[h]
 	\centering
 	\includegraphics[width=1.0\textwidth]{image/asn_all_no_title}
 	\caption{Zestawienie systemów autonomicznych, z których domeny najczęściej odpowiadają na zapytania AXFR.}
@@ -150,7 +151,7 @@ z trzech państw -- Niemiec, Turcji oraz Holandii. Z pewnością wpływ na zapre
 wdrożenia IPv6 w poszczególnych państwach. Zastanawiająca jest stosunkowo niska pozycja systemów autonomicznych ze Stanów Zjednoczonych,
 jednak można przypuszczać, że jest to właśnie konsekwencja stanu wdrożenia protokołu IPv6. Kolejne z państw przestawione na
 wykresie \ref{fig:ipv6_as_countries} stanowią już bardzo małą część wszystkich systemów autonomicznych -- nawet poniżej 1\textperthousand.
-\begin{figure}[ht]
+\begin{figure}[h]
 	\centering
 	\includegraphics[width=1.0\textwidth]{image/ipv6_countries_no_title}
 	\caption{Pochodzenie geograficzne adresów IPv6 z podziałem na państwa. Adresy określane na podstawie numerów AS.}
@@ -161,7 +162,7 @@ Analogicznie jak w przypadku opisanym w rozdziale \ref{sec:ipv4_results} zapreze
 którego możliwa jest analiza adresów ze wzlęgu na numery poszczególnych systemów autonomicznych. Widać dość wyraźną różnicę pomiędzy
 dwoma najbardziej licznymi zbiorami AS, a całą resztą znalezionych adresów. Co więcej, są to systemy autonomiczne stosunkowo młode,
 na co wskazują ich wysokie indeksy (20081 i 197328).
-\begin{figure}[ht]
+\begin{figure}[h]
 	\centering
 	\includegraphics[width=1.0\textwidth]{image/Ipv6_as_count_no_title}
 	\caption{Pochodzenie geograficzne adresów IPv6 z podziałem na państwa. Adresy określane na podstawie numerów AS.}
@@ -173,8 +174,8 @@ Jednym z podejść analizy zebranego zbioru danych było sprawdzenie, jak przeds
 dla serwerów podatnych na nieuprawiony transfer strefy.
 
 W głównej mierze należy zastanowić się, czy rozkład ten jest w ogóle istotny, czy może nie różni się on niczym od ogólnego,
-całościowego rozkładu popularności TLD w internecie, bez uwzględnienia podatności czy innych czynników. W tym celu przeanalizowano
-i przedstawiono wykres popularności domen najwyższego poziomu w sieci internet \cite{TLD_popularity}. Jest on przedstawiony na
+całościowego rozkładu popularności TLD w internecie, bez uwzględnienia podatności, czy innych czynników. W tym celu przeanalizowano
+i przedstawiono wykres popularności domen najwyższego poziomu w sieci Internet \cite{TLD_popularity}. Jest on przedstawiony na
 rysunku \ref{fig:TLD_all}.
 \begin{center}
 	\begin{figure}
@@ -210,13 +211,13 @@ zestawić ze sobą inne zbiory danych. Wykreślono podobne wykresy dla popularno
 podczas skanowania oraz TLD domen, które na zapytania odpowiedziały. Następnie zestawiono ze sobą wyniki pozyskane z obu tych zbiorów
 danych. Zostały odpowiednio wykreślone:
 \begin{enumerate}
-	\item wykres 15 najpopularniejszych TLD w zbiorze domen odpytywanych w porównaniu do popularności tych TLD w zbiorze domen
+	\item wykres 15 najpopularniejszych TLD w zbiorze domen odpytywanych w porównaniu do popularności tych TLD w zbiorze domen,
 	które odpowiedziały na zapytanie AXFR -- wykres \ref{req_to_resp},
-	\item wykres 15 najpopularniejszych TLD w zbiorze domen które odpowiedziały na zapytanie AXFR w zestawieniu z ich popularnością
+	\item wykres 15 najpopularniejszych TLD w zbiorze domen, które odpowiedziały na zapytanie AXFR w zestawieniu z ich popularnością
 	w puli TLD domen odpytywanych -- wykres \ref{resp_to_req}.
 \end{enumerate}
 
-\begin{figure}[ht]
+\begin{figure}[h]
 	\centering
 	\includegraphics[width=1.0\textwidth]{image/req_to_resp_no_title}
 	\caption{Zestawienie odpowiedzi ze względu na rozkład danych wejściowych. Rozkład odpowiedzi znormalizowano do całkowitej liczby
@@ -224,7 +225,7 @@ danych. Zostały odpowiednio wykreślone:
 	\label{req_to_resp}
 \end{figure}
 
-\begin{figure}[ht]
+\begin{figure}[h]
 	\centering
 	\includegraphics[width=1.0\textwidth]{image/resp_to_req_no_title}
 	\caption{Zestawienie częstości występowania domen najwyższego poziomu dla domen, dla których możliwy jest AXFR z ich populacją
@@ -235,7 +236,7 @@ danych. Zostały odpowiednio wykreślone:
 
 W przypadku tych bezpośrednich zestawień, można zauważyć więcej interesujących prawidłowości. Na początku warto wspomnieć, że
 istnieje duża dysproporcja w przypadku niektórych domen najwyższego poziomu. Pierwszą z nich może być przypadek domeny .de,
-gdzie procentowy udział TLD .de we wszystkich TLD odpowiedzi AXFR jest drugim wynikiem podczas gdy w populacji danych wejściowych
+gdzie procentowy udział TLD .de we wszystkich TLD odpowiedzi AXFR jest drugim wynikiem podczas, gdy w populacji danych wejściowych
 jest to 12 najliczniejsza grupa. Warto dodać, że domena .de jest jedną z domen, których zarządcy traktują proceder
 \textit{zone enumeration} jako łamanie prawa, co opisano w podpunkcie \ref{zone_enumeration}. Transfer AXFR pozwala na uzyskanie
 danych o podobnej charakterystyce, a mimo to, ok 8\% wszystkich odpowiedzi powiązane jest z domeną najwyższego poziomu .de
@@ -245,21 +246,27 @@ gdzie przy małym współczynniku domen odpytywanych otrzymano nieproporcjonalni
 Zjawiskiem w pewnym stopniu odwrotnym do opisanego w poprzednim akapicie jest rozkład zapytań/odpowiedzi dla TLD .cn (Chiny)
 lub .tk (Tokelau -- region zależny od Nowej Zelandii). W tym przypadku zauważalna jest również duża dysproporcja, jednak
 ,,na korzyść'', gdyż w stosunku do wielu zapytań wystosowanych do domen należących do tych TLD uzyskano relatywnie mało odpowiedzi.
-Dodatkowo, do grupy opisywanej w tym akapicie można zaliczyć również TLD .top, która została oficjalnie wydzielona w 2014 roku. (... ?)
+Domena .tk jest interesującym przykładem również z innego względu. Jej operator -- DotTK umożliwia rejestrację darmowych domen.
+W związku z taką polityką, TLD .tk stała się bardzo popularna wśród cyberprzestępców. W 2007 roku firma McAfee uznała ją za najbardziej
+niebezpieczną spośród wszystkich domen \cite{mcafee2007}. W 2010 roku domena ta znalazła się znacznie niżej w rankingu \cite{mcafee2010}, jednak wciąż
+była to wysoka, jedenasta pozycja. W obu raportach domena .cn również znajduje się na wysokich miejscach.
+Również TLD .top można zaliczyć do domeny o niskiej proporcji zapytań względem odpowiedzi. Została ona oficjalnie wydzielona
+w 2014 roku. Jej operatorem jest firma ,,.top registry'' znajdująca się w Chinach, a domeny zarejestrowane w TLD .top muszą używać
+chińskich serwerów.
 
 Oprócz opisanych wcześniej względnych porównań pomiędzy pytaniami i odpowiedziami od serwerów autorytatywnych różnych domen
 sprawdzono jak wygląda dystrybuanta poszczególnych rozkładów. Pozwoliło to oszacować ile (ilościowo) domen najwyższego poziomu
 zawierało się w grupie, dla której generowano większość zapytań (rysunek \ref{cdf_tld_req}). Analogicznie, w przypadku danych
 dotyczących odpowiedzi AXFR można było ocenić ile różnych TLD pojawia się niemal we wszystkich odpowiedziach (rysunek \ref{cdf_tld_resp}).
 
-\begin{figure}[ht]
+\begin{figure}[h]
 	\centering
 	\includegraphics[width=1.0\textwidth]{image/cdf_tld_req_no_title}
 	\caption{Dystrybuanta domeny najwyższego poziomu w odpytywanych domenach.}
 	\label{cdf_tld_req}
 \end{figure}
 
-\begin{figure}[ht]
+\begin{figure}[h]
 	\centering
 	\includegraphics[width=1.0\textwidth]{image/cdf_tld_resp_no_title}
 	\caption{Dystrybuanta domeny najwyższego poziomu w zbiorze domen odpowiadających strefą DNS na zapytanie AXFR.}
@@ -269,13 +276,13 @@ dotyczących odpowiedzi AXFR można było ocenić ile różnych TLD pojawia się
 
 Oprócz wykreślonych charakterystyk policzono również ile domen najwyższego poziomu gromadzi w sobie 99\% zapytań bądź odpowiedzi
 (w zależności od badanego zbioru). Wyniki zaprezentowano w tabeli \ref{cdf_table}. Warto zauważyć, że pomimo ponad dwukrotnie
-mniejszego zbioru różnych domen poziomu najwyższego, należy zgrupować dużo więcej TLD aby uzyskać zbiór 99\% wszystkich odpowiedzi.
+mniejszego zbioru różnych domen poziomu najwyższego, należy zgrupować dużo więcej TLD, aby uzyskać zbiór 99\% wszystkich odpowiedzi.
 Można z tego wnioskować, że rozkład odpowiedzi jest bardziej jednostajny niż w przypadku danych wejściowych. Można także przypuszczać,
 że zbiór wejściowy zawierał pojedyncze domeny z różnych, rzadko spotykanych TLD. W momencie, kiedy jedna, czy jedynie kilka domen
 z takiego TLD są odpowiednio zabezpieczone przed nieuprawnionym transferem AXFR nie znajdziemy danego sufiksu w zbiorze odpowiedzi.
 Sytuacja taka może mieć miejsce, gdy wszystkie domeny z mało popularnego TLD znajdują się pod zarządem jednej osoby czy organizacji.
 
-\begin{table}[!hb]
+\begin{table}[h]
 	\centering
 	\caption{Opis zbiorów zapytań/odpowiedzi}
 	\label{cdf_table}
@@ -299,17 +306,17 @@ Sytuacja taka może mieć miejsce, gdy wszystkie domeny z mało popularnego TLD 
 \section{Liczba wpisów stref w odpowiedziach}
 Odpowiedzi pobrane w wyniku skanowania zostały poddane analizie uwzględniającej jak duże są strefy pobrane z serwerów przestrzeni nazw.
 
-W tym przypadku zastosowano inne podejście niż podczas reszty przeprowadzonych badań. Z racji, że częstym przypadkiem odpowiedzi
-otrzymywanej od serwera był jedynie rekord SOA, postanowiono oddzielnie analizować pliki stref zawierające tylko jeden wpis, a
+W tym przypadku zastosowano inne podejście niż podczas reszty przeprowadzonych badań. Z racji tego, że częstym przypadkiem odpowiedzi
+otrzymywanej od serwera był jedynie rekord SOA/CNAME, postanowiono oddzielnie analizować pliki stref zawierające tylko jeden wpis, a
 oddzielnie pliki zawierające więcej niż jeden rekord.
 
 W wyniku przeprowadzonych badań ustalono, że:
 \begin{enumerate}
-	\item 6179845 z 8985154 plików stref zawiera jedynie jeden wpis (rekord SOA bądź rekord CNAME),
-	\item 2803902 z 8985154 plików stref zawiera więcej niż jeden wpis.
+	\item 6179845 z 8985154 (68,8\%) plików stref zawiera jedynie jeden wpis (rekord SOA bądź rekord CNAME),
+	\item 2803902 z 8985154 (31,2\%) plików stref zawiera więcej niż jeden wpis.
 \end{enumerate}
 Przypadek, gdy plik strefy zawiera więcej niż jeden wpis można utożsamić ze źle skonfigurowanym serwerem autorytatywnym domeny.
-Zwracanie samego wpisu SOA (czyli odpowiednik zbioru danych z jendym wpisem w pliku strefy) nie może być traktowane jako błąd,
+Zwracanie samego wpisu SOA (czyli odpowiednik zbioru danych z jednym wpisem w pliku strefy) nie może być traktowane jako błąd,
 gdyż w dokładnie taki sam sposób zachowuje się serwer DNS w przypadku podania błędnego numeru serii w transferze IXFR. Tak
 zaprojektowany został inkrementalny transfer strefy DNS zaprezentowany w RFC1995 \cite{RFC1995} i do tej pory nie zaprezentowano
 ewentualnych podatności, które mogłyby wykorzystywać ten protokół.
@@ -318,16 +325,18 @@ Dla zbioru danych, który określa rozmiar pobranych stref wykreślony został h
 są strefy DNS o określonych rozmiarach. W przypadku skanów polegających na transferze stref widoczna jest bardzo duża częstość
 występowania domen o wpisach do kilkudziesięciu rekordów. Pierwszy z histogramów na których zaprezentowano opisane częstości
 (rysunek \ref{fig:hist_zone_size}) sugeruje, że dużo bardziej interesująca jest pierwsza część całego wykresu. Zaprezentowano ją,
-w powiększeniu, na kolejnym rysunku \ref{fig:hist_zone_size_zoom}.
+w powiększeniu, na kolejnym rysunku \ref{fig:hist_zone_size_zoom}. Dodatkowo, w górnej części rysunku \ref{fig:hist_zone_size}
+umieszczono histogram w powiększeniu, z bardzo ograniczoną skalą na osi rzędnych. Pozwala to, na zaobserwowanie prążków, które
+nie były widoczne na histogramie prezentującym cały zbiór.
 
-\begin{figure}[ht]
+\begin{figure}[h]
 	\centering
 	\includegraphics[width=1.0\textwidth]{image/hist_zone_size_no_title}
 	\caption{Rozkład liczby rekordów w odpowiedziach AXFR.}
 	\label{fig:hist_zone_size}
 \end{figure}
 
-\begin{figure}[ht]
+\begin{figure}[h]
 \centering
 \includegraphics[width=1.0\textwidth]{image/hist_zone_size_zoom_no_title}
 \caption{Rozkład liczby rekordów w odpowiedziach AXFR, widok powiększony.}
@@ -335,15 +344,15 @@ w powiększeniu, na kolejnym rysunku \ref{fig:hist_zone_size_zoom}.
 \end{figure}
 
 Dodatkowo, można zauważyć, że histogram \ref{fig:hist_zone_size} posiada bardzo dużo pozycji na osi X. Jest to ponownie następstwo
-własnej implementacji oprogramowania umożliwiającego transfer stref AXFR. Widocznie zauważalny jest prążek na wartości około 8 tysięcy
+własnej implementacji oprogramowania umożliwiającego transfer stref AXFR. Zauważalny jest prążek na wartości około 8 tysięcy
 wpisów. Dokładnie jest to 8244 wpisów w pliku strefy. Sprawdzono, czy rzeczywiście strefy te są tak duże. Odpytano kilka z serwerów,
 dla których otrzymano tak specyficzną odpowiedź. Pakiety, które wysłano oraz odebrano zostały przeanalizowane programem Wireshark.
 Okazuje się, że utworzenie opisanego wcześniej pliku jest następstwem otrzymania wiadomości HTTP o statusie 400 -- Bad request.
 Co ciekawe, odpowiedź tę otrzymujemy na mało standardowy port w kontekście protokołu HTTP -- port 53. Szczegóły otrzymanej wiadomości
 zostały przedstawione w lsitingu \ref{list:dnsHTTPstd}. Innym wynikiem typu zachowania były odpowiedzi o liczbie linii ok. 11 tysięcy.
 Jest to wyraźnie mniej zauważalne, wnioskując choćby po histogramie \ref{fig:hist_zone_size}, gdzie widoczny jest jedynie prążek na
-wartości około 8000 linijek w pliku strefy. Plik o około 11 tysiącach wpisów był tworzony w wyniku otrzymania rozszerzonej, głównie o tagi HTML
- wiadomości HTTP 400 -- została ona przedstawiona na listingu \ref{list:dnsHTTPmore}.
+wartości około 8000 linijek w pliku strefy. Plik o około 11 tysiącach (11900 linii) wpisów był tworzony w wyniku otrzymania rozszerzonej,
+głównie o tagi HTML wiadomości HTTP 400 -- została ona przedstawiona na listingu \ref{list:dnsHTTPmore}.
 
 \begin{lstlisting}[label={list:dnsHTTPstd},captionpos=b,caption=Odpowiedź HTTP 400 na zapytanie DNS.,language=xml]
 HTTP/1.0 400 Bad request
@@ -392,20 +401,21 @@ movida-bar.pl.  14400   6        ns1.consultingteam.pl. hostmaster.movida-bar.pl
 Z listingu \ref{list:dns_zone_example} możemy dowiedzieć się, że domena obsługiwana przez odpytany serwer DNS udostępnia między
 innymi takie usługi jak serwery pocztowe smtp i pop, serwer FTP oraz serwer WWW. Wszystkie one są kierowane na jeden adres IP.
 Dodatkowo, na serwerze DNS został umieszczony wpis TXT (id 16). Zdefiniowano w nim rekord SPF gdzie określa się reguły dotyczące
-wymiany wiadomości e-mail w danej domenie.
+wymiany wiadomości e-mail w danej domenie. Odwzorowanie indeksów poszczególnych rekordów DNS można odczytać z tabelii \ref{records}.
 
 Strefy tego typu są najczęściej spotykane w danych, które udało się zebrać podczas skanowania. Można wnioskować, że transfer AXFR
 jest najczęściej możliwy dla domen zarejestrowanych głównie w celach informacyjnych czy marketingowych. Jak opisano wcześniej, są
-to najczęściej pojedyncze adresy IP z kilkoma usługami. Działalność organizacji, na potrzeby któych rejestowano takie niewielkie
+to najczęściej pojedyncze adresy IP z kilkoma usługami. Działalność organizacji, na potrzeby których rejestowano takie niewielkie
 domeny, jest najczęściej mało związana z informatyką czy telekomunikacją.
 
 To, na co warto zwrócić uwagę na histogramie \ref{fig:hist_zone_size_zoom} to również domeny o strefach o rozmiarze około 40-60 wpisów.
 Jest to reprezentacja tych stref, które wykorzystują mechanizm podpisywania rekordów DNS zaprezentowany w rozszerzedniu
-protokołu -- DNSSEC \cite{RFC4034, RFC4035}. Zgodnie z tym, co zostało opisane w rozdziale \ref{tsig}, Dla każdej pary rekordów
-przechowywanych w strefie DNS liczony jest podpis cyfrowy.
+protokołu -- DNSSEC \cite{RFC4034, RFC4035}. Zgodnie z tym, co zostało opisane w rozdziale \ref{tsig}. Dla każdej pary rekordów
+przechowywanych w strefie DNS liczony jest podpis cyfrowy. Serwery, które odpowiedziały strefą zawierającą podpisy kryptograficzne
+najprawdopodobniej wspierają DNSSEC, co może zostać użyte przez cyberprzestępców do
 
 \section{Odpowiedzi niestandardowe}
-Jak wspomniano w podpunkcie \ref{sec:typy}, wyjątkową sytuacją, którą udało się zaobserwować, był odpowiedzi o nietypowym
+Jak wspomniano w podpunkcie \ref{sec:typy}, wyjątkową sytuacją, którą udało się zaobserwować, były odpowiedzi o nietypowym
 rozmiarze 25123 bajtów. Przykładowa komunikacja z serwerem odpowiadającym w ten sposób została zaprezentowana na listingu
 \ref{list:unused}.
 
@@ -421,18 +431,17 @@ tnttelivision.com.	86400	IN	SOA	ns1.parklogic.com. hostmaster.tnttelivision.com.
 W tym samym czasie ustawiono nasłuchiwanie programu Wireshark \cite{wireshark} na odpowiednim interfejsie oraz odfiltrowano ruch sieciowy
 nie związany z komunikacją z serwerem przestrzeni nazw o adresie 173.255.218.70. Ogólny przebieg komunikacji można zobaczyć na
 zrzucie ekranu \ref{fig:unused_wireshark}.
-\begin{figure}[ht]
+\begin{figure}[h!]
 \centering
 \includegraphics[width=1.0\textwidth]{image/unused_wireshark}
 	\caption{}
 \label{fig:unused_wireshark}
 \end{figure}
 
-
 Postanowiono sprawdzić, czy domeny oraz serwery autorytatywne powiązane z takimi przypadkami mają
-wspólne cechy. Pierszym kryterium porównania wspomnianych przypadków była analiza systemów autonomicznych do których przynależą
+wspólne cechy. Pierszym kryterium porównania wspomnianych przypadków była analiza systemów autonomicznych, do których przynależą
 dane serwery przestrzeni nazwy. Wyniki zaprezentowano w tabeli \ref{tab:unused}.
-\begin{table}[!hb]
+\begin{table}[h]
 	\centering
 	\caption{Tabela liczebności AS w opisywanym przypadku}
 	\label{tab:unused}
@@ -465,19 +474,21 @@ dane serwery przestrzeni nazwy. Wyniki zaprezentowano w tabeli \ref{tab:unused}.
 		45413 & SERVENET-AS-TH-AP Serve NET Solution Limited Partnership, TH & 1 \\
 		\hline
 		12374 & LFNET-AS01, DE & 1 \\
-		\hline\hline
+		\hline
 	\end{tabular}
 \end{table}
 
 Niewątpliwie interesującym zjawiskiem jest fakt, że znaczna większość tych specyficznych plików pochodzi z kilku ASów.
-Może to sugerować, że właśnie w tych systemach autonomicznych operatorzy wykorzystują oprogramowanie specjlanie modyfikowane
-pod swoje potrzeby, jednak nie zawsze zgodne ze specyfikacją ustalaną w kolejnych dokumentach RFC.
+Może to sugerować, że właśnie w tych systemach autonomicznych operatorzy wykorzystują oprogramowanie specjalnie modyfikowane
+pod swoje potrzeby, jednak nie zawsze zgodne ze specyfikacją ustalaną w kolejnych dokumentach RFC. Wynik zapytania, który zaprezentowano
+na listingu \ref{list:unused} zawiera rekord SOA, który wskazuje, że podstawowym serwerem dla tej domeny jest
+serwer \textit{ns1.parklogic.com}. Nazwa tego serwera może sugerować, że dana domena została zaparkowana. \cite{todo:koniecznie}
 
 Na wykresie \ref{fig:unused_pie} pokazano procentowy rozkład krajów z których pochodziły serwery przestrzeni nazw. Jak widać,
 serwery z jedynie dwóch krajów (Japonii oraz Stanów Zjednoczonych) stanowią liczną grupę w tym zestawieniu. Pozostałe kraje, nawet
 zebrane we wspólną grupę stanowią zaledwie 0,5\textperthousand.
 
-\begin{figure}[ht]
+\begin{figure}[h]
 \centering
 \includegraphics[width=1.0\textwidth]{image/unused_pie_no_title}
 \caption{Lokalizacja serwerów nazw odpowiadających pakietem TCP z flagą RST.}
@@ -486,19 +497,19 @@ zebrane we wspólną grupę stanowią zaledwie 0,5\textperthousand.
 
 Przedstawiona proporcja jest ciekawa w kontekście analizy domen najwyższego poziomu, które obsługują serwery nazw opisane
 w poprzednim akapicie. Jeśli chodzi o ten zbiór, to różnorodność jest zdecydowanie większa. Wciąż najbardziej popularną domeną
-jest .com, kojarzona w głównej mierze ze Stanami Zjednoczonymi. Pojawiają się również domeny
+jest .com, kojarzona w głównej mierze ze Stanami Zjednoczonymi. .....
 
 \section{Geograficzna lokalizacja serwerów}
 Biorąc pod uwagę poprzednie rozważania postanowiono, że warto przeanalizować geograficzne rozmieszczenie serwerów przestrzeni nazw,
 które odpowiedziały na zapytanie AXFR. Podział zaprezentowany w tym punkcie jest już bardziej szczegółowym rozbiciem konkrentych
-wyników. Najważniejszym kryterium podziały domen było przede wszystkim rozdzielenie plików stref oraz odpowiadających im serwerów
+wyników. Najważniejszym kryterium podziału domen było przede wszystkim rozdzielenie plików stref oraz odpowiadających im serwerów
 przestrzeni nazw w zależności od tego jak duży plik strefy udało się dla nich pozyskać.
 
 Pierwszym wykresem który zaprezentowano jest mapa adresów IP serwerów przestrzeni nazw, które odpowiedziały plikiem strefy zawierającym
 więcej niż jeden rekord DNS. Należy dodać, że pliki ,,sztuczne'', takie, które powstały w wyniku niedoskonałości napisanego oprogramowania
 nie zostały uwzględnione podczas niniejszej analizy. Wyniki zaprezentowano na rysunku \ref{fig:many_lines_map}.
 
-\begin{figure}[ht]
+\begin{figure}[h]
 \centering
 \includegraphics[width=1.0\textwidth]{image/many_lines_map_no_title}
 \caption{Lokalizacja serwerów DNS, które odpowiedziały więcej niż jednym rekordem.}
@@ -516,18 +527,26 @@ systemów kontroli wersji (git, svn) oraz systemów automatycznego budowania opr
 W niniejszej pracy magisterskiej zdecydowano się głównie na te usługi ze względu na dużą wrażliwość takich danych jak kody źródłowe
 przechowywane na serwerach git czy svn a także ze względu na istotę elementów środowiska pracy jak systemy CI typu Jenkins.
 
-Z zeskanowanych danych można również pozyskiwać informacje o wielu innych usługach. Popularne jest poszukiwanie serwerów z prefiksem
-\textit{owa}. Odpowiadają one najczęściej systemom firmy Microsoft (ang. \textit{Outlook Web Access}). Niemniej jednak, w tej pracy
-magisterskiej zrezygnowano z dodawania poszukiwania kolejnych usług ze względu na rosnący czas analizy zebranych danych.
+Dodatkowo sprawdzono jak często w odebranych strefach możliwe jest znalezienie informacji na temat usług pocztowych. W tym przypadku
+głównym celem poszukiwań były wpisy typu MX (id: 15) definiujące serwery wymiany poczty elektronicznej w danej domenie. Oprócz
+wcześniej wspomnianych usług, postanowiono także sprawdzić popularność serwerów wymiany plików ftp.
 
+\subsection{Usługi wspomagające rozwój oprogramowania}
 Jeśli chodzi o usługi, które zostały wymienione w pierwszym akapicie tego rozdziału, to na podstawie samego adresu URL udało się
 uzyskać informacje o ponad 3 tysiącach serwerach systemu git oraz ponad 3.5 tysiącach systemów svn. W odniesieniu do skali
 przeprowadzonych badań jest to nieduża liczba, co dobrze świadczy o społeczności. Niemniej jednak, liczba około 7 tysięcy systemów
-kontroli wersji o których informacje uzyskano jedynie poprzez skanowanie AXFR jest wysoką liczbą. Szczególnie, jeśli uwzględniony
-zostanie fakt, że systemy te najczęściej wykorzystywane są przez osoby techniczne, świadome istoty bezpieczeństwa sieciowego.
+kontroli wersji, o których informacje uzyskano jedynie poprzez skanowanie AXFR jest wysoką liczbą. Szczególnie, jeśli uwzględniony
+zostanie fakt, że systemy te najczęściej wykorzystywane są przez osoby o wykształceniu technicznym, które są świadome istoty
+bezpieczeństwa sieciowego.
 
 Kolejną z wymienionych usług był serwer CI Jenkins. Jest to jeden z najpopoularniejszych systemów ciągłej integracji. Filtrując
 wyniki po adresach URL zdobyto informacje o 1.5 tysiąca serwerów tego typu.
+
+\subsection{Usługi poczty elektronicznej}
+Z zeskanowanych danych można również pozyskiwać informacje o usługach poczty elektronicznej. Popularne jest poszukiwanie
+serwerów z prefiksem \textit{owa}. Odpowiadają one najczęściej systemom firmy Microsoft (ang. \textit{Outlook Web Access}).
+Niemniej jednak, w tej pracy magisterskiej zrezygnowano z dodawania poszukiwania kolejnych usług ze względu na rosnący czas
+analizy zebranych danych.
 
 \section{Wpisy SPF}
 Wpisy SPF zostały zdefiniowane w celu ochrony użytkowników domeny przed spamem. Pozwalają na określanie reguł, czy wiadomość
@@ -537,4 +556,8 @@ Istotnym elementem wpisów SPF są między innymi kwalifikatory. Wyróżniamy kw
 interesujący jest kwalifikator +all, który mówi, że reguły SPF pozwalają na odebranie wszystkich wiadomości ze wszystkich domen.
 Wśród danych pobranych podczas skanowania znaleziono 1.8 miliona wpisów SPF. Co ciekawsze, 3.5 tysiąca z nich było opatrzonych
 klauzulą ,,+all''. Daje to między innymi bardzo ciekawą informację dla osób wysyłających niechcianą pocztę (tzw. spam). Wiedząc,
-że reguły SPF nie odfiltrują danej wiadomości warto jest próbować wysyłac ją do użytkowników mających adres w danych domenach.
+że reguły SPF nie odfiltrują danej wiadomości warto jest próbować wysyłać ją do użytkowników mających adres w danych domenach.
+
+\section{Strefy ISP}
+Podczas realizacji pracy magisterskiej zauważono w zebranych danych obecność specyficznych domen, których rozmiar wynosił od
+250 do 260 wpisów.
