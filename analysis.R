@@ -63,7 +63,7 @@ while(input[x, 2] < 0.99)
 
 
 
-countries<-read.csv("ipv6_asn_cnt_formatted.result", header=FALSE, sep = ' ')
+countries<-read.csv("ipv6_asn_public_cnt_formatted.result", header=FALSE, sep = ' ')
 density=15
 countries$V2<-countries$V2/sum(countries$V2)*100
 x <- cbind(head(countries, density)$V2)
@@ -78,5 +78,12 @@ grid()
 
 size<-read.csv("new_zones_size_cnt.result", header=FALSE, sep = ',')
 
+setwd("~/Documents/myDig/results")
+nsip<-read.csv("manyLines_ns_ip_cnt.result", header=FALSE, sep = ' ')
+plot(ecdf(rep(nsip$V1, nsip$V2)), xlab="ID serwera przestrzeni nazw", ylab="CDF", main="")
+grid()
+nsip$V1=as.numeric(as.character(nsip$V1))
+y=nsip$V1/tail(nsip$V1,n =1)
+lines(nsip$V1, y, type = "l")
 
 
