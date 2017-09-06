@@ -24,7 +24,7 @@ AXFR (ang. \textit{AXFR fallback}) opisane między innymi w RFC1995 \cite{RFC199
 w sytuacji, kiedy numer wersji pliku strefy przysłany do serwera jest wyższy niż numer wersji aktualnie na nim przechowywany.
 Na różnego rodzaju forach \cite{powerdns-forum} czy w serwisach internetowych \cite{powerdns-git}, problem który został opisany
 pojawia się najczęściej jako problem implementacji oprogramowania PowerDNS \cite{powerdns}. Niemniej jednak nie ustalono dokładnie
-jaki jest powód wysłania tak dużego pakietu w odpowiedzi na zwykłe zapytanie AXFR.
+jaki jest powód wysłania pakietu powodującego takie zachowanie w odpowiedzi na zwykłe zapytanie AXFR.
 
 Kolejnym przykładem odpowiedzi, która powodowała powstanie dużego pliku na dysku, było odebranie od serwera autorytatywnego pakietu
 TCP RST(ang. \textit{TCP reset packet}). Sytuacja taka wynika również z pewnego uproszczenia, które zostało przyjęte w implementacji
@@ -33,9 +33,16 @@ oraz faktem, że problem ten można w łatwy sposób obejść poprzez odfiltrowa
 sytuacje tego typu były bardzo sporadyczne, więc nie wpływało to w znaczącym stopniu ani na czas przeanalizowania pobranych danych
 ani na wynik tej analizy.
 
-Kolejnymi specyficznymi grupami jeśli chodzi o rozmiar pliku z odpowiedzią są już typowe odpowiedzi na zapytania AXFR. Najmniejszy rozmiar mają oczywiście odpowiedzi, które zawierają jedynie rekord SOA i jest to dopuszczalna odpowiedź na zapytanie AXFR. Następnie, wraz ze zwiększającą się liczbą wpisów w pliku strefy DNS, zwiększa się rozmiar odpowiedzi. Nie przekłada się to jednak bezpośrednio na informacje, które można wyodrębnić z takich plików strefy. Zdarza się bowiem sytuacja, w której znaczną część pliku strefy DNS zajmują wpisy podpisów cyfrowych RRSIG, których długość przekłada się na rozmiar plików. Dodatkowo, podpisy generowane mogą być dla każdego rekordu oddzielnie (co szerzej opisano w podpunkcie \ref{TSIG}), dlatego też wpływa to bardzo znacząco na rozmiar otrzymywanej odpowiedzi.
+Kolejnymi specyficznymi grupami jeśli chodzi o rozmiar pliku z odpowiedzią są już typowe odpowiedzi na zapytania AXFR.
+Najmniejszy rozmiar mają oczywiście odpowiedzi, które zawierają jedynie rekord SOA i jest to dopuszczalna odpowiedź na zapytanie
+AXFR. Następnie, wraz ze zwiększającą się liczbą wpisów w pliku strefy DNS, zwiększa się rozmiar odpowiedzi. Nie przekłada się to
+jednak bezpośrednio na informacje, które można wyodrębnić z takich plików strefy. Zdarza się bowiem sytuacja, w której znaczną część
+pliku strefy DNS zajmują wpisy podpisów cyfrowych RRSIG, których długość przekłada się na rozmiar plików. Dodatkowo, podpisy
+generowane mogą być dla każdego rekordu oddzielnie (co szerzej opisano w podpunkcie \ref{TSIG}), dlatego też wpływa to bardzo
+znacząco na rozmiar otrzymywanej odpowiedzi.
 
 \section{Odebrane adresy IPv4 oraz IPv6}
+\label{sec:adresy_ip}
 Częstym argumentem, który pojawia się podczas dyskusji na temat bezpieczeństwa transferów plików bazy danych DNS jest ujawnianie
 adresów IP. W niniejszym podrozdziale skupiono się głównie na adresach IP w wersji 4. ponieważ jest to wciąż dominujący typ adresacji
 w Internecie \cite{Ipv6_deployment}. Okazuje się, że pomimo obaw o wycieki adresów przez dokonywanie nieuprawnionego transferu nikt nie
@@ -47,13 +54,14 @@ z których pochodzą określone maszyny. Następnie możliwe było, na podstawie
 zlokalizowane.
 
 \subsection{Analiza AS}
-Podstawową informacją, którą uzyskać można wykorzystując pobrane dane z transferów AXFR jest przynależność otrzymanych adresów IP
+Podstawową informacją, którą uzyskać można wykorzystując pobrane dane z transferów AXFR, jest przynależność otrzymanych adresów IP
 do konkretnych grup autonomicznych. Grupy te określają przynależność do sieci, które zarządzane są przed tego samego operatora
 sieciowego, a wykorzystuje się je głównie w protokołach routingu. Informacje związane z systemami autonomicznymi można, w głównej
 mierze, znaleźć w RFC1930 \cite{RFC1930}. Zbiór danych został podzielony ze względu na wersję protokołu IP używanej przy adresacji
 konkretnych maszyn. Przeprowadzono analizę systemów autonomicznych w rozdzielnych grupach, dla wersji 4 protokołu IP oraz dla wersji 6.
 
-Jak już wcześniej wspomiano, wciąż dominującym sposobem adresacji urządzeń w sieci jest adresacja IP w wersji 4 \cite{Ipv6_deployment}.
+Jak już wcześniej wspomiano (rozdział \ref{sec:adresy_ip}), wciąż dominującym sposobem adresacji urządzeń w sieci jest adresacja
+IP w wersji 4 \cite{Ipv6_deployment}.
 Do podobnych wniosków można dojść analizując zbiór dannych zebranych podczas skanowania. Okazuje się bowiem, że znaczna większość
 adresów IP, które zostały pobrane w wyniku skanowania należy do zbioru adresów IP w wersji 4. Dane liczbowe prezentują się w
 następujący sposób:
@@ -86,13 +94,26 @@ datę, gdy dany adres IP został zeskanowany. Mapowanie adresu IP na AS w konkre
 danych. Okazuje się, że w praktyce, dla każdej z dat udostępniony jest oddzielny plik z bazą danych, dzięki której możliwe jest
 tłumaczenie adresów IP na ASy. Możliwe jest, aby pobrać bazę danych, która najlepiej odpowiada zebranym pomiarom. W przypadku tej
 pracy magisterskiej pobierane są pliki dla każdego dnia, w którym przeprowadzone zostało skanowanie. Pliki są dystrybuowane wraz z
-biblioteką. Jedyną akcją, którą musi podjąć jej użytkownik jest przygotownie pliku tekstowego z datami, dla których powinna zostać
+biblioteką. Użytkownik musi przygotować pliku tekstowego z datami, dla których powinna zostać
 pobrana baza danych. Następnie bazy są przetwarzane na pliki w formacie odpowiednim dla biblioteki \textit{pyasn}. Aby zautomatyzować
-opisany proces, zaimplementowano odpowiednie narzędzie w języku skryptowym bash. Pobiera ono daty z odpowiednich katalogów z wynikami
+opisany proces, zaimplementowano odpowiednie narzędzie w języku skryptowym bash, którego działanie zaprezentowano na diagramie
+\ref{fig:netcat}. Pobiera ono daty z odpowiednich katalogów z wynikami
 skanów, następnie tworzy odpowiedni plik tekstowy, który później wykorzystywany jest jako plik wejściowy dla biblioteki \textit{pyasn}.
-Na jego podstawie kopiowane są bazy danych dla konkretnych dni. Jest to najbardziej dokładna forma mapowania adresów IP na numery
-systemów autonomicznych. Pobrane bazy danych są następnie konwertowane do takiego formatu, którego wymaga narzędzie. W kolejnym kroku
-dokonuje się właściwego odwzorowania adresów IP na odpowiadające im ASy.
+Na jego podstawie kopiowane są bazy danych dla konkretnych dni. Pobrane bazy danych są następnie konwertowane do takiego formatu,
+którego wymaga narzędzie. W kolejnym kroku dokonuje się właściwego odwzorowania adresów IP na odpowiadające im ASy.
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=1.0\textwidth]{image/netcat}
+	\caption{Zasada działania narzędzia mapującego adresy IP na numery AS.}
+	\label{fig:netcat}
+\end{figure}
+
+Jest to bardziej dokładna forma mapowania adresów IP na numery
+systemów autonomicznych. Translacja uzależniona jest od bazy danych, której wersję określa użytkownik. API, które zostało opisane
+na początku tego rozdziału jest całym komponentem, na który użytkownik nie ma wpływu. Dodatkowo, w przypadku poprzedniego systemu,
+do interfejsu serwera nie jest przekazywana data, więc należy zakładać, że adresy IP są mapowane na numery systemów autonomicznych
+na podstawie najnowszej bazy danych. Aby odwzorowanie było jak najbardziej wiarygodne, mapowanie adresów powinno być realizowane
+już w dniu przeprowadzania skanowania, co dodatkowo obciążyłoby serwer i przełożyło się na niższą wydajność.
 
 \subsection{Zbiór adresów IPv4}
 \label{sec:ipv4_results}
