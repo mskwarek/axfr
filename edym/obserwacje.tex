@@ -124,7 +124,7 @@ niż liczebność systemu autonomicznego z drugiego kraju w rankingu, czyli z Ni
 TLD .de jest jedną z tych, które wymagają zabezpieczania stref DNS przed \textit{zone enumeration} \cite{euLaw, zoneEnumeration}.
 Okazuje się natomiast,
 że w praktyce drugim najczęściej spotykanym krajem w zestawieniu adresów IP w skanowaniu AXFR są właśnie Niemcy, a transfer strefy
-jest w realizacji dużo łatwiejszym atakiem niż wspomniane wcześniej \textit{zone walking} \label{zone_enumeration}.
+jest w realizacji dużo łatwiejszym atakiem niż wspomniane wcześniej \textit{zone walking} \ref{zone_enumeration}.
 
 Dodatkowo, zastanawiające jest, że oprócz bardzo widocznej przewagi systemów autonomicznych ze Stanów Zjednoczonych, widoczna jest
 również duża różnica pomiędzy 9 pierwszymi krajami oraz resztą populacji (etykieta \textit{tr} (Turcja) na
@@ -516,9 +516,61 @@ nie zostały uwzględnione podczas niniejszej analizy. Wyniki zaprezentowano na 
 \label{fig:many_lines_map}
 \end{figure}
 
-Zbiór adresów IP serwerów przestrzeni nazw który zaprezentowano na mapie \ref{fig:many_lines_map} liczył 87091 unikalnych adresów, podczas
+Zbiór adresów IP serwerów przestrzeni nazw który zaprezentowano na mapie \ref{fig:many_lines_map} liczył 109160 unikalnych adresów, podczas
 gdy zbiór wszystkich plików stref danego typu dla analizowanego zbioru wynosił 2132448. Oznacza to, że na jeden serwer autorytatywny
-przypada ponad 24 domen.
+średnio przypada ponad 19 domen. Wykreślona została dystrybuanta rozkładu popularności serwerów przestrzeni nazw odpowiadających na
+zapytania AXFR. Przedstawiono ją na rysunku \ref{fig:cdf_ns}. Widoczna jest na nim ciekawa tendencja, że odpowiedzi o połowie
+wszystkich domen, dla których pobrano informacje, pochodzą od relatywnie niewielkiej liczby serwerów przestrzeni nazw. Dokładne
+kwantyle przedstawionego rozkładu zawarto w tabeli \ref{tab_cdf_ns}.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=1.0\textwidth]{image/cdf_ns_responded}
+\caption{Dystrybuanta rozkładu popularności serwerów przestrzeni nazw, które odpowiadają na zapytania AXFR.}
+\label{fig:cdf_ns}
+\end{figure}
+
+Z danych zawartych w tabeli \ref{tab_cdf_ns} wynika, że 75\% (trzeci kwantyl) wszystkich domen, które umożliwiają transfer strefy
+obsługiwanych jest przez jedynie 9.69\% autorytatywnych serwerów przestrzeni nazw. Trend ten jest również zauważalny na wykresie
+dystrybuanty \ref{fig:cdf_ns}, gdzie od poziomu 0,75 na osi OY charakterystyka jest bardziej łagodna niż w pozostałej części wykresu.
+Wyniki te oznaczają, że dla pozostałych 25\% domen autorytatywnych jest 90,21\% wszystkich serwerów przestrzeni nazw. Najpopularniejsze
+adresy IP serwerów NS zapisano również w tabeli \ref{tab:most_cnt_ns} wraz z liczbą domen, dla których dany serwer jest autorytatywnym.
+
+
+\begin{longtable}{|c|p{3cm}|p{3cm}|}
+	\hline
+	\textbf{Kwantyl} &
+	\textbf{Liczba serwerów} &
+	\textbf{Procent wszystkich serwerów} \\
+	\hline\hline
+	I & 136 & 0,12\% \\
+	II & 1447 & 1,33\% \\
+	III & 10579 & 9,69\% \\
+	IV & 109160 & 100\% \\
+	\hline
+	\caption{Kwantyle rozkładu popularności serwerów przestrzeni nazw, które odpowiadają na AXFR.}
+	\label{tab_cdf_ns}
+\end{longtable}
+\begin{longtable}{|c|p{3cm}|p{3cm}|}
+	\hline
+	\textbf{Lp.} &
+	\textbf{Adres IP} &
+	\textbf{Liczba domen} \\
+	\hline\hline
+	1 & 167.160.13.69 & 16503 \\
+	2 & 167.160.13.70 & 16318 \\
+	3 & 162.243.45.236 & 14254 \\
+	4 & 199.255.159.226 & 13735 \\
+	5 & 198.204.224.146 & 13439 \\
+	6 & 173.208.189.26 & 13222 \\
+	7 & 209.160.33.82 & 13153 \\
+	8 & 104.219.19.52 & 13113 \\
+	9 & 192.151.149.92 & 12602 \\
+	10 & 101.200.203.5 & 10659 \\
+	\hline
+	\caption{Autrytatywne NS dla największej liczby domen.}
+	\label{tab:most_cnt_ns}
+\end{longtable}
 
 \section{Usługi}
 Przeprowadzone skanowanie umożliwiło również sprawdzenie jakie usługi uruchamiane są wewnątrz organizacji, których serwery DNS
@@ -543,10 +595,32 @@ Kolejną z wymienionych usług był serwer CI Jenkins. Jest to jeden z najpopoul
 wyniki po adresach URL zdobyto informacje o 1.5 tysiąca serwerów tego typu.
 
 \subsection{Usługi poczty elektronicznej}
-Z zeskanowanych danych można również pozyskiwać informacje o usługach poczty elektronicznej. Popularne jest poszukiwanie
-serwerów z prefiksem \textit{owa}. Odpowiadają one najczęściej systemom firmy Microsoft (ang. \textit{Outlook Web Access}).
-Niemniej jednak, w tej pracy magisterskiej zrezygnowano z dodawania poszukiwania kolejnych usług ze względu na rosnący czas
-analizy zebranych danych.
+Z zeskanowanych danych można również pozyskiwać informacje o usługach poczty elektronicznej. Wyróżniono kilka podejść do
+poszukiwania takich informacji. Jednym z nich jest poszukiwanie adresów domen z prefiksem \textit{owa}.
+Odpowiadają one najczęściej systemom pocztowym firmy Microsoft (ang. \textit{Outlook Web Access}) i często, dla ułatwienia
+zapamiętania adresu tej usługi, skraca się jej adres do właśnie tego skrótu. Innym podejściem jest pobieranie ze stref DNS rekordów
+o identyfikatorze równym 15, czyli serwerów wymiany poczty.
+
+W niniejszej pracy magisterskiej zdecydowano się na przeprowadzenie analizy zarówno jedną jak i drugą opisaną metodą. Wyniki zostały
+zaprezentowane poniżej:
+\begin{itemize}
+		\item znaleziono 3378 rekordów, które odnoszą się do serwisów \textit{Outlook Web Access}; są to rekordy typu A, AAAA lub
+		CNAME, więc odnoszą się odpowiednio do adresów IPv4, adresów IPv6 lub są zwykłymi aliasami dla innych domen,
+		\item zostały wyodrębnione 3443626 rekordów typu MX (id 15); oprócz typowego zastosowania rekordu MX, czyli definiowania
+		serwerów poczty elektronicznej wewnątrz domeny zauważono, że niektóre ze znalezionych wpisów odnoszą się do usług pocztowych
+		firmy Google.
+\end{itemize}
+
+Specyficzny rekord MX, który odnosi się do usług firmy Google jest najczęściej postaci \textit{alt\{id\}.aspmx.l.google.com} lub
+\textit{aspmx\{id\}.googlemail.com}. Obecność takiego wpisu w strefie DNS sugeruje, że ogranizacja, która wykorzystuje daną domenę
+korzysta z usług określanych nazwą \textit{G Suite}. Nazwa odnosi się głównie do usług poczty elektronicznej dla firm udostępnianych
+przez Google jak również do rozwiązań Cloud -- edycji czy przechowywania dokumentów w chmurze.
+
+Oprócz tego, że informacje na temat usług poczty elektronicznej są istotne ze względów czysto infrastrukturalnych, czyli cyberprzestępca
+pozyskuje informacje na temat uruchomionego serwera poczty, to mogą być również ciekawe ze względu na możliwość użycia ich w atakach
+phishingowych. Niewątpliwie informacja taka jak typ używanego systemu pocztowego (\textit{Outlook Web Access}, \textit{G Suite} czy
+inne) są istotną informacją dla takiego ataku i pozwalają lepiej się do niego przygotować.
+
 
 \section{Wpisy SPF}
 Wpisy SPF zostały zdefiniowane w celu ochrony użytkowników domeny przed spamem. Pozwalają na określanie reguł, czy wiadomość
