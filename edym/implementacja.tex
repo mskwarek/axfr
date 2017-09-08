@@ -196,7 +196,7 @@ rozpoczęcie pisania/czytania danych z instancji gniazda TCP. Dokładny algorytm
 \end{figure}
 
 Program umożliwia parsowanie najbardziej popularnych i najczęściej używanych rekordów RR. Zostały one spisane w tabeli \ref{records}
-wraz z identyfikatorami, które rezprezentują je w protokole DNS.
+wraz z identyfikatorami, które reprezentują je w protokole DNS.
 
 \begin{longtable}{|c|c|c|}
 	\hline
@@ -236,7 +236,7 @@ sieciowego są zapisane w systemie szesnastkowym, zgodnie z zaleceniami znanymi 
 \end{figure}
 
 Dodatkowo, jeśli zostanie odebrany typ, który nie został przewidziany w implementacji parsera to wszystkie dane odczytane z
-socketa zostaną przeniesione w formie zapisu heksadecymalnego do pliku z odpowiedzią. Zapewnia ta kompatybilność z innymi
+gniazda zostaną przeniesione w formie zapisu heksadecymalnego do pliku z odpowiedzią. Zapewnia ta kompatybilność z innymi
 rozszerzeniami protokołu DNS oraz zabezpiecza przed błędnym wykluczeniem niektórych informacji ze skanowania. Jeśli pojawi
 się nieznany wcześniej typ rekordu z bazy danych DNS, to będzie można interpretować go podczas analizy konkretnych odpowiedzi
 od serwera.
@@ -269,7 +269,7 @@ Ostatecznie przyjęto rozwiązanie, które ignoruje fakt nawiązywania połącze
 Dane wejściowe programu zostały pozyskane od grupy naukowców z TU Delft \cite{delft} w formie par (domena, adres IP serwera
 autorytarnego). Lista w takim formacie przechowywana była w pliku tekstowym. Zgromadzono w nim, zgodnie z tym co zostało przyjęte
 w obliczeniach \ref{obliczenia}, ponad 5 miliardów wpisów uporządkowanych w kolejności alfabetycznej, a ich łączny rozmiar przekraczał
-130 gigabajtów. Powoduje to oczywiście szereg problemów związanych z procesowaniem takich plików. (?? skad dane)
+130 gigabajtów. Powoduje to oczywiście szereg problemów związanych z procesowaniem takich plików. \cite{(??skaddane)}
 
 Jedną z niedogodności, które wiążą się z rozmiarem danych wejściowych był problem z wyborem losowej próby do kolejnych procesów
 skanera. Pożądane jest, aby plik wejściowy do każdego z procesów skanujących nie był w żaden sposób uporządkowany, a najlepiej
@@ -340,8 +340,8 @@ na wydajność jak i stabilność. Ustalone ograniczenie zostało zrealizowane d
 uruchomionych jest aktualnie instancji skanera, jeśli liczba była mniejsza od 15000, to uruchamiano procesy w liczbie takiej,
 aby suma uruchomionych procesów skanera osiągała zdefiniowaną górną granicę. Aby uniknąć konfliktów zapisu do plików ustalono,
 że każdy z uruchomionych
-procesów będzie zapisywał odebrane informacje do oddzielnych katalogów. Katalogi były indeksowane, ich nazwa byla postaci
-,,iter\_{numer\_iteracji}''. Umożliwioło to wyeliminowanie dzielenia zasobów pomiędzy procesami, co przełożyło się na wydajność całego
+procesów będzie zapisywał odebrane informacje do oddzielnych katalogów. Katalogi były indeksowane, ich nazwa była postaci
+,,iter\_{numer\_iteracji}''. Umożliwiło to wyeliminowanie dzielenia zasobów pomiędzy procesami, co przełożyło się na wydajność całego
 rozwiązania. Pogrupowanie danych wyjściowych w katalogach umożliwiło też prostsze analizowanie zebranych informacji. Możliwa była
 analiza wielu folderów jednocześnie, co pozytywnie przełożyło się na czas wykonywania się poszczególnych operacji.
 

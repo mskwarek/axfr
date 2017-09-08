@@ -60,20 +60,20 @@ sieciowego, a wykorzystuje się je głównie w protokołach routingu. Informacje
 mierze, znaleźć w RFC1930 \cite{RFC1930}. Zbiór danych został podzielony ze względu na wersję protokołu IP używanej przy adresacji
 konkretnych maszyn. Przeprowadzono analizę systemów autonomicznych w rozdzielnych grupach, dla wersji 4 protokołu IP oraz dla wersji 6.
 
-Jak już wcześniej wspomiano (rozdział \ref{sec:adresy_ip}), wciąż dominującym sposobem adresacji urządzeń w sieci jest adresacja
+Jak już wcześniej wspomniano (rozdział \ref{sec:adresy_ip}), wciąż dominującym sposobem adresacji urządzeń w sieci jest adresacja
 IP w wersji 4 \cite{Ipv6_deployment}.
 Do podobnych wniosków można dojść analizując zbiór dannych zebranych podczas skanowania. Okazuje się bowiem, że znaczna większość
 adresów IP, które zostały pobrane w wyniku skanowania należy do zbioru adresów IP w wersji 4. Dane liczbowe prezentują się w
 następujący sposób:
 \begin{enumerate}
-	\item znaleziono 1695653 adresów publicznych adresów IPv4 -- oznacza to, że odflitrowano te adresy, które zostały określone
+	\item znaleziono 1695653 adresów publicznych adresów IPv4 -- oznacza to, że odfiltrowano te adresy, które zostały określone
 	jako adresy sieci prywatnych w RFC1918 \cite{RFC1918},
-	\item odflitrowano 127424 adresów IPv6, które są różne od adresu ,,localhost'' (:::::::1) -- zgodnie z wymaganiami postawionymi
+	\item znaleziono 127424 adresów IPv6, które są różne od adresu ,,localhost'' (:::::::1) -- zgodnie z wymaganiami postawionymi
 	w RFC4291 \cite{RFC4291}.
 \end{enumerate}
 
 \subsection{Sposób określenia AS}
-W celu określenia numerów systemów autonomicznych adresów IP pozyskanych podczas skanowania zaimplementowane zostalo kolejne
+W celu określenia numerów systemów autonomicznych adresów IP pozyskanych podczas skanowania zaimplementowane zostało kolejne
 narzędzie umożliwiające takie mapowanie. Społeczność udostępnia kilka sposobów dopasowania adresów IP do odpowiadających im
 systemów autonomicznych. Podczas badań zapoznano się z dwoma z nich, które opisano poniżej:
 \begin{enumerate}
@@ -83,9 +83,9 @@ systemów autonomicznych. Podczas badań zapoznano się z dwoma z nich, które o
 
 Pierwszy ze sposobów jest prostszy w użyciu, gdyż wystarczy użyć narzędzia netcat \cite{netcat}, gdzie argumentami jest odpowiednia
 strona internetowa Team Cymru \cite{cymru} oraz ścieżka do pliku, w którym znajdują się w kolejnych liniach adresy IP. Każdy z plików
-rozpoczyna się słowem kluczowym ,,begin'' oraz kończy słowem kluczowym ,,end''. Sposób ten jest wygodny, jednak moze budzić pewne
+rozpoczyna się słowem kluczowym ,,begin'' oraz kończy słowem kluczowym ,,end''. Sposób ten jest wygodny, jednak może budzić pewne
 wątpliwości. Najbardziej istotną wydaje się być kwestia dotycząca głównie adresacji IP w wersji 4. -- dynamiczne przydzielanie adresów
-IP różnym operatorom \cite{RFC2050}. Problem związany jest pośrednio z kończącą sie pulą adresów IPv4. Prowadzi to do zmian przynależności
+IP różnym operatorom \cite{RFC2050}. Problem związany jest pośrednio z kończącą się pulą adresów IPv4. Prowadzi to do zmian przynależności
 adresów IPv4 do systemów autonomicznych. Dynamikę tych zmian można obserwować między innymi pod adresem \cite{cidr_report}.
 
 Wątpliwości, które wynikły z wykorzystania udostępnionego API były bezpośrednią przyczyną szukania innego, optymalnego rozwiązania.
@@ -118,7 +118,7 @@ już w dniu przeprowadzania skanowania, co dodatkowo obciążyłoby serwer i prz
 \subsection{Zbiór adresów IPv4}
 \label{sec:ipv4_results}
 Analizując zbiór pod kątem adresów IP jedynie w czwartej wersji, zaprezentowany na rysunku \ref{fig:ipv4_countries}, możemy
-zauważyć kilka interesująych faktów. Pierwszym, który jest natychmiast zauważalny, to bardzo wysoki współczynnik systemów autonomicznych
+zauważyć kilka interesujących faktów. Pierwszym, który jest natychmiast zauważalny, to bardzo wysoki współczynnik systemów autonomicznych
 ze Stanów Zjednoczonych w populacji adresów IPv4 które zostały zebrane w wyniku skanowania. Poziom ten jest około 3.5 raza wyższy,
 niż liczebność systemu autonomicznego z drugiego kraju w rankingu, czyli z Niemiec. Informacja ta jest interesująca w tym sensie, że
 TLD .de jest jedną z tych, które wymagają zabezpieczania stref DNS przed \textit{zone enumeration} \cite{euLaw, zoneEnumeration}.
@@ -159,7 +159,7 @@ wykresie \ref{fig:ipv6_as_countries} stanowią już bardzo małą część wszys
 \end{figure}
 
 Analogicznie jak w przypadku opisanym w rozdziale \ref{sec:ipv4_results} zaprezentowano bardziej szczegółowy wykres, na podstawie
-którego możliwa jest analiza adresów ze wzlęgu na numery poszczególnych systemów autonomicznych. Widać dość wyraźną różnicę pomiędzy
+którego możliwa jest analiza adresów ze względu na numery poszczególnych systemów autonomicznych. Widać dość wyraźną różnicę pomiędzy
 dwoma najbardziej licznymi zbiorami AS, a całą resztą znalezionych adresów. Co więcej, są to systemy autonomiczne stosunkowo młode,
 na co wskazują ich wysokie indeksy (20081 i 197328).
 \begin{figure}[h]
@@ -349,7 +349,7 @@ wpisów. Dokładnie jest to 8244 wpisów w pliku strefy. Sprawdzono, czy rzeczyw
 dla których otrzymano tak specyficzną odpowiedź. Pakiety, które wysłano oraz odebrano zostały przeanalizowane programem Wireshark.
 Okazuje się, że utworzenie opisanego wcześniej pliku jest następstwem otrzymania wiadomości HTTP o statusie 400 -- Bad request.
 Co ciekawe, odpowiedź tę otrzymujemy na mało standardowy port w kontekście protokołu HTTP -- port 53. Szczegóły otrzymanej wiadomości
-zostały przedstawione w lsitingu \ref{list:dnsHTTPstd}. Innym wynikiem typu zachowania były odpowiedzi o liczbie linii ok. 11 tysięcy.
+zostały przedstawione w listingu \ref{list:dnsHTTPstd}. Innym wynikiem typu zachowania były odpowiedzi o liczbie linii ok. 11 tysięcy.
 Jest to wyraźnie mniej zauważalne, wnioskując choćby po histogramie \ref{fig:hist_zone_size}, gdzie widoczny jest jedynie prążek na
 wartości około 8000 linijek w pliku strefy. Plik o około 11 tysiącach (11900 linii) wpisów był tworzony w wyniku otrzymania rozszerzonej,
 głównie o tagi HTML wiadomości HTTP 400 -- została ona przedstawiona na listingu \ref{list:dnsHTTPmore}.
@@ -401,7 +401,7 @@ movida-bar.pl.  14400   6        ns1.consultingteam.pl. hostmaster.movida-bar.pl
 Z listingu \ref{list:dns_zone_example} możemy dowiedzieć się, że domena obsługiwana przez odpytany serwer DNS udostępnia między
 innymi takie usługi jak serwery pocztowe smtp i pop, serwer FTP oraz serwer WWW. Wszystkie one są kierowane na jeden adres IP.
 Dodatkowo, na serwerze DNS został umieszczony wpis TXT (id 16). Zdefiniowano w nim rekord SPF gdzie określa się reguły dotyczące
-wymiany wiadomości e-mail w danej domenie. Odwzorowanie indeksów poszczególnych rekordów DNS można odczytać z tabelii \ref{records}.
+wymiany wiadomości e-mail w danej domenie. Odwzorowanie indeksów poszczególnych rekordów DNS można odczytać z tabeli \ref{records}.
 
 Strefy tego typu są najczęściej spotykane w danych, które udało się zebrać podczas skanowania. Można wnioskować, że transfer AXFR
 jest najczęściej możliwy dla domen zarejestrowanych głównie w celach informacyjnych czy marketingowych. Jak opisano wcześniej, są
@@ -409,7 +409,7 @@ to najczęściej pojedyncze adresy IP z kilkoma usługami. Działalność organi
 domeny, jest najczęściej mało związana z informatyką czy telekomunikacją.
 
 To, na co warto zwrócić uwagę na histogramie \ref{fig:hist_zone_size_zoom} to również domeny o strefach o rozmiarze około 40-60 wpisów.
-Jest to reprezentacja tych stref, które wykorzystują mechanizm podpisywania rekordów DNS zaprezentowany w rozszerzedniu
+Jest to reprezentacja tych stref, które wykorzystują mechanizm podpisywania rekordów DNS zaprezentowany w rozszerzeniu
 protokołu -- DNSSEC \cite{RFC4034, RFC4035}. Zgodnie z tym, co zostało opisane w rozdziale \ref{tsig}. Dla każdej pary rekordów
 przechowywanych w strefie DNS liczony jest podpis cyfrowy. Serwery, które odpowiedziały strefą zawierającą podpisy kryptograficzne
 najprawdopodobniej wspierają DNSSEC, co może zostać użyte przez cyberprzestępców do
@@ -439,7 +439,7 @@ zrzucie ekranu \ref{fig:unused_wireshark}.
 \end{figure}
 
 Postanowiono sprawdzić, czy domeny oraz serwery autorytatywne powiązane z takimi przypadkami mają
-wspólne cechy. Pierszym kryterium porównania wspomnianych przypadków była analiza systemów autonomicznych, do których przynależą
+wspólne cechy. Pierwszym kryterium porównania wspomnianych przypadków była analiza systemów autonomicznych, do których przynależą
 dane serwery przestrzeni nazwy. Wyniki zaprezentowano w tabeli \ref{tab:unused}.
 \begin{table}[h]
 	\centering
@@ -501,7 +501,7 @@ jest .com, kojarzona w głównej mierze ze Stanami Zjednoczonymi. .....
 
 \section{Geograficzna lokalizacja serwerów}
 Biorąc pod uwagę poprzednie rozważania postanowiono, że warto przeanalizować geograficzne rozmieszczenie serwerów przestrzeni nazw,
-które odpowiedziały na zapytanie AXFR. Podział zaprezentowany w tym punkcie jest już bardziej szczegółowym rozbiciem konkrentych
+które odpowiedziały na zapytanie AXFR. Podział zaprezentowany w tym punkcie jest już bardziej szczegółowym rozbiciem konkretnych
 wyników. Najważniejszym kryterium podziału domen było przede wszystkim rozdzielenie plików stref oraz odpowiadających im serwerów
 przestrzeni nazw w zależności od tego jak duży plik strefy udało się dla nich pozyskać.
 
@@ -568,7 +568,7 @@ adresy IP serwerów NS zapisano również w tabeli \ref{tab:most_cnt_ns} wraz z 
 	9 & 192.151.149.92 & 12602 \\
 	10 & 101.200.203.5 & 10659 \\
 	\hline
-	\caption{Autrytatywne NS dla największej liczby domen.}
+	\caption{Autorytatywne NS dla największej liczby domen.}
 	\label{tab:most_cnt_ns}
 \end{longtable}
 
@@ -591,7 +591,7 @@ kontroli wersji, o których informacje uzyskano jedynie poprzez skanowanie AXFR 
 zostanie fakt, że systemy te najczęściej wykorzystywane są przez osoby o wykształceniu technicznym, które są świadome istoty
 bezpieczeństwa sieciowego.
 
-Kolejną z wymienionych usług był serwer CI Jenkins. Jest to jeden z najpopoularniejszych systemów ciągłej integracji. Filtrując
+Kolejną z wymienionych usług był serwer CI Jenkins. Jest to jeden z najpopularniejszych systemów ciągłej integracji. Filtrując
 wyniki po adresach URL zdobyto informacje o 1.5 tysiąca serwerów tego typu.
 
 \subsection{Usługi poczty elektronicznej}
@@ -623,14 +623,24 @@ inne) są istotną informacją dla takiego ataku i pozwalają lepiej się do nie
 
 
 \section{Wpisy SPF}
-Wpisy SPF zostały zdefiniowane w celu ochrony użytkowników domeny przed spamem. Pozwalają na określanie reguł, czy wiadomość
+Wpisy SPF (ang. \textit{Sender Policy Framework}) zostały zdefiniowane w celu ochrony użytkowników domeny przed spamem. Pozwalają na określanie reguł, czy wiadomość
 elektroniczna powinna zostać przyjęta przez serwer czy nie.
 
 Istotnym elementem wpisów SPF są między innymi kwalifikatory. Wyróżniamy kwalifikatory: ,,+'', ,,-'', ,,?'', ,,~''. Szczególnie
 interesujący jest kwalifikator +all, który mówi, że reguły SPF pozwalają na odebranie wszystkich wiadomości ze wszystkich domen.
 Wśród danych pobranych podczas skanowania znaleziono 1.8 miliona wpisów SPF. Co ciekawsze, 3.5 tysiąca z nich było opatrzonych
-klauzulą ,,+all''. Daje to między innymi bardzo ciekawą informację dla osób wysyłających niechcianą pocztę (tzw. spam). Wiedząc,
+klauzulą ,,+all''. Daje to między innymi bardzo ciekawą informację dla osób wysyłających niechcianą pocztę (tzw. spam), czy
+podmiotów, które rozsyłają wiadomości z linkami do złośliwego oprogramowania (ang. \textit{phishing}). Wiedząc,
 że reguły SPF nie odfiltrują danej wiadomości warto jest próbować wysyłać ją do użytkowników mających adres w danych domenach.
+Cyberprzestępca może wtedy przypuszczać, że jego spam rzeczywiście trafi do odbiorcy oraz oszczędza na czasie, nie wysyłając
+wiadomości do serwerów, które najprawdopodobniej jego spam odfiltrują. Istotne jest, że rekordy SPF są enkapsulowane w rekordach DNS
+o numerze identyfikacyjnym 16 (TXT), gdzie mogą znajdować się również inne informacje, które są niezwiązane z mechanizmem SPF.
+W związku z tym nie ma skutecznej metody na pobieranie tylko i wyłącznie rekordów SPF. Przykłady wpisu definiującego politykę
+wysyłania/odbierania wiadomości przedstawiono na listingu \ref{list:spf}.
+
+\begin{lstlisting}[label={list:spf},captionpos=b,caption=Przykład odebranych rekordów SPF.,language=bash]
+
+\end{lstlisting}
 
 \section{Strefy ISP}
 Podczas realizacji pracy magisterskiej zauważono w zebranych danych obecność specyficznych domen, których rozmiar wynosił od

@@ -60,7 +60,7 @@ pracy dyplomowej.
 DNS Response Policy Zone jest metodą zarządzania odpowiedziami na konkretne zapytania DNS. Funkcja ta została wprowadzona w wersji
 9.10 pakietu BIND oraz od tamtego wydania funkcjonalność dostępna jest w każdym kolejnym. DNS RPZ jest często nazywane Firewallem DNS.
 Nazwa ta jest dobrym określeniem działania całego systemu. Dzięki niemu, można definiować reguły odpowiedzi, na przykład na podstawie
-źródła żądania bądź informacji, które ono zaiwera. Administratorzy podejmują się definiowania reguł odpowiedzi między innymi
+źródła żądania bądź informacji, które ono zawiera. Administratorzy podejmują się definiowania reguł odpowiedzi między innymi
 ze względu na obawy dotyczące udostępniania
 informacji niezaufanym maszynom. Innymi powodami, dla których zarządcy chcą definiować reguły odpowiedzi protokołu DNS to na przykład
 próba ograniczenia ruchu (na przykład ruchu wychodzącego) pewnym grupom użytkowników. Innym przykładem zastosowania DNS RZP
@@ -71,7 +71,7 @@ potwierdza, że istnieje potrzeba posiadania usługi czy mechanizmu, dzięki kt�
 informacji w protokole DNS. DNS RPZ to tylko jedno z możliwych rozwiązań, dzięki któremu
 możliwa jest ochrona danych zawartych w strefach DNS. W odróżnieniu od prezentowanej pracy magisterskiej, temat niebezpieczeństw
 wynikających z powszechnego udostępniania informacji
-strefowych nie został tam szeroko zaprezentowany, a jednynie wspomniany jako jeden z powodów propozycji danego rozwiązania.
+strefowych nie został tam szeroko zaprezentowany, a jedynie wspomniany jako jeden z powodów propozycji danego rozwiązania.
 
 \section{DNS as a service}
 \textit{DNS as service} to pojęcie wykorzystywane do opisywania usług świadczonych w obrębie protokołu DNS. Dosłownym tłumaczeniem tego
@@ -159,7 +159,7 @@ jest podpisana i tworzy rekord NSEC, a każdy rekord podpisany kluczem prywatnym
 nie istnieje, odpowiada rekordem NSEC pary domen, które w uporządkowanej liście znajdują się odpowiednio przed i po odpytywanej
 domenie oraz związane z nimi podpisy. Rozwiązanie zapewnia, że tylko serwer autorytatywny powinien być obdarzony zaufaniem oraz
 umożliwia wstępną generację podpisów. Niestety wprowadza dodatkowo efekt uboczny, w postaci umożliwienia \textit{zone enumeration},
-czyli wylistowania strefy. Przykładowa odpowiedź na zapytanie o nieistniejącą poddomenę została zaprezentwoana na listingu
+czyli wylistowania strefy. Przykładowa odpowiedź na zapytanie o nieistniejącą poddomenę została zaprezentowana na listingu
 \ref{list:dnssec_nx_domain}.
 
 \begin{lstlisting}[label={list:dnssec_nx_domain},captionpos=b,caption=Odpowiedź na zapytanie DNSSEC o nieistniejącą domenę (na podstawie \cite{dnssec_nxdomain}).,language=bash]

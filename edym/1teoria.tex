@@ -1,7 +1,20 @@
-\chapter{Wprowadzenie}
+\chapter{Wstęp}
+Ataki na systemy informatyczne czy telekomunikacyjne są bardzo złożone. Wymagają one bardzo często ciężkiej pracy już przed
+właściwym przejęciem kontroli nad systemem. Pozyskuje się wtedy informacje, których posiadanie może mieć istotny wpływ w późniejszych
+etapach ataku. Skuteczny atak na system powinien przebiegać w jak najkrótszym czasie, tak, aby dać jak najmniej czasu drugiej stronie
+na jego odparcie. Właśnie dlatego cyberprzestępcy starają się pozyskiwać jak najwięcej informacji o celach ataków. Informacje odnoszą
+się do wielu płaszczyzn -- zarówno technicznych aspektów jak i socjologicznych bądź społecznych.
 
-\section{Wstęp}
+Celem niniejszej pracy magisterskiej było zbadanie jakie informacje możliwe są do uzyskania na temat systemów teleinformatycznych
+bazując na protokole Domain Name System. Osiągnięcie tego celu zapewniono poprzez wykonanie skanowania podatności domen na transfer
+strefy oraz późniejszą syntezę pobranych informacji. Podejście zaprezentowane w niniejszej pracy magisterskiej jest unikalne
+na światową skalę ze względu na to, jak duży obszar został pokryty podczas wykonywania skanowania.
 
+W pracy magisterskiej zaprezentowano oraz przedyskutowano dostępność i jakość narzędzi umożliwiających przeprowadzenie takich badań.
+Następnie zaproponowano autorskie podejście do implementacji narzędzi umożliwiających realizację prac na taką skalę oraz opisano
+architekturę środowiska uruchomieniowego. W kolejnej części pracy przedstawiono przebieg badań eksperymentalnych oraz uzyskane wyniki,
+które zostały następnie poddane analizie i syntezie. Przeanalizowano, jakimi cechami wspólnymi charakteryzują się uzyskane odpowiedzi
+oraz zaprezentowano i omówiono anomalie, które wystąpiły podczas badań eksperymentalnych. 
 
 \section{Ataki rekonesansowe}
 Ataki rekonesansowe są typem ataków komputerowych, których głównym celem jest pozyskanie informacji na temat atakowanego systemu bądź
@@ -43,7 +56,7 @@ systemów. Kompletną listę grup wyróżnionych w tym podziale zaprezentowano o
 	\\
 	\hline
 	4 & Profil zabezpieczeń &
-	Określenie poziomu, profilu zabezpieczeń fizycznych (np. konroli dostępu), złożoności haseł wymaganych przez system, pozyskanie
+	Określenie poziomu, profilu zabezpieczeń fizycznych (np. kontroli dostępu), złożoności haseł wymaganych przez system, pozyskanie
 	informacji na temat systemów wykrywania włamań.\\
 	\hline
 	\caption{Typy rekonesansu, opis na podstawie \cite{rekonesans}}
@@ -52,19 +65,19 @@ systemów. Kompletną listę grup wyróżnionych w tym podziale zaprezentowano o
 
 Z uwagi na techniczny charakter niniejszej pracy magisterskiej w kolejnych rozdziałach skupiono się głównie na rekonesansie odnoszącym
 się do infrastruktury systemów. Mowa tu zarówno o infrastrukturze sieciowej jak i profilu sprzętowym odpytywanych maszyn. Ataki tego typu
-są najczęsciej przeprowadzane poprzez wykonanie kilku testów, jednak nie są to jedyne sposoby pozyskiwania informacji o infrastrukturze.
+są najczęściej przeprowadzane poprzez wykonanie kilku testów, jednak nie są to jedyne sposoby pozyskiwania informacji o infrastrukturze.
 Jednym z podstawowych, powszechnie spotykanych przykładów aktywnego rekonesansu jest skanowanie portów. Proces ten jest zaliczany
 do ataku aktywnego, ponieważ atakujący próbuje dowiedzieć się, na których portach danego systemu uruchomione są usługi (np. FTP, www,
 serwer pocztowy, SSH). Uzyskanie takich danych pozwala w późniejszym etapie na wykorzystanie podatności danych usług, wynikających
 głównie z błędnej implementacji bądź konfiguracji. Prowadzi to następnie do eskalacji uprawnień na maszynie na rzecz atakującego.
-Przykładowe wykorzytanie danych podatności na podstawie usługi SSH opisane zostało w dokumencie \cite{ssh_podatnosci}.
+Przykładowe wykożytanie danych podatności na podstawie usługi SSH opisane zostało w dokumencie \cite{ssh_podatnosci}.
 
 Inną formą rekonesansu dotyczącego infrastruktury systemu jest rekonesans DNS. Jest to część testu penetracyjnego polegającą na pozyskaniu jak największej ilości informacji na temat badanej domeny.
 Dane uzyskiwane podczas jego przeprowadzania odnoszą się zarówno do serwera DNS jak i wpisów, które przechowuje. Zebrane informacje mogą
 kompromitować infrastrukturę sieciową firmy nie powodując przy tym generowania zbyt podejrzanego ruchu. Między innymi dlatego
 ważne jest, aby przywiązywać znaczną uwagę do tego kto i w jaki sposób próbuje łączyć się z serwerami autorytatywnymi odpowiedzialnymi
 za domenę. W sytuacji, gdy badana jest jedna domena, bądź zbiór kilku domen pod zarządem jednej organizacji wykorzystywane są najczęściej
-narzędzia dostępne w różnego rodzaju pakietach, na przykłąd BIND \cite{isc}. Przykładami takich programów są dig \cite{dig} czy
+narzędzia dostępne w różnego rodzaju pakietach, na przykład BIND \cite{isc}. Przykładami takich programów są dig \cite{dig} czy
 nslookup \cite{domain_example}. Oba pozwalają na wysyłanie zapytań DNS do serwerów. Największą zaletą wspomnianych narzędzi jest
 możliwość dostosowywania pól w wiadomościach do potrzeb użytkownika. Dodatkowo nslookup umożliwia również pracę w trybie serwera,
 jednak bardziej istotna dla atakujących jest sama generacja zapytań, dzięki którym można uzyskać informację na temat testowanego
@@ -105,7 +118,7 @@ pierwszego poziomu.
 \begin{center}
 	\begin{figure}
 	\includegraphics[scale=1]{image/hierarchy_dns}
-	\caption{Heriarchia systemu DNS \cite{hierarchy_dns}.}
+	\caption{Herarchia systemu DNS \cite{hierarchy_dns}.}
 	\label{hierarchy_dns}
 	\end{figure}
 \end{center}
@@ -297,8 +310,10 @@ istotnych wpisów określonych w dokumencie RFC 1035 \cite{RFC1035} wraz z ich p
 		\item primary -- adres serwera głównego (ang. \textit{primary}) dla danej strefy,
 		\item adres poczty administratora,
 		\item numer seryjny -- uaktualniany przy każdej zmianie informacji w pliku strefy,
-		\item czas życia -- czas w sekundach określający okres odpytywania serwera głównego przez serwer podrzędny o numer seryjny pliku strefy; zapewnia spójność danych na serwerach podrzędnych,
-		\item ponowienie żądania -- czas, który powinien odczekać serwer podrzędny jeśli serwer główny nie odpowiedział na żądanie (w sekundach); po jego upłynięciu możliwe jest ponowne wysłanie żądania,
+		\item czas życia -- czas w sekundach określający okres odpytywania serwera głównego przez serwer podrzędny o numer seryjny
+			pliku strefy; zapewnia spójność danych na serwerach podrzędnych,
+		\item ponowienie żądania -- czas, który powinien odczekać serwer podrzędny jeśli serwer główny nie odpowiedział na żądanie
+			(w sekundach); po jego upłynięciu możliwe jest ponowne wysłanie żądania,
 		\item czas przedawnienia -- czas w sekundach, po którym serwer podrzędny powinien przestać odpytywać serwer podstawowy,
 		\item TTL czas przechowywania odpowiedzi typu NXDOMAIN od serwera autorytatywnego (ang. \textit{negative caching}).
 	\end{itemize}
@@ -345,7 +360,7 @@ wprowadzone w kolejnych dokumentach RFC, których dokładne numery zostały wspo
 		autentyczności odpowiedzi negatywnych. \\ \hline
 
 		SPF & 4408 \cite{RFC4408} & Ang. \textit{Sender policy framework} & Definiuje, które z wiadomości elektronicznych mogą być
-		dostarczane do danej strefy. Odbywa się to poprzez weryfikację adresów poczty. Rekordy te są wykorzystywane do odflitrowywania
+		dostarczane do danej strefy. Odbywa się to poprzez weryfikację adresów poczty. Rekordy te są wykorzystywane do filtrowania
 		spamu oraz wiadomości niebezpiecznych dla odbiorców. \\ \hline
 
 		RP & 1183 \cite{RFC1183} & Osoba odpowiedzialna za domenę & W odróżnieniu od osoby odpowiedzialnej za całą strefę DNS, której adres zawarty jest
@@ -358,7 +373,7 @@ wprowadzone w kolejnych dokumentach RFC, których dokładne numery zostały wspo
 		Wpis zaprojektowany w celu ułatwienia klientom lokalizowania serwisów, których poszukują w danej domenie.
 		Wpis jest wykorzystywany najczęściej w odniesieniu do protokołów SIP \cite{RFC3261} bądź XMPP \cite{RFC3921}.
 		Jeśli klient chce sprawdzić, czy na danym serwerze uruchomiona jest usługa protokołu SIP, wystosuje do serwera zapytanie o
-		domenę \_sip.\_tcp.somedomain.com. Nietypowy format zaiwerający znaki ,,\_'' został zastosowany ze względu na uniknięcie kolizji
+		domenę \_sip.\_tcp.somedomain.com. Nietypowy format zawierający znaki ,,\_'' został zastosowany ze względu na uniknięcie kolizji
 		nazw domen wykorzystywanych w rekordach SRV z adresami, pod którymi dostępne są ,,rzeczywiste'' usługi. \\
 
 		\hline
@@ -388,7 +403,7 @@ Mapowanie numerów na adresy internetowe zostało opisane między innymi w RFC37
 Strefy DNS są przechowywane na serwerach w formie specjalnie sformatowanych plików. To w nich definiuje się oraz umieszcza kolejne
 wpisy, rekordy, które będą zwracane dla różnego rodzaju zapytań. Plik strefy jest jednym z kluczowych jeśli chodzi o konfigurację
 serwera DNS. Na listingu \ref{list:dns_zone_file} zaprezentowano przykładowy plik strefy DNS wraz z kilkoma wpisami. Przedstawiony
-plik jest zformatowany zgodnie z wymaganiami stawianymi przez implementację serwera DNS zawartą w pakiecie
+plik jest sformatowany zgodnie z wymaganiami stawianymi przez implementację serwera DNS zawartą w pakiecie
 BIND \cite{Liu:2006:DB:1197828, isc, domain_example}.
 
 \begin{lstlisting}[label={list:dns_zone_file},captionpos=b,caption=Przykładowy plik strefy DNS.,language=bash]
@@ -574,9 +589,9 @@ Rynek parkowania domen okazał się niezwykle dochodowy, czego potwierdzeniem mo
 takie usługi -- Sedo Holding \cite{sedo}.
 
 Sposób, w jaki realizowana jest usługa parkowania domen może sprzyjać również różnego rodzaju nadużyciom. Jednym z przykładów jest tak
-zwany click-spam. Termin związany jest z głównym wskaźnikiem popularności reklam internetowych -- liczbą kliknięć. Clisk-spam określega
+zwany click-spam. Termin związany jest z głównym wskaźnikiem popularności reklam internetowych -- liczbą kliknięć. Click-spam określa
 nadużycie, gdzie jedna ze stron jest źródłem całego ruchu kierowanego do serwisu reklamy, jednak dzięki pewnym mechanizmom, z punktu
-widzenia firmy marketingowej jest ona rezprezentowana jako wiele rozdzielnych podmiotów. Wykorzystanie parkowanych domen w odniesieniu
+widzenia firmy marketingowej jest ona reprezentowana jako wiele rozdzielnych podmiotów. Wykorzystanie parkowanych domen w odniesieniu
 do click-spamu zostało omówione między innymi w publikacji \cite{measuring-and-fingerprinting-click-spam-in-ad-networks}.
 Z click-spamem łączy się pośrednio inne zagrożenie, które może nieść za sobą parkowanie domen -- wielokrotne przekierowywania
 pomiędzy domenami. Przekierowania mogą w pewnym momencie mylić, czy niepokoić użytkownika powodując wrażenie, że nie ma on
