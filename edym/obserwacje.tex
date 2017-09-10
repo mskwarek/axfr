@@ -4,7 +4,7 @@ temat analizowanych serwerów. Przeskanowano cały plik wejściowy liczący 5032
 w dniach od 21. kwietnia 2017 roku do 1. maja 2017 roku włącznie.
 
 Obciążenie skanera zwiększano stopniowo w ciągu kolejnych dni przeprowadzania skanowania. W ten sposób można było uniknąć przeciążenia
-skanera oraz uzyskać jednocześnie zadowalającą wydajność. Okazało sie, że możliwe jest uruchomienie większej liczby procesów niż
+skanera oraz uzyskać jednocześnie zadowalającą wydajność. Okazało się, że możliwe jest uruchomienie większej liczby procesów niż
 przewidywano na etapie projektowania. Przełożyło się to na krótszy czas skanowania.
 
 \section{Typy odebranych odpowiedzi}\label{sec:typy}
@@ -415,7 +415,7 @@ wymiany wiadomości e-mail w danej domenie. Odwzorowanie indeksów poszczególny
 
 Strefy tego typu są najczęściej spotykane w danych, które udało się zebrać podczas skanowania. Można wnioskować, że transfer AXFR
 jest najczęściej możliwy dla domen zarejestrowanych głównie w celach informacyjnych czy marketingowych. Jak opisano wcześniej, są
-to najczęściej pojedyncze adresy IP z kilkoma usługami. Działalność organizacji, na potrzeby których rejestowano takie niewielkie
+to najczęściej pojedyncze adresy IP z kilkoma usługami. Działalność organizacji, na potrzeby których rejestrowano takie niewielkie
 domeny, jest najczęściej mało związana z informatyką czy telekomunikacją.
 
 To, na co warto zwrócić uwagę na histogramie \ref{fig:hist_zone_size_zoom} to również domeny o strefach o rozmiarze około 40-60 wpisów.
@@ -678,7 +678,7 @@ amplifikacji jest wyższy.
 Sprawdzono także, czy odpytanie domeny o wszystkie
 rekordy (modyfikator \textit{any} programu dig) pozwoli na zwiększenie tego współczynnika, jednak w przypadku domen DNSSEC często
 istnieje uzasadniona obawa, że odpowiedź będzie większa, niż maksymalny rozmiar datagramu UDP i będzie wymagana zmiana
-protokołu warstwy transportu na protokół TCP. W przypadku ataku opisywanego w tym rozdziale wymagane jest, aby używać protkołu UDP
+protokołu warstwy transportu na protokół TCP. W przypadku ataku opisywanego w tym rozdziale wymagane jest, aby używać protokołu UDP
 aby nie było potrzeby zestawiania sesji oraz w prosty sposób można było manipulować źródłowym adresem IP.
 
 \section{Wpisy SPF}
@@ -706,7 +706,7 @@ woonbetonmeubels.nl.	180	16	v=spf1 +a +mx +all
 \end{lstlisting}
 
 Informacje, jakie można odczytać z podanych rekordów SPF, to na przykład linijka 1. listingu \ref{list:spf} definiuje, że jeśli
-wiadomość pochodzi z innego systemu niż dostępnypod adresem ip 209.200.229.240, domena z której wysłano wiadomość nie posiada
+wiadomość pochodzi z innego systemu niż dostępny pod adresem ip 209.200.229.240, domena z której wysłano wiadomość nie posiada
 wpisu A bądź MX, to należy wiadomość otagować. Linia 3. definiuje regułę, która pozwala na przyjmowanie wiadomości jedynie od trzech
 systemów, zaś reguła z linii 5. pozwala na odebranie każdej wiadomości.
 
@@ -719,7 +719,7 @@ testowania, ataków na konkretne domeny, które najczęściej odpowiadają konkr
 \section{Strefy podsieci}
 \noindent Podczas realizacji pracy magisterskiej zauważono w zebranych danych obecność specyficznych domen, których rozmiar wynosił od
 250 do 260 wpisów. Zyskały one zainteresowanie dlatego, że znalazły się wysoko w zestawieniu liczebności domen o danej liczbie wpisów
-w pliku sterfy. Okazuje się, że również ich rozmiar nie jest przypadkowy. Domeny te najczęściej składają się z wpisów, które mapują
+w pliku strefy. Okazuje się, że również ich rozmiar nie jest przypadkowy. Domeny te najczęściej składają się z wpisów, które mapują
 podsieci wykorzystujące adresy IP klasy C na nazwy domenowe. Przykład takiego pliku strefy został zaprezentowany na
 listingu \ref{list:subnets}.
 
@@ -746,4 +746,5 @@ amplifikacji takiej komunikacji wynosił odpowiednio:
 
 $$ BAF=\frac{len(UDP) odpowiedzi}{len(UDP) zapytania}=\frac{1264}{664}=1,90 $$
 
-Okazuje się, że jest dużo niższy niż współczynnik dla wzmocnienia przy użyciu serwerów DNSSEC.
+Okazuje się, że jest dużo niższy niż współczynnik dla wzmocnienia przy użyciu serwerów DNSSEC a ponadto, dużych stref jest znacznie mniej
+Niż serwerów, które używają protokołu DNSSEC.

@@ -70,7 +70,7 @@ x <- cbind(head(countries, density)$V2)
 barplot(t(x), las=2, col=c("darkblue"), beside = T, 
         cex.names = 0.8, names.arg = head(countries, density)$V1, 
         ylim=c(0, 40), xlab="Numer systemu autonomicznego", 
-        ylab = "Część znalezionych adresów IPv6")
+        ylab = "Część znalezionych adresów IPv6 (%)")
 #legend("topright", 
 #       legend = c("zapytania", "odpowiedzi"), 
 #       fill = c("darkblue", "red"), cex=0.8)
@@ -96,15 +96,29 @@ df <- data.frame(variable = lbls, value=cnts)
 
 
 browsers<-read.table("tmp",header=FALSE, sep=',')
-browsers<-browsers[order(browsers[,2]),]
-pielabels <- sprintf("%s = %3.1f%s", browsers[,1],
+browsers<-browsers[order(browsers[,2], -1),]
+pielabels <- sprintf("%s = %3.3f%s", browsers[,1],
                      100*browsers[,2]/sum(browsers[,2]), "%")
 pie(browsers[,2],
     labels=pielabels,
     clockwise=TRUE,
     radius=1,
-    col=brewer.pal(7,"Set1"),
+    #col=brewer.pal(7,"Set1"),
     border="white",
-    cex=0.8,
-    main="Percentage Share of Internet Browser usage")
+    cex=1,
+    main="")
+
+
+countries<-read.csv("unused_tld_cnt.result", header=FALSE, sep = ',')
+density=10
+countries$V2<-countries$V2/sum(countries$V2)*100
+x <- cbind(head(countries, density)$V2)
+barplot(t(x), las=2, col=c("darkblue"), beside = T, 
+        cex.names = 0.8, names.arg = head(countries, density)$V1, 
+        ylim=c(0, 80), xlab="TLD", 
+        ylab = "Część wszystkich TLD (%)")
+#legend("topright", 
+#       legend = c("zapytania", "odpowiedzi"), 
+#       fill = c("darkblue", "red"), cex=0.8)
+grid()
 

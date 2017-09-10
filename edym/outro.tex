@@ -4,7 +4,7 @@ domen i ich serwerów przestrzeni nazw. Przeanalizowano, czy powszechnie dostęp
 badania w zakresie postawionego problemu. Została zaproponowana implementacja oraz wdrożenie systemu, który umożliwia optymalne wykonanie
 takich badań. Zebrano oraz przeanalizowano dane, które można uzyskać w wyniku globalnego skanowania domen pod kątem podatności
 na transfer AXFR. Pogrupowano uzyskane odpowiedzi, typy zachowań na wystosowane żądanie AXFR. Opisano, w jaki sposób mogą odpowiadać
-serwery autorytatywne oraz rzeanalizowano popoularność każdego z typów otrzymywanej odpowiedzi.
+serwery autorytatywne oraz przeanalizowano popularność każdego z typów otrzymywanej odpowiedzi.
 
 Podsumowując przeprowadzone prace i badania okazuje się, że transfer strefy wykorzystując mechanizm AXFR jest wciąż możliwy dla
 bardzo wielu domen. Bardzo duża część domen jest pod zarządem niewielkiej liczby serwerów autorytatywnych, więc możliwe, że zezwolenie
@@ -22,7 +22,7 @@ każdej maszyny wystosowującej zapytanie tego typu. Wymagałoby to używania je
 Rozwiązanie to ograniczyłoby skalowalność rozwiązania, jednak jawne podanie adresu IP jest dużo bardziej bezpieczne i zapewnia, że
 transfer strefy przeprowadzony będzie tylko przez te maszyny, którym rzeczywiście, wprost, na to zezwolono.
 
-Innym rozwiązaniem jest rezygnacja z własnych serwerów DNS na rzecz usług \textit{DNS as a service} (rozdział \ref{dnsasservice}). Takie postępowanie eliminuje więszkość
+Innym rozwiązaniem jest rezygnacja z własnych serwerów DNS na rzecz usług \textit{DNS as a service} (rozdział \ref{dnsasservice}). Takie postępowanie eliminuje większość
 problemów związanych z transferem strefy, gdyż cała infrastruktura jest dzierżawiona od zewnętrznej firmy. Firmom takim również zależy
 na jak najlepszej jakości ich usług oraz zależy im, aby dane na temat stref DNS nie były tak powszechnie dostępne, dlatego dobrze
 zabezpieczają transfer strefy. Odbywa się to na przykład dzięki zestawieniu sesji SSL pomiędzy stronami wymieniającymi dane, bądź
