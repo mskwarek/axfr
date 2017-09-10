@@ -1,0 +1,40 @@
+\chapter{Podsumowanie}
+\noindent W niniejszej pracy magisterskiej zaproponowano unikatowe podejście do problemu transferu strefy AXFR oparte na globalnym skanowaniu
+domen i ich serwerów przestrzeni nazw. Przeanalizowano, czy powszechnie dostępne narzędzia zapewniają takie funkcje, aby przeprowadzić
+badania w zakresie postawionego problemu. Została zaproponowana implementacja oraz wdrożenie systemu, który umożliwia optymalne wykonanie
+takich badań. Zebrano oraz przeanalizowano dane, które można uzyskać w wyniku globalnego skanowania domen pod kątem podatności
+na transfer AXFR. Pogrupowano uzyskane odpowiedzi, typy zachowań na wystosowane żądanie AXFR. Opisano, w jaki sposób mogą odpowiadać
+serwery autorytatywne oraz rzeanalizowano popoularność każdego z typów otrzymywanej odpowiedzi.
+
+Podsumowując przeprowadzone prace i badania okazuje się, że transfer strefy wykorzystując mechanizm AXFR jest wciąż możliwy dla
+bardzo wielu domen. Bardzo duża część domen jest pod zarządem niewielkiej liczby serwerów autorytatywnych, więc możliwe, że zezwolenie
+na taki transfer bywa zamierzone. Resztę można zaliczyć jako niepoprawnie skonfigurowane i to one są najbardziej narażone na
+ataki cyberprzestępców. Zalecenia wydane w dalszej części rozdziału są kierowane głównie w kierunku administratorów właśnie tych domen.
+
+W pracy opisano także, które części stref DNS pozwalają cyberprzestępcom na pozyskanie informacji na temat ich potencjalnych celów.
+Skupiono się w głównej mierze na usługach uruchamianych w badanych systemach, informacjach na temat infrastruktury antyspamowej,
+ale także na pośrednim wykorzystaniu danych maszyn w innych typach ataków.
+
+\section{Zalecenia}
+\noindent Transfer strefy AXFR pozwala na uzyskanie wielu informacji na temat tego, jakie usługi oraz jakie maszyny są uruchomione wewnątrz danej
+domeny. Drastycznym, ale najbardziej skutecznym zaleceniem jest wycofanie z implementacji serwerów DNS funkcji transferu strefy DNS do
+każdej maszyny wystosowującej zapytanie tego typu. Wymagałoby to używania jedynie adresów IP serwerów, które mogą ten transfer przeprowadzić.
+Rozwiązanie to ograniczyłoby skalowalność rozwiązania, jednak jawne podanie adresu IP jest dużo bardziej bezpieczne i zapewnia, że
+transfer strefy przeprowadzony będzie tylko przez te maszyny, którym rzeczywiście, wprost, na to zezwolono.
+
+Innym rozwiązaniem jest rezygnacja z własnych serwerów DNS na rzecz usług \textit{DNS as a service} (rozdział \ref{dnsasservice}). Takie postępowanie eliminuje więszkość
+problemów związanych z transferem strefy, gdyż cała infrastruktura jest dzierżawiona od zewnętrznej firmy. Firmom takim również zależy
+na jak najlepszej jakości ich usług oraz zależy im, aby dane na temat stref DNS nie były tak powszechnie dostępne, dlatego dobrze
+zabezpieczają transfer strefy. Odbywa się to na przykład dzięki zestawieniu sesji SSL pomiędzy stronami wymieniającymi dane, bądź
+innym wykorzystaniu kryptografii (na przykład szyfrowanie).
+
+\section{Retrospekcja}
+\noindent Pośrednim wynikiem tworzenia niniejszej pracy magisterskiej mogą być również wnioski na temat samego procesu jej realizacji czy przeprowadzania badań.
+Nie wszystkie etapy pracy były przeprowadzane płynnie, co pozwala na wyciągnięcie wniosków pozwalających uniknąć takich sytuacji
+w przyszłości. Jednym z trudniejszych etapów realizacji pracy było przygotowanie oprogramowania i środowiska pod globalne skanowanie.
+Trud ten wynika głównie ze skali, skrypty dostępne w Internecie nie są aż tak wydajne aby zapewnić oczekiwaną wydajność. Poważnym
+błędem, który spowodował wydłużenie czasu uruchomienia systemu były próby wykorzystania już istniejących narzędzi, jednak pozwoliło to
+na opisanie ich wad bądź zalet. Dodatkowo, można wyciągnąć wniosek, że przeprowadzanie skanowania na szeroką skalę bardzo często wymaga
+implementacji oprogramowania dokładnie pod kątem tego specyficznego przypadku, bardzo często bez używania innych projektów powiązanych
+z tematyką badań. Oprogramowanie skanera jest ciągle ulepszane, co dowodzi temu, że nawet kilka miesięcy działania systemu nie pozwala
+na pełne, dokładne przetestowanie skanera.
