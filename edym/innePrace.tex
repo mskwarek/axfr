@@ -1,5 +1,5 @@
 \chapter{Powiązane prace}
-Pomimo faktu, że problem ,,wycieku'' danych z serwerów DNS poruszany był już w 2002 roku \cite{uscert2} oraz w późniejszych
+\noindent Pomimo faktu, że problem ,,wycieku'' danych z serwerów DNS poruszany był już w 2002 roku \cite{uscert2} oraz w późniejszych
 publikacjach \cite{uscert}, na blogach bądź forach dotyczących testowania infrastruktury pod kątem bezpieczeństwa
 \cite{stackexchange, zonetransfer}, to nie udało dotrzeć
 się do żadnych globalnych badań na temat bezpieczeństwa transferu strefy DNS. To właśnie skala badania przeprowadzonego w ramach
@@ -10,7 +10,7 @@ rozdziale przedstawiono istniejące, powiązane prace oraz ich różnice w stosu
 dyplomowej.
 
 \section{Internet-Wide Scan Data Repository}
-\textit{Internet-Wide Scan Data Repository} jest to publiczne archiwum danych dostępne głównie pod adresem scans.io \cite{scans.io}.
+\noindent \textit{Internet-Wide Scan Data Repository} jest to publiczne archiwum danych dostępne głównie pod adresem scans.io \cite{scans.io}.
 Gromadzone są tam dane badawcze zebrane podczas aktywnych skanów przeprowadzonych w internecie. Repozytorium prowadzone jest przez
 badaczy z Uniwersytetu z Michigan \cite{censys}. Cel pobierania danych nie jest wyraźnie określony przez naukowców, to co zostanie z
 nich wywnioskowane pozostawia się osobom trzecim. Z punktu widzenia niniejszej pracy, \textit{Internet-Wide Scan Data Repository}
@@ -28,7 +28,7 @@ uproszczeniem. Ponadto, naturalne jest, że najpopularniejsze strony będą przy
 swoich zasobów, dlatego można się spodziewać, że wyników takiego skanowania będzie mniej niż na równej ilościowo, losowo wybranej próbie.
 
 \section{Projekty open source}
-Podczas prac nad niniejszą pracą magisterską natknięto się na dwa hobbystyczne projekty dotyczące transferu strefy DNS. Pierwszym z nich
+\noindent Podczas prac nad niniejszą pracą magisterską natknięto się na dwa hobbystyczne projekty dotyczące transferu strefy DNS. Pierwszym z nich
 jest projekt nazwany AXFR dostępny w serwisie GitHub \cite{asg-axfr}. W ramach niego zaimplementowane zostało narzędzie umożliwiające
 równoległe przetwarzanie żądań transferu strefy AXFR. Całość zrealizowano w języku Python, zaś danymi wejściowymi była lista miliona
 najpopularniejszych domen Alexa Top 1 Milion \cite{alexa}. Dodatkowo, w ramach projektu przeprowadzono analizę uzyskanych wyników.
@@ -57,7 +57,7 @@ wszystko, zasięg badań hobbystycznych zaprezentowanych w tym rozdziale jest du
 pracy dyplomowej.
 
 \section{DNS Response Policy Zone}
-DNS Response Policy Zone jest metodą zarządzania odpowiedziami na konkretne zapytania DNS. Funkcja ta została wprowadzona w wersji
+\noindent DNS Response Policy Zone jest metodą zarządzania odpowiedziami na konkretne zapytania DNS. Funkcja ta została wprowadzona w wersji
 9.10 pakietu BIND oraz od tamtego wydania funkcjonalność dostępna jest w każdym kolejnym. DNS RPZ jest często nazywane Firewallem DNS.
 Nazwa ta jest dobrym określeniem działania całego systemu. Dzięki niemu, można definiować reguły odpowiedzi, na przykład na podstawie
 źródła żądania bądź informacji, które ono zawiera. Administratorzy podejmują się definiowania reguł odpowiedzi między innymi
@@ -74,7 +74,8 @@ wynikających z powszechnego udostępniania informacji
 strefowych nie został tam szeroko zaprezentowany, a jedynie wspomniany jako jeden z powodów propozycji danego rozwiązania.
 
 \section{DNS as a service}
-\textit{DNS as service} to pojęcie wykorzystywane do opisywania usług świadczonych w obrębie protokołu DNS. Dosłownym tłumaczeniem tego
+\label{dnsasservice}
+\noindent \textit{DNS as service} to pojęcie wykorzystywane do opisywania usług świadczonych w obrębie protokołu DNS. Dosłownym tłumaczeniem tego
 terminu jest \textit{DNS jako usługa}. W rozumieniu protokołu DNS jest to wystawienie interfejsów klientowi, tak,
 aby mógł on dodać interesujące go rekordy.
 
@@ -107,7 +108,7 @@ w naszym systemie. Dodatkowo sugeruje to, że często administratorzy czy klienc
 takiego systemu na firmę trzecią w zamian za odpowiednie ich wynagrodzenie.
 
 \section{DNS Enumeration}\label{zone_enumeration}
-Rozszerzenie DNSSEC (\textit{DNS Security Extentions}) zostało zaprezentowane w roku 1997 \cite{RFC2065} jako odpowiedź na poważne
+\noindent Rozszerzenie DNSSEC (\textit{DNS Security Extentions}) zostało zaprezentowane w roku 1997 \cite{RFC2065} jako odpowiedź na poważne
 luki w bezpieczeństwie systemów DNS opisane w dokumencie \cite{DNSsecurityProblem}. W dużym uproszczeniu rozszerzenie to pozwala
 na zweryfikowanie, czy odpowiedź na zapytanie wysłane do serwera pochodzi na pewno od niego a nie od atakującego system.
 Wyspecyfikowanie standardu DNSSEC było problematyczne, a organizacje pracujące nad nim wielokrotnie go zmieniały. Podyktowane to

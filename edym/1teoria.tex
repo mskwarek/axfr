@@ -1,5 +1,5 @@
 \chapter{Wstęp}
-Ataki na systemy informatyczne czy telekomunikacyjne są bardzo złożone. Wymagają one bardzo często ciężkiej pracy już przed
+\noindent Ataki na systemy informatyczne czy telekomunikacyjne są bardzo złożone. Wymagają one bardzo często ciężkiej pracy już przed
 właściwym przejęciem kontroli nad systemem. Pozyskuje się wtedy informacje, których posiadanie może mieć istotny wpływ w późniejszych
 etapach ataku. Skuteczny atak na system powinien przebiegać w jak najkrótszym czasie, tak, aby dać jak najmniej czasu drugiej stronie
 na jego odparcie. Właśnie dlatego cyberprzestępcy starają się pozyskiwać jak najwięcej informacji o celach ataków. Informacje odnoszą
@@ -14,10 +14,13 @@ W pracy magisterskiej zaprezentowano oraz przedyskutowano dostępność i jakoś
 Następnie zaproponowano autorskie podejście do implementacji narzędzi umożliwiających realizację prac na taką skalę oraz opisano
 architekturę środowiska uruchomieniowego. W kolejnej części pracy przedstawiono przebieg badań eksperymentalnych oraz uzyskane wyniki,
 które zostały następnie poddane analizie i syntezie. Przeanalizowano, jakimi cechami wspólnymi charakteryzują się uzyskane odpowiedzi
-oraz zaprezentowano i omówiono anomalie, które wystąpiły podczas badań eksperymentalnych. 
+oraz zaprezentowano i omówiono anomalie, które wystąpiły podczas badań eksperymentalnych. Odniesiono się do najbardziej użytecznych
+informacji z punktu widzenia cyberprzestępców, tj. adresów IP oraz usług, uruchomionych pod danymi adresami. W podsumowaniu pracy
+uwydatnione zostały najbardziej istotne aspekty wiążące się z prezentowaną tematyką oraz wydano zalecenia umożliwiające poprawę
+bezpieczeństwa obszaru odnoszącego się do protokołu DNS, które kierowane są do administratorów domen.
 
 \section{Ataki rekonesansowe}
-Ataki rekonesansowe są typem ataków komputerowych, których głównym celem jest pozyskanie informacji na temat atakowanego systemu bądź
+\noindent Ataki rekonesansowe są typem ataków komputerowych, których głównym celem jest pozyskanie informacji na temat atakowanego systemu bądź
 podatności, które w nim występują. Słowo ,,rekonesans'' zostało zapożyczone z nomenklatury militarnej i odnosi się do zapoznania z
 terenem wroga. W kontekście ataków na sieci komputerowe stwierdzeniem określa się analogiczny krok -- działanie przed właściwym atakiem.
 Sam rekonesans można podzielić dodatkowo na dwie kategorie: atak aktywny oraz pasywny.
@@ -102,7 +105,7 @@ odpytywany serwer DNS. Wspomniane przygotowanie pakietu DNS nie jest specjalnie 
 przykład dig \cite{dig}, wchodzący w skład pakietu bind \cite{isc}.
 
 \section{Domain Name System}
-Głównym zadaniem protokołu DNS (\textit{Domain Name System}) \cite{RFC1035} jest translacja nazw przyswajalnych dla użytkowników (najczęściej
+\noindent Głównym zadaniem protokołu DNS (\textit{Domain Name System}) \cite{RFC1035} jest translacja nazw przyswajalnych dla użytkowników (najczęściej
 alfanumerycznych) na nazwy sieciowe, czyli adresy IP.
 
 DNS jest jednym z podstawowych elementów internetu. Z wystawionego przez niego interfejsu korzysta wiele usług sieciowych i innych
@@ -169,7 +172,7 @@ nazwami w domenie google.com przekazuje do niższego szczeblem serwera przestrze
 możliwość przypisywania nazw takim domenom jak zaprezentowane support.google.com.
 
 \subsection{Podział domen najwyższego poziomu}
-Jeśli chodzi o podział domen pierwszego poziomu ze względu na przynależność organizacyjną, to aktualny stan przedstawiony jest w
+\noindent Jeśli chodzi o podział domen pierwszego poziomu ze względu na przynależność organizacyjną, to aktualny stan przedstawiony jest w
 tabeli poniżej.
 
 \begin{table}[h]
@@ -200,7 +203,7 @@ tabeli poniżej.
 Przedstawiony podział nie jest stały. Autorzy zastrzegli, że w przyszłości może być on rozszerzony o dodatkowe kategorie.
 
 \subsection{Domena DNS}
-Domeną określa się dany podzbiór hierarchii DNS. Są to wszystkie poddomeny podlegające tej samej domenie wyższego poziomu. Odnosząc
+\noindent Domeną określa się dany podzbiór hierarchii DNS. Są to wszystkie poddomeny podlegające tej samej domenie wyższego poziomu. Odnosząc
 się do wcześniej przywołanego porównania do systemu plików -- domena to odpowiednik folderu. Może zawierać kolejne domeny, może być
 określana zarówno na bardzo wysokim (domeny poziomu TLD) jak i bardzo szczegółowym (domeny 2-3 LD) poziomie abstrakcji. Jeśli
 chcielibyśmy reprezentować system DNS jako drzewo, to domeną DNS nazwiemy węzeł drzewa i wszystkie węzły, które są jego potomkami.
@@ -215,7 +218,7 @@ Pojęcie domeny i elementy, które ono określa przedstawiono na rysunku \ref{fi
 \end{center}
 
 \subsection{Strefa DNS}
-Strefa DNS jest pojęciem, które określa zbiór domen, za które odpowiedzialny jest konkretny serwer przestrzeni nazw. Jeśli wyobrazimy
+\noindent Strefa DNS jest pojęciem, które określa zbiór domen, za które odpowiedzialny jest konkretny serwer przestrzeni nazw. Jeśli wyobrazimy
 sobie hierarchię DNS jako drzewo, w którym węzłami są kolejne nazwy domen, to strefą DNS będzie zbiór węzłów tego drzewa. Zbiór
 węzłów wyznaczany jest na podstawie informacji o serwerze autorytatywnym odpowiedzialnym za daną domenę. Te węzły (domeny)
 których nazwami zarządza ten sam serwer znajdują się w jednej strefie DNS. Przykładowy podział systemu na konkretne strefy został
@@ -237,7 +240,7 @@ przestrzeni zarządzany przez określony serwer nazywany jest strefą DNS.
 
 \subsection{Kompletne nazwy domen}
 \label{sec:FQDN}
-Określeniem pełne, kompletne lub zupełne nazwy domen (ang. \textit{Fully Qualified Domain Names (FQDNs)}) nazywane są te domeny,
+\noindent Określeniem pełne, kompletne lub zupełne nazwy domen (ang. \textit{Fully Qualified Domain Names (FQDNs)}) nazywane są te domeny,
 których nazwy zawierają domenę każdego poziomu, począwszy od lokalnej, aż po domenę główną, czyli root. Łatwo dostrzec analogię
 do wcześniej wspomnianego systemu pliku w systemach operacyjnych UNIX pomiędzy FQDN a bezpośrednią ścieżką do pliku. Różnicą jest
 tu jednak sposób odczytywania takiej ścieżki. W systemach DNS najbardziej ogólny węzeł znajduje się na skrajnie prawej pozycji a
@@ -245,14 +248,14 @@ poruszając się w stronę lewą dochodzimy do kolejnych lokalnych domen.
 
 \subsection{Mapowanie nazw na adres IP}
 \label{mapping}
-Mapowanie nazw domeny na jej adres IP jest możliwe dzięki plikom strefy DNS, które znajdują się na autorytatywnym serwerze
+\noindent Mapowanie nazw domeny na jej adres IP jest możliwe dzięki plikom strefy DNS, które znajdują się na autorytatywnym serwerze
 przestrzeni nazw, tzw. \textit{zone files}. Jeden z typów tych plików przechowuje nazwy domen wraz z odpowiadającymi im adresami
 IP. Gdy klient chce dowiedzieć się pod jaki adres kierować swoje zapytanie, kieruje informacje do serwera autorytatywnego. On
 odpowiada za znalezienie i przedstawienie mapowania nazwy na adres IP, dokonując przeszukania plików strefy.
 
 \subsection{Mapowanie odwrotne}
 \label{revmapping}
-Baza danych DNS może także zawierać pliki, które umożliwiają mapowania odwrotne, tj. adresu IP na nazwę domeny/hosta. Mechanizm ten
+\noindent Baza danych DNS może także zawierać pliki, które umożliwiają mapowania odwrotne, tj. adresu IP na nazwę domeny/hosta. Mechanizm ten
 może być użyty przy próbie weryfikacji pochodzenia wiadomości. Chcąc wykluczyć próbę oszustwa ze strony prawdziwego nadawcy możemy
 posiłkować się właśnie odwrotnym mapowaniem. Możemy zweryfikować, czy adres IP mapowania odwrotnego zgadza się z adresem IP z którego
 nadano wiadomość. Mechanizm ten może być również wykorzystywany do autoryzacji operacji wykonywanych zdalnie.
@@ -265,7 +268,7 @@ ma przypisany adres 10.8.0.32. W plikach strefy dla domeny in-addr.arpa adres te
 oczywiście z kropką po członie \textit{in-addr.arpa}, która reprezentuje domenę \textit{root}.
 
 \subsection{Wpisy plików strefy}
-Tak jak wspomniano we wcześniejszych punktach \ref{mapping} oraz \ref{revmapping} działanie całego mechanizmu mapowana (czy to
+\noindent Tak jak wspomniano we wcześniejszych punktach \ref{mapping} oraz \ref{revmapping} działanie całego mechanizmu mapowana (czy to
 właściwego czy odwrotnego) może zachodzić dzięki serwerom autorytatywnym oraz przechowywanym przez nie plikom strefy DNS.
 
 Z racji, że system DNS dostarcza administratorom wielu funkcji poza standardowym mapowaniem adresów na IP, wpisy w bazach danych
@@ -382,7 +385,7 @@ wprowadzone w kolejnych dokumentach RFC, których dokładne numery zostały wspo
 \end{longtable}
 
 \subsection{TLD ARPA}
-Specyficzną domeną najwyższego rzędu jest domena \textit{ARPA}. Jest to jedna z nielicznych domen ściśle powiązana z dokładnie jedną
+\noindent Specyficzną domeną najwyższego rzędu jest domena \textit{ARPA}. Jest to jedna z nielicznych domen ściśle powiązana z dokładnie jedną
 instytucją. Skrót ARPA wywodzi się historycznie od nazwy jednostki (ang. \textit{Advanced Research Projects Agency (ARPA)}), która
 brała czynny udział w propagowaniu oraz rozwijaniu sieci Internet. Dzięki tej jednostce powstał między innymi prekursor dzisiejszego
 Internetu -- ARPANET. Aktualnie TLD ARPA jest wykorzystywane jedynie w celach dotykających infrastruktury internetu. Skrót rozwijany jest
@@ -400,7 +403,7 @@ PSTN na adresy internetowe ma szczególne znaczenie w integracji dwóch technik 
 Mapowanie numerów na adresy internetowe zostało opisane między innymi w RFC3761 \cite{RFC3761}.
 
 \subsection{Plik strefy DNS}
-Strefy DNS są przechowywane na serwerach w formie specjalnie sformatowanych plików. To w nich definiuje się oraz umieszcza kolejne
+\noindent Strefy DNS są przechowywane na serwerach w formie specjalnie sformatowanych plików. To w nich definiuje się oraz umieszcza kolejne
 wpisy, rekordy, które będą zwracane dla różnego rodzaju zapytań. Plik strefy jest jednym z kluczowych jeśli chodzi o konfigurację
 serwera DNS. Na listingu \ref{list:dns_zone_file} zaprezentowano przykładowy plik strefy DNS wraz z kilkoma wpisami. Przedstawiony
 plik jest sformatowany zgodnie z wymaganiami stawianymi przez implementację serwera DNS zawartą w pakiecie
@@ -450,7 +453,7 @@ istotne jest, że fraza \$ORIGIN <domena> obowiązuje od miejsca, gdzie została
 pliku.
 
 \section{Transfer strefy DNS}
-Transfer strefy DNS jest typem transakcji DNS, która jest podstawowym elementem mechanizmu odtwarzania bazy danych DNS pomiędzy
+\noindent Transfer strefy DNS jest typem transakcji DNS, która jest podstawowym elementem mechanizmu odtwarzania bazy danych DNS pomiędzy
 serwerami systemu. Transfer jako protokołu warstwy 4 używa TCP i przybiera formę komunikacji typu klient-serwer. Zgodnie z założeniem
 projektantów klient jest podrzędnym lub zapasowym serwerem DNS a serwer, który odpytuje to nadrzędny bądź główny serwer DNS. To, co
 wysyłane jest w odpowiedzi od serwera głównego jest strefą DNS -- część bazy danych przechowywanych na głównym serwerze.
@@ -469,7 +472,7 @@ serwera podrzędnego. Określone zostały także mechanizmy, które pozwalają p
 na serwerze podstawowym \cite{RFC5936, RFC1996}, jednak wciąż odpowiedzialność za rozpoczęcie transferu spoczywa na kliencie.
 
 \subsection{Transfer AXFR}
-Pierwszym wymienionym sposobem dokonania transferu danych jest wystosowanie do serwera zapytania typu 252. -- AXFR \cite{RFC5936}
+\noindent Pierwszym wymienionym sposobem dokonania transferu danych jest wystosowanie do serwera zapytania typu 252. -- AXFR \cite{RFC5936}
 używając do tego celu między innymi połączenia TCP. Serwer odpowiada na zapytanie kolejnymi wiadomościami, które niosą informację o
 rekordach zapisanych w strefie DNS. Istotnym faktem jest, że w tym przypadku serwer przesyła wszystkie rekordy jakie są zawarte w
 podgrupie określanej strefą DNS. Transfer zawsze zaczyna się od rekordu typu SOA, gdzie widnieje między innymi wersja przechowywanej
@@ -481,7 +484,7 @@ wymaga aktualizacji. Dzięki temu możliwe jest ustalenie, czy warto w ogóle wy
 w wielu przypadkach oszczędzić zbędnej wymiany informacji między serwerami.
 
 \subsection{Transfer IXFR}
-Drugą możliwością pobrania informacji na temat strefy DNS jest tak zwany transfer inkrementalny IXFR, którego wartość pola QTYPE
+\noindent Drugą możliwością pobrania informacji na temat strefy DNS jest tak zwany transfer inkrementalny IXFR, którego wartość pola QTYPE
 wynosi 251. Od zapytania AXFR różni się tym, że przesyłane informacje są tylko różnicą pomiędzy kolejnymi wersjami przechowywanymi
 na serwerze podstawowym. Wymaga to podania w wystosowanym zapytaniu wersji pliku, który przechowywany jest aktualnie na
 komputerze-kliencie. W odpowiedzi uzyskiwana jest lista zmian, które zostały wprowadzone w kolejnych wersjach danej strefy DNS.
@@ -494,10 +497,9 @@ przekierowania. AXFR fallback następuje najczęściej w sytuacji, kiedy serwer 
 Może to następować po otrzymaniu wersji strefy wyższej niż ta przechowywana na serwerze podstawowym, albo w momencie, kiedy na
 serwerze podrzędnym nie ma dostępnej żadnej bazy danych \cite{I-D.song-dnsop-ixfr-fallback}.
 
-
 \section{Podpisy TSIG}
 \label{TSIG}
-Istotnym typem rekordu jest również typ 250. -- rekord TSIG (ang. \textit{Secret Key Transaction Authentication for DNS/Transaction
+\noindent Istotnym typem rekordu jest również typ 250. -- rekord TSIG (ang. \textit{Secret Key Transaction Authentication for DNS/Transaction
 Signature}) zdefiniowany w dokumencie RFC 2845 \cite{RFC2845}. Używany jest przede wszystkim w protokole DNS aby zapewnić, że
 informacja przesyłana pomiędzy obiema komunikującymi się stronami faktycznie pochodzi od nadawcy oraz że nie była modyfikowana w
 trakcie komunikacji. Mechanizm używany jest przede wszystkim do dynamicznych aktualizacji baz DNS oraz do transferów stref pomiędzy
@@ -506,7 +508,7 @@ bezkolizyjne funkcje skrótu.
 
 \subsection{Opis działania TSIG}
 \label{tsig}
-Rekord TSIG pozwala na wykorzystywanie mechanizmów znanych z protokołu DNSSEC \cite{nask-tsig} w protokole DNS zaproponowanych w
+\noindent Rekord TSIG pozwala na wykorzystywanie mechanizmów znanych z protokołu DNSSEC \cite{nask-tsig} w protokole DNS zaproponowanych w
 RFC 1035 \cite{RFC1035}. Praktyka taka została zaproponowana z powodu częstych problemów z używaniem protokołu
 DNSSEC \cite{RFC4033, RFC4035}. Wprowadzenie korzystania z rekordów TSIG pozwala między innymi na:
 \begin{enumerate}
@@ -543,7 +545,7 @@ bądź równa długości klucza użytego do podpisania wiadomości.
 
 \subsection{Wady TSIG}
 \label{wady-tsig}
-Problemem związanym z wykorzystaniem rekordów TSIG jest przede wszystkim dystrybucja kluczy. Ponadto w systemie DNS rzadko zdarza się,
+\noindent Problemem związanym z wykorzystaniem rekordów TSIG jest przede wszystkim dystrybucja kluczy. Ponadto w systemie DNS rzadko zdarza się,
 że tylko jeden klient będzie korzystał z interfejsu serwera, więc każdy z klientów powinien posiadać swój klucz, co ponownie prowadzi
 do problemu ich dystrybucji, przechowywania i zarządzania \cite{nask-tsig}.
 
@@ -557,7 +559,7 @@ jak inna poprawna wiadomość, bez rozróżnienia z jakiego źródła pochodzi. 
 elementów jest hierarchiczna struktura musimy liczyć się z faktem, że mechanizm TSIG może być nieodpowiedni.
 
 \section{Inne metody podpisywania wiadomości}
-Oprócz przedstawionego w podpunkcie \ref{TSIG} mechanizmu TSIG postało kilka innych propozycji podpisywania wiadomości w protokole DNS.
+\noindent Oprócz przedstawionego w podpunkcie \ref{TSIG} mechanizmu TSIG postało kilka innych propozycji podpisywania wiadomości w protokole DNS.
 Propozycje te opracowywane były przede wszystkim dlatego, że TSIG charakteryzuje się pewnymi uciążliwymi wadami opisanymi w podpunkcie
 \ref{wady-tsig} -- nie rozwiązuje problemu dystrybucji kluczy, nie uwzględnia poziomów w hierarchii systemu DNS czy wykorzystuje
 przestarzałą funkcję skrótu HMAC-MD5.
@@ -578,7 +580,7 @@ dokumencie RFC4635 \cite{RFC4635} gdzie zaproponowano zastąpienie przestarzałe
 odpowiednio użycie SHA1 \cite{RFC3174} lub algorytmów zaproponowane w projekcie FIPS PUB 180-2, znane później jako SHA-2 \cite{RFC4634}.
 
 \section{Parkowanie domen}
-Parkowanie domen to zachowanie, które można określić jako wypożyczenie kompletnej nazwy domeny (FQDN \ref{sec:FQDN}).
+\noindent Parkowanie domen to zachowanie, które można określić jako wypożyczenie kompletnej nazwy domeny (FQDN \ref{sec:FQDN}).
 Odnosi się ono do przypisywania nieużywanych, kompletnych nazw domen do systemów, które mogą zapewnić obsłużenie ruchu generowanego
 do danej domeny. Takie rozwiązanie znalazło szerokie zastosowanie na przykład w branży marketingowej. Podmioty posiadające domeny mogą
 je ,,zaparkować'' poprzez specjalne serwisy. Cały proces jest ukierunkowany na pozyskiwanie korzyści finansowych. Użytkownikowi,

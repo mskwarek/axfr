@@ -1,5 +1,5 @@
 \chapter{Implementacja}
-Przeanalizowanie problemu postawionego w niniejszej pracy magisterskiej wymagało implementacji własnych narzędzi. Dostępne są w sieci
+\noindent Przeanalizowanie problemu postawionego w niniejszej pracy magisterskiej wymagało implementacji własnych narzędzi. Dostępne są w sieci
 programy umożliwiające przeprowadzenie rekonesansu DNS i są bardzo dobre (dig \cite{dig}, axfr-tool \cite{python_axfr_test}, robotex \cite{robotex})
 jednak nie są to skanery, które umożliwiają globalne skanowanie, a więc nie zapewniają oczekiwanej wydajności dla dużych zbiorów
 danych. Wynika to z faktu, że są one nastawione głównie na analizę konkretnego przypadku. Temat ten został szerzej opisany w punkcie
@@ -19,7 +19,7 @@ zbyt dużej ilości zasobów, a głównie pamięci RAM, dlatego wymuszone zosta�
 
 \section{Przegląd dostępnych narzędzi}
 \label{narzedzia}
-Społeczność internetu oferuje bardzo szeroką gamę narzędzi umożliwiających pozyskiwanie informacji na podstawie protokołu DNS.
+\noindent Społeczność internetu oferuje bardzo szeroką gamę narzędzi umożliwiających pozyskiwanie informacji na podstawie protokołu DNS.
 Bardzo użytecznym i przydatnym narzędziem jest w tym przypadku program dig. Wspomniany program ma jednak znaczącą wadę -- jest
 wydajny jedynie przy niewielkiej liczbie odpytywanych domen. Dodatkową niedogodnością jest, wbrew pozorom, fakt, że program
 wchodzi w skład pakietu Open Source bind. Ten, jak każde oprogramowanie na wolnej licencji, cierpi na szereg niedogodności z
@@ -103,7 +103,7 @@ się głównie na kwestiach wykorzystania tych rozwiązań w przeprowadzonych ba
 \end{longtable}
 
 \section{Zaimplementowane narzędzia}
-Przeprowadzenie globalnego skanu niosło za sobą szereg konsekwencji. Zakładając, że średnio należy przeznaczyć na skanowanie
+\noindent Przeprowadzenie globalnego skanu niosło za sobą szereg konsekwencji. Zakładając, że średnio należy przeznaczyć na skanowanie
 jednej pary (domena, adres IP) około 3 sekund okazało się, że przeprocesowanie całego zbioru danych wejściowych (ok. 5 miliardów
 par) zajęłoby odpowiednio:
 $$3(s) * 5 * 10^{9} = 25 * 10^{8}(min) = \frac{25}{60} * 10^{8}(h) = 41.67 * 10^{6} (dni)\label{obliczenia}$$
@@ -118,7 +118,7 @@ Szczegółowo zostaną one opisane w kolejnych punktach tego rozdziału.
 
 \subsection{Program dig zarządzany skryptami powłoki}
 \label{dig_sh}
-Pierwszym rozwiązaniem, które powstało w ramach pracy nad opisywanym problemem był skaner AXFR oparty na programie
+\noindent Pierwszym rozwiązaniem, które powstało w ramach pracy nad opisywanym problemem był skaner AXFR oparty na programie
 dig \cite{isc}. Program skupia się wokół protokołu DNS i umożliwia wykonywanie zapytań różnych typów \cite{Liu:2006:DB:1197828}.
 Ponadto, jest prosty w obsłudze, daje duże możliwości jeśli chodzi o budowanie zapytań DNS oraz bardzo często dostępny jest
 domyślnie w wielu dystrybucjach systemów operacyjnych Linux.
@@ -130,7 +130,7 @@ na szerszą skalę a także występowały kłopoty z zapotrzebowaniem na zasoby 
 podejście zostało zastosowane w opisywanym wcześniej projekcie skanowania domen z listy \textit{Alexa 1 Milion} \cite{scans.io}.
 
 \subsection{Menedżer procesów zarządzany skryptami języka Python}
-Kolejną próbą rozwiązania problemu ogromnej liczby danych do przeskanowania była implementacja skanera w języku skryptowym Python.
+\noindent Kolejną próbą rozwiązania problemu ogromnej liczby danych do przeskanowania była implementacja skanera w języku skryptowym Python.
 Próba ta podyktowana była kilkoma istotnymi aspektami. Pierwszym z nich jest implementacja tak zwanych ,,programowych'' wątków w
 standardowej bibliotece tego języka. Umożliwiło to implementację mechanizmu, który pozwolił sprawdzić, czy maszyna dysponuje
 takimi zasobami, które pozwolą na uruchomienie kolejnego wątku skanującego. Dodatkowym atutem jest tu także możliwość wywoływania
@@ -160,7 +160,7 @@ pojedynczych serwerów, więc jego wykorzystanie wymagałoby implementacji bardz
 początku tego rozdziału.
 
 \subsection{Skaner C-AXFR}
-Ostatecznie zdecydowano się na napisanie własnego narzędzia umożliwiającego transfer strefy DNS. Wybór padł na język
+\noindent Ostatecznie zdecydowano się na napisanie własnego narzędzia umożliwiającego transfer strefy DNS. Wybór padł na język
 programowania C \cite{Kernighan:1988:CPL:576122} w wersji standardu C11 \cite{ISO9899}. Oczywiście aplikacje pisane w języku
 C nie należą do rozwiązań prostych, jednak są bardzo dobrym kompromisem pomiędzy wysokim poziomem abstrakcji modeli programistycznych
 i łatwością dostępu do interfejsów sieciowych. Ponadto język C charakteryzuje się dość dobrą szybkością działania, ze względu na
@@ -266,7 +266,7 @@ Ostatecznie przyjęto rozwiązanie, które ignoruje fakt nawiązywania połącze
 
 \section{Dane wejściowe}
 \label{inputData}
-Dane wejściowe programu zostały pozyskane od grupy naukowców z TU Delft \cite{delft} w formie par (domena, adres IP serwera
+\noindent Dane wejściowe programu zostały pozyskane od grupy naukowców z TU Delft \cite{delft} w formie par (domena, adres IP serwera
 autorytarnego). Lista w takim formacie przechowywana była w pliku tekstowym. Zgromadzono w nim, zgodnie z tym co zostało przyjęte
 w obliczeniach \ref{obliczenia}, ponad 5 miliardów wpisów uporządkowanych w kolejności alfabetycznej, a ich łączny rozmiar przekraczał
 130 gigabajtów. Powoduje to oczywiście szereg problemów związanych z procesowaniem takich plików. \cite{(??skaddane)}
@@ -295,7 +295,7 @@ tak aby widoczny był postęp w skanowaniu. Przeprocesowanie 25 tysięcy linii o
 że dla każdej domeny upłynie limit czasu żądania.
 
 \section{Środowisko uruchomieniowe}
-Każda z aplikacji była rozwijana w podobny sposób. Cały proces można podzielić na 3 główne etapy:
+\noindent Każda z aplikacji była rozwijana w podobny sposób. Cały proces można podzielić na 3 główne etapy:
 \begin{enumerate}
 	\item rozwijanie oprogramowania -- dodawanie nowych funkcji do skanera oraz proste testy funkcjonalne,
 	\item uruchomienie w warunkach testowych -- sprawdzanie poprawności działania systemu w dłuższej perspektywie (do kilkunastu godzin),
@@ -319,7 +319,7 @@ W momencie, gdy można było domniemywać, że system działa stabilnie przez d�
 na uzyskaniu jak największej wydajności skanera.
 
 \section{Metodyka badań}
-Skaner został zaprojektowany w takie sposób, aby potrafił przeskanować kilka domen podczas jednego uruchomienia. Założenie wynika z
+\noindent Skaner został zaprojektowany w takie sposób, aby potrafił przeskanować kilka domen podczas jednego uruchomienia. Założenie wynika z
 ograniczeń wydajnościowych, które zauważono przy próbie implementacji skanera, którą opisano w punkcie \ref{dig_sh}.
 
 Skanera nie zaprojektowano tak, aby wspierał wielowątkowość. Może się okazać, że implementacja uruchamiania wielu wątków już w programie
@@ -346,7 +346,7 @@ rozwiązania. Pogrupowanie danych wyjściowych w katalogach umożliwiło też pr
 analiza wielu folderów jednocześnie, co pozytywnie przełożyło się na czas wykonywania się poszczególnych operacji.
 
 \section{System powiadomień}
-W ramach badań przeprowadzonych podczas realizacji niniejszej pracy magisterskiej został zaimplementowany i uruchomiony system
+\noindent W ramach badań przeprowadzonych podczas realizacji niniejszej pracy magisterskiej został zaimplementowany i uruchomiony system
 powiadamiania administratorów domen. System bazuje na informacjach pobranych podczas skanowania podatności serwerów na zapytania
 typu AXFR. W rekordzie SOA przesyłanym na początku i na końcu wiadomości przesyłany jest adres osoby odpowiedzialnej za daną domenę.
 Jego miejscem jest pozycja numer 2. w rekordzie SOA z tą różnicą, że pierwszy znak ,,.'' napotkany w adresie jest zamieniany na

@@ -2,7 +2,7 @@
 \begin{titlepage}
 \begin{center}
 	\includegraphics[scale=0.33]{image/weiti}
-	\setmainfont[Ligatures=TeX]{Helvetica}
+	%\setmainfont[Ligatures=TeX]{Helvetica}
 	\vspace{0.7cm}
 	\begingroup
 	\fontsize{12pt}{12pt}\selectfont
@@ -39,15 +39,14 @@
 		\vspace{0.9cm}
 		opiekun\\
 		dr hab. inż Wojciech Mazurczyk\\
-		\vspace{6.8cm}
+		\vspace{6.3cm}
 		Warszawa 2017
 	\end{center}
 	\endgroup
 \end{center}
 \end{titlepage}
 
-\afterpage{\null\newpage}
-\pagenumbering{gobble}
+\newpage
 
 \clearpage
 \pagenumbering{gobble}
@@ -60,8 +59,13 @@
 	\fontsize{14pt}{12pt}\selectfont
 	\textbf{Streszczenie}
 \end{center}
-Tekst streszczenia.\\
-\noindent\textbf{Słowa kluczowe:} \textit{\LaTeX \{keywords\}}\\
+Protokół Doman Name system jest jednym z kluczowych elementów sieci Internet, bez którego niemożliwe byłoby jej działanie.
+Z racji na swoją istotną rolę, powinien być on jak najlepiej zabezpieczony przed różnego rodzaju atakami. Bardzo istotne jest zapewnienie,
+aby informacje przesyłane protokołem DNS były spójne oraz autentyczne jednak należy pamiętać, że powinny być one możliwie najbardziej
+prywatne. Nieumyślne ujawnianie pozornie nieszkodliwych informacji, może prowadzić do poważnych problemów związanych z bezpieczeństwem
+sieciowym. Niniejsza praca przedstawia i omawia przypadki, w których lekceważenie zabezpieczania protokołu DNS może powodować poważne
+incydenty bezpieczeństwa sieciowego.\\
+\noindent\textbf{Słowa kluczowe:} \textit{DNS, rekonesans, cyberbezpieczeństwo, AXFR}\\
 \vspace{1.5cm}
 
 \begin{center}
@@ -70,8 +74,12 @@ Tekst streszczenia.\\
 	\fontsize{14pt}{12pt}\selectfont
 	\textbf{Abstract}
 \end{center}
-Abstract content.\\
-\noindent\textbf{Keywords:} \textit{\LaTeX \{keywords\}}\\
+Doman Name System protocol is one of the keyelements in the Internet, which make this network working. Due to that, it have to be
+properly secured against various attacks. Besides, information sent through DNS shoud be coherent and authentic it has to be
+known that it should be as private as possible. Serious network security problem could be caused by unintentional disclosure of
+potentially harmless information. Therefore, consequences of disregard for DNS data protection was discussed and presented in the thesis.
+\\
+\noindent\textbf{Keywords:} \textit{DNS, reconnaissance, cybersecurity, AXFR}\\
 \vspace{1.5cm}
 
 \newpage
@@ -79,4 +87,6 @@ Abstract content.\\
 	\textbf{Życiorys}
 \end{center}
 \vspace{1cm}
-\lipsum[4-5]
+Nazywam się Marcin Skwarek, urodziłem się 10.10.1993 roku w Siedlcach. W 2012 roku ukończyłem I Liceum Ogólnokształcące w Siedlcach
+w klasie o profilu matematyczno-fizyczno-informatycznym, w 2013 rozpocząłem studia na Wydziale Elektroniki i Technik Informacyjnych
+Politechniki Warszawskiej na kierunku telekomunikacja, które ukończyłem w roku 2016 uzyskując tytuł inżyniera.

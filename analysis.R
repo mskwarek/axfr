@@ -84,6 +84,27 @@ plot(ecdf(rep(nsip$V1, nsip$V2)), xlab="ID serwera przestrzeni nazw", ylab="CDF"
 grid()
 nsip$V1=as.numeric(as.character(nsip$V1))
 y=nsip$V1/tail(nsip$V1,n =1)
-lines(nsip$V1, y, type = "l")
+lines(nsip$V1, y, lty = 2, pch = 22)
+plot(1:10, 1:10)
+lines(1:10, 1:10, type = "x")
 
+# Simple Pie Chart
+cnts <- c(626288, 6179845, 2801593, 2409)
+lbls <- c("TCP RST", "1 wpis", "Wiele wpisów", "HTML")
+df <- data.frame(variable = lbls, value=cnts)
+
+
+
+browsers<-read.table("tmp",header=FALSE, sep=',')
+browsers<-browsers[order(browsers[,2]),]
+pielabels <- sprintf("%s = %3.1f%s", browsers[,1],
+                     100*browsers[,2]/sum(browsers[,2]), "%")
+pie(browsers[,2],
+    labels=pielabels,
+    clockwise=TRUE,
+    radius=1,
+    col=brewer.pal(7,"Set1"),
+    border="white",
+    cex=0.8,
+    main="Percentage Share of Internet Browser usage")
 
