@@ -1,92 +1,97 @@
 
-\begin{titlepage}
+% \begin{titlepage}
+% \begin{center}
+% 	\includegraphics[scale=0.33]{image/weiti}
+% 	%\setmainfont[Ligatures=TeX]{Helvetica}
+% 	\vspace{0.7cm}
+% 	\begingroup
+% 	\fontsize{12pt}{12pt}\selectfont
+% 		\begin{center}
+% 			Instytut Telekomunikacji
+% 		\end{center}
+% 	\endgroup
+% 	\vspace{0.7cm}
+% 	\includegraphics[scale=0.8]{image/tytul}\\
+% 	\vspace{0.3cm}
+% 	na kierunku telekomunikacja\\
+% 	na specjalności telekomunikacja.\\
+% 	\vspace{1.2cm}
+% 	\begingroup
+% 	\fontsize{14pt}{12pt}\selectfont
+% 	\begin{center}
+% 	 	\{Tytuł\}\\
+% 	\end{center}
+% 	\endgroup
+% 	\vspace{2.3cm}
+%
+%
+% 	\begingroup
+% 	\fontsize{21pt}{12pt}\selectfont
+% 	\begin{center}
+% 		Marcin Skwarek
+% 	\end{center}
+% 	\endgroup
+%
+% 		\begingroup
+% 	\fontsize{12pt}{12pt}\selectfont
+% 	\begin{center}
+% 		numer albumu 257319\\
+% 		\vspace{0.9cm}
+% 		opiekun\\
+% 		dr hab. inż Wojciech Mazurczyk\\
+% 		\vspace{6.3cm}
+% 		Warszawa 2017
+% 	\end{center}
+% 	\endgroup
+% \end{center}
+% \end{titlepage}
+
+\afterpage{\blankpage}
 \begin{center}
-	\includegraphics[scale=0.33]{image/weiti}
-	%\setmainfont[Ligatures=TeX]{Helvetica}
-	\vspace{0.7cm}
-	\begingroup
-	\fontsize{12pt}{12pt}\selectfont
-		\begin{center}
-			Instytut Telekomunikacji
-		\end{center}
-	\endgroup
-	\vspace{0.7cm}
-	\includegraphics[scale=0.8]{image/tytul}\\
-	\vspace{0.3cm}
-	na kierunku telekomunikacja\\
-	na specjalności telekomunikacja.\\
-	\vspace{1.2cm}
-	\begingroup
-	\fontsize{14pt}{12pt}\selectfont
-	\begin{center}
-	 	\{Tytuł\}\\
-	\end{center}
-	\endgroup
-	\vspace{2.3cm}
-
-
-	\begingroup
-	\fontsize{21pt}{12pt}\selectfont
-	\begin{center}
-		Marcin Skwarek
-	\end{center}
-	\endgroup
-
-		\begingroup
-	\fontsize{12pt}{12pt}\selectfont
-	\begin{center}
-		numer albumu 257319\\
-		\vspace{0.9cm}
-		opiekun\\
-		dr hab. inż Wojciech Mazurczyk\\
-		\vspace{6.3cm}
-		Warszawa 2017
-	\end{center}
-	\endgroup
-\end{center}
-\end{titlepage}
-
-\newpage
-
-\clearpage
-\pagenumbering{gobble}
-\newpage
-\clearpage
-\pagenumbering{gobble}
-\begin{center}
-	\fontsize{18pt}{12pt}\selectfont\textbf{\{Tytuł\}}\\
+	\fontsize{18pt}{12pt}\selectfont\textbf{Rekonesans DNS na podstawie analizy zawartości zapytań AXFR}\\
 	\vspace{1cm}
-	\fontsize{14pt}{12pt}\selectfont
+	\fontsize{15pt}{12pt}\selectfont
 	\textbf{Streszczenie}
 \end{center}
-Protokół Doman Name system jest jednym z kluczowych elementów sieci Internet, bez którego niemożliwe byłoby jej działanie.
-Z racji na swoją istotną rolę, powinien być on jak najlepiej zabezpieczony przed różnego rodzaju atakami. Bardzo istotne jest zapewnienie,
-aby informacje przesyłane protokołem DNS były spójne oraz autentyczne jednak należy pamiętać, że powinny być one możliwie najbardziej
-prywatne. Nieumyślne ujawnianie pozornie nieszkodliwych informacji, może prowadzić do poważnych problemów związanych z bezpieczeństwem
-sieciowym. Niniejsza praca przedstawia i omawia przypadki, w których lekceważenie zabezpieczania protokołu DNS może powodować poważne
-incydenty bezpieczeństwa sieciowego.\\
-\noindent\textbf{Słowa kluczowe:} \textit{DNS, rekonesans, cyberbezpieczeństwo, AXFR}\\
-\vspace{1.5cm}
+Celem niniejszej pracy jest omówienie konsekwencji lekceważenia zabezpieczania protokołu DNS, które może powodować poważne incydenty
+bezpieczeństwa sieciowego.
+Protokół Domain Name System jest jednym z kluczowych elementów sieci Internet, bez którego niemożliwe byłoby jej działanie.
+Z racji na swoją istotną rolę, powinien być on jak najlepiej zabezpieczony przed różnego rodzaju atakami oraz być niezawodnym.
+Niezawodność została zapewniona między innymi poprzez wprowadzenie redundancji serwerów przestrzeni nazw. Bardzo ważne jest również zapewnienie, że informacje przesyłane
+protokołem DNS są spójne oraz autentyczne. Należy także pamiętać o zachowaniu ich prywatności. Informacje na temat infrastruktury
+oraz usług przechowywane są w strefach DNS. System DNS został usprawniony dzięki wprowadzeniu mechanizmu AXFR, który umożliwia
+transfer strefy z jednego serwera na drugi. Wynikiem transferu tego typu, jest otrzymanie wpisów przechowywanych w danej strefie.
+Nieumiejętna konfiguracja serwera DNS może prowadzić do tego, że każda maszyna będzie mogła skutecznie pobrać strefę DNS danego
+serwera.
+Nieumyślne ujawnianie pozornie nieszkodliwych informacji, może prowadzić do poważnych problemów związanych z bezpieczeństwem sieciowym.
+W pracy przeanalizowane zostały różnice oraz podobieństwa serwerów, które umożliwiają przeprowadzenie takiego transferu. Ponadto,
+przedstawione zostały korzyści, które może czerpać cyberprzestępca w wyniku pozyskania informacji o strefach DNS.
+Cel został osiągnięty poprzez realizację globalnego skanowania domen pod kątem transferu AXFR oraz późniejszej syntezie wyników.\\
+\vspace{1cm}
 
+\noindent\textbf{Słowa kluczowe:} \textit{DNS, rekonesans, cyberbezpieczeństwo, AXFR}\\
+\newpage
+\afterpage{\blankpage}
 \begin{center}
-	\fontsize{18pt}{12pt}\selectfont\textbf{\{Title\}}\\
+	\fontsize{18pt}{12pt}\selectfont\textbf{DNS reconnaisance based on content of AXFR queries analysis}\\
 	\vspace{1cm}
 	\fontsize{14pt}{12pt}\selectfont
 	\textbf{Abstract}
 \end{center}
-Domain Name System protocol is one of the key elements in the Internet, which make this network working. Due to that, it have to be
-properly secured against various attacks. Besides, information sent through DNS should be coherent and authentic it has to be
-known that it should be as private as possible. Serious network security problem could be caused by unintentional disclosure of
-potentially harmless information. Therefore, consequences of disregard for DNS data protection was discussed and presented in the thesis.
-\\
+The purpose of the thesis is to present consequences of disregard for DNS data protection. Domain Name System protocol is one of
+crucial elements on the Internet that run network. Due to its significant role, it has to be properly secured against various
+attacks and reliable. The latter is achieved through implementation of redundant namespace server. Furthermore, information sent
+through DNS should be coherent and authentic, keeping in mind its privacy. Infrastructure and services information is stored in DNS zones.
+DNS was streamlined by introducing AXFR protocol that defines zone transfer from one server to another. The result of that type
+of transfer is obtaining entry in certain zone. Improper DNS server configuration can lead to the situation that any computer
+will be able to download zone files successfully.
+Unintentional disclosure of potentially harmless information may lead to severe network security problems.
+Thesis involves analysis of differences and similarities between servers, which enables carrying out transfer operations.
+There are also presented potential benefits for cybercriminal gaining information about DNS zones.
+The aim may be achieved by global domain scanning, paying special attention to AXFR transfer and further synthesis of results.\\
+\vspace{1cm}
+
 \noindent\textbf{Keywords:} \textit{DNS, reconnaissance, cybersecurity, AXFR}\\
 \vspace{1.5cm}
 
 \newpage
-\begin{center}
-	\textbf{Życiorys}
-\end{center}
-\vspace{1cm}
-Nazywam się Marcin Skwarek, urodziłem się 10.10.1993 roku w Siedlcach. W 2012 roku ukończyłem I Liceum Ogólnokształcące w Siedlcach
-w klasie o profilu matematyczno-fizyczno-informatycznym, w 2013 rozpocząłem studia na Wydziale Elektroniki i Technik Informacyjnych
-Politechniki Warszawskiej na kierunku telekomunikacja, które ukończyłem w roku 2016 uzyskując tytuł inżyniera.

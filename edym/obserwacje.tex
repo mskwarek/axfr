@@ -14,7 +14,7 @@ rozmiar pliku przechowującego informacje pobrane z serwera autorytatywnego. Jes
 jest plik z odpowiedzią, tym spodziewamy się, że zawiera on więcej informacji na temat odpytywanej domeny. Wykres \ref{fig:types}
 przestawia względną liczebność każdego z typów odebranych wiadomości.
 
-\begin{figure}[h]
+\begin{figure}[h!]
 	\centering
 	\includegraphics[width=1.0\textwidth]{image/types}
 	\caption{Wykres liczebności poszczególnych zbiorów typów odpowiedzi.}
@@ -110,9 +110,9 @@ opisany proces, zaimplementowano odpowiednie narzędzie w języku skryptowym bas
 skanów, następnie tworzy odpowiedni plik tekstowy, który później wykorzystywany jest jako plik wejściowy dla biblioteki \textit{pyasn}.
 Na jego podstawie kopiowane są bazy danych dla konkretnych dni. Pobrane bazy danych są następnie konwertowane do takiego formatu,
 którego wymaga narzędzie. W kolejnym kroku dokonuje się właściwego odwzorowania adresów IP na odpowiadające im ASy.
-\begin{figure}[h]
+\begin{figure}[h!]
 	\centering
-	\includegraphics[width=1.0\textwidth]{image/netcat}
+	\includegraphics[width=0.8\textwidth]{image/netcat}
 	\caption{Zasada działania narzędzia mapującego adresy IP na numery AS.}
 	\label{fig:netcat}
 \end{figure}
@@ -135,23 +135,27 @@ Okazuje się natomiast,
 że w praktyce drugim najczęściej spotykanym krajem w zestawieniu adresów IP w skanowaniu AXFR są właśnie Niemcy, a transfer strefy
 jest w realizacji dużo łatwiejszym atakiem niż wspomniane wcześniej \textit{zone walking} \ref{zone_enumeration}.
 
-Dodatkowo, zastanawiające jest, że oprócz bardzo widocznej przewagi systemów autonomicznych ze Stanów Zjednoczonych, widoczna jest
-również duża różnica pomiędzy 9 pierwszymi krajami oraz resztą populacji (etykieta \textit{tr} (Turcja) na
-wykresie \ref{fig:ipv4_countries}).
-
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=1.0\textwidth]{image/ipv4_as_countries_no_title}
+	\includegraphics[width=0.85\textwidth]{image/ipv4_as_countries_no_title}
 	\caption{Pochodzenie geograficzne adresów IPv4 z podziałem na państwa. Adresy określane na podstawie numerów AS.}
 	\label{fig:ipv4_countries}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[h!]
 	\centering
-	\includegraphics[width=1.0\textwidth]{image/asn_all_no_title}
+	\includegraphics[width=0.80\textwidth]{image/asn_all_no_title}
 	\caption{Zestawienie systemów autonomicznych, z których domeny najczęściej odpowiadają na zapytania AXFR.}
 	\label{fig:asn_all}
 \end{figure}
+
+Dodatkowo, zastanawiające jest, że oprócz bardzo widocznej przewagi systemów autonomicznych ze Stanów Zjednoczonych, widoczna jest
+również duża różnica pomiędzy 9 pierwszymi krajami oraz resztą populacji (etykieta \textit{tr} (Turcja) na
+wykresie \ref{fig:ipv4_countries}).
+
+Analizując wykres \ref{fig:asn_all} można dojść do wniosku, że istnieje kilka systemów autonomicznych, które zdecydowanie przeważają
+w liczbie adresów IPv4, które udało się uzyskać dzięki transferowi strefy AXFR. Możliwe, że administratorzy tych domen wiedzą o tym
+i specjalnie udostępniają taką możliwość.
 
 \subsection{Zbiór adresów IPv6}
 \noindent Oprócz opisanego w poprzednim podpunkcie \ref{sec:ipv4_results} przeanalizowano zebrane dane pod względem zawartości adresów IP
@@ -160,9 +164,9 @@ z trzech państw -- Niemiec, Turcji oraz Holandii. Z pewnością wpływ na zapre
 wdrożenia IPv6 w poszczególnych państwach. Zastanawiająca jest stosunkowo niska pozycja systemów autonomicznych ze Stanów Zjednoczonych,
 jednak można przypuszczać, że jest to właśnie konsekwencja stanu wdrożenia protokołu IPv6. Kolejne z państw przestawione na
 wykresie \ref{fig:ipv6_as_countries} stanowią już bardzo małą część wszystkich systemów autonomicznych -- nawet poniżej 1\textperthousand.
-\begin{figure}[h]
+\begin{figure}[h!]
 	\centering
-	\includegraphics[width=1.0\textwidth]{image/ipv6_countries_no_title}
+	\includegraphics[width=0.9\textwidth]{image/ipv6_countries_no_title}
 	\caption{Pochodzenie geograficzne adresów IPv6 z podziałem na państwa. Adresy określane na podstawie numerów AS.}
 	\label{fig:ipv6_as_countries}
 \end{figure}
@@ -187,12 +191,22 @@ W głównej mierze należy zastanowić się, czy rozkład ten jest w ogóle isto
 całościowego rozkładu popularności TLD w internecie, bez uwzględnienia podatności, czy innych czynników. W tym celu przeanalizowano
 i przedstawiono wykres popularności domen najwyższego poziomu w sieci Internet \cite{TLD_popularity}. Jest on przedstawiony na
 rysunku \ref{fig:TLD_all}.
+
 \begin{center}
-	\begin{figure}
+	\begin{figure}[h]
 		\centering
 		\includegraphics[scale=0.75]{image/TLD_all}
 		\caption{Popularność TLD w internecie (dostęp na dzień 15. maja 2017), źródło:  \cite{TLD_popularity}.}
 		\label{fig:TLD_all}
+	\end{figure}
+\end{center}
+
+\begin{center}
+	\begin{figure}[h]
+		\centering
+		\includegraphics[width=1.0\textwidth]{image/resp_no_title}
+		\caption{Popularność TLD w odpowiedziach AXFR.}
+		\label{fig:resp}
 	\end{figure}
 \end{center}
 
@@ -202,13 +216,6 @@ do 20 najbardziej popularnych TLD. Różnice pomiędzy kolejnymi rekordami są n
 na ogólną reprezentację wyników. Wykres \ref{fig:TLD_all} zostanie następnie zestawiony z popularnością TLD tych domen, których serwery
 autorytatywne umożliwiają nieuprawniony transfer AXFR. Rozkład popularności TLD domen odpowiadających na zapytanie AXFR przedstawiono
 na rysunku \ref{fig:resp}.
-\begin{center}
-	\begin{figure}
-		\includegraphics[width=1.0\textwidth]{image/resp_no_title}
-		\caption{Popularność TLD w odpowiedziach AXFR.}
-		\label{fig:resp}
-	\end{figure}
-\end{center}
 
 Dokonując porównania wykresów \ref{fig:TLD_all} oraz \ref{fig:resp} możemy dostrzec kilka prawidłowości. Zarówno w jednym jak i
 drugim przypadku, wyraźnie dominującą domeną najwyższego poziomu jest domena .com. Dodatkowo, nie można mówić tu o anomalii,
@@ -227,7 +234,7 @@ danych. Zostały odpowiednio wykreślone:
 	w puli TLD domen odpytywanych -- wykres \ref{resp_to_req}.
 \end{enumerate}
 
-\begin{figure}[h]
+\begin{figure}[h!]
 	\centering
 	\includegraphics[width=1.0\textwidth]{image/req_to_resp_no_title}
 	\caption{Zestawienie odpowiedzi ze względu na rozkład danych wejściowych. Rozkład odpowiedzi znormalizowano do całkowitej liczby
@@ -235,7 +242,7 @@ danych. Zostały odpowiednio wykreślone:
 	\label{req_to_resp}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[h!]
 	\centering
 	\includegraphics[width=1.0\textwidth]{image/resp_to_req_no_title}
 	\caption{Zestawienie częstości występowania domen najwyższego poziomu dla domen, dla których możliwy jest AXFR z ich populacją
@@ -294,7 +301,6 @@ Sytuacja taka może mieć miejsce, gdy wszystkie domeny z mało popularnego TLD 
 
 \begin{table}[h]
 	\centering
-	\caption{Opis zbiorów zapytań/odpowiedzi}
 	\label{cdf_table}
 	\begin{tabular}{|p{0.2\textwidth}|p{0.3\textwidth}|p{0.4\textwidth}|}
 		\hline
@@ -311,6 +317,7 @@ Sytuacja taka może mieć miejsce, gdy wszystkie domeny z mało popularnego TLD 
 		187\\
 		\hline
 	\end{tabular}
+	\caption{Opis zbiorów zapytań/odpowiedzi}
 \end{table}
 
 \section{Liczba wpisów stref w odpowiedziach}
@@ -331,14 +338,6 @@ gdyż w dokładnie taki sam sposób zachowuje się serwer DNS w przypadku podani
 zaprojektowany został inkrementalny transfer strefy DNS zaprezentowany w RFC1995 \cite{RFC1995} i do tej pory nie zaprezentowano
 ewentualnych podatności, które mogłyby wykorzystywać ten protokół.
 
-Dla zbioru danych, który określa rozmiar pobranych stref wykreślony został histogram, z którego można odczytać, jak często spotykane
-są strefy DNS o określonych rozmiarach. W przypadku skanów polegających na transferze stref widoczna jest bardzo duża częstość
-występowania domen o wpisach do kilkudziesięciu rekordów. Pierwszy z histogramów na których zaprezentowano opisane częstości
-(rysunek \ref{fig:hist_zone_size}) sugeruje, że dużo bardziej interesująca jest pierwsza część całego wykresu. Zaprezentowano ją,
-w powiększeniu, na kolejnym rysunku \ref{fig:hist_zone_size_zoom}. Dodatkowo, w górnej części rysunku \ref{fig:hist_zone_size}
-umieszczono histogram w powiększeniu, z bardzo ograniczoną skalą na osi rzędnych. Pozwala to, na zaobserwowanie prążków, które
-nie były widoczne na histogramie prezentującym cały zbiór.
-
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=1.0\textwidth]{image/hist_zone_size_no_title}
@@ -352,6 +351,14 @@ nie były widoczne na histogramie prezentującym cały zbiór.
 \caption{Rozkład liczby rekordów w odpowiedziach AXFR, widok powiększony.}
 \label{fig:hist_zone_size_zoom}
 \end{figure}
+
+Dla zbioru danych, który określa rozmiar pobranych stref wykreślony został histogram, z którego można odczytać, jak często spotykane
+są strefy DNS o określonych rozmiarach. W przypadku skanów polegających na transferze stref widoczna jest bardzo duża częstość
+występowania domen o wpisach do kilkudziesięciu rekordów. Pierwszy z histogramów na których zaprezentowano opisane częstości
+(rysunek \ref{fig:hist_zone_size}) sugeruje, że dużo bardziej interesująca jest pierwsza część całego wykresu. Zaprezentowano ją,
+w powiększeniu, na kolejnym rysunku \ref{fig:hist_zone_size_zoom}. Dodatkowo, w górnej części rysunku \ref{fig:hist_zone_size}
+umieszczono histogram w powiększeniu, z bardzo ograniczoną skalą na osi rzędnych. Pozwala to, na zaobserwowanie prążków, które
+nie były widoczne na histogramie prezentującym cały zbiór.
 
 Dodatkowo, można zauważyć, że histogram \ref{fig:hist_zone_size} posiada bardzo dużo pozycji na osi X. Jest to ponownie następstwo
 własnej implementacji oprogramowania umożliwiającego transfer stref AXFR. Zauważalny jest prążek na wartości około 8 tysięcy
@@ -444,7 +451,7 @@ zrzucie ekranu \ref{fig:unused_wireshark}.
 \begin{figure}[h!]
 \centering
 \includegraphics[width=1.0\textwidth]{image/unused_wireshark}
-	\caption{}
+	\caption{Przebieg komunikacji z serwerem wysyłającym pakiet TCP z flagą RST.}
 \label{fig:unused_wireshark}
 \end{figure}
 
@@ -453,7 +460,6 @@ wspólne cechy. Pierwszym kryterium porównania wspomnianych przypadków była a
 dane serwery przestrzeni nazwy. Wyniki zaprezentowano w tabeli \ref{tab:unused}.
 \begin{table}[h]
 	\centering
-	\caption{Tabela liczebności AS w opisywanym przypadku}
 	\label{tab:unused}
 	\begin{tabular}{|p{0.2\textwidth}|p{0.5\textwidth}|p{0.2\textwidth}|}
 		\hline
@@ -486,6 +492,7 @@ dane serwery przestrzeni nazwy. Wyniki zaprezentowano w tabeli \ref{tab:unused}.
 		12374 & LFNET-AS01, DE & 1 \\
 		\hline
 	\end{tabular}
+	\caption{Tabela liczebności AS w opisywanym przypadku}
 \end{table}
 
 Niewątpliwie interesującym zjawiskiem jest fakt, że znaczna większość tych specyficznych plików pochodzi z kilku ASów.
@@ -498,9 +505,9 @@ autonomicznych czy domen najwyższego poziomu dla tego zbioru. Domena, którą z
 Firmy oferujące takie usługi są często bardzo duże \cite{sedo}, rynek parkowania domen jest więc oligopolem, co potwierdzają otrzymane
 wyniki.
 
-\begin{figure}[h]
+\begin{figure}[h!]
 \centering
-\includegraphics[width=1.0\textwidth]{image/unused_pie_no_title}
+\includegraphics[width=0.8\textwidth]{image/unused_pie_no_title}
 \caption{Lokalizacja serwerów nazw odpowiadających pakietem TCP z flagą RST.}
 \label{fig:unused_pie}
 \end{figure}
@@ -509,7 +516,7 @@ Na wykresie \ref{fig:unused_pie} pokazano procentowy rozkład krajów z których
 serwery z jedynie dwóch krajów (Japonii oraz Stanów Zjednoczonych) stanowią liczną grupę w tym zestawieniu. Pozostałe kraje, nawet
 zebrane we wspólną grupę stanowią zaledwie 0,5\textperthousand.
 
-\begin{figure}[h]
+\begin{figure}[h!]
 \centering
 \includegraphics[width=1.0\textwidth]{image/unused_tld}
 \caption{TLD domen, których serwery autorytatywne odpowiadają TCP RST.}
@@ -530,11 +537,18 @@ Pierwszym wykresem który zaprezentowano jest mapa adresów IP serwerów przestr
 więcej niż jeden rekord DNS. Należy dodać, że pliki ,,sztuczne'', takie, które powstały w wyniku niedoskonałości napisanego oprogramowania
 nie zostały uwzględnione podczas niniejszej analizy. Wyniki zaprezentowano na rysunku \ref{fig:many_lines_map}.
 
-\begin{figure}[h]
+\begin{figure}[h!]
 \centering
-\includegraphics[width=1.0\textwidth]{image/many_lines_map_no_title}
+\includegraphics[width=0.9\textwidth]{image/many_lines_map_no_title}
 \caption{Lokalizacja serwerów DNS, które odpowiedziały więcej niż jednym rekordem.}
 \label{fig:many_lines_map}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.9\textwidth]{image/cdf_ns_responded}
+\caption{Dystrybuanta rozkładu popularności serwerów przestrzeni nazw, które odpowiadają na zapytania AXFR.}
+\label{fig:cdf_ns}
 \end{figure}
 
 Zbiór adresów IP serwerów przestrzeni nazw który zaprezentowano na mapie \ref{fig:many_lines_map} liczył 109160 unikalnych adresów, podczas
@@ -543,13 +557,6 @@ gdy zbiór wszystkich plików stref danego typu dla analizowanego zbioru wynosi�
 zapytania AXFR. Przedstawiono ją na rysunku \ref{fig:cdf_ns}. Widoczna jest na nim ciekawa tendencja, że odpowiedzi o połowie
 wszystkich domen, dla których pobrano informacje, pochodzą od relatywnie niewielkiej liczby serwerów przestrzeni nazw. Dokładne
 kwantyle przedstawionego rozkładu zawarto w tabeli \ref{tab_cdf_ns}.
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=1.0\textwidth]{image/cdf_ns_responded}
-\caption{Dystrybuanta rozkładu popularności serwerów przestrzeni nazw, które odpowiadają na zapytania AXFR.}
-\label{fig:cdf_ns}
-\end{figure}
 
 Z danych zawartych w tabeli \ref{tab_cdf_ns} wynika, że 75\% (trzeci kwantyl) wszystkich domen, które umożliwiają transfer strefy
 obsługiwanych jest przez jedynie 9.69\% autorytatywnych serwerów przestrzeni nazw. Trend ten jest również zauważalny na wykresie
@@ -643,7 +650,7 @@ zaprezentowane poniżej:
 		firmy Google.
 \end{itemize}
 
-Specyficzny rekord MX, który odnosi się do usług firmy Google jest najczęściej postaci \textit{alt\{id\}.aspmx.l.google.com} lub
+Specyficzny rekord MX, który odnosi się do usług firmy Google można rozpoznać po jego adresie. Jest najczęściej postaci \textit{alt\{id\}.aspmx.l.google.com} lub
 \textit{aspmx\{id\}.googlemail.com}. Obecność takiego wpisu w strefie DNS sugeruje, że ogranizacja, która wykorzystuje daną domenę
 korzysta z usług określanych nazwą \textit{G Suite}. Nazwa odnosi się głównie do usług poczty elektronicznej dla firm udostępnianych
 przez Google jak również do rozwiązań Cloud -- edycji czy przechowywania dokumentów w chmurze.

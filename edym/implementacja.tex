@@ -50,7 +50,8 @@ ma niską wartość jeśli chodzi o skanowanie większego zbioru domen.
 
 Krótkie podsumowanie każdego z narzędzi zawarto w tabeli \ref{tab:narzedzia}. Opisano w niej krótko ich zalety oraz wady, skupiając
 się głównie na kwestiach wykorzystania tych rozwiązań w przeprowadzonych badaniach.
-\begin{longtable}{|p{1.8cm}|p{5cm}|p{5cm}|}
+\newpage
+\begin{longtable}{|p{2.5cm}|p{6.5cm}|p{6.5cm}|}
 	\hline
 	\textbf{Narzędzie} &
 	\textbf{Zalety} &
@@ -170,7 +171,7 @@ pokazały poprzednie próby implementacji.
 Rolę danych wejściowych programu mogą pełnić odpowiednio:
 \begin{enumerate}
 	\item plik tekstowy w formacie \textit{adres\_domeny}|\textit{IP\_serwera\_autorytatywnego},
-	\item para parametrów wejściowych podanych w odpowiedniej kolejności - \textit{adres\_domeny IP\_serwera\_autorytatywnego}.
+	\item para parametrów wejściowych podanych w odpowiedniej kolejności - \textit{adres\_domeny} oraz odpowiadający \textit{IP\_serwera\_autorytatywnego}.
 \end{enumerate}
 Zdecydowano się na takie rozróżnienie z prostego powodu. Najistotniejszą kwestią prezentowanego rozwiązania było
 zachowanie podobieństwa do programu dig, który jest wykorzystywany przez wiele osób. Dodatkowo, dużo łatwiej można testować
@@ -188,16 +189,16 @@ mechanizm pozwalający na wykorzystywanie własnych limitów czasu żądania prz
 gniazda na nieblokujący tryb pracy. Następnie wykorzystano funkcję \textit{select()}, która zwraca informację o tym, czy możliwe jest
 rozpoczęcie pisania/czytania danych z instancji gniazda TCP. Dokładny algorytm działania został przedstawiony na rysunku \ref{fig:socketAlg}.
 
-\begin{figure}[h]
+\begin{figure}[h!]
 	\centering
-	\includegraphics[width=1.0\textwidth]{image/socketAlg}
+	\includegraphics[width=0.9\textwidth]{image/socketAlg}
 	\caption{Algorytm dynamicznego ustawiania limitu czasu żądania dla gniazda TCP w blokującym trybie pracy.}
 	\label{fig:socketAlg}
 \end{figure}
 
 Program umożliwia parsowanie najbardziej popularnych i najczęściej używanych rekordów RR. Zostały one spisane w tabeli \ref{records}
 wraz z identyfikatorami, które reprezentują je w protokole DNS.
-
+\newpage
 \begin{longtable}{|c|c|c|}
 	\hline
 	\textbf{Lp.} &
@@ -228,9 +229,9 @@ wraz z identyfikatorami, które reprezentują je w protokole DNS.
 Algorytm postępowania w przypadku odebrania pakietu danych przedstawiony jest na rysunku \ref{fig:receiving}. Dane odbierane z interfejsu
 sieciowego są zapisane w systemie szesnastkowym, zgodnie z zaleceniami znanymi dokumentu RFC 1035 \cite{RFC1035}.
 
-\begin{figure}[h]
+\begin{figure}[h!]
 	\centering
-	\includegraphics[width=1.0\textwidth]{image/receiving}
+	\includegraphics[width=0.8\textwidth]{image/receiving}
 	\caption{Algorytm postępowania w przypadku odebrania APDU protokołu DNS.}
 	\label{fig:receiving}
 \end{figure}
@@ -266,10 +267,23 @@ Ostatecznie przyjęto rozwiązanie, które ignoruje fakt nawiązywania połącze
 
 \section{Dane wejściowe}
 \label{inputData}
-\noindent Dane wejściowe programu zostały pozyskane od grupy naukowców z TU Delft \cite{delft} w formie par (domena, adres IP serwera
-autorytarnego). Lista w takim formacie przechowywana była w pliku tekstowym. Zgromadzono w nim, zgodnie z tym co zostało przyjęte
+\noindent Dane wejściowe programu zostały pozyskane dzięki współpracy z TU Delft \cite{delft} w formie par (domena, adres IP serwera
+autorytarnego). Dane, które składały się na plik wejściowy zostały pobrane z kilku źródeł:
+\begin{itemize}
+	\item DNS-DB \cite{DNSDB},
+	\item zapytań ANY dostępnych przez serwis scans.io \cite{scansIOany},
+	\item plików strefy z jednego dnia dla TLD: \textit{org}, \textit{info}, \textit{se}, \textit{net}, \textit{US}, \textit{org}, \textit{com},
+	\textit{name}, wszystkich domen \textit{gTLD},
+	\item listy Alexa 1M \cite{alexa} z grudnia 2016.
+\end{itemize}
+Następnym krokiem przygotowującym dane wejściowe było wygenerowanie par \textit{domena} \textit{adres\_NS\_IP}. W kolejnym kroku
+odfiltrowano adresy arpa, adresy IP sieci prywatnych. Odfiltrowane zostały również adresy oraz domeny dostawców, którzy zgłosili się
+z prośbą do zespołu z TU Delft, aby ich sieci nie były skanowane podczas badań \cite{maciek}.
+Gromadzenie danych rozpoczęło się w styczniu 2015 roku, a zakończyło w grudniu 2016 roku.
+
+Lista w takim formacie przechowywana była w pliku tekstowym. Zgromadzono w nim, zgodnie z tym co zostało przyjęte
 w obliczeniach \ref{obliczenia}, ponad 5 miliardów wpisów uporządkowanych w kolejności alfabetycznej, a ich łączny rozmiar przekraczał
-130 gigabajtów. Powoduje to oczywiście szereg problemów związanych z procesowaniem takich plików. \cite{(??skaddane)}
+130 gigabajtów. Powoduje to oczywiście szereg problemów związanych z procesowaniem takich plików.
 
 Jedną z niedogodności, które wiążą się z rozmiarem danych wejściowych był problem z wyborem losowej próby do kolejnych procesów
 skanera. Pożądane jest, aby plik wejściowy do każdego z procesów skanujących nie był w żaden sposób uporządkowany, a najlepiej
