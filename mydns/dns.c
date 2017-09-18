@@ -142,7 +142,7 @@ void parse_default(unsigned char* data, unsigned short data_len, FILE* f);
 /*
  * Perform a DNS query by sending a packet
  * */
-dns_result ngethostbyname(const char *que , const char *server, const char *dst_log_path, int query_type, int to)
+dns_result ngethostbyname(const char *que , const char *server, const char *dst_log_path, int query_type, int to, dns_transport_type transport_type)
 {
     int s = -1;
     unsigned char name[256] = {0};
@@ -153,110 +153,120 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
     DNS_H *dns = NULL;
 
     printf("%s %s\n", que, server);
-    s = socket(AF_INET , SOCK_STREAM , IPPROTO_TCP);
-    if(s<0)
+
+    if(TRANSPORT_TYPE_UDP == transport_type)
     {
-        printf("Conn refused");
-        return DNS_RESULT_ERR;
+        s = socket(AF_INET , SOCK_DGRAM , IPPROTO_UDP); //UDP packet for DNS queries
+        dest.sin_family = AF_INET;
+        dest.sin_port = htons(53);
+        dest.sin_addr.s_addr = inet_addr(server);
     }
-    struct timeval timeout;
-    timeout.tv_sec = to;
-    timeout.tv_usec = 0;
-
-    if (setsockopt (s, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout,
-            sizeof(timeout)) < 0) {
-        printf("setsockopt failed\n");
-    }
-
-    // printf("Nameserver IP: %s\n", server);
-    dest.sin_addr.s_addr = inet_addr(server);
-    dest.sin_family = AF_INET;
-    dest.sin_port = htons(53);
-
-    long arg = 0;
-    int res = 0;
-    fd_set myset = {0};
-    int valopt = 0;
-
-    socklen_t lon = {0};
-
-    if( (arg = fcntl(s, F_GETFL, NULL)) < 0) {
-        fprintf(stderr, "Error fcntl(..., F_GETFL) (%s)\n", strerror(errno));
-        return DNS_RESULT_ERR;
-        // exit(0);
-    }
-    arg |= O_NONBLOCK;
-    if( fcntl(s, F_SETFL, arg) < 0) {
-        fprintf(stderr, "Error fcntl(..., F_SETFL) (%s)\n", strerror(errno));
-        return DNS_RESULT_ERR;
-    }
-    // Trying to connect with timeout
-    res = connect(s, (struct sockaddr *)&dest, sizeof(dest));
-    if (res < 0) {
-        if (errno == EINPROGRESS) {
-            // fprintf(stderr, "EINPROGRESS in connect() - selecting\n");
-            do {
-                timeout.tv_sec = to;
-                timeout.tv_usec = 0;
-                FD_ZERO(&myset);
-                FD_SET(s, &myset);
-                res = select(s+1, NULL, &myset, NULL, &timeout);
-                if (res < 0 && errno != EINTR) {
-                    fprintf(stderr, "Error connecting %d - %s\n", errno, strerror(errno));
-                    close(s);
-                    return DNS_RESULT_ERR;
-                }
-                else if (res > 0) {
-                    // Socket selected for write
-                    lon = sizeof(int);
-                    if (getsockopt(s, SOL_SOCKET, SO_ERROR, (void*)(&valopt), &lon) < 0) {
-                        fprintf(stderr, "Error in getsockopt() %d - %s\n", errno, strerror(errno));
-                        close(s);
-                        return DNS_RESULT_ERR;
-                    }
-                    // Check the value returned...
-                    if (valopt) {
-                        fprintf(stderr, "Error in delayed connection() %d - %s\n", valopt, strerror(valopt)
-                        );
-                        close(s);
-                        return DNS_RESULT_ERR;
-                    }
-                    break;
-                }
-                else {
-                    fprintf(stderr, "Timeout in select() - Cancelling!\n");
-                    close(s);
-                    return DNS_RESULT_ERR;
-                }
-            } while (1);
+    else
+    {
+        s = socket(AF_INET , SOCK_STREAM , IPPROTO_TCP);
+        if(s<0)
+        {
+            printf("Conn refused");
+            return DNS_RESULT_ERR;
         }
-        else {
-            fprintf(stderr, "Error connecting %d - %s\n", errno, strerror(errno));
+        struct timeval timeout;
+        timeout.tv_sec = to;
+        timeout.tv_usec = 0;
+
+        if (setsockopt (s, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout,
+                sizeof(timeout)) < 0) {
+            printf("setsockopt failed\n");
+        }
+
+        // printf("Nameserver IP: %s\n", server);
+        dest.sin_addr.s_addr = inet_addr(server);
+        dest.sin_family = AF_INET;
+        dest.sin_port = htons(53);
+
+        long arg = 0;
+        int res = 0;
+        fd_set myset = {0};
+        int valopt = 0;
+
+        socklen_t lon = {0};
+
+        if( (arg = fcntl(s, F_GETFL, NULL)) < 0) {
+            fprintf(stderr, "Error fcntl(..., F_GETFL) (%s)\n", strerror(errno));
+            return DNS_RESULT_ERR;
+            // exit(0);
+        }
+        arg |= O_NONBLOCK;
+        if( fcntl(s, F_SETFL, arg) < 0) {
+            fprintf(stderr, "Error fcntl(..., F_SETFL) (%s)\n", strerror(errno));
+            return DNS_RESULT_ERR;
+        }
+        // Trying to connect with timeout
+        res = connect(s, (struct sockaddr *)&dest, sizeof(dest));
+        if (res < 0) {
+            if (errno == EINPROGRESS) {
+                // fprintf(stderr, "EINPROGRESS in connect() - selecting\n");
+                do {
+                    timeout.tv_sec = to;
+                    timeout.tv_usec = 0;
+                    FD_ZERO(&myset);
+                    FD_SET(s, &myset);
+                    res = select(s+1, NULL, &myset, NULL, &timeout);
+                    if (res < 0 && errno != EINTR) {
+                        fprintf(stderr, "Error connecting %d - %s\n", errno, strerror(errno));
+                        close(s);
+                        return DNS_RESULT_ERR;
+                    }
+                    else if (res > 0) {
+                        // Socket selected for write
+                        lon = sizeof(int);
+                        if (getsockopt(s, SOL_SOCKET, SO_ERROR, (void*)(&valopt), &lon) < 0) {
+                            fprintf(stderr, "Error in getsockopt() %d - %s\n", errno, strerror(errno));
+                            close(s);
+                            return DNS_RESULT_ERR;
+                        }
+                        // Check the value returned...
+                        if (valopt) {
+                            fprintf(stderr, "Error in delayed connection() %d - %s\n", valopt, strerror(valopt)
+                            );
+                            close(s);
+                            return DNS_RESULT_ERR;
+                        }
+                        break;
+                    }
+                    else {
+                        fprintf(stderr, "Timeout in select() - Cancelling!\n");
+                        close(s);
+                        return DNS_RESULT_ERR;
+                    }
+                } while (1);
+            }
+            else {
+                fprintf(stderr, "Error connecting %d - %s\n", errno, strerror(errno));
+                close(s);
+                return DNS_RESULT_ERR;
+            }
+        }
+        // Set to blocking mode again...
+        if( (arg = fcntl(s, F_GETFL, NULL)) < 0) {
+            fprintf(stderr, "Error fcntl(..., F_GETFL) (%s)\n", strerror(errno));
+            close(s);
+            return DNS_RESULT_ERR;
+        }
+        arg &= (~O_NONBLOCK);
+        if( fcntl(s, F_SETFL, arg) < 0) {
+            fprintf(stderr, "Error fcntl(..., F_SETFL) (%s)\n", strerror(errno));
+            close(s);
+            return DNS_RESULT_ERR;
+        }
+
+
+        if (connect(s,(struct sockaddr *) &dest, sizeof(dest)) < 0)
+        {
+            printf("ERROR connecting\n");
             close(s);
             return DNS_RESULT_ERR;
         }
     }
-    // Set to blocking mode again...
-    if( (arg = fcntl(s, F_GETFL, NULL)) < 0) {
-        fprintf(stderr, "Error fcntl(..., F_GETFL) (%s)\n", strerror(errno));
-        close(s);
-        return DNS_RESULT_ERR;
-    }
-    arg &= (~O_NONBLOCK);
-    if( fcntl(s, F_SETFL, arg) < 0) {
-        fprintf(stderr, "Error fcntl(..., F_SETFL) (%s)\n", strerror(errno));
-        close(s);
-        return DNS_RESULT_ERR;
-    }
-
-
-    if (connect(s,(struct sockaddr *) &dest, sizeof(dest)) < 0)
-    {
-        printf("ERROR connecting\n");
-        close(s);
-        return DNS_RESULT_ERR;
-    }
-
     unsigned char *qname = NULL;
     struct QUESTION *qinfo = NULL;
     unsigned char host[128] = {0};

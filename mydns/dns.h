@@ -9,7 +9,14 @@ typedef enum
 	DNS_RESULT_OK
 } dns_result;
 
-dns_result ngethostbyname (const char* , const char*, const char *dst_log_path, int, int);
+typedef enum
+{
+	TRANSPORT_TYPE_UDP,
+	TRANSPORT_TYPE_TCP
+} dns_transport_type;
+
+dns_result ngethostbyname (const char* , const char*, const char *dst_log_path, int, int, dns_transport_type);
+
 
 /**
    @filedns.h

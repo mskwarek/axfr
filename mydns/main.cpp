@@ -21,13 +21,11 @@ void split(const std::string &s, char delim, Out result) {
   }
 }
 
-
 std::vector<std::string> split(const std::string &s, char delim) {
   std::vector<std::string> elems;
   split(s, delim, std::back_inserter(elems));
   return elems;
 }
-
 
 int main(int argc, char* argv[]){
   std::string line;
@@ -36,7 +34,7 @@ int main(int argc, char* argv[]){
   if(argc>=5)
   {
     // std::cout<<"Main args: "<<argv[1]<<" " <<argv[2]<<std::endl;
-    ngethostbyname(argv[1], argv[2], argv[5], atoi(argv[3]), atoi(argv[4]));
+    ngethostbyname(argv[1], argv[2], argv[5], atoi(argv[3]), atoi(argv[4]), TRANSPORT_TYPE_TCP);
   }
   else
   {
@@ -45,7 +43,7 @@ int main(int argc, char* argv[]){
   while(std::getline(inputFile, line)){
     std::cout<<i++<<std::endl;
     std::vector<std::string> x = split(line, '|');
-    ngethostbyname(x[0].c_str(), x[1].c_str(), argv[3], 252, atoi(argv[2]));
+    ngethostbyname(x[0].c_str(), x[1].c_str(), argv[3], 252, atoi(argv[2]), TRANSPORT_TYPE_TCP);
   }
   inputFile.close();
   }
