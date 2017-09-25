@@ -428,20 +428,22 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
     snprintf(filename, 512, "%s/%s_%s.axfr", dst_log_path, que, server);
     // printf(" %s\n", filename);
 
-        if(ntohs(dns->ans_count) <= 0)
+    if(ntohs(dns->ans_count) <= 0)
     {
         printf("answers: %d", dns->ans_count);
 	    return DNS_RESULT_ERR;
     }
 
-    unsigned short dnsIdFromPacket = ((*(buf+2) << 8) &0xFF00) | (*(buf+3) & 0xFF);
-
-    if(dns_id != dnsIdFromPacket)
+    if(TRANSPORT_TYPE_TCP == transport_type)
     {
-        printf("dnsId from resp does not match");
-        return DNS_RESULT_ERR;
-    }
+        unsigned short dnsIdFromPacket = ((*(buf+2) << 8) &0xFF00) | (*(buf+3) & 0xFF);
 
+        if(dns_id != dnsIdFromPacket)
+        {
+            printf("dnsId from resp does not match");
+            return DNS_RESULT_ERR;
+        }
+    }
     FILE *f = fopen(filename, "w");
     if (f == NULL)
     {
