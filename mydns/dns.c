@@ -207,9 +207,9 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
         dns->add_count = 0;// htons(1);
 
         //point to the query portion
-        qname =(unsigned char*)&buf[sizeof(struct DNS_HEADER)];
+        qname =(unsigned char*)&buf[sizeof(struct DNS_HEADER_UDP)];
         ChangetoDnsNameFormat(qname , host);
-        qinfo =(struct QUESTION*)&buf[sizeof(struct DNS_HEADER) + (strlen((const char*)qname) + 1)]; //fill it
+        qinfo =(struct QUESTION*)&buf[sizeof(struct DNS_HEADER_UDP) + (strlen((const char*)qname) + 1)]; //fill it
         qinfo->qtype = htons( query_type ); //type of the query , A , MX , CNAME , NS etc
         qinfo->qclass = htons(1);
 
@@ -218,7 +218,7 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
         dest.sin_family = AF_INET;
         dest.sin_port = htons(53);
         dest.sin_addr.s_addr = inet_addr(server);
-        int len = (unsigned int)sizeof(struct DNS_HEADER) + (strlen((const char*)qname)+1) + sizeof(struct QUESTION);
+        int len = (unsigned int)sizeof(struct DNS_HEADER_UDP) + (strlen((const char*)qname)+1) + sizeof(struct QUESTION);
 
         printf("\nSending Packet...");
         if( sendto(s,(char*)buf,len,0,(struct sockaddr*)&dest,sizeof(dest)) < 0)
