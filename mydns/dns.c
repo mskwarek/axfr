@@ -93,7 +93,6 @@ struct DNS_HEADER_UDP
     unsigned short auth_count; // number of authority entries
     unsigned short add_count; // number of resource entries
 };
-
 typedef struct DNS_HEADER_UDP DNS_H_UDP;
 
 struct QUESTION
@@ -416,7 +415,7 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
     dns_buf = buf;
 
     dns = (struct DNS_HEADER_UDP*) &buf;
-    printf("\ndatalen: %d\n", ntohs(dns->len));
+    //printf("\ndatalen: %d\n", ntohs(dns->len));
 
 
     int i =0  , j = 0;
@@ -429,7 +428,7 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
     snprintf(filename, 512, "%s/%s_%s.axfr", dst_log_path, que, server);
     // printf(" %s\n", filename);
 
-    if(ntohs(dns->ans_count) <= 0)
+        if(ntohs(dns->ans_count) <= 0)
     {
         printf("answers: %d", dns->ans_count);
 	    return DNS_RESULT_ERR;
