@@ -34,7 +34,7 @@ int main(int argc, char* argv[]){
   if(argc>=5)
   {
     // std::cout<<"Main args: "<<argv[1]<<" " <<argv[2]<<std::endl;
-    ngethostbyname(argv[1], argv[2], argv[5], atoi(argv[3]), atoi(argv[4]), TRANSPORT_TYPE_TCP);
+    ngethostbyname(argv[1], argv[2], argv[5], atoi(argv[3]), atoi(argv[4]), TRANSPORT_TYPE_UDP);
   }
   else
   {
