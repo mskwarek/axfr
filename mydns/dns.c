@@ -94,7 +94,7 @@ struct DNS_HEADER_UDP
     unsigned short add_count; // number of resource entries
 };
 
-typedef struct DNS_HEADER DNS_H_UDP;
+typedef struct DNS_HEADER_UDP DNS_H_UDP;
 
 struct QUESTION
 {
