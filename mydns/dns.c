@@ -362,7 +362,7 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
     dns_buf = buf;
 
     dns = (struct DNS_HEADER*) &buf;
-    // printf("\n n: %d, offset: %d, datalen: %d\n", n, off, ntohs(dns->len));
+    printf("\ndatalen: %d\n", ntohs(dns->len));
 
 
     int i =0  , j = 0;
