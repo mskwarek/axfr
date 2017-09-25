@@ -376,17 +376,18 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
     // printf(" %s\n", filename);
 
     if(ntohs(dns->ans_count) <= 0)
-      {
-	return DNS_RESULT_ERR;
-      }
+    {
+        printf("answers: %d", dns->ans_count);
+	    return DNS_RESULT_ERR;
+    }
 
-      unsigned short dnsIdFromPacket = ((*(buf+2) << 8) &0xFF00) | (*(buf+3) & 0xFF);
+    unsigned short dnsIdFromPacket = ((*(buf+2) << 8) &0xFF00) | (*(buf+3) & 0xFF);
 
-      if(dns_id != dnsIdFromPacket)
-      {
-          printf("dnsId from resp does not match");
-          return DNS_RESULT_ERR;
-      }
+    if(dns_id != dnsIdFromPacket)
+    {
+        printf("dnsId from resp does not match");
+        return DNS_RESULT_ERR;
+    }
 
     FILE *f = fopen(filename, "w");
     if (f == NULL)
@@ -395,8 +396,8 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
         return DNS_RESULT_ERR;
     }
 
-    // printf("\nThe response contains : ");
-    // printf("\n %d Answers.",ntohs(dns->ans_count));
+    printf("\nThe response contains : ");
+    printf("\n %d Answers.",ntohs(dns->ans_count));
 
 
     answers = (struct RES_RECORD*)calloc(ntohs(dns->ans_count), sizeof(struct RES_RECORD));
