@@ -154,6 +154,42 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
 
     printf("%s %s\n", que, server);
 
+    unsigned char *qname = NULL;
+    struct QUESTION *qinfo = NULL;
+    unsigned char host[128] = {0};
+      //Set the DNS structure to standard queries
+
+    snprintf(host, 128, "%s", que);
+    // printf("\nResolving %s\n" , host);
+
+    dns = (struct DNS_HEADER *)&buf;
+
+    dns_id = getpid();
+    dns->id = (unsigned short) htons(dns_id);
+    dns->qr = 0; //This is a query
+    dns->opcode = 0; //This is a standard query
+    dns->aa = 0; //Not Authoritative
+    dns->tc = 0; //This message is not truncated
+    dns->rd = 0; //Recursion Desired
+    dns->ra = 0; //Recursion not available! hey we dont have it (lol)
+    dns->z = 0;
+    dns->ad = 1;
+    dns->cd = 0;
+    dns->rcode = 0;
+    dns->q_count = htons(1); //we have only 1 question
+    dns->ans_count = 0;
+    dns->auth_count = 0;
+    dns->add_count = 0;// htons(1);
+
+    //point to the query portion
+    qname =(unsigned char*)&buf[sizeof(struct DNS_HEADER)];
+    ChangetoDnsNameFormat(qname , host);
+    qinfo =(struct QUESTION*)&buf[sizeof(struct DNS_HEADER) + (strlen((const char*)qname) + 1)]; //fill it
+    qinfo->qtype = htons( query_type ); //type of the query , A , MX , CNAME , NS etc
+    qinfo->qclass = htons(1);
+    dns->len = htons((unsigned int)sizeof(struct DNS_HEADER) + (strlen((const char*)qname)+1) + sizeof(struct QUESTION)-2);
+
+
     if(TRANSPORT_TYPE_UDP == transport_type)
     {
         s = socket(AF_INET , SOCK_DGRAM , IPPROTO_UDP); //UDP packet for DNS queries
@@ -266,48 +302,14 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
             close(s);
             return DNS_RESULT_ERR;
         }
+
+
+        int len = (unsigned int)sizeof(struct DNS_HEADER) + (strlen((const char*)qname)+1) + sizeof(struct QUESTION);
+        int n = write(s, (char*)buf, len);
+        if (n < 0) {
+            perror("ERROR writing to socket");
+        }
     }
-    unsigned char *qname = NULL;
-    struct QUESTION *qinfo = NULL;
-    unsigned char host[128] = {0};
-      //Set the DNS structure to standard queries
-
-    snprintf(host, 128, "%s", que);
-    // printf("\nResolving %s\n" , host);
-
-    dns = (struct DNS_HEADER *)&buf;
-
-    dns_id = getpid();
-    dns->id = (unsigned short) htons(dns_id);
-    dns->qr = 0; //This is a query
-    dns->opcode = 0; //This is a standard query
-    dns->aa = 0; //Not Authoritative
-    dns->tc = 0; //This message is not truncated
-    dns->rd = 0; //Recursion Desired
-    dns->ra = 0; //Recursion not available! hey we dont have it (lol)
-    dns->z = 0;
-    dns->ad = 1;
-    dns->cd = 0;
-    dns->rcode = 0;
-    dns->q_count = htons(1); //we have only 1 question
-    dns->ans_count = 0;
-    dns->auth_count = 0;
-    dns->add_count = 0;// htons(1);
-
-    //point to the query portion
-    qname =(unsigned char*)&buf[sizeof(struct DNS_HEADER)];
-    ChangetoDnsNameFormat(qname , host);
-    qinfo =(struct QUESTION*)&buf[sizeof(struct DNS_HEADER) + (strlen((const char*)qname) + 1)]; //fill it
-    qinfo->qtype = htons( query_type ); //type of the query , A , MX , CNAME , NS etc
-    qinfo->qclass = htons(1);
-    dns->len = htons((unsigned int)sizeof(struct DNS_HEADER) + (strlen((const char*)qname)+1) + sizeof(struct QUESTION)-2);
-
-    int len = (unsigned int)sizeof(struct DNS_HEADER) + (strlen((const char*)qname)+1) + sizeof(struct QUESTION);
-    int n = write(s, (char*)buf, len);
-    if (n < 0) {
-        perror("ERROR writing to socket");
-    }
-
     bzero(buf, 65536);
 
     enum{BUFSIZE=65536};
