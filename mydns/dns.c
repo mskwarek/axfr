@@ -192,10 +192,27 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
 
     if(TRANSPORT_TYPE_UDP == transport_type)
     {
+        int i = 0;
         s = socket(AF_INET , SOCK_DGRAM , IPPROTO_UDP); //UDP packet for DNS queries
         dest.sin_family = AF_INET;
         dest.sin_port = htons(53);
         dest.sin_addr.s_addr = inet_addr(server);
+        printf("\nSending Packet...");
+        if( sendto(s,(char*)buf,sizeof(struct DNS_HEADER) + (strlen((const char*)qname)+1) + \
+                        sizeof(struct QUESTION),0,(struct sockaddr*)&dest,sizeof(dest)) < 0)
+        {
+            perror("sendto failed");
+        }
+        printf("Done");
+
+        //Receive the answer
+        i = sizeof dest;
+        printf("\nReceiving answer...");
+        if(recvfrom (s,(char*)buf , 65536 , 0 , (struct sockaddr*)&dest , (socklen_t*)&i ) < 0)
+        {
+            perror("recvfrom failed");
+        }
+        printf("Done");
     }
     else
     {
@@ -309,39 +326,39 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
         if (n < 0) {
             perror("ERROR writing to socket");
         }
+
+        bzero(buf, 65536);
+
+        enum{BUFSIZE=65536};
+        char replyMessage[BUFSIZE] = {0};
+        ssize_t numBytesRecv = 0;
+        int off = 0;
+        int data_length = 0;
+        do
+          {
+    	memset(&replyMessage, 0, sizeof(replyMessage));
+    	numBytesRecv = recv(s, replyMessage, BUFSIZE, 0);
+    	if(off == 0 && numBytesRecv >= 2)
+    	  {
+    	    data_length = ((*(replyMessage) << 8) &0xFF00) | (*(replyMessage+1) & 0xFF);
+    	  }
+    	if ( numBytesRecv < 0)
+    	  {
+    	    printf("recv() failed\n");
+    	    close(s);
+    	    return DNS_RESULT_ERR;
+    	  }
+    	memcpy(buf+off, replyMessage, numBytesRecv);
+    	off+=numBytesRecv;
+    	// printf("%ld\n", numBytesRecv);
+    	if(off>=data_length+2 && off != 0)
+    	  {
+    	    break;
+    	  }
+          }
+        while (numBytesRecv > 0);
+        close(s);
     }
-    bzero(buf, 65536);
-
-    enum{BUFSIZE=65536};
-    char replyMessage[BUFSIZE] = {0};
-    ssize_t numBytesRecv = 0;
-    int off = 0;
-    int data_length = 0;
-    do
-      {
-	memset(&replyMessage, 0, sizeof(replyMessage));
-	numBytesRecv = recv(s, replyMessage, BUFSIZE, 0);
-	if(off == 0 && numBytesRecv >= 2)
-	  {
-	    data_length = ((*(replyMessage) << 8) &0xFF00) | (*(replyMessage+1) & 0xFF);
-	  }
-	if ( numBytesRecv < 0)
-	  {
-	    printf("recv() failed\n");
-	    close(s);
-	    return DNS_RESULT_ERR;
-	  }
-	memcpy(buf+off, replyMessage, numBytesRecv);
-	off+=numBytesRecv;
-	// printf("%ld\n", numBytesRecv);
-	if(off>=data_length+2 && off != 0)
-	  {
-	    break;
-	  }
-      }
-    while (numBytesRecv > 0);
-    close(s);
-
     dns_buf = buf;
 
     dns = (struct DNS_HEADER*) &buf;
