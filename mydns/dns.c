@@ -170,10 +170,10 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
     dns->opcode = 0; //This is a standard query
     dns->aa = 0; //Not Authoritative
     dns->tc = 0; //This message is not truncated
-    dns->rd = 0; //Recursion Desired
+    dns->rd = 1; //Recursion Desired
     dns->ra = 0; //Recursion not available! hey we dont have it (lol)
     dns->z = 0;
-    dns->ad = 1;
+    dns->ad = 0;
     dns->cd = 0;
     dns->rcode = 0;
     dns->q_count = htons(1); //we have only 1 question
