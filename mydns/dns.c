@@ -463,7 +463,7 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
     }
 
     //move ahead of the dns header and the query field
-    reader = &buf[sizeof(struct DNS_HEADER) + (strlen((const char*)qname)+1) + sizeof(struct QUESTION)];
+    reader = &buf[sizeof(struct DNS_HEADER_UDP) + (strlen((const char*)qname)+1) + sizeof(struct QUESTION)];
 
     //Start reading answers
 
