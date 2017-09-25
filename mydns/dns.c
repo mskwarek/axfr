@@ -94,6 +94,8 @@ struct DNS_HEADER_UDP
     unsigned short add_count; // number of resource entries
 };
 
+typedef struct DNS_HEADER DNS_H_UDP;
+
 struct QUESTION
 {
     unsigned short qtype;
@@ -172,20 +174,20 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
     struct hostent *he = NULL;
     struct sockaddr_in dest = {0};
 
-    DNS_H *dns = NULL;
-
     printf("%s %s\n", que, server);
 
     unsigned char *qname = NULL;
     struct QUESTION *qinfo = NULL;
     unsigned char host[128] = {0};
       //Set the DNS structure to standard queries
+      DNS_H_UDP *dns = NULL;
 
     snprintf(host, 128, "%s", que);
     // printf("\nResolving %s\n" , host);
 
     if(TRANSPORT_TYPE_UDP == transport_type)
     {
+
         dns = (struct DNS_HEADER_UDP *)&buf;
 
         dns_id = getpid();
@@ -237,6 +239,8 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
     }
     else
     {
+
+        DNS_H *dns = NULL;
 
         dns = (struct DNS_HEADER *)&buf;
 
@@ -411,7 +415,7 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
     }
     dns_buf = buf;
 
-    dns = (struct DNS_HEADER*) &buf;
+    dns = (struct DNS_HEADER_UDP*) &buf;
     printf("\ndatalen: %d\n", ntohs(dns->len));
 
 
