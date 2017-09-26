@@ -172,6 +172,8 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
     unsigned char buf[65536] = {0};
     struct hostent *he = NULL;
     struct sockaddr_in dest = {0};
+    int answers_cnt = 0;
+    int dns_header_size = 0;
 
     printf("%s %s\n", que, server);
 
@@ -179,14 +181,13 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
     struct QUESTION *qinfo = NULL;
     unsigned char host[128] = {0};
       //Set the DNS structure to standard queries
-      DNS_H_UDP *dns = NULL;
 
     snprintf(host, 128, "%s", que);
     // printf("\nResolving %s\n" , host);
 
     if(TRANSPORT_TYPE_UDP == transport_type)
     {
-
+        DNS_H_UDP *dns = NULL;
         dns = (struct DNS_HEADER_UDP *)&buf;
 
         dns_id = getpid();
@@ -235,6 +236,12 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
             perror("recvfrom failed");
         }
         printf("Done");
+
+        dns_buf = buf;
+        dns = (struct DNS_HEADER_UDP*) &buf;
+
+        answers_cnt = ntohs(dns->ans_count);
+        dns_header_size = sizeof(struct DNS_HEADER_UDP);
     }
     else
     {
@@ -411,10 +418,13 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
           }
         while (numBytesRecv > 0);
         close(s);
-    }
-    dns_buf = buf;
+        dns_buf = buf;
 
-    dns = (struct DNS_HEADER_UDP*) &buf;
+        dns = (struct DNS_HEADER*) &buf;
+        answers_cnt = ntohs(dns->ans_count);
+        dns_header_size = sizeof(struct DNS_HEADER);
+    }
+
     //printf("\ndatalen: %d\n", ntohs(dns->len));
 
 
@@ -428,9 +438,9 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
     snprintf(filename, 512, "%s/%s_%s.axfr", dst_log_path, que, server);
     // printf(" %s\n", filename);
 
-    if(ntohs(dns->ans_count) <= 0)
+    if(answers_cnt <= 0)
     {
-        printf("answers: %d", dns->ans_count);
+        printf("answers: %d", answers_cnt);
 	    return DNS_RESULT_ERR;
     }
 
@@ -452,10 +462,10 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
     }
 
     printf("\nThe response contains : ");
-    printf("\n %d Answers.",ntohs(dns->ans_count));
+    printf("\n %d Answers.", answers_cnt);
 
 
-    answers = (struct RES_RECORD*)calloc(ntohs(dns->ans_count), sizeof(struct RES_RECORD));
+    answers = (struct RES_RECORD*)calloc(answers_cnt, sizeof(struct RES_RECORD));
     if(answers == NULL)
     {
         fclose(f);
@@ -463,13 +473,13 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
     }
 
     //move ahead of the dns header and the query field
-    reader = &buf[sizeof(struct DNS_HEADER_UDP) + (strlen((const char*)qname)+1) + sizeof(struct QUESTION)];
+    reader = &buf[dns_header_size + (strlen((const char*)qname)+1) + sizeof(struct QUESTION)];
 
     //Start reading answers
 
     int noMemory = 0;
     int mallocRetry = 0;
-    for(i=0;i<ntohs(dns->ans_count);)
+    for(i=0; i<answers_cnt; )
     {
     	unsigned char na[1024] = {0};
         unsigned int name_offset = readSOA(reader, buf+2, na) + 1;
@@ -504,7 +514,7 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
         }
     }
     fclose(f);
-    for(i=0; i < ntohs(dns->ans_count); ++i)
+    for(i=0; i < answers_cnt; ++i)
     {
         free(answers[i].rdata);
     }
