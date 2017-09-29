@@ -45,7 +45,28 @@ std::vector<std::string> split(const std::string &s, char delim) {
 
 int getQueryTypeIdByName(const char* query_type)
 {
-    return 1;
+    if(!query_type)
+        return QTYPE_AXFR;
+    else if(0 == strcmp(query_type, "A"))
+        return 1;
+    else if(0 == strcmp(query_type, "AAAA"))
+        return TYPE_NS;
+    else if(0 == strcmp(query_type, "NS"))
+        return TYPE_NS;
+    else if(0 == strcmp(query_type, "CNAME"))
+        return TYPE_CNAME;
+    else if(0 == strcmp(query_type, "SOA"))
+        return TYPE_SOA;
+    else if(0 == strcmp(query_type, "PTR"))
+        return TYPE_PTR;
+    else if(0 == strcmp(query_type, "MX"))
+        return TYPE_MX;
+    else if(0 == strcmp(query_type, "TXT"))
+        return TYPE_TXT;
+    else if(0 == strcmp(query_type, "AXFR"))
+        return QTYPE_AXFR;
+    else
+        return QTYPE_AXFR;
 }
 
 int getTimeout(const char* timeout)
