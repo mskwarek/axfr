@@ -449,7 +449,7 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
 
     unsigned char filename[512] = {0};
     snprintf(filename, 512, "%s/%s_%s.axfr", dst_log_path, que, server);
-    // printf(" %s\n", filename);
+    printf(" %s\n", filename);
 
     if(answers_cnt <= 0)
     {
