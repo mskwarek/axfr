@@ -6,6 +6,7 @@ extern "C"{
 }
 
 #include <string>
+#include <cstring>
 #include <sstream>
 #include <vector>
 #include <iterator>

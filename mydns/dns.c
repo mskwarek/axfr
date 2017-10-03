@@ -263,7 +263,6 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
         DNS_H *dns = NULL;
 
         dns = (struct DNS_HEADER *)&buf;
-
         dns_id = getpid();
         dns->id = (unsigned short) htons(dns_id);
         dns->qr = 0; //This is a query
