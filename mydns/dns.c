@@ -11,6 +11,7 @@
 #include<unistd.h>    //usleep
 #include<fcntl.h> //fcntl
 #include <errno.h>
+#include <sys/time.h>
 #include "dns.h"
 //List of DNS Servers registered on the system
 char dns_servers[10][100];
@@ -219,12 +220,24 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
         dest.sin_family = AF_INET;
         dest.sin_port = htons(53);
         dest.sin_addr.s_addr = inet_addr(server);
+
+        struct timeval tv;
+        tv.tv_sec = to;
+        int setopterr = setsockopt(s, SOL_SOCKET, SO_RCVTIMEO, (char*)&tv, sizeof(tv));
+        if (setopterr < 0) {
+            //perror("Error");
+            //printf("err: %d\n", setopterr);
+            printf("setsockopt failed");
+            return DNS_RESULT_ERR;
+        }
+
         int len = (unsigned int)sizeof(struct DNS_HEADER_UDP) + (strlen((const char*)qname)+1) + sizeof(struct QUESTION);
 
         printf("\nSending Packet...");
         if( sendto(s,(char*)buf,len,0,(struct sockaddr*)&dest,sizeof(dest)) < 0)
         {
-            perror("sendto failed");
+            printf("sendto failed");
+            return DNS_RESULT_ERR;
         }
         printf("Done");
 
@@ -233,7 +246,9 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
         printf("\nReceiving answer...");
         if(recvfrom (s,(char*)buf , 65536 , 0 , (struct sockaddr*)&dest , (socklen_t*)&i ) < 0)
         {
-            perror("recvfrom failed");
+            //perror("recvfrom failed");
+            printf("recvfrom failed");
+            return DNS_RESULT_ERR;
         }
         printf("Done");
 
@@ -245,7 +260,6 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
     }
     else
     {
-
         DNS_H *dns = NULL;
 
         dns = (struct DNS_HEADER *)&buf;
@@ -982,7 +996,10 @@ void convert_name(unsigned char *name)
         }
         name[i]='.';
     }
-    // name[i-1]='\0';
+    if(i>0)
+    {
+        name[i-1]='\0';
+    }
 }
 
 
