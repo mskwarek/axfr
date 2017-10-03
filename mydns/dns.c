@@ -495,7 +495,12 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
     for(i=0; i<answers_cnt; )
     {
     	unsigned char na[1024] = {0};
-        unsigned int name_offset = readSOA(reader, buf+2, na) + 1;
+        unsigned int tcp_offset = 0;
+        if(TRANSPORT_TYPE_TCP == transport_type)
+        {
+            tcp_offset = 2;
+        }
+        unsigned int name_offset = readSOA(reader, buf+tcp_offset, na) + 1;
 
     	unsigned short class = ((*(reader+2 + name_offset) << 8) &0xFF00) | (*(reader+3 + name_offset) & 0xFF);
     	unsigned short type = ((*(reader+name_offset) << 8) &0xFF00) | (*(reader+1 +name_offset) & 0xFF);
@@ -514,7 +519,7 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
         {
             fprintf(f, "%s\t%d\t%d\t", na, ttl, type);
         }
-    	if((DNS_RESULT_NO_MEMORY != ReadName(reader, name_size, type, buf + 2, f)) || noMemory > 2)
+    	if((DNS_RESULT_NO_MEMORY != ReadName(reader, name_size, type, buf + tcp_offset, f)) || noMemory > 2)
         {
            reader+=name_size;
            noMemory = 0;
