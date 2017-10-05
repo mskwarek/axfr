@@ -24,29 +24,6 @@ static unsigned char* get_domain_name;
 static unsigned long get_domain_ip;/**< Resolved ip address */
 static QUERYDATA query_data;/**< Query type */
 
-enum
-  {
-    T_A=1, //Ipv4 address
-    T_NS=2, //Nameserver
-    T_CNAME= 5, // canonical name
-    T_SOA=6, /* start of authority zone */
-    T_PTR=12, /* domain name pointer */
-    T_HINFO = 13,
-    T_MX=15,
-    T_TXT = 16,
-    T_RP = 17,
-    T_AFSDB = 18,
-    T_AAAA  = 28,
-    T_LOC = 29,
-    T_SRV = 33,
-    T_NAPTR = 35,
-    T_RRSIG = 46,
-    T_NSEC = 47,
-    T_DNSKEY = 48
-
-  };//Mail server
-
-
 //DNS header structure
 struct DNS_HEADER
 {
@@ -453,7 +430,7 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
 
     if(answers_cnt <= 0)
     {
-        printf("answers: %d", answers_cnt);
+        //printf("answers: %d", answers_cnt);
 	    return DNS_RESULT_ERR;
     }
 
@@ -473,10 +450,10 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
         printf("Error opening file!\n");
         return DNS_RESULT_ERR;
     }
-
-    printf("\nThe response contains : ");
-    printf("\n %d Answers.", answers_cnt);
-
+    //
+    // printf("\nThe response contains : ");
+    // printf("\n %d Answers.", answers_cnt);
+    //
 
     answers = (struct RES_RECORD*)calloc(answers_cnt, sizeof(struct RES_RECORD));
     if(answers == NULL)

@@ -109,6 +109,27 @@ TYPE fields are used in resource records.  Note that these types are a subset of
 #define QTYPE_TYPE_ALL 255 /**< A request for all records */
 
 
+enum
+  {
+    T_A=1, //Ipv4 address
+    T_NS=2, //Nameserver
+    T_CNAME= 5, // canonical name
+    T_SOA=6, /* start of authority zone */
+    T_PTR=12, /* domain name pointer */
+    T_HINFO = 13,
+    T_MX=15,
+    T_TXT = 16,
+    T_RP = 17,
+    T_AFSDB = 18,
+    T_AAAA  = 28,
+    T_LOC = 29,
+    T_SRV = 33,
+    T_NAPTR = 35,
+    T_RRSIG = 46,
+    T_NSEC = 47,
+    T_DNSKEY = 48
+
+  };
 
 #define INITRTT 2000L/**< Initial smoothed response time */
 #define MAXCNAME 10/**< Maximum amount of cname recursion */

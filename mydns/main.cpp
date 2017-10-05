@@ -49,23 +49,43 @@ int getQueryTypeIdByName(const char* query_type)
     if(!query_type)
         return QTYPE_AXFR;
     else if(0 == strcmp(query_type, "A"))
-        return 1;
+        return T_A;
     else if(0 == strcmp(query_type, "AAAA"))
-        return TYPE_NS;
+        return T_AAAA;
     else if(0 == strcmp(query_type, "NS"))
-        return TYPE_NS;
+        return T_NS;
     else if(0 == strcmp(query_type, "CNAME"))
-        return TYPE_CNAME;
+        return T_CNAME;
     else if(0 == strcmp(query_type, "SOA"))
-        return TYPE_SOA;
+        return T_SOA;
     else if(0 == strcmp(query_type, "PTR"))
-        return TYPE_PTR;
+        return T_PTR;
     else if(0 == strcmp(query_type, "MX"))
-        return TYPE_MX;
+        return T_MX;
     else if(0 == strcmp(query_type, "TXT"))
-        return TYPE_TXT;
+        return T_TXT;
+    else if(0 == strcmp(query_type, "HINFO"))
+        return T_HINFO;
+    else if(0 == strcmp(query_type, "RP"))
+        return T_RP;
+    else if(0 == strcmp(query_type, "AFSDB"))
+        return T_AFSDB;
+    else if(0 == strcmp(query_type, "LOC"))
+        return T_LOC;
+    else if(0 == strcmp(query_type, "SRV"))
+        return T_SRV;
+    else if(0 == strcmp(query_type, "NAPTR"))
+        return T_NAPTR;
+    else if(0 == strcmp(query_type, "RRSIG"))
+        return T_RRSIG;
+    else if(0 == strcmp(query_type, "NSEC"))
+        return T_NSEC;
+    else if(0 == strcmp(query_type, "DNSKEY"))
+        return T_DNSKEY;
     else if(0 == strcmp(query_type, "AXFR"))
         return QTYPE_AXFR;
+    else if(0 == strcmp(query_type, "ALL"))
+        return QTYPE_TYPE_ALL;
     else
         return QTYPE_AXFR;
 }
