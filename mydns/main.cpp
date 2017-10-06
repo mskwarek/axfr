@@ -115,7 +115,8 @@ void printHelpPrompt()
             << "\t-t\ttimeout in ms [default 5s]" << std::endl
             << "\t-d\tdomain to scan [optional; scan only one domain]" << std::endl
             << "\t-n\tNS IP address [optional; needed by one-domain-scan mode]" << std::endl
-            << "\t-q\tQuery type [A, AAAA, NS, TXT, AXFR, (...); default AXFR]" << std::endl
+            << "\t-q\tQuery type [A, AAAA, NS, CNAME, SOA, PTR, MX, TXT, HINFO, RP, AFSDB, LOC, SRV, NAPTR,\n"
+            << "\t\tRRSIG, NSEC, DNSKEY, AXFR, ALL; default AXFR]" << std::endl
             << "\t-p\tTransport protocol used in scanner [default TCP]" << std::endl
             << "\t-l\tlist with records to scan in format domain_address|ns_ip [optional]" << std::endl;
 }
