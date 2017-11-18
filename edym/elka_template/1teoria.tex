@@ -1,0 +1,42 @@
+\chapter{Wstęp}
+\noindent \lipsum[2-4].
+
+\section{Rozwinięcie}
+\noindent \lipsum[5-6] Odwołanie się do tabelki \ref{tab:tabelka}.
+
+\begin{longtable}{|c|p{4cm}|p{8cm}|}
+	\hline
+	\textbf{Lp.} &
+	\textbf{A} &
+	\textbf{B} \\ \hline\hline
+	1 & C & \lipsum[7]\\
+	\hline
+	\caption{Opis na podstawie \cite{domain_tree_src}.}
+	\label{tab:tabelka}
+\end{longtable}
+
+\lipsum[10-12] Odwołanie się do obrazka \ref{obrazek}.
+
+\begin{center}
+	\begin{figure}
+	\centering
+	\includegraphics[scale=0.3]{image/obrazek}
+	\caption{Podpis}
+	\label{obrazek}
+	\end{figure}
+\end{center}
+
+\subsection{Kolejna sekcja}
+\noindent \lipsum[12-13] Ponowne odwołanie się do listingu bo nie chciało mi się go usunąć \ref{list:listing}.
+
+\begin{lstlisting}[label={list:listing},captionpos=b,caption=Przykładowy listing.,language=c]
+	#include <iostream>
+
+	int main()
+	{
+	  std::cout << "Hello World!";
+	  std::cout << std::endl;
+
+	  return 0;
+	}
+\end{lstlisting}
