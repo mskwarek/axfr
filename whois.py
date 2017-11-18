@@ -17,6 +17,8 @@ def get_template():
             where not exists(select * from address_to_registrar where add_id=(select id from url where address='$address') and registrar_id=(select id from registrar where name='$registrar')); 
     ''')
 
+
+
 def insert_values(cur, address, registrar):
     cur.executescript(get_template().substitute(address=address, registrar=registrar))
 
