@@ -40,3 +40,4 @@ python_module/*.pyc
 /edym/.DS_Store
 */*.log
 *.log
+*.icloud
