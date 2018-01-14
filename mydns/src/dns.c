@@ -146,7 +146,7 @@ void parse_default(unsigned char* data, unsigned short data_len, FILE* f);
 dns_result ngethostbyname(const char *que , const char *server, const char *dst_log_path, int query_type, int to, dns_transport_type transport_type)
 {
     int s = -1;
-    unsigned char name[256] = {0};
+    char name[256] = {0};
     unsigned char buf[65536] = {0};
     struct hostent *he = NULL;
     struct sockaddr_in dest = {0};
@@ -157,7 +157,7 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
 
     unsigned char *qname = NULL;
     struct QUESTION *qinfo = NULL;
-    unsigned char host[128] = {0};
+    char host[128] = {0};
       //Set the DNS structure to standard queries
 
     snprintf(host, 128, "%s", que);
@@ -187,7 +187,7 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
 
         //point to the query portion
         qname =(unsigned char*)&buf[sizeof(struct DNS_HEADER_UDP)];
-        ChangetoDnsNameFormat(qname , host);
+        ChangetoDnsNameFormat(qname , (unsigned char*)host);
         qinfo =(struct QUESTION*)&buf[sizeof(struct DNS_HEADER_UDP) + (strlen((const char*)qname) + 1)]; //fill it
         qinfo->qtype = htons( query_type ); //type of the query , A , MX , CNAME , NS etc
         qinfo->qclass = htons(1);
@@ -259,7 +259,7 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
 
         //point to the query portion
         qname =(unsigned char*)&buf[sizeof(struct DNS_HEADER)];
-        ChangetoDnsNameFormat(qname , host);
+        ChangetoDnsNameFormat(qname , (unsigned char*)host);
         qinfo =(struct QUESTION*)&buf[sizeof(struct DNS_HEADER) + (strlen((const char*)qname) + 1)]; //fill it
         qinfo->qtype = htons( query_type ); //type of the query , A , MX , CNAME , NS etc
         qinfo->qclass = htons(1);
@@ -424,7 +424,7 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
 
     struct RES_RECORD *answers = NULL;
 
-    unsigned char filename[512] = {0};
+    char filename[512] = {0};
     snprintf(filename, 512, "%s/%s_%s.axfr", dst_log_path, que, server);
     //printf(" %s\n", filename);
 
@@ -925,7 +925,7 @@ int getName(unsigned char* data, unsigned short data_len, unsigned char* dns_pac
     }
 
     fprintf(f,"%s", name);
-    return strlen(name);
+    return strlen((char*)name);
 }
 
 unsigned int readString(unsigned char* data, unsigned short data_len, unsigned char* dns_packet_resp, unsigned char* name)
