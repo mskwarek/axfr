@@ -39,10 +39,10 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /usr/local/Cellar/cmake/3.9.4_1/bin/cmake
+CMAKE_COMMAND = /usr/local/Cellar/cmake/3.9.5/bin/cmake
 
 # The command to remove a file.
-RM = /usr/local/Cellar/cmake/3.9.4_1/bin/cmake -E remove -f
+RM = /usr/local/Cellar/cmake/3.9.5/bin/cmake -E remove -f
 
 # Escaping for special characters.
 EQUALS = =
@@ -59,7 +59,7 @@ CMAKE_BINARY_DIR = /Users/mskwarek/Documents/myDig/mydns
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	/usr/local/Cellar/cmake/3.9.4_1/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	/usr/local/Cellar/cmake/3.9.5/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : rebuild_cache
 
 # Special rule for the target rebuild_cache
@@ -111,17 +111,44 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named DNSScan
+# Target rules for targets named axfrScanner
 
 # Build rule for target.
-DNSScan: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 DNSScan
-.PHONY : DNSScan
+axfrScanner: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 axfrScanner
+.PHONY : axfrScanner
 
 # fast build rule for target.
-DNSScan/fast:
-	$(MAKE) -f CMakeFiles/DNSScan.dir/build.make CMakeFiles/DNSScan.dir/build
-.PHONY : DNSScan/fast
+axfrScanner/fast:
+	$(MAKE) -f CMakeFiles/axfrScanner.dir/build.make CMakeFiles/axfrScanner.dir/build
+.PHONY : axfrScanner/fast
+
+src/main.o: src/main.cpp.o
+
+.PHONY : src/main.o
+
+# target to build an object file
+src/main.cpp.o:
+	$(MAKE) -f CMakeFiles/axfrScanner.dir/build.make CMakeFiles/axfrScanner.dir/src/main.cpp.o
+.PHONY : src/main.cpp.o
+
+src/main.i: src/main.cpp.i
+
+.PHONY : src/main.i
+
+# target to preprocess a source file
+src/main.cpp.i:
+	$(MAKE) -f CMakeFiles/axfrScanner.dir/build.make CMakeFiles/axfrScanner.dir/src/main.cpp.i
+.PHONY : src/main.cpp.i
+
+src/main.s: src/main.cpp.s
+
+.PHONY : src/main.s
+
+# target to generate assembly for a file
+src/main.cpp.s:
+	$(MAKE) -f CMakeFiles/axfrScanner.dir/build.make CMakeFiles/axfrScanner.dir/src/main.cpp.s
+.PHONY : src/main.cpp.s
 
 # Help Target
 help:
@@ -131,7 +158,10 @@ help:
 	@echo "... depend"
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
-	@echo "... DNSScan"
+	@echo "... axfrScanner"
+	@echo "... src/main.o"
+	@echo "... src/main.i"
+	@echo "... src/main.s"
 .PHONY : help
 
 
