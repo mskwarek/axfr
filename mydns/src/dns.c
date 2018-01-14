@@ -426,7 +426,7 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
 
     unsigned char filename[512] = {0};
     snprintf(filename, 512, "%s/%s_%s.axfr", dst_log_path, que, server);
-    printf(" %s\n", filename);
+    //printf(" %s\n", filename);
 
     if(answers_cnt <= 0)
     {
@@ -511,9 +511,11 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
     fclose(f);
     for(i=0; i < answers_cnt; ++i)
     {
-        free(answers[i].rdata);
+        if(answers[i].rdata!=NULL)
+            free(answers[i].rdata);
     }
-    free(answers);
+    if(answers!=NULL)
+        free(answers);
     return DNS_RESULT_OK;
 }
 
@@ -701,12 +703,14 @@ dns_result parse_naptr(unsigned char* data, unsigned short data_len, FILE* f)
     txt2 = (unsigned char*)calloc(service_len+1, sizeof(unsigned char));
     if(txt2 == NULL)
     {
-        free(txt);
+        if(free!=NULL)
+            free(txt);
         return DNS_RESULT_NO_MEMORY;
     }
     while(i<service_len)
     {
-        txt2[i++]=*data++;
+        if(txt2!=NULL)
+            txt2[i++]=*data++;
     }
     txt2[i]='\0';
 
@@ -716,8 +720,10 @@ dns_result parse_naptr(unsigned char* data, unsigned short data_len, FILE* f)
     txt3 = (unsigned char*)calloc(regex_len+1, sizeof(unsigned char));
     if(txt3 == NULL )
     {
-        free(txt);
-        free(txt2);
+        if(txt!=NULL)
+            free(txt);
+        if(txt2!=NULL)
+            free(txt2);
         return DNS_RESULT_NO_MEMORY;
     }
     while(i<regex_len)
@@ -733,9 +739,12 @@ dns_result parse_naptr(unsigned char* data, unsigned short data_len, FILE* f)
     txt4 = (unsigned char*)calloc(rep_len+1, sizeof(unsigned char));
     if(txt4 == NULL)
     {
-        free(txt);
-        free(txt2);
-        free(txt3);
+        if(txt!=NULL)
+            free(txt);
+        if(txt2!=NULL)
+            free(txt2);
+        if(txt3!=NULL)
+            free(txt3);
         return DNS_RESULT_NO_MEMORY;
     }
     while(i<rep_len)
@@ -744,14 +753,19 @@ dns_result parse_naptr(unsigned char* data, unsigned short data_len, FILE* f)
     }
     txt4[i]='\0';
 
-    convert_name(txt4);
+    //convert_name(txt4);
 
     fprintf(f,"%u %u %d %d %s %s %s %s\n", order, preference, flags_length, service_len, txt, txt2, txt3, txt4);
 
-    free(txt);
-    free(txt2);
-    free(txt3);
-    free(txt4);
+
+    if(txt!=NULL)
+        free(txt);
+    if(txt2!=NULL)
+        free(txt2);
+    if(txt3!=NULL)
+        free(txt3);
+    if(txt4!=NULL)
+        free(txt4);
 
     return DNS_RESULT_OK;
 }
@@ -848,7 +862,8 @@ dns_result parse_txt(unsigned char* data, unsigned short data_len, FILE* f)
 
     fprintf(f,"%s", txt);
     fprintf(f,"\n");
-    free(txt);
+    if(txt!=NULL)
+        free(txt);
     return DNS_RESULT_OK;
 }
 
