@@ -1,7 +1,6 @@
 
 #include <stdio.h>
-
-
+  
 typedef enum
 {
 	DNS_RESULT_ERR,
@@ -15,7 +14,7 @@ typedef enum
 	TRANSPORT_TYPE_TCP
 } dns_transport_type;
 
-dns_result ngethostbyname (const char* , const char*, const char *dst_log_path, int, int, dns_transport_type);
+dns_result ngethostbyname(const char* , const char*, const char *dst_log_path, int, int, dns_transport_type);
 
 
 /**

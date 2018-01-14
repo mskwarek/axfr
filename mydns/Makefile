@@ -123,6 +123,33 @@ axfrScanner/fast:
 	$(MAKE) -f CMakeFiles/axfrScanner.dir/build.make CMakeFiles/axfrScanner.dir/build
 .PHONY : axfrScanner/fast
 
+src/dns.o: src/dns.c.o
+
+.PHONY : src/dns.o
+
+# target to build an object file
+src/dns.c.o:
+	$(MAKE) -f CMakeFiles/axfrScanner.dir/build.make CMakeFiles/axfrScanner.dir/src/dns.c.o
+.PHONY : src/dns.c.o
+
+src/dns.i: src/dns.c.i
+
+.PHONY : src/dns.i
+
+# target to preprocess a source file
+src/dns.c.i:
+	$(MAKE) -f CMakeFiles/axfrScanner.dir/build.make CMakeFiles/axfrScanner.dir/src/dns.c.i
+.PHONY : src/dns.c.i
+
+src/dns.s: src/dns.c.s
+
+.PHONY : src/dns.s
+
+# target to generate assembly for a file
+src/dns.c.s:
+	$(MAKE) -f CMakeFiles/axfrScanner.dir/build.make CMakeFiles/axfrScanner.dir/src/dns.c.s
+.PHONY : src/dns.c.s
+
 src/main.o: src/main.cpp.o
 
 .PHONY : src/main.o
@@ -159,6 +186,9 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
 	@echo "... axfrScanner"
+	@echo "... src/dns.o"
+	@echo "... src/dns.i"
+	@echo "... src/dns.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"

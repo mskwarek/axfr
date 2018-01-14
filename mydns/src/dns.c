@@ -13,6 +13,7 @@
 #include <errno.h>
 #include <sys/time.h>
 #include "dns.h"
+
 //List of DNS Servers registered on the system
 char dns_servers[10][100];
 int dns_server_count = 0;
@@ -41,7 +42,6 @@ struct DNS_HEADER
     unsigned char ad :1; // authenticated data
     unsigned char z :1; // its z! reserved
     unsigned char ra :1; // recursion available
-  //    unsigned char adbit :1;
 
     unsigned short q_count; // number of question entries
     unsigned short ans_count; // number of answer entries

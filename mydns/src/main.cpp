@@ -1,8 +1,9 @@
 #include <iostream>
 #include <fstream>
 
-extern "C"{
-#include"dns.h"
+extern "C"
+{
+#include "dns.h"
 }
 
 #include <string>
