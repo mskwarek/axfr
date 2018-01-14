@@ -703,7 +703,7 @@ dns_result parse_naptr(unsigned char* data, unsigned short data_len, FILE* f)
     txt2 = (unsigned char*)calloc(service_len+1, sizeof(unsigned char));
     if(txt2 == NULL)
     {
-        if(free!=NULL)
+        if(txt!=NULL)
             free(txt);
         return DNS_RESULT_NO_MEMORY;
     }
