@@ -21,9 +21,6 @@ int dns_server_count = 0;
 
 static unsigned short dns_id = 0;//0x1122;/**< DNS query id  */
 static unsigned char*  dns_buf;
-static unsigned char* get_domain_name;
-static unsigned long get_domain_ip;/**< Resolved ip address */
-static QUERYDATA query_data;/**< Query type */
 
 //DNS header structure
 struct DNS_HEADER
@@ -105,12 +102,6 @@ typedef struct
     struct QUESTION *ques;
 } QUERY;
 
-
-static int dns_parse_reponse(void);/* analyze a response from DNS sever */
-static unsigned char * dns_parse_question(unsigned char * cp);/* analyze a question part in resources recode */
-static unsigned char * dns_answer(unsigned char *cp);/* analyze a answer part in resources recode */
-static int parse_name(char* cp,char* qname, unsigned int qname_maxlen);/* analyze a qname in each part. */
-
 //Function Prototypes
 void convert_name(unsigned char *name);
 void ChangetoDnsNameFormat (unsigned char*,unsigned char*);
@@ -146,9 +137,7 @@ void parse_default(unsigned char* data, unsigned short data_len, FILE* f);
 dns_result ngethostbyname(const char *que , const char *server, const char *dst_log_path, int query_type, int to, dns_transport_type transport_type)
 {
     int s = -1;
-    char name[256] = {0};
     unsigned char buf[65536] = {0};
-    struct hostent *he = NULL;
     struct sockaddr_in dest = {0};
     int answers_cnt = 0;
     int dns_header_size = 0;
@@ -288,7 +277,7 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
 
         long arg = 0;
         int res = 0;
-        fd_set myset = {0};
+        fd_set myset = {{0}};
         int valopt = 0;
 
         socklen_t lon = {0};
@@ -418,7 +407,7 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
     //printf("\ndatalen: %d\n", ntohs(dns->len));
 
 
-    int i =0  , j = 0;
+    int i =0;
     unsigned char *reader = NULL;
     struct sockaddr_in a = {0};
 
@@ -1025,7 +1014,6 @@ void ChangetoDnsNameFormat(unsigned char* dns,unsigned char* host)
 
 int hostname_to_ip(const char *hostname , char *ip)
 {
-  int sockfd = 0;
   struct addrinfo hints = {0}, *servinfo = NULL, *p = NULL;
   struct sockaddr_in *h = NULL;
   int rv = 0;
