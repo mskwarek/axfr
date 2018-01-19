@@ -122,6 +122,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named runUnitTests
+
+# Build rule for target.
+runUnitTests: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 runUnitTests
+.PHONY : runUnitTests
+
+# fast build rule for target.
+runUnitTests/fast:
+	$(MAKE) -f CMakeFiles/runUnitTests.dir/build.make CMakeFiles/runUnitTests.dir/build
+.PHONY : runUnitTests/fast
+
+#=============================================================================
 # Target rules for targets named axfrScanner
 
 # Build rule for target.
@@ -188,6 +201,33 @@ src/main.cpp.s:
 	$(MAKE) -f CMakeFiles/axfrScanner.dir/build.make CMakeFiles/axfrScanner.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
 
+test/dns_ut.o: test/dns_ut.cpp.o
+
+.PHONY : test/dns_ut.o
+
+# target to build an object file
+test/dns_ut.cpp.o:
+	$(MAKE) -f CMakeFiles/runUnitTests.dir/build.make CMakeFiles/runUnitTests.dir/test/dns_ut.cpp.o
+.PHONY : test/dns_ut.cpp.o
+
+test/dns_ut.i: test/dns_ut.cpp.i
+
+.PHONY : test/dns_ut.i
+
+# target to preprocess a source file
+test/dns_ut.cpp.i:
+	$(MAKE) -f CMakeFiles/runUnitTests.dir/build.make CMakeFiles/runUnitTests.dir/test/dns_ut.cpp.i
+.PHONY : test/dns_ut.cpp.i
+
+test/dns_ut.s: test/dns_ut.cpp.s
+
+.PHONY : test/dns_ut.s
+
+# target to generate assembly for a file
+test/dns_ut.cpp.s:
+	$(MAKE) -f CMakeFiles/runUnitTests.dir/build.make CMakeFiles/runUnitTests.dir/test/dns_ut.cpp.s
+.PHONY : test/dns_ut.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -197,6 +237,7 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
 	@echo "... test"
+	@echo "... runUnitTests"
 	@echo "... axfrScanner"
 	@echo "... src/dns.o"
 	@echo "... src/dns.i"
@@ -204,6 +245,9 @@ help:
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
+	@echo "... test/dns_ut.o"
+	@echo "... test/dns_ut.i"
+	@echo "... test/dns_ut.s"
 .PHONY : help
 
 
