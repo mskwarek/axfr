@@ -131,9 +131,6 @@ unsigned int parse_to_uint(unsigned char*);
 void parse_default(unsigned char* data, unsigned short data_len, FILE* f);
 
 
-/*
- * Perform a DNS query by sending a packet
- * */
 dns_result ngethostbyname(const char *que , const char *server, const char *dst_log_path, int query_type, int to, dns_transport_type transport_type)
 {
     int s = -1;
