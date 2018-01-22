@@ -7,7 +7,7 @@ include_directories(${GTEST_INCLUDE_DIRS})
 
 #Bring the headers, such as Student.h into the project
 include_directories(inc)
- 
+
 #However, the file(GLOB...) allows for wildcard additions:
 file(GLOB SOURCES "src/*.c*")
 
@@ -19,4 +19,4 @@ add_executable(axfrScanner ${SOURCES})
 add_executable(runUnitTests test/dns_ut.cpp)
 # Link test executable against gtest & gtest_main
 target_link_libraries(runUnitTests gtest gtest_main)
-add_test( runUnitTests runUnitTests )
+add_test(runUnitTests runUnitTests)
