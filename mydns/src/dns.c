@@ -44,7 +44,7 @@ struct DNS_HEADER
     unsigned short auth_count; // number of authority entries
     unsigned short add_count; // number of resource entries
 };
-typedef struct DNS_HEADER DNS_H;
+typedef struct DNS_HEADER DNS_H_TCP;
 
 struct DNS_HEADER_UDP
 {
@@ -194,7 +194,7 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
     }
     else
     {
-        DNS_H *dns = NULL;
+        DNS_H_TCP *dns = NULL;
 
         dns = (struct DNS_HEADER *)&buf;
         dns_id = getpid();
