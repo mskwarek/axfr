@@ -1,12 +1,7 @@
+#ifndef _DNS_H_
+#define _DNS_H_
 
-#include <stdio.h>
-  
-typedef enum
-{
-	DNS_RESULT_ERR,
-	DNS_RESULT_NO_MEMORY,
-	DNS_RESULT_OK
-} dns_result;
+#include "dns_response_parser.h"
 
 typedef enum
 {
@@ -21,9 +16,6 @@ dns_result ngethostbyname(const char* , const char*, const char *dst_log_path, i
    @filedns.h
    @brief Implement Simple Domain Name System Protocol
 */
-
-#ifndef __DNS_H
-#define __DNS_H
 
 /*
        <Message Format>
@@ -106,28 +98,6 @@ TYPE fields are used in resource records.  Note that these types are a subset of
 #define QTYPE_MAILB 253 /**< A request for mailbox-related records (MB, MG or MR) */
 #define QTYPE_MAILA 254 /**< A request for mail agent RRs (Obsolete - see MX) */
 #define QTYPE_TYPE_ALL 255 /**< A request for all records */
-
-
-enum
-  {
-    T_A=1, //Ipv4 address
-    T_NS=2, //Nameserver
-    T_CNAME= 5, // canonical name
-    T_SOA=6, /* start of authority zone */
-    T_PTR=12, /* domain name pointer */
-    T_HINFO = 13,
-    T_MX=15,
-    T_TXT = 16,
-    T_RP = 17,
-    T_AFSDB = 18,
-    T_AAAA  = 28,
-    T_LOC = 29,
-    T_SRV = 33,
-    T_NAPTR = 35,
-    T_RRSIG = 46,
-    T_NSEC = 47,
-    T_DNSKEY = 48
-  };
 
 #define INITRTT 2000L/**< Initial smoothed response time */
 #define MAXCNAME 10/**< Maximum amount of cname recursion */
@@ -365,4 +335,4 @@ Each resource record has the following format:
 										      //extern u_long gethostbyname(char* hostname);// gethostbyname function retrieves host ip address corresponding to a host name
 
 
-										      #endif
+#endif

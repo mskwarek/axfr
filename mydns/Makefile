@@ -174,6 +174,33 @@ src/dns.c.s:
 	$(MAKE) -f CMakeFiles/axfrScanner.dir/build.make CMakeFiles/axfrScanner.dir/src/dns.c.s
 .PHONY : src/dns.c.s
 
+src/dns_response_parser.o: src/dns_response_parser.c.o
+
+.PHONY : src/dns_response_parser.o
+
+# target to build an object file
+src/dns_response_parser.c.o:
+	$(MAKE) -f CMakeFiles/axfrScanner.dir/build.make CMakeFiles/axfrScanner.dir/src/dns_response_parser.c.o
+.PHONY : src/dns_response_parser.c.o
+
+src/dns_response_parser.i: src/dns_response_parser.c.i
+
+.PHONY : src/dns_response_parser.i
+
+# target to preprocess a source file
+src/dns_response_parser.c.i:
+	$(MAKE) -f CMakeFiles/axfrScanner.dir/build.make CMakeFiles/axfrScanner.dir/src/dns_response_parser.c.i
+.PHONY : src/dns_response_parser.c.i
+
+src/dns_response_parser.s: src/dns_response_parser.c.s
+
+.PHONY : src/dns_response_parser.s
+
+# target to generate assembly for a file
+src/dns_response_parser.c.s:
+	$(MAKE) -f CMakeFiles/axfrScanner.dir/build.make CMakeFiles/axfrScanner.dir/src/dns_response_parser.c.s
+.PHONY : src/dns_response_parser.c.s
+
 src/main.o: src/main.cpp.o
 
 .PHONY : src/main.o
@@ -200,6 +227,33 @@ src/main.s: src/main.cpp.s
 src/main.cpp.s:
 	$(MAKE) -f CMakeFiles/axfrScanner.dir/build.make CMakeFiles/axfrScanner.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
+
+src/utils.o: src/utils.c.o
+
+.PHONY : src/utils.o
+
+# target to build an object file
+src/utils.c.o:
+	$(MAKE) -f CMakeFiles/axfrScanner.dir/build.make CMakeFiles/axfrScanner.dir/src/utils.c.o
+.PHONY : src/utils.c.o
+
+src/utils.i: src/utils.c.i
+
+.PHONY : src/utils.i
+
+# target to preprocess a source file
+src/utils.c.i:
+	$(MAKE) -f CMakeFiles/axfrScanner.dir/build.make CMakeFiles/axfrScanner.dir/src/utils.c.i
+.PHONY : src/utils.c.i
+
+src/utils.s: src/utils.c.s
+
+.PHONY : src/utils.s
+
+# target to generate assembly for a file
+src/utils.c.s:
+	$(MAKE) -f CMakeFiles/axfrScanner.dir/build.make CMakeFiles/axfrScanner.dir/src/utils.c.s
+.PHONY : src/utils.c.s
 
 test/dns_ut.o: test/dns_ut.cpp.o
 
@@ -242,9 +296,15 @@ help:
 	@echo "... src/dns.o"
 	@echo "... src/dns.i"
 	@echo "... src/dns.s"
+	@echo "... src/dns_response_parser.o"
+	@echo "... src/dns_response_parser.i"
+	@echo "... src/dns_response_parser.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
+	@echo "... src/utils.o"
+	@echo "... src/utils.i"
+	@echo "... src/utils.s"
 	@echo "... test/dns_ut.o"
 	@echo "... test/dns_ut.i"
 	@echo "... test/dns_ut.s"
