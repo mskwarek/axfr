@@ -7,6 +7,7 @@ extern "C"{
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 void ChangetoDnsNameFormat (unsigned char*, unsigned char*);
 unsigned int readSOA(unsigned char* data, unsigned char* dns_packet_resp, unsigned char* name);
