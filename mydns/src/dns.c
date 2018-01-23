@@ -118,7 +118,7 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
       //Set the DNS structure to standard queries
 
     snprintf(host, 128, "%s", que);
-    // printf("\nResolving %s\n" , host);
+    printf("\nResolving %s\n" , host);
 
     if(TRANSPORT_TYPE_UDP == transport_type)
     {
