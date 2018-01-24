@@ -122,19 +122,6 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named runUnitTests
-
-# Build rule for target.
-runUnitTests: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 runUnitTests
-.PHONY : runUnitTests
-
-# fast build rule for target.
-runUnitTests/fast:
-	$(MAKE) -f CMakeFiles/runUnitTests.dir/build.make CMakeFiles/runUnitTests.dir/build
-.PHONY : runUnitTests/fast
-
-#=============================================================================
 # Target rules for targets named axfrScanner
 
 # Build rule for target.
@@ -144,143 +131,21 @@ axfrScanner: cmake_check_build_system
 
 # fast build rule for target.
 axfrScanner/fast:
-	$(MAKE) -f CMakeFiles/axfrScanner.dir/build.make CMakeFiles/axfrScanner.dir/build
+	$(MAKE) -f src/CMakeFiles/axfrScanner.dir/build.make src/CMakeFiles/axfrScanner.dir/build
 .PHONY : axfrScanner/fast
 
-src/dns.o: src/dns.c.o
+#=============================================================================
+# Target rules for targets named runUnitTests
 
-.PHONY : src/dns.o
+# Build rule for target.
+runUnitTests: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 runUnitTests
+.PHONY : runUnitTests
 
-# target to build an object file
-src/dns.c.o:
-	$(MAKE) -f CMakeFiles/axfrScanner.dir/build.make CMakeFiles/axfrScanner.dir/src/dns.c.o
-.PHONY : src/dns.c.o
-
-src/dns.i: src/dns.c.i
-
-.PHONY : src/dns.i
-
-# target to preprocess a source file
-src/dns.c.i:
-	$(MAKE) -f CMakeFiles/axfrScanner.dir/build.make CMakeFiles/axfrScanner.dir/src/dns.c.i
-.PHONY : src/dns.c.i
-
-src/dns.s: src/dns.c.s
-
-.PHONY : src/dns.s
-
-# target to generate assembly for a file
-src/dns.c.s:
-	$(MAKE) -f CMakeFiles/axfrScanner.dir/build.make CMakeFiles/axfrScanner.dir/src/dns.c.s
-.PHONY : src/dns.c.s
-
-src/dns_response_parser.o: src/dns_response_parser.c.o
-
-.PHONY : src/dns_response_parser.o
-
-# target to build an object file
-src/dns_response_parser.c.o:
-	$(MAKE) -f CMakeFiles/axfrScanner.dir/build.make CMakeFiles/axfrScanner.dir/src/dns_response_parser.c.o
-.PHONY : src/dns_response_parser.c.o
-
-src/dns_response_parser.i: src/dns_response_parser.c.i
-
-.PHONY : src/dns_response_parser.i
-
-# target to preprocess a source file
-src/dns_response_parser.c.i:
-	$(MAKE) -f CMakeFiles/axfrScanner.dir/build.make CMakeFiles/axfrScanner.dir/src/dns_response_parser.c.i
-.PHONY : src/dns_response_parser.c.i
-
-src/dns_response_parser.s: src/dns_response_parser.c.s
-
-.PHONY : src/dns_response_parser.s
-
-# target to generate assembly for a file
-src/dns_response_parser.c.s:
-	$(MAKE) -f CMakeFiles/axfrScanner.dir/build.make CMakeFiles/axfrScanner.dir/src/dns_response_parser.c.s
-.PHONY : src/dns_response_parser.c.s
-
-src/main.o: src/main.cpp.o
-
-.PHONY : src/main.o
-
-# target to build an object file
-src/main.cpp.o:
-	$(MAKE) -f CMakeFiles/axfrScanner.dir/build.make CMakeFiles/axfrScanner.dir/src/main.cpp.o
-.PHONY : src/main.cpp.o
-
-src/main.i: src/main.cpp.i
-
-.PHONY : src/main.i
-
-# target to preprocess a source file
-src/main.cpp.i:
-	$(MAKE) -f CMakeFiles/axfrScanner.dir/build.make CMakeFiles/axfrScanner.dir/src/main.cpp.i
-.PHONY : src/main.cpp.i
-
-src/main.s: src/main.cpp.s
-
-.PHONY : src/main.s
-
-# target to generate assembly for a file
-src/main.cpp.s:
-	$(MAKE) -f CMakeFiles/axfrScanner.dir/build.make CMakeFiles/axfrScanner.dir/src/main.cpp.s
-.PHONY : src/main.cpp.s
-
-src/utils.o: src/utils.c.o
-
-.PHONY : src/utils.o
-
-# target to build an object file
-src/utils.c.o:
-	$(MAKE) -f CMakeFiles/axfrScanner.dir/build.make CMakeFiles/axfrScanner.dir/src/utils.c.o
-.PHONY : src/utils.c.o
-
-src/utils.i: src/utils.c.i
-
-.PHONY : src/utils.i
-
-# target to preprocess a source file
-src/utils.c.i:
-	$(MAKE) -f CMakeFiles/axfrScanner.dir/build.make CMakeFiles/axfrScanner.dir/src/utils.c.i
-.PHONY : src/utils.c.i
-
-src/utils.s: src/utils.c.s
-
-.PHONY : src/utils.s
-
-# target to generate assembly for a file
-src/utils.c.s:
-	$(MAKE) -f CMakeFiles/axfrScanner.dir/build.make CMakeFiles/axfrScanner.dir/src/utils.c.s
-.PHONY : src/utils.c.s
-
-test/dns_ut.o: test/dns_ut.cpp.o
-
-.PHONY : test/dns_ut.o
-
-# target to build an object file
-test/dns_ut.cpp.o:
-	$(MAKE) -f CMakeFiles/runUnitTests.dir/build.make CMakeFiles/runUnitTests.dir/test/dns_ut.cpp.o
-.PHONY : test/dns_ut.cpp.o
-
-test/dns_ut.i: test/dns_ut.cpp.i
-
-.PHONY : test/dns_ut.i
-
-# target to preprocess a source file
-test/dns_ut.cpp.i:
-	$(MAKE) -f CMakeFiles/runUnitTests.dir/build.make CMakeFiles/runUnitTests.dir/test/dns_ut.cpp.i
-.PHONY : test/dns_ut.cpp.i
-
-test/dns_ut.s: test/dns_ut.cpp.s
-
-.PHONY : test/dns_ut.s
-
-# target to generate assembly for a file
-test/dns_ut.cpp.s:
-	$(MAKE) -f CMakeFiles/runUnitTests.dir/build.make CMakeFiles/runUnitTests.dir/test/dns_ut.cpp.s
-.PHONY : test/dns_ut.cpp.s
+# fast build rule for target.
+runUnitTests/fast:
+	$(MAKE) -f test/CMakeFiles/runUnitTests.dir/build.make test/CMakeFiles/runUnitTests.dir/build
+.PHONY : runUnitTests/fast
 
 # Help Target
 help:
@@ -291,23 +156,8 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
 	@echo "... test"
-	@echo "... runUnitTests"
 	@echo "... axfrScanner"
-	@echo "... src/dns.o"
-	@echo "... src/dns.i"
-	@echo "... src/dns.s"
-	@echo "... src/dns_response_parser.o"
-	@echo "... src/dns_response_parser.i"
-	@echo "... src/dns_response_parser.s"
-	@echo "... src/main.o"
-	@echo "... src/main.i"
-	@echo "... src/main.s"
-	@echo "... src/utils.o"
-	@echo "... src/utils.i"
-	@echo "... src/utils.s"
-	@echo "... test/dns_ut.o"
-	@echo "... test/dns_ut.i"
-	@echo "... test/dns_ut.s"
+	@echo "... runUnitTests"
 .PHONY : help
 
 

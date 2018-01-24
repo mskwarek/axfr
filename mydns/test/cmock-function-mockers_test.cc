@@ -1,6 +1,6 @@
 #include <cmock/cmock.h>
 
-#include "mocks.testMock.h"
+#include "mocks/testMock.h"
 
 using namespace ::testing;
 
