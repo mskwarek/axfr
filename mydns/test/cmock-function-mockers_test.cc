@@ -1,4 +1,4 @@
-#include <cmock/cmock.h>
+#include "cmock/cmock.h"
 
 #include "mocks/testMock.h"
 

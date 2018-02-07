@@ -13,15 +13,9 @@
 #include "utils.h"
 #include <stdlib.h>
 
-//List of DNS Servers registered on the system
-char dns_servers[10][100];
-int dns_server_count = 0;
-//Types of DNS resource records :)
-
 static unsigned short dns_id = 0;//0x1122;/**< DNS query id  */
 static unsigned char*  dns_buf;
 
-//DNS header structure
 struct DNS_HEADER
 {
     unsigned short len;
@@ -102,7 +96,8 @@ typedef struct
 } QUERY;
 
 
-dns_result ngethostbyname(const char *que , const char *server, const char *dst_log_path, int query_type, int to, dns_transport_type transport_type)
+dns_result ngethostbyname(const char *que , const char *server, const char *dst_log_path, int query_type,
+    int to, dns_transport_type transport_type)
 {
     int s = -1;
     unsigned char buf[65536] = {0};
@@ -220,7 +215,7 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
         qinfo =(struct QUESTION*)&buf[sizeof(struct DNS_HEADER) + (strlen((const char*)qname) + 1)]; //fill it
         qinfo->qtype = htons( query_type ); //type of the query , A , MX , CNAME , NS etc
         qinfo->qclass = htons(1);
-        dns->len = htons((unsigned int)sizeof(struct DNS_HEADER) + (strlen((const char*)qname)+1) + sizeof(struct QUESTION)-2);
+        dns->len = htons((unsigned int)sizeof(struct DNS_HEADER)+(strlen((const char*)qname)+1) + sizeof(struct QUESTION)-2);
 
 
         s = socket(AF_INET , SOCK_STREAM , IPPROTO_TCP);
@@ -407,7 +402,7 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
         return DNS_RESULT_ERR;
     }
     //
-    // printf("\nThe response contains : ");
+    // printf("\nThe response contains : z15AiYOM71wL8wTF");
     // printf("\n %d Answers.", answers_cnt);
     //
 

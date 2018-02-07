@@ -1,14 +1,10 @@
-#ifndef CMOCK_TEST_FOO_H_
-#define CMOCK_TEST_FOO_H_
+#ifndef CMOCK_TEST_FOO_MOCK_H_
+#define CMOCK_TEST_FOO_MOCK_H_
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include "cmock/cmock.h"
 
-int foo(int a1, int a2);
+#include "testMock.h"
 
-#ifdef __cplusplus
-}
-#endif
+DECLARE_FUNCTION_MOCK2(FooFunctionMock, foo, int(int, int));
 
-#endif /* CMOCK_TEST_FOO_H_ */
+#endif /* CMOCK_TEST_FOO_MOCK_H_ */
