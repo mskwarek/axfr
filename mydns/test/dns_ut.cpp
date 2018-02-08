@@ -1,4 +1,7 @@
-#include <dns.h>
+//extern "C"
+//{
+//#include <dns.h>
+//}
 #include <gtest/gtest.h>
 
 TEST(Dummy, DummyAssertForEnvCheck)

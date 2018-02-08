@@ -114,13 +114,14 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
 
     snprintf(host, 128, "%s", que);
     printf("\nResolving %s\n" , host);
+    dns_id = getpid();
+
 
     if(TRANSPORT_TYPE_UDP == transport_type)
     {
         DNS_H_UDP *dns = NULL;
         dns = (struct DNS_HEADER_UDP *)&buf;
 
-        dns_id = getpid();
         dns->id = (unsigned short) htons(dns_id);
         dns->qr = 0; //This is a query
         dns->opcode = 0; //This is a standard query
@@ -192,7 +193,6 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
         DNS_H_TCP *dns = NULL;
 
         dns = (struct DNS_HEADER *)&buf;
-        dns_id = getpid();
         dns->id = (unsigned short) htons(dns_id);
         dns->qr = 0; //This is a query
         dns->opcode = 0; //This is a standard query
