@@ -11,9 +11,9 @@ build:
   before_script: 
     - apt update && apt -y install make autoconf cmake
   script: 
-    cd mydns
-    cmake .
-    make -j
+    - cd mydns
+    - cmake .
+    - make -j
   artifacts:
     paths:
       - mybinary
