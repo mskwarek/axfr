@@ -6,7 +6,7 @@
 
 
 //Function Prototypes
-void parse_ip(unsigned char* data, FILE* f);
+_Noreturn void parse_ip(unsigned char* data, FILE* f);
 void parse_ptr(unsigned char* data, unsigned short data_len, unsigned char* dns, FILE* f);
 void parse_soa(unsigned char* data, unsigned short data_len, unsigned char* dns, FILE* f);
 void parse_hinfo(unsigned char* data, unsigned short data_len, FILE* f);

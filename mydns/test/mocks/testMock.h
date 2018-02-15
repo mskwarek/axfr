@@ -2,6 +2,7 @@
 #define CMOCK_TEST_FOO_MOCK_H_
 
 #include "cmock/cmock.h"
+#include "dummyFunc.h"
 
 DECLARE_FUNCTION_MOCK2(FooFunctionMock, foo, int(int, int));
 

@@ -6,5 +6,5 @@ include_directories(../inc)
 file(GLOB SOURCES "*.c*")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-long-long -pedantic -std=c++1z")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wno-long-long -pedantic -std=c99")
-add_executable(axfrScanner ${SOURCES})
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wno-long-long -pedantic -std=gnu11")
+add_executable(axfrScanner ${SOURCES} ../inc/dummyFunc.h dummyFunc.c)
