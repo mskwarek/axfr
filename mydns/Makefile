@@ -39,10 +39,10 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /usr/local/Cellar/cmake/3.9.5/bin/cmake
+CMAKE_COMMAND = /Applications/CLion.app/Contents/bin/cmake/bin/cmake
 
 # The command to remove a file.
-RM = /usr/local/Cellar/cmake/3.9.5/bin/cmake -E remove -f
+RM = /Applications/CLion.app/Contents/bin/cmake/bin/cmake -E remove -f
 
 # Escaping for special characters.
 EQUALS = =
@@ -59,7 +59,7 @@ CMAKE_BINARY_DIR = /Users/mskwarek/Documents/myDig/mydns
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	/usr/local/Cellar/cmake/3.9.5/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	/Applications/CLion.app/Contents/bin/cmake/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : rebuild_cache
 
 # Special rule for the target rebuild_cache
@@ -70,7 +70,7 @@ rebuild_cache/fast: rebuild_cache
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
-	/usr/local/Cellar/cmake/3.9.5/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+	/Applications/CLion.app/Contents/bin/cmake/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -81,7 +81,7 @@ edit_cache/fast: edit_cache
 # Special rule for the target test
 test:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running tests..."
-	/usr/local/Cellar/cmake/3.9.5/bin/ctest --force-new-ctest-process $(ARGS)
+	/Applications/CLion.app/Contents/bin/cmake/bin/ctest --force-new-ctest-process $(ARGS)
 .PHONY : test
 
 # Special rule for the target test
@@ -147,6 +147,19 @@ runUnitTests/fast:
 	$(MAKE) -f test/CMakeFiles/runUnitTests.dir/build.make test/CMakeFiles/runUnitTests.dir/build
 .PHONY : runUnitTests/fast
 
+#=============================================================================
+# Target rules for targets named foolib
+
+# Build rule for target.
+foolib: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 foolib
+.PHONY : foolib
+
+# fast build rule for target.
+foolib/fast:
+	$(MAKE) -f test/CMakeFiles/foolib.dir/build.make test/CMakeFiles/foolib.dir/build
+.PHONY : foolib/fast
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -158,6 +171,7 @@ help:
 	@echo "... test"
 	@echo "... axfrScanner"
 	@echo "... runUnitTests"
+	@echo "... foolib"
 .PHONY : help
 
 
