@@ -1,5 +1,5 @@
 #include "cmock/cmock.h"
-#include "foo_mock.h"
+//#include "foo_mock.h"
 
 using namespace ::testing;
 
