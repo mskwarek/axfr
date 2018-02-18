@@ -40,3 +40,6 @@ Makefile*
 *.icloud
 *.cmake
 .idea/
+mydns/axfrScanner\.cbp
+
+mydns/src/axfrScanner
