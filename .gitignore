@@ -41,3 +41,4 @@ python_module/*.pyc
 */*.log
 *.log
 *.icloud
+mydns/*.cmake
