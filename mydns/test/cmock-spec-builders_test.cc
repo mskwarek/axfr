@@ -1,5 +1,4 @@
-#include <cmock/cmock.h>
-
+#include "cmock/cmock.h"
 #include "foo_mock.h"
 
 TEST(SpecBuildersTest, ExpectFunctionCallCompiles)
