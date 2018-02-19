@@ -6,7 +6,7 @@ include_directories(${GMOCK_INCLUDE_DIRS})
 include_directories(../inc/)
 include_directories(../inc/cmock)
 include_directories(mocks/)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-long-long -pedantic -std=c++1z -pthread")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-long-long -pedantic -std=c++1z -pthread -rdynamic -Wl -ldl")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2 -Wall -Wno-long-long -pedantic -std=gnu11 -pthread -Wl,-soname -ldl")
 
 FILE(GLOB c_src *.c)
