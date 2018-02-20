@@ -42,4 +42,5 @@ Makefile*
 .idea/
 mydns/axfrScanner\.cbp
 
-mydns/src/axfrScanner
+axfrScanner
+runUnitTests
