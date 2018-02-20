@@ -13,12 +13,23 @@ void ChangetoDnsNameFormat(unsigned char* dns, unsigned char* host)
         return;
 
     int lock = 0 , i = 0;
-    strcat((char*)host, ".");
 
-    for(i = 0 ; i < strlen((char*) host) ; i++)
+    int passed_host_addr_len = strlen((char*) host);
+
+    if('.' != host[passed_host_addr_len-1])
+    {
+        strcat((char*)host, ".");
+        passed_host_addr_len++;
+    }
+
+
+    for(i = 0 ; i < passed_host_addr_len ; i++)
     {
         if(host[i]=='.')
         {
+            if(i == 0)
+                return;
+
             *dns++ = i-lock;
             for(;lock<i;lock++)
             {

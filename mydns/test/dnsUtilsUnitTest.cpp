@@ -27,4 +27,24 @@ TEST(ChangetoDnsNameFormatUnitTest, ShouldChangeFormatWhenProperDataArePassed)
     EXPECT_TRUE(0 == memcmp((const char*)expected, (const char*)returned, sizeof(expected)));
 }
 
+TEST(ChangetoDnsNameFormatUnitTest, ShouldDoNothinPassed)
+{
+    unsigned char expected[25] = "";
+    unsigned char returned[25] = "";
+    unsigned char passed[25] = { '.', 'w', 'w', 'w', '.', 'g', 'o', 'o', 'g', 'l', 'e', '.', 'c', 'o', 'm'};
 
+    ChangetoDnsNameFormat(returned, passed);
+    EXPECT_TRUE(NULL != passed);
+    EXPECT_TRUE(0 == memcmp((const char*)expected, (const char*)returned, sizeof(expected)));
+}
+
+TEST(ChangetoDnsNameFormatUnitTest, ShouldPassed)
+{
+    unsigned char expected[25] = {'\x03', 'w', 'w', 'w', '\x06', 'g', 'o', 'o', 'g', 'l', 'e', '\x03', 'c', 'o', 'm'};
+    unsigned char returned[25] = "";
+    unsigned char passed[25] = { 'w', 'w', 'w', '.', 'g', 'o', 'o', 'g', 'l', 'e', '.', 'c', 'o', 'm', '.'};
+
+    ChangetoDnsNameFormat(returned, passed);
+    EXPECT_TRUE(NULL != passed);
+    EXPECT_TRUE(0 == memcmp((const char*)expected, (const char*)returned, sizeof(expected)));
+}
