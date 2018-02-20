@@ -7,12 +7,15 @@ static void convert_name(unsigned char *name);
  * This will convert www.google.com to 3www6google3com
  * got it :)
  * */
-void ChangetoDnsNameFormat(unsigned char* dns,unsigned char* host)
+void ChangetoDnsNameFormat(unsigned char* dns, unsigned char* host)
 {
-    int lock = 0 , i = 0;
-    strcat((char*)host,".");
+    if(NULL == dns || NULL == host)
+        return;
 
-    for(i = 0 ; i < strlen((char*)host) ; i++)
+    int lock = 0 , i = 0;
+    strcat((char*)host, ".");
+
+    for(i = 0 ; i < strlen((char*) host) ; i++)
     {
         if(host[i]=='.')
         {
