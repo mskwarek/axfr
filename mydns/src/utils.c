@@ -21,8 +21,7 @@ void ChangetoDnsNameFormat(unsigned char* dns, unsigned char* host)
         strcat((char*)host, ".");
         passed_host_addr_len++;
     }
-
-
+    
     for(i = 0 ; i < passed_host_addr_len ; i++)
     {
         if(host[i]=='.')
@@ -64,7 +63,6 @@ unsigned int readSOA(unsigned char* data, unsigned char* dns_packet_resp, unsign
 
     //now convert 3www6google3com0 to www.google.com
     convert_name(name);
-//    name[i-1]='\0'; //remove the last dot
 
     return p;
 }
@@ -73,6 +71,33 @@ unsigned int parse_to_uint(unsigned char* data)
 {
   return (unsigned int)*data << 24 |(unsigned int)*(data+1) << 16 |
     (unsigned int)*(data+2) << 8 | (unsigned int)*(data+3);
+}
+
+unsigned int readString(unsigned char* data, unsigned short data_len,
+                        unsigned char* dns_packet_resp, unsigned char* name)
+{
+    if(data == NULL || name == NULL || dns_packet_resp == NULL)
+        return 0;
+    unsigned int p = 0;
+    //printf("name data: %02x %02x  ", *data, *(data+1));
+
+    while(*data != 0x00)
+    {
+        if((uint8_t)(*data) >= 192 && *(data+1) != 0x00)
+        {
+            unsigned short name_offset = (((*(data) << 8) &0xFF00) | (*(data+1) & 0xFF)) - 49152;
+            //printf("from pointer: %02x %02x offset: %d ", *data, *(data+1), name_offset);
+            p+=readString(dns_packet_resp + name_offset, 0, dns_packet_resp, name+p);
+            break;
+        }
+
+        name[p++]=*data++;
+    }
+
+    //printf("while success\n");
+    name[p] = '\0';
+
+    return p;
 }
 
 void convert_name(unsigned char *name)
@@ -92,27 +117,4 @@ void convert_name(unsigned char *name)
     {
         name[i-1]='\0';
     }
-}
-
-unsigned int readString(unsigned char* data, unsigned short data_len, unsigned char* dns_packet_resp, unsigned char* name)
-{
-    unsigned int p = 0;
-    //printf("name data: %02x %02x  ", *data, *(data+1));
-
-    while(*data != 0x00)
-    {
-        if((uint8_t)(*data) >= 192 && *(data+1) != 0x00)
-        {
-            unsigned short name_offset = (((*(data) << 8) &0xFF00) | (*(data+1) & 0xFF)) - 49152;
-            //printf("from pointer: %02x %02x offset: %d ", *data, *(data+1), name_offset);
-            p+=readString(dns_packet_resp + name_offset, 0, dns_packet_resp, name+p);
-            break;
-        }
-
-        name[p++]=*data++;
-    }
-
-    //printf("while success\n");
-    name[p] = '\0';
-    return p;
 }
