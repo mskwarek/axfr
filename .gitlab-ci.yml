@@ -10,9 +10,10 @@ build:
   # install the necessary build tools when needed
   before_script: 
     - apt update && apt -y install make autoconf cmake libgtest-dev
-  script: 
-    - cd mydns
-    - cmake .
+  script:
+    - mkdir mydns/build
+    - cd mydns/build
+    - cmake ..
     - make -j
     - ./test/runUnitTests
 
