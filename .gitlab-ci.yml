@@ -14,18 +14,5 @@ build:
     - cd mydns
     - cmake .
     - make -j
-  artifacts:
-    paths:
-      - mybinary
-  # depending on your build setup it's most likely a good idea to cache outputs to reduce the build time
-  # cache:
-  #   paths:
-  #     - "*.o"
+    - ./test/runUnitTests
 
-# run tests using the binary built before
-test:
-  stage: test
-  before_script: 
-    - build
-  script:
-    ./test/runUnitTests
