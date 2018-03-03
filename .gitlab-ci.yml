@@ -24,7 +24,8 @@ build:
 
 # run tests using the binary built before
 test:
-  before_script: build
   stage: test
+  before_script: 
+    - build
   script:
     ./test/runUnitTests
