@@ -68,7 +68,9 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
     int to, dns_transport_type transport_type)
 {
     int s = -1;
-    unsigned char buf[65536] = {0};
+
+    enum{BUFSIZE=65536};
+    unsigned char buf[BUFSIZE] = {0};
     struct sockaddr_in dest = {0};
     int answers_cnt = 0;
     int dns_header_size = 0;
@@ -296,7 +298,6 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
         if (n < 0) {
             perror("ERROR writing to socket");
         }
-        enum{BUFSIZE=65536};
         bzero(buf, BUFSIZE);
 
         char replyMessage[BUFSIZE] = {0};
@@ -340,7 +341,6 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
     int i =0;
     unsigned char *reader = NULL;
 
-    struct RES_RECORD *answers = NULL;
     enum { FILENAME_SIZE = 512 };
 
     char filename[FILENAME_SIZE] = {0};
@@ -374,6 +374,7 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
     // printf("\n %d Answers.", answers_cnt);
     //
 
+    struct RES_RECORD *answers = NULL;
     answers = (struct RES_RECORD*)calloc(answers_cnt, sizeof(struct RES_RECORD));
     if(answers == NULL)
     {
