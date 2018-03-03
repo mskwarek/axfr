@@ -1,17 +1,12 @@
 #include <string.h>
-#include<sys/socket.h>    //you know what this is for
-#include<arpa/inet.h> //inet_addr , inet_ntoa , ntohs etc
-#include<netinet/in.h>
-#include<unistd.h>    //getpid
-#include <netinet/in.h>
-#include <netdb.h>
-#include<unistd.h>    //usleep
-#include<fcntl.h> //fcntl
+#include <sys/socket.h>    //you know what this is for
+#include <arpa/inet.h>
+#include <unistd.h>
+#include <fcntl.h> //fcntl
 #include <errno.h>
-#include <sys/time.h>
 #include "dns.h"
 #include "utils.h"
-#include <stdlib.h>
+#include "dns_received_packet_reader.h"
 
 static unsigned short dns_id = 0;//0x1122;/**< DNS query id  */
 static unsigned char*  dns_buf;
@@ -68,33 +63,6 @@ struct QUESTION
     unsigned short qtype;
     unsigned short qclass;
 };
-
-//Constant sized fields of the resource record structure
-#pragma pack(push, 1)
-struct R_DATA
-{
-    unsigned short type;
-    unsigned short _class;
-    unsigned int ttl;
-    unsigned short data_len;
-};
-#pragma pack(pop)
-
-//Pointers to resource record contents
-struct RES_RECORD
-{
-    unsigned char *name;
-    struct R_DATA *resource;
-    unsigned char *rdata;
-};
-
-//Structure of a Query
-typedef struct
-{
-    unsigned char *name;
-    struct QUESTION *ques;
-} QUERY;
-
 
 dns_result ngethostbyname(const char *que , const char *server, const char *dst_log_path, int query_type,
     int to, dns_transport_type transport_type)
@@ -328,10 +296,9 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
         if (n < 0) {
             perror("ERROR writing to socket");
         }
-
-        bzero(buf, 65536);
-
         enum{BUFSIZE=65536};
+        bzero(buf, BUFSIZE);
+
         char replyMessage[BUFSIZE] = {0};
         ssize_t numBytesRecv = 0;
         int off = 0;
@@ -374,9 +341,10 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
     unsigned char *reader = NULL;
 
     struct RES_RECORD *answers = NULL;
+    enum { FILENAME_SIZE = 512 };
 
-    char filename[512] = {0};
-    snprintf(filename, 512, "%s/%s_%s.axfr", dst_log_path, que, server);
+    char filename[FILENAME_SIZE] = {0};
+    snprintf(filename, FILENAME_SIZE, "%s/%s_%s.axfr", dst_log_path, que, server);
     //printf(" %s\n", filename);
 
     if(answers_cnt <= 0)
@@ -416,49 +384,8 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
     //move ahead of the dns header and the query field
     reader = &buf[dns_header_size + (strlen((const char*)qname)+1) + sizeof(struct QUESTION)];
 
-    //Start reading answers
+    readAnswers(transport_type, reader, answers, buf, f, answers_cnt);
 
-    int noMemory = 0;
-    int mallocRetry = 0;
-    for(i=0; i<answers_cnt; )
-    {
-    	unsigned char na[1024] = {0};
-        unsigned int tcp_offset = 0;
-        if(TRANSPORT_TYPE_TCP == transport_type)
-        {
-            tcp_offset = 2;
-        }
-        unsigned int name_offset = readSOA(reader, buf+tcp_offset, na) + 1;
-
-    	unsigned short class = ((*(reader+2 + name_offset) << 8) &0xFF00) | (*(reader+3 + name_offset) & 0xFF);
-    	unsigned short type = ((*(reader+name_offset) << 8) &0xFF00) | (*(reader+1 +name_offset) & 0xFF);
-        unsigned int ttl = parse_to_uint(reader+4+name_offset);
-    	unsigned short name_size = ((*(reader+8+name_offset) << 8) &0xFF00) | (*(reader+9+name_offset) & 0xFF);
-    	answers[i].resource=(struct R_DATA*)(reader);
-
-    	reader+=10 + name_offset;
-
-    	answers[i].rdata = (unsigned char*)malloc(name_size);
-        if(answers[i].rdata == NULL && mallocRetry < 4)
-        {
-            mallocRetry++;
-        }
-        else
-        {
-            fprintf(f, "%s\t%d\t%d\t", na, ttl, type);
-        }
-    	if((DNS_RESULT_NO_MEMORY != ReadName(reader, name_size, type, buf + tcp_offset, f)) || noMemory > 2)
-        {
-           reader+=name_size;
-           noMemory = 0;
-           mallocRetry = 0;
-           ++i;
-        }
-        else
-        {
-            noMemory++;
-        }
-    }
     fclose(f);
     for(i=0; i < answers_cnt; ++i)
     {
