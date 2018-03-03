@@ -18,6 +18,4 @@ build:
     - cmake .. -DCOVERAGE=1
     - make -j
     - ./test/runUnitTests
-
-  after_success:
     - coveralls --root . -E ".*gtest.*" -E ".*CMakeFiles.*"
