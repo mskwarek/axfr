@@ -10,10 +10,14 @@ build:
   # install the necessary build tools when needed
   before_script: 
     - apt update && apt -y install make autoconf cmake libgtest-dev
+    - pip install --user cpp-coveralls
+
   script:
     - mkdir mydns/build
     - cd mydns/build
-    - cmake ..
+    - cmake .. -DCOVERAGE=1
     - make -j
     - ./test/runUnitTests
 
+  after_success:
+    - coveralls --root . -E ".*gtest.*" -E ".*CMakeFiles.*"

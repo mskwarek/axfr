@@ -1,3 +1,4 @@
+SET(COVERAGE OFF CACHE BOOL "Coverage")
 
 enable_testing()
 find_package(GTest REQUIRED)
@@ -19,6 +20,11 @@ add_library(foolib SHARED ${c_src})
 
 FILE(GLOB src *.cc *.cpp)
 add_executable(runUnitTests ${src})
+
+if (COVERAGE)
+    target_compile_options(runUnitTests PRIVATE --coverage)
+    target_link_libraries(runUnitTests PRIVATE --coverage)
+endif()
 
 # Link test executable against gtest & gtest_main
 add_test(runUnitTests runUnitTests)
