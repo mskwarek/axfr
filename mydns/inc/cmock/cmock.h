@@ -33,7 +33,7 @@
 #ifndef CMOCK_INCLUDE_CMOCK_CMOCK_H_
 #define CMOCK_INCLUDE_CMOCK_CMOCK_H_
 
-#include "gmock/gmock.h"
+#include <gmock/gmock.h>
 
 #include "cmock-function-mockers.h"
 #include "cmock-spec-builders.h"
