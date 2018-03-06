@@ -10,12 +10,16 @@ build:
   # install the necessary build tools when needed
   before_script: 
     - apt update && apt -y install make autoconf cmake libgtest-dev
-    - pip install --user cpp-coveralls
 
   script:
     - mkdir mydns/build
     - cd mydns/build
     - cmake .. -DCOVERAGE=1
     - make -j
+    - make test
     - ./test/runUnitTests
-    - coveralls --root . -E ".*gtest.*" -E ".*CMakeFiles.*"
+    - mkdir _coverage && cd _coverage
+    - find .. -iname "*.gcda" | xargs gcov
+    - lcov --capture --directory .. --output-file coverage.info
+    - genhtml coverage.info --output-directory ../coverage
+    
