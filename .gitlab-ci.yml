@@ -12,7 +12,6 @@ build:
     - apt update && apt -y install make autoconf cmake libgtest-dev lcov
 
   script:
-    - mkdir coverage
     - mkdir mydns/build
     - cd mydns/build
     - cmake .. -DCOVERAGE=1
@@ -22,8 +21,8 @@ build:
     - mkdir _coverage && cd _coverage
     - find .. -iname "*.gcda" | xargs gcov
     - lcov --capture --directory .. --output-file coverage.info
-    - genhtml coverage.info --output-directory ../../coverage
-    - cd ../..
+    - genhtml coverage.info --output-directory ../../../coverage
+    - cd ../../..
 
   artifacts:
     paths:
