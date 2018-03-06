@@ -22,4 +22,7 @@ build:
     - find .. -iname "*.gcda" | xargs gcov
     - lcov --capture --directory .. --output-file coverage.info
     - genhtml coverage.info --output-directory ../coverage
-    
+
+  artifacts:
+    paths:
+      - mydns/build/coverage/
