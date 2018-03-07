@@ -21,7 +21,7 @@ build:
     - mkdir _coverage && cd _coverage
     - find .. -iname "*.gcda" | xargs gcov
     - lcov --capture --directory .. --output-file coverage.info
-    - lcov --remove coverage.info '/usr/include/*' '/usr/lib/*' -o coverage_filtered.info
+    - lcov --remove coverage.info '/usr/include/*' '/usr/lib/*' '/usr/local/*' -o coverage_filtered.info
     - genhtml coverage_filtered.info --output-directory ../../../coverage
     - cd ../../..
 
