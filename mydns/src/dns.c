@@ -11,6 +11,8 @@
 static unsigned short dns_id = 0;//0x1122;/**< DNS query id  */
 static unsigned char*  dns_buf;
 
+
+
 struct DNS_HEADER
 {
     unsigned short len;
@@ -58,6 +60,7 @@ struct DNS_HEADER_UDP
 };
 typedef struct DNS_HEADER_UDP DNS_H_UDP;
 
+
 struct QUESTION
 {
     unsigned short qtype;
@@ -69,7 +72,11 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
 {
     int s = -1;
 
-    enum{BUFSIZE=65536};
+    enum
+    {
+        BUFSIZE=65536,
+        HOSTSIZE = 128
+    };
     unsigned char buf[BUFSIZE] = {0};
     struct sockaddr_in dest = {0};
     int answers_cnt = 0;
@@ -79,10 +86,10 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
 
     unsigned char *qname = NULL;
     struct QUESTION *qinfo = NULL;
-    char host[128] = {0};
+    char host[HOSTSIZE] = {0};
       //Set the DNS structure to standard queries
 
-    snprintf(host, 128, "%s", que);
+    snprintf(host, HOSTSIZE, "%s", que);
     printf("\nResolving %s\n" , host);
     dns_id = getpid();
 
@@ -134,7 +141,7 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
         int len = (unsigned int)sizeof(struct DNS_HEADER_UDP) + (strlen((const char*)qname)+1) + sizeof(struct QUESTION);
 
         printf("\nSending Packet...");
-        if( sendto(s,(char*)buf,len,0,(struct sockaddr*)&dest,sizeof(dest)) < 0)
+        if( 0 > sendto(s,(char*)buf,len,0,(struct sockaddr*)&dest,sizeof(dest)) )
         {
             printf("sendto failed");
             return DNS_RESULT_ERR;

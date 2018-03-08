@@ -16,7 +16,7 @@ endif()
 FILE(GLOB c_src *.c)
 add_library(foolib SHARED ${c_src})
 
-FILE(GLOB src *.cc *.cpp)
+FILE(GLOB src *.cc *.cpp mocks/*.cpp mocks/*.cc)
 add_executable(runUnitTests ${src})
 
 # Link test executable against gtest & gtest_main
