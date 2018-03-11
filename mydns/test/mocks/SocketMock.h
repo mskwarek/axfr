@@ -15,3 +15,6 @@ DECLARE_FUNCTION_MOCK5(SocketFunctionMock, setsockopt, int(int, int, int, const 
 
 DECLARE_FUNCTION_MOCK6(SendtoFunctionMock, sendto, ssize_t(int, const void *, size_t, int, const struct sockaddr *,
     socklen_t));
+
+DECLARE_FUNCTION_MOCK6(RecvfromFunctionMock, recvfrom, ssize_t(int, void *, size_t, int, struct sockaddr * __restrict,
+    socklen_t * __restrict));
