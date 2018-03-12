@@ -18,9 +18,15 @@ TEST_F(DnsReceivedPacketReaderTest, testParsingResponse)
         SocketFunctionMock setoptionsMock;
         SendtoFunctionMock sentoMock;
         RecvfromFunctionMock recvfromMock;
+        DnsTcpReceivedDataMock tcpMock;
 
 //        EXPECT_FUNCTION_CALL(setoptionsMock, (_, _, _, _, _)).WillOnce(Return(0));
 //        EXPECT_FUNCTION_CALL(sentoMock, (_, _, _, _, _, _)).WillOnce(Return(0));
+//        EXPECT_FUNCTION_CALL(tcpMock, (_, _, _, _, _, _, _ ,_)).WillRepeatedly(
+//            DoAll(
+//                Return(0),
+//                SetArgReferee<6>(this->dnsByteBuffer)));
     }
 
 }
+
