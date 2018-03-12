@@ -241,34 +241,27 @@
 			</Target>
 		</Build>
 		<Unit filename="/Users/mskwarek/Documents/myDig/mydns/src/dns.c">
-			<Option target="axfrScanner"/>
 			<Option target="axfr"/>
 		</Unit>
 		<Unit filename="/Users/mskwarek/Documents/myDig/mydns/src/dns_packet.c">
-			<Option target="axfrScanner"/>
 			<Option target="axfr"/>
 		</Unit>
 		<Unit filename="/Users/mskwarek/Documents/myDig/mydns/src/dns_received_packet_reader.c">
-			<Option target="axfrScanner"/>
 			<Option target="axfr"/>
 		</Unit>
 		<Unit filename="/Users/mskwarek/Documents/myDig/mydns/src/dns_response_parser.c">
-			<Option target="axfrScanner"/>
 			<Option target="axfr"/>
 		</Unit>
 		<Unit filename="/Users/mskwarek/Documents/myDig/mydns/src/dns_tcp.c">
-			<Option target="axfrScanner"/>
 			<Option target="axfr"/>
 		</Unit>
 		<Unit filename="/Users/mskwarek/Documents/myDig/mydns/src/dns_udp.c">
-			<Option target="axfrScanner"/>
 			<Option target="axfr"/>
 		</Unit>
 		<Unit filename="/Users/mskwarek/Documents/myDig/mydns/src/main.cpp">
 			<Option target="axfrScanner"/>
 		</Unit>
 		<Unit filename="/Users/mskwarek/Documents/myDig/mydns/src/utils.c">
-			<Option target="axfrScanner"/>
 			<Option target="axfr"/>
 		</Unit>
 		<Unit filename="/Users/mskwarek/Documents/myDig/mydns/test/DnsReceivedPacketReaderTest.cpp">
