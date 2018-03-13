@@ -52,11 +52,11 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
         DNS_H_TCP *dns = NULL;
 
         dns = (struct DNS_TCP_HEADER *)&buf;
-        dns_id = dns->header.id;
+
 
         feel_dns_header_req(&(dns->header));
         qname = &buf[sizeof(struct DNS_TCP_HEADER)];
-
+        dns_id = dns->header.id;
         if(DNS_RESULT_OK != dns_tcp_req(dns, qname, qinfo, to, host, (char*) buf, query_type, server))
         {
             return DNS_RESULT_ERR;
