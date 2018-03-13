@@ -18,13 +18,17 @@ build:
     - cd mydns/build
     - cmake .. -DCOVERAGE=1
     - make -j
+    - make -j test
+  artifacts:
+    paths:
+      - mydns/build
 
 test:
   stage: test
   dependencies:
     - build
   script:
-    - make test
+    - cd mydns/build
     - ./test/runUnitTests
     - mkdir _coverage && cd _coverage
     - find .. -iname "*.gcda" | xargs gcov
