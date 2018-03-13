@@ -18,6 +18,12 @@ build:
     - cd mydns/build
     - cmake .. -DCOVERAGE=1
     - make -j
+
+test:
+  stage: test
+  dependencies:
+    - build
+  script:
     - make test
     - ./test/runUnitTests
     - mkdir _coverage && cd _coverage
@@ -31,10 +37,11 @@ build:
     paths:
       - coverage/
 
+
 pages:
   stage: deploy
   dependencies:
-    - build
+    - test
   script:
     - mv coverage/ public/
   artifacts:
