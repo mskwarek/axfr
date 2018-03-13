@@ -91,7 +91,7 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
 
         if(dns_id != dnsIdFromPacket)
         {
-            printf("dnsId from resp does not match");
+            printf("dnsId from resp does not match %d, %d", dns_id, dnsIdFromPacket);
             return DNS_RESULT_ERR;
         }
     }
