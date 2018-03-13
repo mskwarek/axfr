@@ -25,6 +25,8 @@ build:
 
 test:
   stage: test
+  before_script:
+    - apt -y install gcc lcov
   dependencies:
     - build
   script:
