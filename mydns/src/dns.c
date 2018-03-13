@@ -89,7 +89,7 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
     {
         unsigned short dnsIdFromPacket = ((*(buf+2) << 8) &0xFF00) | (*(buf+3) & 0xFF);
 
-        if(dns_id != dnsIdFromPacket)
+        if(htons(dns_id) != dnsIdFromPacket)
         {
             printf("dnsId from resp does not match %d, %d, %d, %d", dns_id, dnsIdFromPacket, htons(dns_id), ntohs(dns_id));
             return DNS_RESULT_ERR;
