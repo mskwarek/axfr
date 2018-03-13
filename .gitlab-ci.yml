@@ -12,7 +12,7 @@ build:
     - apt update && apt -y install make autoconf cmake libgtest-dev lcov
     - git clone -q https://github.com/google/googletest.git googletest
     - cd googletest && git checkout tags/release-1.8.0 && mkdir -p googletest/build && cd googletest/build && cmake .. && make && make install
-    - cd ../../googlemock && mkdir build && cd build && cmake .. && make && make install
+    - cd ../../googlemock && mkdir build && cd build && cmake .. && make && make install && cd ../../..
   script:
     - mkdir mydns/build
     - cd mydns/build
