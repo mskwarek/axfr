@@ -15,7 +15,7 @@ class DnsReceivedPacketReaderTest : public DnsResponseTest
 TEST_F(DnsReceivedPacketReaderTest, testParsingResponse)
 {
     {
-        SocketFunctionMock setoptionsMock;
+//        SocketFunctionMock setoptionsMock;
         SendtoFunctionMock sentoMock;
         RecvfromFunctionMock recvfromMock;
         DnsTcpReceivedDataMock tcpMock;
