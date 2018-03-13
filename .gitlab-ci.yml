@@ -9,7 +9,7 @@ build:
   # instead of calling g++ directly you can also use some build toolkit like make
   # install the necessary build tools when needed
   before_script: 
-    - apt update && apt -y install make autoconf cmake libgtest-dev lcov build-essential git gcc python lshw llvm-5.0 llvm-5.0-tools clang-5.0 libtbb-dev
+    - apt update && apt -y install make autoconf cmake lcov build-essential git gcc python lshw llvm-5.0 llvm-5.0-tools clang-5.0
     - git clone -q https://github.com/google/googletest.git googletest
     - cd googletest && git checkout tags/release-1.8.0 && mkdir -p googletest/build && cd googletest/build && cmake .. && make && make install
     - cd ../../googlemock && mkdir build && cd build && cmake .. && make && make install && cd ../../..
