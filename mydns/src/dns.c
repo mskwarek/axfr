@@ -52,6 +52,7 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
         DNS_H_TCP *dns = NULL;
 
         dns = (struct DNS_TCP_HEADER *)&buf;
+        dns_id = dns->header.id;
 
         feel_dns_header_req(&(dns->header));
         qname = &buf[sizeof(struct DNS_TCP_HEADER)];
