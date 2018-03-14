@@ -11,5 +11,5 @@ IMPLEMENT_FUNCTION_MOCK6(SendtoFunctionMock, sendto, ssize_t(int, const void *, 
 IMPLEMENT_FUNCTION_MOCK6(RecvfromFunctionMock, recvfrom, ssize_t(int, void *, size_t, int, struct sockaddr * __restrict,
                     socklen_t * __restrict));
 
-IMPLEMENT_FUNCTION_MOCK8(DnsTcpReceivedDataMock, dns_tcp_req, dns_result (DNS_H_TCP *dns, unsigned char *qname,
-    struct QUESTION *qinfo, unsigned int to, char* host, unsigned char* buf, int query_type, const char *server));
+IMPLEMENT_FUNCTION_MOCK8(DnsTcpReceivedDataMock, dns_tcp_req, dns_result (DNS_H_TCP *, unsigned char *,
+    struct QUESTION *, unsigned int, char*, unsigned char*, int, const char *));

@@ -189,56 +189,6 @@
 					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/mskwarek/Documents/myDig/mydns/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
-			<Target title="foolib">
-				<Option output="/Users/mskwarek/Documents/myDig/mydns/cmake-build-debug/test/libfoolib.dylib" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/Users/mskwarek/Documents/myDig/mydns/cmake-build-debug/test"/>
-				<Option object_output="./"/>
-				<Option type="3"/>
-				<Option compiler="clang"/>
-				<Compiler>
-					<Add directory="/usr/local/include"/>
-					<Add directory="/Users/mskwarek/Documents/myDig/mydns/test/../inc"/>
-					<Add directory="/Users/mskwarek/Documents/myDig/mydns/test/../inc/cmock"/>
-					<Add directory="/Users/mskwarek/Documents/myDig/mydns/test/mocks"/>
-					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
-					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/9.0.0/include"/>
-					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
-					<Add directory="/usr/include"/>
-					<Add directory="/System/Library/Frameworks"/>
-					<Add directory="/Library/Frameworks"/>
-				</Compiler>
-				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/Users/mskwarek/Documents/myDig/mydns/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 foolib"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/mskwarek/Documents/myDig/mydns/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/Users/mskwarek/Documents/myDig/mydns/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/mskwarek/Documents/myDig/mydns/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 clean"/>
-				</MakeCommands>
-			</Target>
-			<Target title="foolib/fast">
-				<Option output="/Users/mskwarek/Documents/myDig/mydns/cmake-build-debug/test/libfoolib.dylib" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/Users/mskwarek/Documents/myDig/mydns/cmake-build-debug/test"/>
-				<Option object_output="./"/>
-				<Option type="3"/>
-				<Option compiler="clang"/>
-				<Compiler>
-					<Add directory="/usr/local/include"/>
-					<Add directory="/Users/mskwarek/Documents/myDig/mydns/test/../inc"/>
-					<Add directory="/Users/mskwarek/Documents/myDig/mydns/test/../inc/cmock"/>
-					<Add directory="/Users/mskwarek/Documents/myDig/mydns/test/mocks"/>
-					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
-					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/9.0.0/include"/>
-					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
-					<Add directory="/usr/include"/>
-					<Add directory="/System/Library/Frameworks"/>
-					<Add directory="/Library/Frameworks"/>
-				</Compiler>
-				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/Users/mskwarek/Documents/myDig/mydns/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 foolib/fast"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/mskwarek/Documents/myDig/mydns/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/Users/mskwarek/Documents/myDig/mydns/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/mskwarek/Documents/myDig/mydns/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 clean"/>
-				</MakeCommands>
-			</Target>
 		</Build>
 		<Unit filename="/Users/mskwarek/Documents/myDig/mydns/src/dns.c">
 			<Option target="axfr"/>
@@ -267,28 +217,10 @@
 		<Unit filename="/Users/mskwarek/Documents/myDig/mydns/test/DnsReceivedPacketReaderTest.cpp">
 			<Option target="runUnitTests"/>
 		</Unit>
-		<Unit filename="/Users/mskwarek/Documents/myDig/mydns/test/cmock-function-mockers_test.cc">
-			<Option target="runUnitTests"/>
-		</Unit>
-		<Unit filename="/Users/mskwarek/Documents/myDig/mydns/test/cmock-spec-builders_test.cc">
-			<Option target="runUnitTests"/>
-		</Unit>
 		<Unit filename="/Users/mskwarek/Documents/myDig/mydns/test/dnsUtilsUnitTest.cpp">
 			<Option target="runUnitTests"/>
 		</Unit>
 		<Unit filename="/Users/mskwarek/Documents/myDig/mydns/test/dns_ut.cpp">
-			<Option target="runUnitTests"/>
-		</Unit>
-		<Unit filename="/Users/mskwarek/Documents/myDig/mydns/test/foo.c">
-			<Option target="foolib"/>
-		</Unit>
-		<Unit filename="/Users/mskwarek/Documents/myDig/mydns/test/foo.h">
-			<Option target="foolib"/>
-		</Unit>
-		<Unit filename="/Users/mskwarek/Documents/myDig/mydns/test/foo_mock.cc">
-			<Option target="runUnitTests"/>
-		</Unit>
-		<Unit filename="/Users/mskwarek/Documents/myDig/mydns/test/foo_mock.h">
 			<Option target="runUnitTests"/>
 		</Unit>
 		<Unit filename="/Users/mskwarek/Documents/myDig/mydns/test/mocks/SocketMock.cpp">

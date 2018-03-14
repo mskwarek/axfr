@@ -1,34 +1,38 @@
 #ifndef _DNS_H_
 #define _DNS_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "dns_response_parser.h"
 
 typedef enum
 {
-	TRANSPORT_TYPE_UDP,
-	TRANSPORT_TYPE_TCP
+    TRANSPORT_TYPE_UDP,
+    TRANSPORT_TYPE_TCP
 } dns_transport_type;
 
 //Constant sized fields of the resource record structure
 #pragma pack(push, 1)
 struct R_DATA
 {
-	unsigned short type;
-	unsigned short _class;
-	unsigned int ttl;
-	unsigned short data_len;
+    unsigned short type;
+    unsigned short _class;
+    unsigned int ttl;
+    unsigned short data_len;
 };
 #pragma pack(pop)
 
 //Pointers to resource record contents
 struct RES_RECORD
 {
-	unsigned char *name;
-	struct R_DATA *resource;
-	unsigned char *rdata;
+    unsigned char *name;
+    struct R_DATA *resource;
+    unsigned char *rdata;
 };
 
-dns_result ngethostbyname(const char* , const char*, const char *dst_log_path, int, int, dns_transport_type);
+dns_result ngethostbyname(const char *, const char *, const char *dst_log_path, int, int, dns_transport_type);
 
 
 /**
@@ -176,96 +180,96 @@ TYPE fields are used in resource records.  Note that these types are a subset of
 #define DHDR_SIZE 12
 
 
-										      /**
-											 @brief Header for all domain messages
-										      */
-										      typedef struct _DHDR
-										      {
-											unsigned int id;/**< Identification */
-											unsigned char flag0;
-											unsigned char flag1;
-											unsigned int qdcount;/**< Question count */
-											unsigned int ancount;/**< Answer count */
-											unsigned int nscount;/**< Authority (name server) count */
-											unsigned int arcount;/**< Additional record count */
-										      }DHDR;
+/**
+@brief Header for all domain messages
+*/
+typedef struct _DHDR
+{
+    unsigned int id;/**< Identification */
+    unsigned char flag0;
+    unsigned char flag1;
+    unsigned int qdcount;/**< Question count */
+    unsigned int ancount;/**< Answer count */
+    unsigned int nscount;/**< Authority (name server) count */
+    unsigned int arcount;/**< Additional record count */
+} DHDR;
 
-										      /* rd : Recursion desired , tc : Truncation, aa: Authoratative answer, opcode : op code = OP_QUREY, OP_IQUREY, OP_STAUTS, qr : Query/Response */
-#define MAKE_FLAG0(qr,op,aa,tc,rd)( ((qr & 0x01) << 7) + ((op & 0x0F) << 3) + ((aa & 0x01) << 2) + ((tc & 0x01) << 1) + (rd & 0x01) )
+/* rd : Recursion desired , tc : Truncation, aa: Authoratative answer, opcode : op code = OP_QUREY, OP_IQUREY, OP_STAUTS, qr : Query/Response */
+#define MAKE_FLAG0(qr, op, aa, tc, rd)( ((qr & 0x01) << 7) + ((op & 0x0F) << 3) + ((aa & 0x01) << 2) + ((tc & 0x01) << 1) + (rd & 0x01) )
 
-										      /* rcode : Response code, z : Reserved for future use.  Must be zero in all queries and responses, */
-										      /* ra : Recursion Available - this be is set or cleared in a response, and denotes whether recursive query support is available in the name server.*/
-#define MAKE_FLAG1(ra,z,rcode)( ((ra & 0x01) << 7) + ((z & 0x07) << 4) +  (rcode & 0x0F) )
+/* rcode : Response code, z : Reserved for future use.  Must be zero in all queries and responses, */
+/* ra : Recursion Available - this be is set or cleared in a response, and denotes whether recursive query support is available in the name server.*/
+#define MAKE_FLAG1(ra, z, rcode)( ((ra & 0x01) << 7) + ((z & 0x07) << 4) +  (rcode & 0x0F) )
 
-										      /*
-											  <QUESTION FORMAT >
-      0  1  2  3  4  5  6  7  8  9  0  1  2  3  4  5
-    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    |                                               |
-    /                     QNAME                     /
-    /                                               /
-    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    |                     QTYPE                     |
-    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    |                     QCLASS                    |
-    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+/*
+<QUESTION FORMAT >
+0  1  2  3  4  5  6  7  8  9  0  1  2  3  4  5
++--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+|                                               |
+/                     QNAME                     /
+/                                               /
++--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+|                     QTYPE                     |
++--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+|                     QCLASS                    |
++--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
 
 where:
 
 QNAME           a domain name represented as a sequence of labels, where
-                each label consists of a length octet followed by that
-                number of octets.  The domain name terminates with the
-                zero length octet for the null label of the root.  Note
-                that this field may be an odd number of octets; no
-                padding is used.
+each label consists of a length octet followed by that
+number of octets.  The domain name terminates with the
+zero length octet for the null label of the root.  Note
+that this field may be an odd number of octets; no
+padding is used.
 
 QTYPE           a two octet code which specifies the type of the query.
-                The values for this field include all codes valid for a
-                TYPE field, together with some more general codes which
-                can match more than one type of RR.
+The values for this field include all codes valid for a
+TYPE field, together with some more general codes which
+can match more than one type of RR.
 
 QCLASS          a two octet code that specifies the class of the query.
 For example, the QCLASS field is IN for the Internet.
 */
 
-										      /**
-											 @brief QUESTION FORMAT
-										      */
-										      typedef struct _QUESTION
-										      {
-											//char* qname;// Variable length data
-											unsigned int qtype;
-											unsigned int qclass;
-										      }DQST;
+/**
+@brief QUESTION FORMAT
+*/
+typedef struct _QUESTION
+{
+    //char* qname;// Variable length data
+    unsigned int qtype;
+    unsigned int qclass;
+} DQST;
 
 
-										      /*
-											 Resource record format
+/*
+Resource record format
 
 The answer, authority, and additional sections all share the same
 format: a variable number of resource records, where the number of
 records is specified in the corresponding count field in the header.
 Each resource record has the following format:
-                                    1  1  1  1  1  1
-      0  1  2  3  4  5  6  7  8  9  0  1  2  3  4  5
-    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    |                                               |
-    /                                               /
-    /                      NAME                     /
-    |                                               |
-    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    |                      TYPE                     |
-    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    |                     CLASS                     |
-    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    |                      TTL                      |
-    |                                               |
-    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    |                   RDLENGTH                    |
-    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--|
-    /                     RDATA                     /
-    /                                               /
-    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+1  1  1  1  1  1
+0  1  2  3  4  5  6  7  8  9  0  1  2  3  4  5
++--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+|                                               |
+/                                               /
+/                      NAME                     /
+|                                               |
++--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+|                      TYPE                     |
++--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+|                     CLASS                     |
++--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+|                      TTL                      |
+|                                               |
++--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+|                   RDLENGTH                    |
++--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--|
+/                     RDATA                     /
+/                                               /
++--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
 
 where:
 
@@ -276,66 +280,64 @@ message.  In this scheme, an entire domain name or a list of labels at
 the end of a domain name is replaced with a pointer to a prior occurance
 of the same name.
 The pointer takes the form of a two octet sequence:
-    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-        | 1  1|                OFFSET                   |
-	    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-	    The first two bits are ones.  This allows a pointer to be distinguished
-	    from a label, since the label must begin with two zero bits because
-	    labels are restricted to 63 octets or less.  (The 10 and 01 combinations
-	    are reserved for future use.)  The OFFSET field specifies an offset from
-	    the start of the message (i.e., the first octet of the ID field in the
-	    domain header).  A zero offset specifies the first byte of the ID field,
-	    etc.
-	    The compression scheme allows a domain name in a message to be
-	    represented as either:
-	       - a sequence of labels ending in a zero octet
-	          - a pointer
-		     - a sequence of labels ending with a pointer
++--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+| 1  1|                OFFSET                   |
++--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+The first two bits are ones.  This allows a pointer to be distinguished
+from a label, since the label must begin with two zero bits because
+labels are restricted to 63 octets or less.  (The 10 and 01 combinations
+are reserved for future use.)  The OFFSET field specifies an offset from
+the start of the message (i.e., the first octet of the ID field in the
+domain header).  A zero offset specifies the first byte of the ID field,
+etc.
+The compression scheme allows a domain name in a message to be
+represented as either:
+- a sequence of labels ending in a zero octet
+- a pointer
+- a sequence of labels ending with a pointer
 
 TYPE            two octets containing one of the RR type codes.  This
-                field specifies the meaning of the data in the RDATA
-                field.
+field specifies the meaning of the data in the RDATA
+field.
 
 CLASS           two octets which specify the class of the data in the
-                RDATA field.
+RDATA field.
 
 TTL             a 32 bit unsigned integer that specifies the time
 interval (in seconds) that the resource record may be
-                cached before it should be discarded.  Zero values are
-                interpreted to mean that the RR can only be used for the
-                transaction in progress, and should not be cached.
+cached before it should be discarded.  Zero values are
+interpreted to mean that the RR can only be used for the
+transaction in progress, and should not be cached.
 
 RDLENGTH        an unsigned 16 bit integer that specifies the length in
-                octets of the RDATA field.
+octets of the RDATA field.
 
 RDATA           a variable length string of octets that describes the
-                resource.  The format of this information varies
-                according to the TYPE and CLASS of the resource record.
-                For example, the if the TYPE is A and the CLASS is IN,
-                the RDATA field is a 4 octet ARPA Internet address.
+resource.  The format of this information varies
+according to the TYPE and CLASS of the resource record.
+For example, the if the TYPE is A and the CLASS is IN,
+the RDATA field is a 4 octet ARPA Internet address.
 */
 
 #define COMPRESSION_SCHEME 0xC0
 
-										      /**
-											 @brief Resource record format
+/**
+@brief Resource record format
 
- The answer, authority, and additional sections all share the same
+The answer, authority, and additional sections all share the same
 format: a variable number of resource records, where the number of
 records is specified in the corresponding count field in the header.
 Each resource record has the following format:
-										      */
-										      typedef struct _RESOURCE_RECORD
-										      {
-											//char* _name;// Variable length data
-											unsigned int _type;
-											unsigned int _class;
-											unsigned int _ttl;
-											unsigned int   _rdlen;
-											//char*    _rdata;// Variable length data
-										      }DRR;
-
-
+*/
+typedef struct _RESOURCE_RECORD
+{
+    //char* _name;// Variable length data
+    unsigned int _type;
+    unsigned int _class;
+    unsigned int _ttl;
+    unsigned int _rdlen;
+    //char*    _rdata;// Variable length data
+} DRR;
 
 
 #define MAX_DNSMSG_SIZE 512/**< Maximum size of DNS message */
@@ -343,15 +345,21 @@ Each resource record has the following format:
 #define MAX_QNAME_LEN 128/**< Maximum size of qname */
 
 
-										      typedef enum _QUERYDATA{BYNAME,BYIP}QUERYDATA;/* Query type */
+typedef enum _QUERYDATA
+{
+    BYNAME, BYIP
+} QUERYDATA;/* Query type */
 
 
 
-										      /* Resolve domain name or ip address from DNS server */
-										      //extern u_char dns_query(SOCKET s, u_long dnsip, u_char * domain_name, u_long* domain_ip,QUERYDATA querydata, u_int elapse);
+/* Resolve domain name or ip address from DNS server */
+//extern u_char dns_query(SOCKET s, u_long dnsip, u_char * domain_name, u_long* domain_ip,QUERYDATA querydata, u_int elapse);
 
-										      //extern int gethostbyaddr(u_long ipaddr,char* domain);// gethostbyaddr function retrieves the host domain name corresponding to a network address
-										      //extern u_long gethostbyname(char* hostname);// gethostbyname function retrieves host ip address corresponding to a host name
+//extern int gethostbyaddr(u_long ipaddr,char* domain);// gethostbyaddr function retrieves the host domain name corresponding to a network address
+//extern u_long gethostbyname(char* hostname);// gethostbyname function retrieves host ip address corresponding to a host name
 
 
+#endif
+#ifdef __cplusplus
+}
 #endif
