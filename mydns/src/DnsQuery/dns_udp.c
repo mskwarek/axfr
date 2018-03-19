@@ -8,7 +8,7 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 
-#include "dns_udp.h"
+#include "DnsQuery/dns_udp.h"
 #include "utils.h"
 
 

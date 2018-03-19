@@ -4,7 +4,7 @@
 
 extern "C"
 {
-#include "dns.h"
+#include "DnsQuery/dns.h"
 }
 
 #include <string>

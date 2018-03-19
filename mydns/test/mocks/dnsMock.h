@@ -5,7 +5,7 @@
 #pragma once
 
 #include "cmock/cmock.h"
-#include "dns.h"
+#include "DnsQuery/dns.h"
 //
 //DECLARE_FUNCTION_MOCK6(DnsFunctionMock, ngethostbyname, dns_result(const char* , const char*,
 //    const char, int, int, dns_transport_type));

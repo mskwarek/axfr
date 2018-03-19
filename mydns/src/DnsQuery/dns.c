@@ -1,10 +1,10 @@
 #include <string.h>
 #include <sys/socket.h>    //you know what this is for
-#include "dns.h"
+#include "DnsQuery/dns.h"
 #include "utils.h"
-#include "dns_received_packet_reader.h"
-#include "dns_tcp.h"
-#include "dns_udp.h"
+#include "DnsQuery/dns_received_packet_reader.h"
+#include "DnsQuery/dns_tcp.h"
+#include "DnsQuery/dns_udp.h"
 
 dns_result ngethostbyname(const char *que , const char *server, const char *dst_log_path, int query_type,
     int to, dns_transport_type transport_type)

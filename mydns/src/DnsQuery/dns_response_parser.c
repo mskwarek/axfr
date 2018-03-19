@@ -1,4 +1,4 @@
-#include "dns_response_parser.h"
+#include "DnsQuery/dns_response_parser.h"
 #include "utils.h"
 #include <string.h>
 

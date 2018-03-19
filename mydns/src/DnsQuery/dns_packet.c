@@ -2,7 +2,7 @@
 // Created by Marcin Skwarek on 11.03.2018.
 //
 
-#include "dns_packet.h"
+#include "DnsQuery/dns_packet.h"
 #include <stdio.h>
 #include <sys/socket.h>
 #include <unistd.h>

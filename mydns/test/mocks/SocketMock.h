@@ -7,7 +7,7 @@
 #include "cmock/cmock.h"
 #include "sys/socket.h"
 #include "stdio.h"
-#include "dns_tcp.h"
+#include "DnsQuery/dns_tcp.h"
 
 //DECLARE_FUNCTION_MOCK6(DnsFunctionMock, ngethostbyname, dns_result(const char* , const char*,
 //                                                                   const char, int, int, dns_transport_type));
