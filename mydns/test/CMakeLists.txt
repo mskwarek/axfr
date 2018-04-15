@@ -6,6 +6,7 @@ include_directories(${GTEST_INCLUDE_DIRS})
 include_directories(${GMOCK_INCLUDE_DIRS})
 include_directories(../inc/)
 include_directories(../inc/cmock)
+include_directories(../inc/DnsQuery)
 include_directories(mocks/)
 
 if(UNIX AND NOT APPLE)
