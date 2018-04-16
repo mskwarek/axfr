@@ -7,8 +7,8 @@ include_directories(../inc/DnsQuery)
 file(GLOB C_SOURCES "DnsQuery/*.c")
 file(GLOB CXX_SOURCES "DnsQuery/*.cpp")
 
-add_library(axfr SHARED ${C_SOURCES})
+add_library(axfr SHARED ${C_SOURCES} utils.c)
 
-add_executable(axfrScanner main.cpp utils.c ${CXX_SOURCES})
+add_executable(axfrScanner main.cpp ${CXX_SOURCES})
 target_link_libraries(axfrScanner axfr)
 

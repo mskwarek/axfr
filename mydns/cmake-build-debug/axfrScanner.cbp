@@ -55,6 +55,7 @@
 				<Option compiler="clang"/>
 				<Compiler>
 					<Add directory="/Users/mskwarek/Documents/myDig/mydns/src/../inc"/>
+					<Add directory="/Users/mskwarek/Documents/myDig/mydns/src/../inc/DnsQuery"/>
 					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
 					<Add directory="/usr/local/include"/>
 					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/9.0.0/include"/>
@@ -78,6 +79,7 @@
 				<Option compiler="clang"/>
 				<Compiler>
 					<Add directory="/Users/mskwarek/Documents/myDig/mydns/src/../inc"/>
+					<Add directory="/Users/mskwarek/Documents/myDig/mydns/src/../inc/DnsQuery"/>
 					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
 					<Add directory="/usr/local/include"/>
 					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/9.0.0/include"/>
@@ -101,6 +103,7 @@
 				<Option compiler="clang"/>
 				<Compiler>
 					<Add directory="/Users/mskwarek/Documents/myDig/mydns/src/../inc"/>
+					<Add directory="/Users/mskwarek/Documents/myDig/mydns/src/../inc/DnsQuery"/>
 					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
 					<Add directory="/usr/local/include"/>
 					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/9.0.0/include"/>
@@ -124,6 +127,7 @@
 				<Option compiler="clang"/>
 				<Compiler>
 					<Add directory="/Users/mskwarek/Documents/myDig/mydns/src/../inc"/>
+					<Add directory="/Users/mskwarek/Documents/myDig/mydns/src/../inc/DnsQuery"/>
 					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
 					<Add directory="/usr/local/include"/>
 					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/9.0.0/include"/>
@@ -149,6 +153,7 @@
 					<Add directory="/usr/local/include"/>
 					<Add directory="/Users/mskwarek/Documents/myDig/mydns/test/../inc"/>
 					<Add directory="/Users/mskwarek/Documents/myDig/mydns/test/../inc/cmock"/>
+					<Add directory="/Users/mskwarek/Documents/myDig/mydns/test/../inc/DnsQuery"/>
 					<Add directory="/Users/mskwarek/Documents/myDig/mydns/test/mocks"/>
 					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
 					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/9.0.0/include"/>
@@ -174,6 +179,7 @@
 					<Add directory="/usr/local/include"/>
 					<Add directory="/Users/mskwarek/Documents/myDig/mydns/test/../inc"/>
 					<Add directory="/Users/mskwarek/Documents/myDig/mydns/test/../inc/cmock"/>
+					<Add directory="/Users/mskwarek/Documents/myDig/mydns/test/../inc/DnsQuery"/>
 					<Add directory="/Users/mskwarek/Documents/myDig/mydns/test/mocks"/>
 					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
 					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/9.0.0/include"/>
@@ -190,29 +196,29 @@
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="/Users/mskwarek/Documents/myDig/mydns/src/dns.c">
+		<Unit filename="/Users/mskwarek/Documents/myDig/mydns/src/DnsQuery/dns.c">
 			<Option target="axfr"/>
 		</Unit>
-		<Unit filename="/Users/mskwarek/Documents/myDig/mydns/src/dns_packet.c">
+		<Unit filename="/Users/mskwarek/Documents/myDig/mydns/src/DnsQuery/dns_packet.c">
 			<Option target="axfr"/>
 		</Unit>
-		<Unit filename="/Users/mskwarek/Documents/myDig/mydns/src/dns_received_packet_reader.c">
+		<Unit filename="/Users/mskwarek/Documents/myDig/mydns/src/DnsQuery/dns_received_packet_reader.c">
 			<Option target="axfr"/>
 		</Unit>
-		<Unit filename="/Users/mskwarek/Documents/myDig/mydns/src/dns_response_parser.c">
+		<Unit filename="/Users/mskwarek/Documents/myDig/mydns/src/DnsQuery/dns_response_parser.c">
 			<Option target="axfr"/>
 		</Unit>
-		<Unit filename="/Users/mskwarek/Documents/myDig/mydns/src/dns_tcp.c">
+		<Unit filename="/Users/mskwarek/Documents/myDig/mydns/src/DnsQuery/dns_tcp.c">
 			<Option target="axfr"/>
 		</Unit>
-		<Unit filename="/Users/mskwarek/Documents/myDig/mydns/src/dns_udp.c">
+		<Unit filename="/Users/mskwarek/Documents/myDig/mydns/src/DnsQuery/dns_udp.c">
 			<Option target="axfr"/>
 		</Unit>
 		<Unit filename="/Users/mskwarek/Documents/myDig/mydns/src/main.cpp">
 			<Option target="axfrScanner"/>
 		</Unit>
 		<Unit filename="/Users/mskwarek/Documents/myDig/mydns/src/utils.c">
-			<Option target="axfr"/>
+			<Option target="axfrScanner"/>
 		</Unit>
 		<Unit filename="/Users/mskwarek/Documents/myDig/mydns/test/DnsReceivedPacketReaderTest.cpp">
 			<Option target="runUnitTests"/>
