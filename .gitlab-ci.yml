@@ -18,7 +18,6 @@ build:
     - cd mydns/build
     - cmake .. -DCOVERAGE=1
     - make -j
-    - make -j test
   artifacts:
     paths:
       - mydns/build
@@ -31,7 +30,7 @@ test:
     - build
   script:
     - cd mydns/build
-    - ./test/runUnitTests
+    - ./DnsQuery/test/runUnitTests
     - mkdir _coverage && cd _coverage
     - find .. -iname "*.gcda" | xargs gcov
     - lcov --capture --directory .. --output-file coverage.info
