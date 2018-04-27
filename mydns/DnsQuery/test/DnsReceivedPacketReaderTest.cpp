@@ -4,7 +4,7 @@
 
 #include "DnsResponseTest.hpp"
 #include "SocketMock.h"
-#include "DnsQuery/dns.h"
+#include "../inc/dns.h"
 
 using namespace ::testing;
 

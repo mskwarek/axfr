@@ -2,8 +2,8 @@
 // Created by Marcin Skwarek on 03.03.2018.
 //
 
-#include "DnsQuery/dns_received_packet_reader.h"
-#include "DnsQuery/dns_response_parser.h"
+#include "../inc/dns_received_packet_reader.h"
+#include "../inc/dns_response_parser.h"
 #include <stdio.h>
 #include "utils.h"
 

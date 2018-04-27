@@ -4,7 +4,7 @@
 
 #include <string.h>
 #include <arpa/inet.h>
-#include "DnsQuery/dns_tcp.h"
+#include "../inc/dns_tcp.h"
 #include "utils.h"
 #include <unistd.h>
 #include <fcntl.h> //fcntl
