@@ -5,7 +5,7 @@
 		<Option title="axfrScanner"/>
 		<Option makefile_is_custom="1"/>
 		<Option compiler="gcc"/>
-		<Option virtualFolders="CMake Files\;CMake Files\src\;CMake Files\test\;"/>
+		<Option virtualFolders="CMake Files\;CMake Files\src\;CMake Files\DnsQuery\;CMake Files\DnsQuery\test\;"/>
 		<Build>
 			<Target title="all">
 				<Option working_dir="/home/mskwarek/projects/myDig/mydns/cmake-build-debug"/>
@@ -37,66 +37,6 @@
 					<DistClean command="/usr/bin/make -j4 -f &quot;/home/mskwarek/projects/myDig/mydns/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
-			<Target title="test">
-				<Option working_dir="/home/mskwarek/projects/myDig/mydns/cmake-build-debug"/>
-				<Option type="4"/>
-				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/home/mskwarek/projects/myDig/mydns/cmake-build-debug/Makefile&quot;  VERBOSE=1 test"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/mskwarek/projects/myDig/mydns/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/home/mskwarek/projects/myDig/mydns/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/home/mskwarek/projects/myDig/mydns/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-				</MakeCommands>
-			</Target>
-			<Target title="axfr">
-				<Option output="/home/mskwarek/projects/myDig/mydns/cmake-build-debug/src/libaxfr.so" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/home/mskwarek/projects/myDig/mydns/cmake-build-debug/src"/>
-				<Option object_output="./"/>
-				<Option type="3"/>
-				<Option compiler="gcc"/>
-				<Compiler>
-					<Add directory="/home/mskwarek/projects/myDig/mydns/src/../inc"/>
-					<Add directory="/home/mskwarek/projects/myDig/mydns/src/../inc/DnsQuery"/>
-					<Add directory="/usr/include/c++/7"/>
-					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
-					<Add directory="/usr/include/c++/7/backward"/>
-					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
-					<Add directory="/usr/local/include"/>
-					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
-					<Add directory="/usr/include/x86_64-linux-gnu"/>
-					<Add directory="/usr/include"/>
-				</Compiler>
-				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/home/mskwarek/projects/myDig/mydns/cmake-build-debug/src/Makefile&quot;  VERBOSE=1 axfr"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/mskwarek/projects/myDig/mydns/cmake-build-debug/src/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/home/mskwarek/projects/myDig/mydns/cmake-build-debug/src/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/home/mskwarek/projects/myDig/mydns/cmake-build-debug/src/Makefile&quot;  VERBOSE=1 clean"/>
-				</MakeCommands>
-			</Target>
-			<Target title="axfr/fast">
-				<Option output="/home/mskwarek/projects/myDig/mydns/cmake-build-debug/src/libaxfr.so" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/home/mskwarek/projects/myDig/mydns/cmake-build-debug/src"/>
-				<Option object_output="./"/>
-				<Option type="3"/>
-				<Option compiler="gcc"/>
-				<Compiler>
-					<Add directory="/home/mskwarek/projects/myDig/mydns/src/../inc"/>
-					<Add directory="/home/mskwarek/projects/myDig/mydns/src/../inc/DnsQuery"/>
-					<Add directory="/usr/include/c++/7"/>
-					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
-					<Add directory="/usr/include/c++/7/backward"/>
-					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
-					<Add directory="/usr/local/include"/>
-					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
-					<Add directory="/usr/include/x86_64-linux-gnu"/>
-					<Add directory="/usr/include"/>
-				</Compiler>
-				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/home/mskwarek/projects/myDig/mydns/cmake-build-debug/src/Makefile&quot;  VERBOSE=1 axfr/fast"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/mskwarek/projects/myDig/mydns/cmake-build-debug/src/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/home/mskwarek/projects/myDig/mydns/cmake-build-debug/src/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/home/mskwarek/projects/myDig/mydns/cmake-build-debug/src/Makefile&quot;  VERBOSE=1 clean"/>
-				</MakeCommands>
-			</Target>
 			<Target title="axfrScanner">
 				<Option output="/home/mskwarek/projects/myDig/mydns/cmake-build-debug/src/axfrScanner" prefix_auto="0" extension_auto="0"/>
 				<Option working_dir="/home/mskwarek/projects/myDig/mydns/cmake-build-debug/src"/>
@@ -105,7 +45,7 @@
 				<Option compiler="gcc"/>
 				<Compiler>
 					<Add directory="/home/mskwarek/projects/myDig/mydns/src/../inc"/>
-					<Add directory="/home/mskwarek/projects/myDig/mydns/src/../inc/DnsQuery"/>
+					<Add directory="/home/mskwarek/projects/myDig/mydns/src/../DnsQuery/inc"/>
 					<Add directory="/usr/include/c++/7"/>
 					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
 					<Add directory="/usr/include/c++/7/backward"/>
@@ -130,7 +70,7 @@
 				<Option compiler="gcc"/>
 				<Compiler>
 					<Add directory="/home/mskwarek/projects/myDig/mydns/src/../inc"/>
-					<Add directory="/home/mskwarek/projects/myDig/mydns/src/../inc/DnsQuery"/>
+					<Add directory="/home/mskwarek/projects/myDig/mydns/src/../DnsQuery/inc"/>
 					<Add directory="/usr/include/c++/7"/>
 					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
 					<Add directory="/usr/include/c++/7/backward"/>
@@ -147,20 +87,70 @@
 					<DistClean command="/usr/bin/make -j4 -f &quot;/home/mskwarek/projects/myDig/mydns/cmake-build-debug/src/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
+			<Target title="axfr">
+				<Option output="/home/mskwarek/projects/myDig/mydns/cmake-build-debug/DnsQuery/libaxfr.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/mskwarek/projects/myDig/mydns/cmake-build-debug/DnsQuery"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/mskwarek/projects/myDig/mydns/DnsQuery/../inc"/>
+					<Add directory="/home/mskwarek/projects/myDig/mydns/DnsQuery/inc"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/mskwarek/projects/myDig/mydns/cmake-build-debug/DnsQuery/Makefile&quot;  VERBOSE=1 axfr"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/mskwarek/projects/myDig/mydns/cmake-build-debug/DnsQuery/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/mskwarek/projects/myDig/mydns/cmake-build-debug/DnsQuery/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/mskwarek/projects/myDig/mydns/cmake-build-debug/DnsQuery/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="axfr/fast">
+				<Option output="/home/mskwarek/projects/myDig/mydns/cmake-build-debug/DnsQuery/libaxfr.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/mskwarek/projects/myDig/mydns/cmake-build-debug/DnsQuery"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/mskwarek/projects/myDig/mydns/DnsQuery/../inc"/>
+					<Add directory="/home/mskwarek/projects/myDig/mydns/DnsQuery/inc"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/mskwarek/projects/myDig/mydns/cmake-build-debug/DnsQuery/Makefile&quot;  VERBOSE=1 axfr/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/mskwarek/projects/myDig/mydns/cmake-build-debug/DnsQuery/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/mskwarek/projects/myDig/mydns/cmake-build-debug/DnsQuery/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/mskwarek/projects/myDig/mydns/cmake-build-debug/DnsQuery/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
 			<Target title="runUnitTests">
-				<Option output="/home/mskwarek/projects/myDig/mydns/cmake-build-debug/test/runUnitTests" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/home/mskwarek/projects/myDig/mydns/cmake-build-debug/test"/>
+				<Option output="/home/mskwarek/projects/myDig/mydns/cmake-build-debug/DnsQuery/test/runUnitTests" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/mskwarek/projects/myDig/mydns/cmake-build-debug/DnsQuery/test"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
 				<Option compiler="gcc"/>
 				<Compiler>
-					<Add directory="/Users/mskwarek/Documents/myDig/mydns/DnsQuery/../inc"/>
-					<Add directory="/Users/mskwarek/Documents/myDig/mydns/DnsQuery/inc"/>
+					<Add directory="/home/mskwarek/projects/myDig/mydns/DnsQuery/../inc"/>
+					<Add directory="/home/mskwarek/projects/myDig/mydns/DnsQuery/inc"/>
 					<Add directory="/usr/local/include"/>
-					<Add directory="/home/mskwarek/projects/myDig/mydns/test/../inc"/>
-					<Add directory="/home/mskwarek/projects/myDig/mydns/test/../inc/cmock"/>
-					<Add directory="/home/mskwarek/projects/myDig/mydns/test/../inc/DnsQuery"/>
-					<Add directory="/home/mskwarek/projects/myDig/mydns/test/mocks"/>
+					<Add directory="/home/mskwarek/projects/myDig/mydns/DnsQuery/test/../inc"/>
+					<Add directory="/home/mskwarek/projects/myDig/mydns/DnsQuery/test/../../inc"/>
+					<Add directory="/home/mskwarek/projects/myDig/mydns/DnsQuery/test/../../inc/cmock"/>
+					<Add directory="/home/mskwarek/projects/myDig/mydns/DnsQuery/test/mocks"/>
 					<Add directory="/usr/include/c++/7"/>
 					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
 					<Add directory="/usr/include/c++/7/backward"/>
@@ -170,26 +160,26 @@
 					<Add directory="/usr/include"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/home/mskwarek/projects/myDig/mydns/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 runUnitTests"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/mskwarek/projects/myDig/mydns/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/home/mskwarek/projects/myDig/mydns/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/home/mskwarek/projects/myDig/mydns/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/mskwarek/projects/myDig/mydns/cmake-build-debug/DnsQuery/test/Makefile&quot;  VERBOSE=1 runUnitTests"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/mskwarek/projects/myDig/mydns/cmake-build-debug/DnsQuery/test/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/mskwarek/projects/myDig/mydns/cmake-build-debug/DnsQuery/test/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/mskwarek/projects/myDig/mydns/cmake-build-debug/DnsQuery/test/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="runUnitTests/fast">
-				<Option output="/home/mskwarek/projects/myDig/mydns/cmake-build-debug/test/runUnitTests" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/home/mskwarek/projects/myDig/mydns/cmake-build-debug/test"/>
+				<Option output="/home/mskwarek/projects/myDig/mydns/cmake-build-debug/DnsQuery/test/runUnitTests" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/mskwarek/projects/myDig/mydns/cmake-build-debug/DnsQuery/test"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
 				<Option compiler="gcc"/>
 				<Compiler>
-					<Add directory="/Users/mskwarek/Documents/myDig/mydns/DnsQuery/../inc"/>
-					<Add directory="/Users/mskwarek/Documents/myDig/mydns/DnsQuery/inc"/>
+					<Add directory="/home/mskwarek/projects/myDig/mydns/DnsQuery/../inc"/>
+					<Add directory="/home/mskwarek/projects/myDig/mydns/DnsQuery/inc"/>
 					<Add directory="/usr/local/include"/>
-					<Add directory="/home/mskwarek/projects/myDig/mydns/test/../inc"/>
-					<Add directory="/home/mskwarek/projects/myDig/mydns/test/../inc/cmock"/>
-					<Add directory="/home/mskwarek/projects/myDig/mydns/test/../inc/DnsQuery"/>
-					<Add directory="/home/mskwarek/projects/myDig/mydns/test/mocks"/>
+					<Add directory="/home/mskwarek/projects/myDig/mydns/DnsQuery/test/../inc"/>
+					<Add directory="/home/mskwarek/projects/myDig/mydns/DnsQuery/test/../../inc"/>
+					<Add directory="/home/mskwarek/projects/myDig/mydns/DnsQuery/test/../../inc/cmock"/>
+					<Add directory="/home/mskwarek/projects/myDig/mydns/DnsQuery/test/mocks"/>
 					<Add directory="/usr/include/c++/7"/>
 					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
 					<Add directory="/usr/include/c++/7/backward"/>
@@ -199,57 +189,57 @@
 					<Add directory="/usr/include"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/home/mskwarek/projects/myDig/mydns/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 runUnitTests/fast"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/mskwarek/projects/myDig/mydns/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/home/mskwarek/projects/myDig/mydns/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/home/mskwarek/projects/myDig/mydns/cmake-build-debug/test/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/mskwarek/projects/myDig/mydns/cmake-build-debug/DnsQuery/test/Makefile&quot;  VERBOSE=1 runUnitTests/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/mskwarek/projects/myDig/mydns/cmake-build-debug/DnsQuery/test/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/mskwarek/projects/myDig/mydns/cmake-build-debug/DnsQuery/test/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/mskwarek/projects/myDig/mydns/cmake-build-debug/DnsQuery/test/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="/home/mskwarek/projects/myDig/mydns/src/DnsQuery/dns.c">
+		<Unit filename="/home/mskwarek/projects/myDig/mydns/DnsQuery/src/dns.c">
 			<Option target="axfr"/>
 		</Unit>
-		<Unit filename="/home/mskwarek/projects/myDig/mydns/src/DnsQuery/dns_packet.c">
+		<Unit filename="/home/mskwarek/projects/myDig/mydns/DnsQuery/src/dns_packet.c">
 			<Option target="axfr"/>
 		</Unit>
-		<Unit filename="/home/mskwarek/projects/myDig/mydns/src/DnsQuery/dns_received_packet_reader.c">
+		<Unit filename="/home/mskwarek/projects/myDig/mydns/DnsQuery/src/dns_received_packet_reader.c">
 			<Option target="axfr"/>
 		</Unit>
-		<Unit filename="/home/mskwarek/projects/myDig/mydns/src/DnsQuery/dns_response_parser.c">
+		<Unit filename="/home/mskwarek/projects/myDig/mydns/DnsQuery/src/dns_response_parser.c">
 			<Option target="axfr"/>
 		</Unit>
-		<Unit filename="/home/mskwarek/projects/myDig/mydns/src/DnsQuery/dns_tcp.c">
+		<Unit filename="/home/mskwarek/projects/myDig/mydns/DnsQuery/src/dns_tcp.c">
 			<Option target="axfr"/>
 		</Unit>
-		<Unit filename="/home/mskwarek/projects/myDig/mydns/src/DnsQuery/dns_udp.c">
+		<Unit filename="/home/mskwarek/projects/myDig/mydns/DnsQuery/src/dns_udp.c">
 			<Option target="axfr"/>
+		</Unit>
+		<Unit filename="/home/mskwarek/projects/myDig/mydns/DnsQuery/src/utils.c">
+			<Option target="axfr"/>
+		</Unit>
+		<Unit filename="/home/mskwarek/projects/myDig/mydns/DnsQuery/test/DnsReceivedPacketReaderTest.cpp">
+			<Option target="runUnitTests"/>
+		</Unit>
+		<Unit filename="/home/mskwarek/projects/myDig/mydns/DnsQuery/test/dnsUtilsUnitTest.cpp">
+			<Option target="runUnitTests"/>
+		</Unit>
+		<Unit filename="/home/mskwarek/projects/myDig/mydns/DnsQuery/test/dns_ut.cpp">
+			<Option target="runUnitTests"/>
+		</Unit>
+		<Unit filename="/home/mskwarek/projects/myDig/mydns/DnsQuery/test/mocks/SocketMock.cpp">
+			<Option target="runUnitTests"/>
+		</Unit>
+		<Unit filename="/home/mskwarek/projects/myDig/mydns/DnsQuery/test/mocks/SocketMock.h">
+			<Option target="runUnitTests"/>
+		</Unit>
+		<Unit filename="/home/mskwarek/projects/myDig/mydns/DnsQuery/test/mocks/dnsMock.cpp">
+			<Option target="runUnitTests"/>
+		</Unit>
+		<Unit filename="/home/mskwarek/projects/myDig/mydns/DnsQuery/test/mocks/dnsMock.h">
+			<Option target="runUnitTests"/>
 		</Unit>
 		<Unit filename="/home/mskwarek/projects/myDig/mydns/src/main.cpp">
 			<Option target="axfrScanner"/>
-		</Unit>
-		<Unit filename="/home/mskwarek/projects/myDig/mydns/src/utils.c">
-			<Option target="axfr"/>
-		</Unit>
-		<Unit filename="/home/mskwarek/projects/myDig/mydns/test/DnsReceivedPacketReaderTest.cpp">
-			<Option target="runUnitTests"/>
-		</Unit>
-		<Unit filename="/home/mskwarek/projects/myDig/mydns/test/dnsUtilsUnitTest.cpp">
-			<Option target="runUnitTests"/>
-		</Unit>
-		<Unit filename="/home/mskwarek/projects/myDig/mydns/test/dns_ut.cpp">
-			<Option target="runUnitTests"/>
-		</Unit>
-		<Unit filename="/home/mskwarek/projects/myDig/mydns/test/mocks/SocketMock.cpp">
-			<Option target="runUnitTests"/>
-		</Unit>
-		<Unit filename="/home/mskwarek/projects/myDig/mydns/test/mocks/SocketMock.h">
-			<Option target="runUnitTests"/>
-		</Unit>
-		<Unit filename="/home/mskwarek/projects/myDig/mydns/test/mocks/dnsMock.cpp">
-			<Option target="runUnitTests"/>
-		</Unit>
-		<Unit filename="/home/mskwarek/projects/myDig/mydns/test/mocks/dnsMock.h">
-			<Option target="runUnitTests"/>
 		</Unit>
 		<Unit filename="/home/mskwarek/projects/myDig/mydns/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\"/>
@@ -257,10 +247,10 @@
 		<Unit filename="/home/mskwarek/projects/myDig/mydns/src/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\src\"/>
 		</Unit>
-		<Unit filename="/home/mskwarek/projects/myDig/mydns/test/CMakeLists.txt">
-			<Option virtualFolder="CMake Files\test\"/>
+		<Unit filename="/home/mskwarek/projects/myDig/mydns/DnsQuery/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\DnsQuery\"/>
 		</Unit>
-		<Unit filename="/Users/mskwarek/Documents/myDig/mydns/DnsQuery/test/CMakeLists.txt">
+		<Unit filename="/home/mskwarek/projects/myDig/mydns/DnsQuery/test/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\DnsQuery\test\"/>
 		</Unit>
 	</Project>
