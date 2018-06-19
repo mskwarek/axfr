@@ -359,7 +359,8 @@ typedef enum _QUERYDATA
 //extern u_long gethostbyname(char* hostname);// gethostbyname function retrieves host ip address corresponding to a host name
 
 
-#endif
+
 #ifdef __cplusplus
 }
+#endif
 #endif

@@ -226,6 +226,12 @@
 		<Unit filename="/home/mskwarek/projects/myDig/mydns/DnsQuery/test/dns_ut.cpp">
 			<Option target="runUnitTests"/>
 		</Unit>
+		<Unit filename="/home/mskwarek/projects/myDig/mydns/DnsQuery/test/mocks/FileMock.cpp">
+			<Option target="runUnitTests"/>
+		</Unit>
+		<Unit filename="/home/mskwarek/projects/myDig/mydns/DnsQuery/test/mocks/FileMock.h">
+			<Option target="runUnitTests"/>
+		</Unit>
 		<Unit filename="/home/mskwarek/projects/myDig/mydns/DnsQuery/test/mocks/SocketMock.cpp">
 			<Option target="runUnitTests"/>
 		</Unit>
