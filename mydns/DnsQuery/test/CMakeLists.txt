@@ -19,7 +19,7 @@ endif()
 
 
 FILE(GLOB src *.cc *.cpp mocks/*.cpp mocks/*.cc)
-add_executable(runUnitTests ${src} mocks/FileMock.cpp mocks/FileMock.h)
+add_executable(runUnitTests ${src} mocks/FileMock.cpp mocks/FileMock.h DnsReadAnswersTest.cpp)
 
 # Link test executable against gtest & gtest_main
 add_test(runUnitTests runUnitTests)

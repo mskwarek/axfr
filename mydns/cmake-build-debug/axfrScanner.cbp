@@ -217,6 +217,9 @@
 		<Unit filename="/home/mskwarek/projects/myDig/mydns/DnsQuery/src/utils.c">
 			<Option target="axfr"/>
 		</Unit>
+		<Unit filename="/home/mskwarek/projects/myDig/mydns/DnsQuery/test/DnsReadAnswersTest.cpp">
+			<Option target="runUnitTests"/>
+		</Unit>
 		<Unit filename="/home/mskwarek/projects/myDig/mydns/DnsQuery/test/DnsReceivedPacketReaderTest.cpp">
 			<Option target="runUnitTests"/>
 		</Unit>
