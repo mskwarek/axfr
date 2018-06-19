@@ -68,3 +68,24 @@ TEST_F(DnsReceivedPacketReaderTest, testParsingValidResponse)
     }
 
 }
+
+TEST_F(DnsReceivedPacketReaderTest, testDnsIdDoesNotMatch)
+{
+    {
+        DnsTcpReceivedDataMock tcpMock;
+
+        EXPECT_FUNCTION_CALL(tcpMock, (_, _, _, _, _, _, _ ,_)).WillOnce(
+                Invoke([this](auto dns_packet, auto, auto, auto, auto, unsigned char* buffer, auto, auto)
+                       {
+                           dnsByteBuffer[3] = 0;
+                           dnsByteBuffer[2] = 0;
+                           std::copy(std::begin(dnsByteBuffer), std::end(dnsByteBuffer), buffer);
+                           return DNS_RESULT_OK;
+                       })
+        );
+
+        EXPECT_EQ(DNS_RESULT_ERR,
+                  ngethostbyname("example.domain.com", "10.0.0.1", "/var/log/path", QTYPE_AXFR, 30, TRANSPORT_TYPE_TCP));
+    }
+
+}
