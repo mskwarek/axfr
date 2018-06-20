@@ -223,6 +223,9 @@
 		<Unit filename="/home/mskwarek/projects/myDig/mydns/DnsQuery/test/DnsReceivedPacketReaderTest.cpp">
 			<Option target="runUnitTests"/>
 		</Unit>
+		<Unit filename="/home/mskwarek/projects/myDig/mydns/DnsQuery/test/DnsTcpRequestSenderTest.cpp">
+			<Option target="runUnitTests"/>
+		</Unit>
 		<Unit filename="/home/mskwarek/projects/myDig/mydns/DnsQuery/test/dnsUtilsUnitTest.cpp">
 			<Option target="runUnitTests"/>
 		</Unit>
