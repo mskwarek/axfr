@@ -31,7 +31,7 @@ dns_result dns_tcp_req(DNS_H_TCP *dns, unsigned char *qname, struct QUESTION *qi
     s = socket(AF_INET , SOCK_STREAM , IPPROTO_TCP);
     if(s<0)
     {
-        printf("Conn refused");
+        printf("Conn refused\n");
         return DNS_RESULT_ERR;
     }
     struct timeval timeout;
@@ -41,6 +41,7 @@ dns_result dns_tcp_req(DNS_H_TCP *dns, unsigned char *qname, struct QUESTION *qi
     if (setsockopt (s, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout,
                     sizeof(timeout)) < 0) {
         printf("setsockopt failed\n");
+        return DNS_RESULT_ERR;
     }
 
     // printf("Nameserver IP: %s\n", server);

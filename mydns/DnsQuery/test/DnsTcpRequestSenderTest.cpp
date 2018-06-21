@@ -49,3 +49,18 @@ TEST_F(DnsTcpRequestSenderTest, testReturningErrorWhenNoSocketIsCreated)
     EXPECT_EQ(DNS_RESULT_ERR, dns_tcp_req(dns, qname, qinfo, 30,  host,
                                           buf, QTYPE_AXFR, "192.168.0.1"));
 }
+
+
+TEST_F(DnsTcpRequestSenderTest, testReturningErrorWhenSocketOptsAreNotSet)
+{
+    SocketCreateMock socketMock;
+    SocketSetOptMock setOptMock;
+
+    EXPECT_FUNCTION_CALL(socketMock, (_, _, _)).WillOnce(Return(0));
+    EXPECT_FUNCTION_CALL(setOptMock, (_, _, _, _, _)).WillOnce(Return(0));
+
+    setUp();
+
+    EXPECT_EQ(DNS_RESULT_ERR, dns_tcp_req(dns, qname, qinfo, 30,  host,
+                                          buf, QTYPE_AXFR, "192.168.0.1"));
+}

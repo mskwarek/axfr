@@ -16,3 +16,5 @@ IMPLEMENT_FUNCTION_MOCK8(DnsTcpReceivedDataMock, dns_tcp_req, dns_result (DNS_H_
 
 
 IMPLEMENT_FUNCTION_MOCK3(SocketCreateMock, socket, int(int, int, int));
+
+IMPLEMENT_FUNCTION_MOCK5(SocketSetOptMock, setsockopt, int(int, int, int, const void *, socklen_t));
