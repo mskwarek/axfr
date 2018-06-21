@@ -22,3 +22,5 @@ DECLARE_FUNCTION_MOCK6(RecvfromFunctionMock, recvfrom, ssize_t(int, void *, size
 
 DECLARE_FUNCTION_MOCK8(DnsTcpReceivedDataMock, dns_tcp_req, dns_result(DNS_H_TCP*, unsigned char *,
     struct QUESTION *, unsigned int, char*, unsigned char*, int, const char *));
+
+DECLARE_FUNCTION_MOCK3(SocketCreateMock, socket, int(int, int, int));
