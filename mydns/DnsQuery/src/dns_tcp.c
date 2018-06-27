@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include <fcntl.h> //fcntl
 #include <errno.h>
+#include "../../SystemFunctionProxy/inc/proxy_functions.h"
 
 dns_result dns_tcp_req(DNS_H_TCP *dns, unsigned char *qname, struct QUESTION *qinfo, unsigned int to, char* host,
                        unsigned char* buf, int query_type, const char *server)
@@ -56,13 +57,12 @@ dns_result dns_tcp_req(DNS_H_TCP *dns, unsigned char *qname, struct QUESTION *qi
 
     socklen_t lon = {0};
 
-    if( (arg = fcntl(s, F_GETFL, NULL)) < 0) {
-        fprintf(stderr, "Error fcntl(..., F_GETFL) (%s)\n", strerror(errno));
+    if( (arg = int_fcntl(s, F_GETFL, NULL)) < 0) {
         return DNS_RESULT_ERR;
         // exit(0);
     }
     arg |= O_NONBLOCK;
-    if( fcntl(s, F_SETFL, arg) < 0) {
+    if( int_fcntl(s, F_SETFL, arg) < 0) {
         fprintf(stderr, "Error fcntl(..., F_SETFL) (%s)\n", strerror(errno));
         return DNS_RESULT_ERR;
     }

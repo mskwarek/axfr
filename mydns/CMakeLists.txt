@@ -6,4 +6,5 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2 -Wall -Wno-long-long -pedantic -rdynamic
 
 add_subdirectory (src)
 add_subdirectory (DnsQuery)
+add_subdirectory (SystemFunctionProxy)
 

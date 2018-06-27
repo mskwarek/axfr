@@ -8,6 +8,7 @@
 #include "sys/socket.h"
 #include "stdio.h"
 #include "../../inc/dns_tcp.h"
+#include "../../../SystemFunctionProxy/inc/proxy_functions.h"
 
 //DECLARE_FUNCTION_MOCK6(DnsFunctionMock, ngethostbyname, dns_result(const char* , const char*,
 //                                                                   const char, int, int, dns_transport_type));
@@ -26,3 +27,7 @@ DECLARE_FUNCTION_MOCK8(DnsTcpReceivedDataMock, dns_tcp_req, dns_result(DNS_H_TCP
 DECLARE_FUNCTION_MOCK3(SocketCreateMock, socket, int(int, int, int));
 
 DECLARE_FUNCTION_MOCK5(SocketSetOptMock, setsockopt, int(int, int, int, const void *, socklen_t));
+
+DECLARE_FUNCTION_MOCK3(SocketConnectMock, connect, int(int, __CONST_SOCKADDR_ARG, socklen_t));
+
+DECLARE_FUNCTION_MOCK3(SocketFcntlMock, int_fcntl, int(int, int, long));

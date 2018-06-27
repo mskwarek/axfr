@@ -42,25 +42,51 @@ TEST_F(DnsTcpRequestSenderTest, testSendingTcpRequest)
 
 TEST_F(DnsTcpRequestSenderTest, testReturningErrorWhenNoSocketIsCreated)
 {
-    SocketCreateMock socketMock;
-    EXPECT_FUNCTION_CALL(socketMock, (_, _, _)).WillOnce(Return(-1));
-    setUp();
+    {
+        SocketCreateMock socketMock;
+        EXPECT_FUNCTION_CALL(socketMock, (_, _, _)).WillOnce(Return(-1));
+        setUp();
 
-    EXPECT_EQ(DNS_RESULT_ERR, dns_tcp_req(dns, qname, qinfo, 30,  host,
-                                          buf, QTYPE_AXFR, "192.168.0.1"));
+        EXPECT_EQ(DNS_RESULT_ERR, dns_tcp_req(dns, qname, qinfo, 30, host,
+                                              buf, QTYPE_AXFR, "192.168.0.1"));
+    }
 }
 
 
 TEST_F(DnsTcpRequestSenderTest, testReturningErrorWhenSocketOptsAreNotSet)
 {
-    SocketCreateMock socketMock;
-    SocketSetOptMock setOptMock;
+    {
+        SocketCreateMock socketMock;
+        SocketSetOptMock setOptMock;
 
-    EXPECT_FUNCTION_CALL(socketMock, (_, _, _)).WillOnce(Return(0));
-    EXPECT_FUNCTION_CALL(setOptMock, (_, _, _, _, _)).WillOnce(Return(0));
+        EXPECT_FUNCTION_CALL(socketMock, (_, _, _)).WillOnce(Return(0));
+        EXPECT_FUNCTION_CALL(setOptMock, (_, _, _, _, _)).WillOnce(Return(-1));
 
-    setUp();
+        setUp();
 
-    EXPECT_EQ(DNS_RESULT_ERR, dns_tcp_req(dns, qname, qinfo, 30,  host,
-                                          buf, QTYPE_AXFR, "192.168.0.1"));
+        EXPECT_EQ(DNS_RESULT_ERR, dns_tcp_req(dns, qname, qinfo, 30, host,
+                                              buf, QTYPE_AXFR, "192.168.0.1"));
+    }
+}
+
+TEST_F(DnsTcpRequestSenderTest, testReturningErrorWhenSocketCannotConnect)
+{
+    {
+        SocketCreateMock socketMock;
+        SocketSetOptMock setOptMock;
+        SocketFcntlMock fcntlMock;
+        SocketConnectMock connectMock;
+
+
+        EXPECT_FUNCTION_CALL(socketMock, (_, _, _)).WillOnce(Return(0));
+        EXPECT_FUNCTION_CALL(setOptMock, (_, _, _, _, _)).WillOnce(Return(0));
+//        EXPECT_FUNCTION_CALL(fcntlMock, (_, _, _)).WillOnce(Return(-1));
+        EXPECT_FUNCTION_CALL(connectMock, (_, _, _)).WillRepeatedly(Return(0));
+
+
+        setUp();
+
+        EXPECT_EQ(DNS_RESULT_ERR, dns_tcp_req(dns, qname, qinfo, 30, host,
+                                              buf, QTYPE_AXFR, "192.168.0.1"));
+    }
 }
