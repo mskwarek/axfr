@@ -89,7 +89,8 @@ TEST_F(DnsReceivedPacketReaderTest, testDnsIdDoesNotMatch) {
 }
 
 
-TEST_F(DnsReceivedPacketReaderTest, testCannotOpenFile) {
+TEST_F(DnsReceivedPacketReaderTest, testCannotOpenFile)
+{
     {
         DnsTcpReceivedDataMock tcpMock;
         FileMock fileMock;

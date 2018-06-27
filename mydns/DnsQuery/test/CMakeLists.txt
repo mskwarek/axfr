@@ -23,4 +23,4 @@ add_executable(runUnitTests ${src} mocks/FileMock.cpp mocks/FileMock.h DnsReadAn
 
 # Link test executable against gtest & gtest_main
 add_test(runUnitTests runUnitTests)
-target_link_libraries(runUnitTests axfr gmock_main gmock gtest gtest_main)
+target_link_libraries(runUnitTests axfr systemFunc gmock_main gmock gtest gtest_main)
