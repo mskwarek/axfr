@@ -41,6 +41,7 @@ Makefile*
 *.cmake
 .idea/
 mydns/axfrScanner\.cbp
+cmake-build-debug/
 
 axfrScanner
 runUnitTests
