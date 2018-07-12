@@ -9,6 +9,7 @@
 #include "../inc/dns.h"
 #include "../inc/dns_tcp.h"
 #include "FileMock.h"
+#include "SystemFunctionMock.h"
 
 using namespace ::testing;
 
