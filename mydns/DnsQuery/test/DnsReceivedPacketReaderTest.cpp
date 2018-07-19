@@ -6,6 +6,7 @@
 #include "DnsResponseTest.hpp"
 #include "SocketMock.h"
 #include "../inc/dns.h"
+#include "../inc/dns_received_packet_reader.h"
 #include "FileMock.h"
 
 using namespace ::testing;
@@ -111,5 +112,13 @@ TEST_F(DnsReceivedPacketReaderTest, testCannotOpenFile)
         EXPECT_EQ(DNS_RESULT_ERR,
                   ngethostbyname("example.domain.com", "10.0.0.1", "/var/log/path", QTYPE_AXFR, 30,
                                  TRANSPORT_TYPE_TCP));
+    }
+}
+
+
+TEST_F(DnsReceivedPacketReaderTest, testReadAnswers)
+{
+    {
+
     }
 }
