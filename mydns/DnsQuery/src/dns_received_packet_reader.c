@@ -4,6 +4,7 @@
 
 #include "../inc/dns_received_packet_reader.h"
 #include "../inc/dns_response_parser.h"
+#include "../../SystemFunctionProxy/inc/proxy_functions.h"
 #include <stdio.h>
 #include "utils.h"
 
@@ -40,7 +41,7 @@ void readAnswers(dns_transport_type transport_type, unsigned char *reader, struc
         }
         else
         {
-            fprintf(f, "%s\t%d\t%d\t", na, ttl, type);
+            sys_print_domain_info_to_file(f, na, ttl, type);
         }
         if((DNS_RESULT_NO_MEMORY != ReadName(reader, name_size, type, buf + tcp_offset, f)) || noMemory > 2)
         {

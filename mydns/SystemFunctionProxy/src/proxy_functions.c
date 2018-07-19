@@ -18,3 +18,8 @@ int int_fcntl(int s, int cmd, long arg)
     }
     return result;
 }
+
+void sys_print_domain_info_to_file(FILE *f, const char* na, int ttl, int type)
+{
+    fprintf(f, "%s\t%d\t%d\t", na, ttl, type);
+}

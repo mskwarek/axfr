@@ -3,11 +3,14 @@
 //
 
 #include <dnsMock.h>
+#include <netinet/in.h>
 #include "DnsResponseTest.hpp"
 #include "SocketMock.h"
 #include "../inc/dns.h"
+#include "../inc/dns_tcp.h"
 #include "../inc/dns_received_packet_reader.h"
 #include "FileMock.h"
+#include "SystemFunctionMock.h"
 
 using namespace ::testing;
 
@@ -120,5 +123,13 @@ TEST_F(DnsReceivedPacketReaderTest, testReadAnswers)
 {
     {
 
+
+        struct RES_RECORD answers[256] = {0};
+        struct DNS_TCP_HEADER *dns = (struct DNS_TCP_HEADER *)&dnsByteBuffer;
+        int ans_cnt = ntohs(dns->header.ans_count);
+        FILE *f = NULL;
+        PrintToFilelMock fileMock;
+        EXPECT_FUNCTION_CALL(fileMock, (_, _, _, _)).WillRepeatedly(Invoke([](auto, auto, auto, auto){}));
+        readAnswers(TRANSPORT_TYPE_TCP, dnsByteBuffer, answers, dnsByteBuffer, f, 10);
     }
 }
