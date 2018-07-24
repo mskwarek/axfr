@@ -14,6 +14,8 @@ extern "C" {
 void readAnswers(dns_transport_type transport_type, unsigned char *reader, struct RES_RECORD *answers,
                  unsigned char *buf, FILE *f, int answers_cnt);
 
+int is_lack_of_memory(unsigned char* allocedMemory, int mallocRetry);
+
 #ifdef __cplusplus
 }
 #endif

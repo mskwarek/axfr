@@ -78,12 +78,10 @@ TEST_F(DnsTcpRequestSenderTest, testReturningErrorWhenSocketCannotConnect)
         SocketFcntlMock fcntlMock;
         SocketConnectMock connectMock;
 
-
         EXPECT_FUNCTION_CALL(socketMock, (_, _, _)).WillOnce(Return(0));
         EXPECT_FUNCTION_CALL(setOptMock, (_, _, _, _, _)).WillOnce(Return(0));
         EXPECT_FUNCTION_CALL(fcntlMock, (_, _, _)).WillOnce(Return(-1));
         EXPECT_FUNCTION_CALL(connectMock, (_, _, _)).WillRepeatedly(Return(0));
-
 
         setUp();
 

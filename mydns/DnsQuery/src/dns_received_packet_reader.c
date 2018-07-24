@@ -35,7 +35,7 @@ void readAnswers(dns_transport_type transport_type, unsigned char *reader, struc
         reader+=10 + name_offset;
 
         answers[i].rdata = (unsigned char*)malloc(name_size);
-        if(answers[i].rdata == NULL && mallocRetry < 4)
+        if(1 == is_lack_of_memory(answers[i].rdata, mallocRetry))
         {
             mallocRetry++;
         }
@@ -55,4 +55,9 @@ void readAnswers(dns_transport_type transport_type, unsigned char *reader, struc
             noMemory++;
         }
     }
+}
+
+int is_lack_of_memory(unsigned char* allocedMemory, int mallocRetry)
+{
+    return (allocedMemory == NULL && mallocRetry < 4);
 }
