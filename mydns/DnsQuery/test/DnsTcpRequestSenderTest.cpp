@@ -90,7 +90,6 @@ TEST_F(DnsTcpRequestSenderTest, testReturningErrorWhenSocketCannotConnect)
     }
 }
 
-
 TEST_F(DnsTcpRequestSenderTest, testSocketSelectedToWrite)
 {
     {

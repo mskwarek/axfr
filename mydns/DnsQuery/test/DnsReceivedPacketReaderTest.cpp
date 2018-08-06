@@ -25,7 +25,7 @@ TEST_F(DnsReceivedPacketReaderTest, testParsingResponse)
     {
         DnsTcpReceivedDataMock tcpMock;
 
-        EXPECT_FUNCTION_CALL(tcpMock, (_, _, _, _, _, _, _ ,_)).Times(2).WillOnce(
+        EXPECT_FUNCTION_CALL(tcpMock, (_, _, _, _, _, _, _ ,_)).Times(2).WillRepeatedly(
                 Return(DNS_RESULT_OK)
         );
 

@@ -6,6 +6,7 @@
 #include "../inc/dns_response_parser.h"
 #include "../../SystemFunctionProxy/inc/proxy_functions.h"
 #include <stdio.h>
+#include <netinet/in.h>
 #include "utils.h"
 
 void readAnswers(dns_transport_type transport_type, unsigned char *reader, struct RES_RECORD *answers,
@@ -60,4 +61,9 @@ void readAnswers(dns_transport_type transport_type, unsigned char *reader, struc
 int is_lack_of_memory(unsigned char* allocedMemory, int mallocRetry)
 {
     return (allocedMemory == NULL && mallocRetry < 4);
+}
+
+int get_answers_cnt(dns_header* dns)
+{
+    return ntohs(dns->ans_count);
 }
