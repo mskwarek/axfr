@@ -19,7 +19,8 @@ dns_result dns_tcp_req(DNS_H_TCP *dns, unsigned char *qname, struct QUESTION *qi
 
     enum
     {
-        BUFSIZE = 65536
+        BUFSIZE = 65536,
+        DEF_DNS_PORT = 53
     };
 
     //point to the query portion
@@ -48,7 +49,7 @@ dns_result dns_tcp_req(DNS_H_TCP *dns, unsigned char *qname, struct QUESTION *qi
     // printf("Nameserver IP: %s\n", server);
     dest.sin_addr.s_addr = inet_addr(server);
     dest.sin_family = AF_INET;
-    dest.sin_port = htons(53);
+    dest.sin_port = htons(DEF_DNS_PORT);
 
     long arg = 0;
     int res = 0;
