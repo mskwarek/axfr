@@ -45,3 +45,16 @@ cmake-build-debug/
 
 axfrScanner
 runUnitTests
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.lot
+*.toc
+*.bbl
+edym/*.dvi
+*.synctex.gz
+*.aux
+**/#*
+**/.vscode
+**/.Rapp.history

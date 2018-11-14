@@ -17,4 +17,4 @@ IMPLEMENT_FUNCTION_MOCK3(SocketCreateMock, socket, int(int, int, int));
 
 IMPLEMENT_FUNCTION_MOCK5(SocketSetOptMock, setsockopt, int(int, int, int, const void *, socklen_t));
 
-IMPLEMENT_FUNCTION_MOCK3(SocketConnectMock, connect, int  (int, __CONST_SOCKADDR_ARG, socklen_t));
+IMPLEMENT_FUNCTION_MOCK3(SocketConnectMock, connect, int  (int, const struct sockaddr *, socklen_t));
