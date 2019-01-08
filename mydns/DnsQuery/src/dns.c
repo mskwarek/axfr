@@ -28,7 +28,7 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
     char host[HOSTSIZE] = {0};
 
     snprintf(host, HOSTSIZE, "%s", que);
-    printf("\nResolving %s\n" , host);
+    printf("Resolving %s\n\n" , host);
 
     if(TRANSPORT_TYPE_UDP == transport_type)
     {
