@@ -14,7 +14,7 @@ with open(cfg.input, 'r') as f:
     content = f.readlines()
     for line in content:
         #print line.strip()
-        print asndb.lookup(line.strip())[0]
+        print(asndb.lookup(line.strip())[0])
 # should return: (15169, '8.8.8.0/24'), the origin AS, and the BGP prefix it matches
 
 #asndb.get_as_prefixes(1128)
