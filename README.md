@@ -6,7 +6,7 @@ AXFR scanner ic C
 
 - [![C coverage]()](https://mskwarek.gitlab.io/myDig) C/C++
 
-# Requirements
+## Requirements
 
 - googletest
 
