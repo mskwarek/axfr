@@ -8,6 +8,8 @@
 #include <netinet/ip.h>
 #include <netinet/udp.h>
 #include <unistd.h>
+#include <time.h>
+#include <stdlib.h>
 
 #include "../inc/dns_udp.h"
 #include "utils.h"
@@ -81,15 +83,18 @@ dns_result dns_udp_req(DNS_H_UDP *dns, unsigned char *qname, struct QUESTION *qi
     ip_hdr->ip_src.s_addr = inet_addr ("188.166.88.29"); //src ip - spoofed
     ip_hdr->ip_dst.s_addr = inet_addr(server); //dst ip
 
-    udp_hdr->source = htons(53);
-    // srand(time(NULL));
-    udp_hdr->dest = rand() % 65536; //dst port
+    
+    srand(time(NULL));   // Initialization, should only be called once.
+    int r = rand()%64511; 
+    udp_hdr->source = htons(r+1025); //htons(53);
+    udp_hdr->dest = htons(53); //srand(time(NULL)) % 65536; //dst port
     udp_hdr->len = htons(sizeof(struct udphdr) + len); //length
     udp_hdr->check = 0; //checksum - disabled
 
     ip_hdr->ip_sum = csum((unsigned short *) datagram, ip_hdr->ip_len >> 1); //real checksum
 
-
+    len += sizeof(struct ip);
+    len += sizeof(struct udphdr);
     // printf("\nSending Packet...");
     // if( 0 > sendto(s,(char*)buf,len,0,(struct sockaddr*)&dest,sizeof(dest)) )
     // {
