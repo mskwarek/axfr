@@ -158,7 +158,7 @@ dns_result dns_req_with_spoofed_ip(DNS_H_UDP *dns, unsigned char *qname, struct 
         close(s);
         return DNS_RESULT_SEND_ERR;
     }
-    else
-        printf( "[+] Spoofed IP packet sent successfully!\n");
+    // else
+    //     printf( "[+] Spoofed IP packet sent successfully!\n");
 
     close(s);

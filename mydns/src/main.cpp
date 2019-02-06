@@ -173,7 +173,7 @@ int main(int argc, char *argv[])
         std::string filename = path_to_input_list_with_spoofed_src;
         std::ifstream inputFile(filename.c_str());
         while(std::getline(inputFile, line)){
-            std::cout<<i++<<std::endl;
+            // std::cout<<i++<<std::endl;
             std::vector<std::string> x = split(line, '|');
             request_dns_and_spoof_src_ip(x[0].c_str(), x[1].c_str(), x[2].c_str(),
                         getQueryTypeIdByName(query_type));
