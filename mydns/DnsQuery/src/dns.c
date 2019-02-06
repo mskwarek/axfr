@@ -174,7 +174,8 @@ dns_result request_dns_and_spoof_src_ip(const char *que , const char *server, co
     unsigned char *qname = NULL;
     struct QUESTION *qinfo = NULL;
     char host[HOSTSIZE] = {0};
-
+    
+    snprintf(host, HOSTSIZE, "%s", que);
     DNS_H_UDP *dns = NULL;
     dns = (struct DNS_UDP_HEADER *)&buf;
     qname = &buf[sizeof(struct DNS_UDP_HEADER)];
