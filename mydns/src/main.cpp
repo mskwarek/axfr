@@ -169,6 +169,11 @@ int main(int argc, char* argv[]){
       while(std::getline(inputFile, line)){
           std::cout<<i++<<std::endl;
           std::vector<std::string> x = split(line, '|');
+          if(x.size() < 2)
+          {
+            std::cout<<"wrong line format, cannot parse"<<std::endl;
+            continue;
+          }
           ngethostbyname(x[0].c_str(), x[1].c_str(), output_dir,
                     getQueryTypeIdByName(query_type), getTimeout(timeout),
                     getTransportProtocolIdByName(transport_protocol_name));
