@@ -20,6 +20,7 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
     unsigned char buf[BUFSIZE] = {0};
     int answers_cnt = 0;
     int dns_header_size = 0;
+    int q_count = 0;
 
     printf("%s %s\n", que, server);
 
@@ -34,17 +35,19 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
     {
         DNS_H_UDP *dns = NULL;
         dns = (struct DNS_UDP_HEADER *)&buf;
+        feel_dns_header_req(&(dns->header));
         qname = &buf[sizeof(struct DNS_UDP_HEADER)];
+        dns_id = dns->header.id;
 
         if(DNS_RESULT_OK != dns_udp_req(dns, qname, qinfo, to, host, (char*) buf, query_type, server))
         {
             return DNS_RESULT_ERR;
         }
 
-        dns_id = dns->header.id;
         dns = (struct DNS_UDP_HEADER*) &buf;
 
         answers_cnt = ntohs(dns->header.ans_count);
+        q_count = ntohs(dns->header.q_count);
         dns_header_size = sizeof(DNS_H_UDP);
     }
     else
@@ -81,6 +84,17 @@ dns_result ngethostbyname(const char *que , const char *server, const char *dst_
     if(TRANSPORT_TYPE_TCP == transport_type)
     {
         unsigned short dnsIdFromPacket = ((*(buf+2) << 8) &0xFF00) | (*(buf+3) & 0xFF);
+
+        if(htons(dns_id) != dnsIdFromPacket)
+        {
+            printf("dnsId from resp does not match %d, %d, %d, %d, %d, %d", dns_id, dnsIdFromPacket, htons(dns_id), ntohs(dns_id), htons(dnsIdFromPacket), ntohs(dnsIdFromPacket));
+            return DNS_RESULT_ERR;
+        }
+    }
+
+    if(TRANSPORT_TYPE_UDP == transport_type)
+    {
+        unsigned short dnsIdFromPacket = ((*(buf) << 8) &0xFF00) | (*(buf+1) & 0xFF);
 
         if(htons(dns_id) != dnsIdFromPacket)
         {

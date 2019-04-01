@@ -9,12 +9,15 @@ static void convert_name(unsigned char *name);
  * */
 void ChangetoDnsNameFormat(unsigned char* dns, unsigned char* host)
 {
-    if(NULL == dns || NULL == host)
+    if(NULL == dns || NULL == host || 0 == strcmp("", (char*) host))
         return;
 
     int lock = 0 , i = 0;
 
     int passed_host_addr_len = strlen((char*) host);
+
+    if(passed_host_addr_len <= 0)
+        return;
 
     if('.' != host[passed_host_addr_len-1])
     {
@@ -41,26 +44,39 @@ void ChangetoDnsNameFormat(unsigned char* dns, unsigned char* host)
 }
 
 
-unsigned int readSOA(unsigned char* data, unsigned char* dns_packet_resp, unsigned char* name)
+unsigned int readSOA(unsigned char* data, unsigned char* dns_packet_resp, unsigned char* name, unsigned int max_len)
 {
     unsigned int p = 0, all = 0;
     //printf("name data: %02x %02x  ", *data, *(data+1));
 
-    while(*data != 0x00)
+    while(max_len - p > 0 && data != NULL && data+1 != NULL)
     {
-        if((uint8_t)(*data) >= 192)
+        if(*data != 0x00)
         {
-            unsigned short name_offset = (((*(data) << 8) &0xFF00) | (*(data+1) & 0xFF)) - 49152;
-            //printf("from pointer: %02x %02x offset: %d ", *data, *(data+1), name_offset);
-            all+=readString(dns_packet_resp + name_offset, 0, dns_packet_resp, name+p);
-            p+=1;
+            if((uint8_t)(*data) >= 192)
+            {
+                if((data+1) != NULL)
+                {
+                    unsigned short name_offset = (((*(data) << 8) &0xFF00) | (*(data+1) & 0xFF)) - 49152;
+                    //printf("from pointer: %02x %02x offset: %d ", *data, *(data+1), name_offset);
+                    all+=readString(dns_packet_resp + name_offset, 0, dns_packet_resp, name+p);
+                }
+                p+=1;
+                break;
+            }
+            ++all;
+            name[p++]=*data++;
+        }
+        else
+        {
             break;
         }
-        ++all;
-        name[p++]=*data++;
+        
     }
-    name[all] = '\0';
-
+    if(all<512)
+        name[all] = '\0';
+    else
+        name[511] = '\0';
     //now convert 3www6google3com0 to www.google.com
     convert_name(name);
 

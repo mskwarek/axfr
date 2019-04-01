@@ -6,7 +6,8 @@
 
 void write_raw_data(FILE *f, const char* data)
 {
-    fprintf(f, "%02x", *(data));
+    if (data != NULL)
+        fprintf(f, "%02x", *(data));
 }
 
 void write_endl(FILE *f)

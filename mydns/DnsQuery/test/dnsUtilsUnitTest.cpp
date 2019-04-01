@@ -86,6 +86,6 @@ TEST(DnsUtilsTestSuite, ShouldReadSOARecordWhenProperDnsFormatIsPassed)
                                            0x78, 0x39, 0x9e, 0x51, 0x00, 0x02, 0xa3, 0x00, 0x00, 0x00, 0x03, 0x84, 0x00,
                                            0x12, 0x75, 0x00, 0x00, 0x00, 0x0e, 0x10};
 
-    readSOA(dns_raw_soa_data, dns_raw_soa_data, returned);
+    readSOA(dns_raw_soa_data, dns_raw_soa_data, returned, 59);
     EXPECT_TRUE(0 == memcmp((const char*)expected, (const char*)returned, sizeof(expected)));
 }
