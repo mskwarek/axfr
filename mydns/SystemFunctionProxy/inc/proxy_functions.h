@@ -12,10 +12,10 @@ extern "C" {
 #include <stdio.h>
 
 int int_fcntl(int s, int cmd, long arg);
-void sys_print_domain_info_to_file(FILE *f, const char* na, int ttl, int type);
+void sys_print_domain_info_to_file(FILE *f, const char *na, int ttl, int type);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif //AXFRSCANNER_PROXY_FUNCTIONS_H
+#endif // AXFRSCANNER_PROXY_FUNCTIONS_H

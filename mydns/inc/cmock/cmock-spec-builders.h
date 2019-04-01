@@ -33,12 +33,11 @@
 #ifndef CMOCK_INCLUDE_CMOCK_CMOCK_SPEC_BUILDERS_H_
 #define CMOCK_INCLUDE_CMOCK_CMOCK_SPEC_BUILDERS_H_
 
-#define CMOCK_ON_FUNCTION_CALL_IMPL_(obj, call) \
-    ((obj).cmock_func call).InternalDefaultActionSetAt(__FILE__, __LINE__, \
-                                                    #obj, #call)
+#define CMOCK_ON_FUNCTION_CALL_IMPL_(obj, call)                                                    \
+    ((obj).cmock_func call).InternalDefaultActionSetAt(__FILE__, __LINE__, #obj, #call)
 #define ON_FUNCTION_CALL(obj, call) CMOCK_ON_FUNCTION_CALL_IMPL_(obj, call)
 
-#define CMOCK_EXPECT_FUNCTION_CALL_IMPL_(obj, call) \
+#define CMOCK_EXPECT_FUNCTION_CALL_IMPL_(obj, call)                                                \
     ((obj).cmock_func call).InternalExpectedAt(__FILE__, __LINE__, #obj, #call)
 #define EXPECT_FUNCTION_CALL(obj, call) CMOCK_EXPECT_FUNCTION_CALL_IMPL_(obj, call)
 

@@ -1,5 +1,5 @@
 #include "utils.h"
-#include<string.h>
+#include <string.h>
 
 static void convert_name(unsigned char *name);
 
@@ -7,110 +7,110 @@ static void convert_name(unsigned char *name);
  * This will convert www.google.com to 3www6google3com
  * got it :)
  * */
-void ChangetoDnsNameFormat(unsigned char* dns, unsigned char* host)
+void ChangetoDnsNameFormat(unsigned char *dns, unsigned char *host)
 {
-    if(NULL == dns || NULL == host || 0 == strcmp("", (char*) host))
+    if (NULL == dns || NULL == host || 0 == strcmp("", (char *)host))
         return;
 
-    int lock = 0 , i = 0;
+    int lock = 0, i = 0;
 
-    int passed_host_addr_len = strlen((char*) host);
+    int passed_host_addr_len = strlen((char *)host);
 
-    if(passed_host_addr_len <= 0)
+    if (passed_host_addr_len <= 0)
         return;
 
-    if('.' != host[passed_host_addr_len-1])
+    if ('.' != host[passed_host_addr_len - 1])
     {
-        strcat((char*)host, ".");
+        strcat((char *)host, ".");
         passed_host_addr_len++;
     }
-    
-    for(i = 0 ; i < passed_host_addr_len ; i++)
+
+    for (i = 0; i < passed_host_addr_len; i++)
     {
-        if(host[i]=='.')
+        if (host[i] == '.')
         {
-            if(i == 0)
+            if (i == 0)
                 return;
 
-            *dns++ = i-lock;
-            for(;lock<i;lock++)
+            *dns++ = i - lock;
+            for (; lock < i; lock++)
             {
-                *dns++=host[lock];
+                *dns++ = host[lock];
             }
-            lock++; //or lock=i+1;
+            lock++; // or lock=i+1;
         }
     }
-    *dns++='\0';
+    *dns++ = '\0';
 }
 
-
-unsigned int readSOA(unsigned char* data, unsigned char* dns_packet_resp, unsigned char* name, unsigned int max_len)
+unsigned int readSOA(
+    unsigned char *data, unsigned char *dns_packet_resp, unsigned char *name, unsigned int max_len)
 {
     unsigned int p = 0, all = 0;
-    //printf("name data: %02x %02x  ", *data, *(data+1));
+    // printf("name data: %02x %02x  ", *data, *(data+1));
 
-    while(max_len - p > 0 && data != NULL && data+1 != NULL)
+    while (max_len - p > 0 && data != NULL && data + 1 != NULL)
     {
-        if(*data != 0x00)
+        if (*data != 0x00)
         {
-            if((uint8_t)(*data) >= 192)
+            if ((uint8_t)(*data) >= 192)
             {
-                if((data+1) != NULL)
+                if ((data + 1) != NULL)
                 {
-                    unsigned short name_offset = (((*(data) << 8) &0xFF00) | (*(data+1) & 0xFF)) - 49152;
-                    //printf("from pointer: %02x %02x offset: %d ", *data, *(data+1), name_offset);
-                    all+=readString(dns_packet_resp + name_offset, 0, dns_packet_resp, name+p);
+                    unsigned short name_offset =
+                        (((*(data) << 8) & 0xFF00) | (*(data + 1) & 0xFF)) - 49152;
+                    // printf("from pointer: %02x %02x offset: %d ", *data, *(data+1), name_offset);
+                    all += readString(dns_packet_resp + name_offset, 0, dns_packet_resp, name + p);
                 }
-                p+=1;
+                p += 1;
                 break;
             }
             ++all;
-            name[p++]=*data++;
+            name[p++] = *data++;
         }
         else
         {
             break;
         }
-        
     }
-    if(all<512)
+    if (all < 512)
         name[all] = '\0';
     else
         name[511] = '\0';
-    //now convert 3www6google3com0 to www.google.com
+    // now convert 3www6google3com0 to www.google.com
     convert_name(name);
 
     return p;
 }
 
-unsigned int parse_to_uint(unsigned char* data)
+unsigned int parse_to_uint(unsigned char *data)
 {
-  return (unsigned int)*data << 24 |(unsigned int)*(data+1) << 16 |
-    (unsigned int)*(data+2) << 8 | (unsigned int)*(data+3);
+    return (unsigned int)*data << 24 | (unsigned int)*(data + 1) << 16 |
+           (unsigned int)*(data + 2) << 8 | (unsigned int)*(data + 3);
 }
 
-unsigned int readString(unsigned char* data, unsigned short data_len,
-                        unsigned char* dns_packet_resp, unsigned char* name)
+unsigned int readString(unsigned char *data, unsigned short data_len,
+    unsigned char *dns_packet_resp, unsigned char *name)
 {
-    if(data == NULL || name == NULL || dns_packet_resp == NULL)
+    if (data == NULL || name == NULL || dns_packet_resp == NULL)
         return 0;
     unsigned int p = 0;
-    //printf("name data: %02x %02x  ", *data, *(data+1));
+    // printf("name data: %02x %02x  ", *data, *(data+1));
 
-    while(*data != 0x00)
+    while (*data != 0x00)
     {
-        if((uint8_t)(*data) >= 192 && *(data+1) != 0x00)
+        if ((uint8_t)(*data) >= 192 && *(data + 1) != 0x00)
         {
-            unsigned short name_offset = (((*(data) << 8) &0xFF00) | (*(data+1) & 0xFF)) - 49152;
-            //printf("from pointer: %02x %02x offset: %d ", *data, *(data+1), name_offset);
-            p+=readString(dns_packet_resp + name_offset, 0, dns_packet_resp, name+p);
+            unsigned short name_offset = (((*(data) << 8) & 0xFF00) | (*(data + 1) & 0xFF)) - 49152;
+            // printf("from pointer: %02x %02x offset: %d ", *data, *(data+1), name_offset);
+            p += readString(dns_packet_resp + name_offset, 0, dns_packet_resp, name + p);
             break;
         }
 
-        name[p++]=*data++;
+        name[p++] = *data++;
     }
 
-    //printf("while success\n");
+    // printf("while success\n");
     name[p] = '\0';
 
     return p;
@@ -119,18 +119,18 @@ unsigned int readString(unsigned char* data, unsigned short data_len,
 void convert_name(unsigned char *name)
 {
     unsigned int i = 0, j = 0, all = 0;
-    for(i=0;i<(int)strlen((const char*)name);i++)
+    for (i = 0; i < (int)strlen((const char *)name); i++)
     {
-        all=name[i];
-        for(j=0;j<(int)all;j++)
+        all = name[i];
+        for (j = 0; j < (int)all; j++)
         {
-            name[i]=name[i+1];
-            i=i+1;
+            name[i] = name[i + 1];
+            i = i + 1;
         }
-        name[i]='.';
+        name[i] = '.';
     }
-    if(i>0)
+    if (i > 0)
     {
-        name[i-1]='\0';
+        name[i - 1] = '\0';
     }
 }

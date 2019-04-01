@@ -13,7 +13,7 @@ typedef enum
     TRANSPORT_TYPE_TCP
 } dns_transport_type;
 
-//Constant sized fields of the resource record structure
+// Constant sized fields of the resource record structure
 #pragma pack(push, 1)
 struct R_DATA
 {
@@ -24,7 +24,7 @@ struct R_DATA
 };
 #pragma pack(pop)
 
-//Pointers to resource record contents
+// Pointers to resource record contents
 struct RES_RECORD
 {
     unsigned char *name;
@@ -32,8 +32,8 @@ struct RES_RECORD
     unsigned char *rdata;
 };
 
-dns_result ngethostbyname(const char *, const char *, const char *dst_log_path, int, int, dns_transport_type);
-
+dns_result ngethostbyname(
+    const char *, const char *, const char *dst_log_path, int, int, dns_transport_type);
 
 /**
    @filedns.h
@@ -89,9 +89,10 @@ and values are defined:
 */
 /* CLASS */
 #define CLASS_IN 1 /**< the Internet */
-#define CLASS_CS2 /**< the CSNET class (Obsolete - used only for examples in some obsolete RFCs) */
-#define CLASS_CH3 /**< the CHAOS class */
-#define CLASS_HS4 /**< Hesiod [Dyer 87] */
+#define CLASS_CS2  /**< the CSNET class (Obsolete - used only for examples in some obsolete RFCs)  \
+                    */
+#define CLASS_CH3  /**< the CHAOS class */
+#define CLASS_HS4  /**< Hesiod [Dyer 87] */
 /* QCLASS */
 #define QCLASS_ANY255 /**< any class */
 
@@ -100,37 +101,36 @@ and values are defined:
 TYPE fields are used in resource records.  Note that these types are a subset of QTYPEs.
 */
 /* TYPE */
-#define TYPE_A 1 /**< The ARPA Internet */
-#define TYPE_NS 2 /**< an authoritative name server */
-#define TYPE_MD 3 /**< a mail destination (Obsolete - use MX) */
-#define TYPE_MF 4 /**< a mail forwarder (Obsolete - use MX) */
-#define TYPE_CNAME 5 /**< the canonical name for an alias */
-#define TYPE_SOA 6 /**< marks the start of a zone of authority */
-#define TYPE_MB 7/**< a mailbox domain name (EXPERIMENTAL) */
-#define TYPE_MG 8 /**< a mail group member (EXPERIMENTAL) */
-#define TYPE_MR 9 /**< a mail rename domain name (EXPERIMENTAL)*/
-#define TYPE_NULL 10 /**< a null RR (EXPERIMENTAL) */
-#define TYPE_WKS 11 /**< a well known service description */
-#define TYPE_PTR 12 /**< a domain name pointer */
+#define TYPE_A 1      /**< The ARPA Internet */
+#define TYPE_NS 2     /**< an authoritative name server */
+#define TYPE_MD 3     /**< a mail destination (Obsolete - use MX) */
+#define TYPE_MF 4     /**< a mail forwarder (Obsolete - use MX) */
+#define TYPE_CNAME 5  /**< the canonical name for an alias */
+#define TYPE_SOA 6    /**< marks the start of a zone of authority */
+#define TYPE_MB 7     /**< a mailbox domain name (EXPERIMENTAL) */
+#define TYPE_MG 8     /**< a mail group member (EXPERIMENTAL) */
+#define TYPE_MR 9     /**< a mail rename domain name (EXPERIMENTAL)*/
+#define TYPE_NULL 10  /**< a null RR (EXPERIMENTAL) */
+#define TYPE_WKS 11   /**< a well known service description */
+#define TYPE_PTR 12   /**< a domain name pointer */
 #define TYPE_HINFO 13 /**< host information */
 #define TYPE_MINFO 14 /**< mailbox or mail list information */
-#define TYPE_MX 15 /**< mail exchange */
-#define TYPE_TXT 16 /**< text strings */
+#define TYPE_MX 15    /**< mail exchange */
+#define TYPE_TXT 16   /**< text strings */
 /* QTYPE */
-#define QTYPE_AXFR 252/**< A request for a transfer of an entire zone */
-#define QTYPE_MAILB 253 /**< A request for mailbox-related records (MB, MG or MR) */
-#define QTYPE_MAILA 254 /**< A request for mail agent RRs (Obsolete - see MX) */
+#define QTYPE_AXFR 252     /**< A request for a transfer of an entire zone */
+#define QTYPE_MAILB 253    /**< A request for mailbox-related records (MB, MG or MR) */
+#define QTYPE_MAILA 254    /**< A request for mail agent RRs (Obsolete - see MX) */
 #define QTYPE_TYPE_ALL 255 /**< A request for all records */
 
-#define INITRTT 2000L/**< Initial smoothed response time */
-#define MAXCNAME 10/**< Maximum amount of cname recursion */
-
+#define INITRTT 2000L /**< Initial smoothed response time */
+#define MAXCNAME 10   /**< Maximum amount of cname recursion */
 
 /* Round trip timing parameters */
-#define AGAIN 8/**< Average RTT gain = 1/8 */
-#define LAGAIN 3/**< Log2(AGAIN) */
-#define DGAIN 4/**< Mean deviation gain = 1/4 */
-#define LDGAIN 2/**< log2(DGAIN) */
+#define AGAIN 8  /**< Average RTT gain = 1/8 */
+#define LAGAIN 3 /**< Log2(AGAIN) */
+#define DGAIN 4  /**< Mean deviation gain = 1/4 */
+#define LDGAIN 2 /**< log2(DGAIN) */
 
 #define IPPORT_DOMAIN 53
 
@@ -156,9 +156,9 @@ TYPE fields are used in resource records.  Note that these types are a subset of
   message.  This value is set by the originator of a query
   and copied into the response.  The values are:
 */
-#define OP_QUERY 0/**< a standard query (QUERY) */
-#define OP_IQUREY 1/**< an inverse query (IQUERY) */
-#define OP_STATUS 2/**< a server status request (STATUS)*/
+#define OP_QUERY 0  /**< a standard query (QUERY) */
+#define OP_IQUREY 1 /**< an inverse query (IQUERY) */
+#define OP_STATUS 2 /**< a server status request (STATUS)*/
 
 /* A one bit field that specifies whether this message is a query (0), or a response (1). */
 #define QR_QUERY 0
@@ -168,38 +168,50 @@ TYPE fields are used in resource records.  Note that these types are a subset of
                    responses.  The values have the following interpretation:
 */
 
-#define RC_NO_ERROR 0/**< No error condition */
-#define RC_FORMAT_ERROR 1/**< Format error - The name server was unable to interpret the query. */
-#define RC_SERVER_FAIL 2/**< Server failure - The name server was unable to process this query due to a problem with the name server. */
-#define RC_NAME_ERROR 3/**< Name Error - Meaningful only for responses from an authoritative name server, this code signifies that the domain name referenced in the query does not exist.*/
-#define RC_NOT_IMPL 4/**< Not Implemented - The name server does not support the requested kind of query.*/
-#define RC_REFUSED 5/**< Refused - The name server refuses to perform the specified operation for policy reasons.
-		     For example, a name server may not wish to provide the information to the particular requester,
-		     or a name server may not wish to perform a particular operation (e.g., zone */
+#define RC_NO_ERROR 0     /**< No error condition */
+#define RC_FORMAT_ERROR 1 /**< Format error - The name server was unable to interpret the query.   \
+                           */
+#define RC_SERVER_FAIL                                                                             \
+    2 /**< Server failure - The name server was unable to process this query due to a problem with \
+         the name server. */
+#define RC_NAME_ERROR                                                                              \
+    3 /**< Name Error - Meaningful only for responses from an authoritative name server, this code \
+         signifies that the domain name referenced in the query does not exist.*/
+#define RC_NOT_IMPL                                                                                \
+    4 /**< Not Implemented - The name server does not support the requested kind of query.*/
+#define RC_REFUSED                                                                                 \
+    5 /**< Refused - The name server refuses to perform the specified operation for policy         \
+       reasons. For example, a name server may not wish to provide the information to the                         \
+       particular requester, or a name server may not wish to perform a particular operation                                   \
+       (e.g., zone */
 
 #define DHDR_SIZE 12
-
 
 /**
 @brief Header for all domain messages
 */
 typedef struct _DHDR
 {
-    unsigned int id;/**< Identification */
+    unsigned int id; /**< Identification */
     unsigned char flag0;
     unsigned char flag1;
-    unsigned int qdcount;/**< Question count */
-    unsigned int ancount;/**< Answer count */
-    unsigned int nscount;/**< Authority (name server) count */
-    unsigned int arcount;/**< Additional record count */
+    unsigned int qdcount; /**< Question count */
+    unsigned int ancount; /**< Answer count */
+    unsigned int nscount; /**< Authority (name server) count */
+    unsigned int arcount; /**< Additional record count */
 } DHDR;
 
-/* rd : Recursion desired , tc : Truncation, aa: Authoratative answer, opcode : op code = OP_QUREY, OP_IQUREY, OP_STAUTS, qr : Query/Response */
-#define MAKE_FLAG0(qr, op, aa, tc, rd)( ((qr & 0x01) << 7) + ((op & 0x0F) << 3) + ((aa & 0x01) << 2) + ((tc & 0x01) << 1) + (rd & 0x01) )
+/* rd : Recursion desired , tc : Truncation, aa: Authoratative answer, opcode : op code = OP_QUREY,
+ * OP_IQUREY, OP_STAUTS, qr : Query/Response */
+#define MAKE_FLAG0(qr, op, aa, tc, rd)                                                             \
+    (((qr & 0x01) << 7) + ((op & 0x0F) << 3) + ((aa & 0x01) << 2) + ((tc & 0x01) << 1) +           \
+        (rd & 0x01))
 
-/* rcode : Response code, z : Reserved for future use.  Must be zero in all queries and responses, */
-/* ra : Recursion Available - this be is set or cleared in a response, and denotes whether recursive query support is available in the name server.*/
-#define MAKE_FLAG1(ra, z, rcode)( ((ra & 0x01) << 7) + ((z & 0x07) << 4) +  (rcode & 0x0F) )
+/* rcode : Response code, z : Reserved for future use.  Must be zero in all queries and responses,
+ */
+/* ra : Recursion Available - this be is set or cleared in a response, and denotes whether recursive
+ * query support is available in the name server.*/
+#define MAKE_FLAG1(ra, z, rcode) (((ra & 0x01) << 7) + ((z & 0x07) << 4) + (rcode & 0x0F))
 
 /*
 <QUESTION FORMAT >
@@ -237,11 +249,10 @@ For example, the QCLASS field is IN for the Internet.
 */
 typedef struct _QUESTION
 {
-    //char* qname;// Variable length data
+    // char* qname;// Variable length data
     unsigned int qtype;
     unsigned int qclass;
 } DQST;
-
 
 /*
 Resource record format
@@ -331,34 +342,31 @@ Each resource record has the following format:
 */
 typedef struct _RESOURCE_RECORD
 {
-    //char* _name;// Variable length data
+    // char* _name;// Variable length data
     unsigned int _type;
     unsigned int _class;
     unsigned int _ttl;
     unsigned int _rdlen;
-    //char*    _rdata;// Variable length data
+    // char*    _rdata;// Variable length data
 } DRR;
 
-
-#define MAX_DNSMSG_SIZE 512/**< Maximum size of DNS message */
-#define MAX_DOMAINNAME_LEN 50/**< Maximum size of domain name */
-#define MAX_QNAME_LEN 128/**< Maximum size of qname */
-
+#define MAX_DNSMSG_SIZE 512   /**< Maximum size of DNS message */
+#define MAX_DOMAINNAME_LEN 50 /**< Maximum size of domain name */
+#define MAX_QNAME_LEN 128     /**< Maximum size of qname */
 
 typedef enum _QUERYDATA
 {
-    BYNAME, BYIP
-} QUERYDATA;/* Query type */
-
-
+    BYNAME,
+    BYIP
+} QUERYDATA; /* Query type */
 
 /* Resolve domain name or ip address from DNS server */
-//extern u_char dns_query(SOCKET s, u_long dnsip, u_char * domain_name, u_long* domain_ip,QUERYDATA querydata, u_int elapse);
+// extern u_char dns_query(SOCKET s, u_long dnsip, u_char * domain_name, u_long* domain_ip,QUERYDATA
+// querydata, u_int elapse);
 
-//extern int gethostbyaddr(u_long ipaddr,char* domain);// gethostbyaddr function retrieves the host domain name corresponding to a network address
-//extern u_long gethostbyname(char* hostname);// gethostbyname function retrieves host ip address corresponding to a host name
-
-
+// extern int gethostbyaddr(u_long ipaddr,char* domain);// gethostbyaddr function retrieves the host
+// domain name corresponding to a network address extern u_long gethostbyname(char* hostname);//
+// gethostbyname function retrieves host ip address corresponding to a host name
 
 #ifdef __cplusplus
 }

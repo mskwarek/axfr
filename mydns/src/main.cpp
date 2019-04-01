@@ -65,7 +65,7 @@ int getQueryTypeIdByName(const char *query_type)
 
     for (uint32_t i = 0; i < sizeof(query_map) / sizeof(query_map[0]); ++i)
     {
-        std::cout<< query_type<< " " << query_map[i].dns_query_name << std::endl;
+        std::cout << query_type << " " << query_map[i].dns_query_name << std::endl;
         if (0 == strcmp(query_type, query_map[i].dns_query_name))
             return query_map[i].query_number;
     }
@@ -166,9 +166,8 @@ int main(int argc, char *argv[])
         std::ifstream inputFile(filename.c_str());
         std::vector<std::shared_future<dns_result>> VF;
         auto K = [=](const std::string &domain, const std::string &ns_ip) {
-            return ngethostbyname(domain.c_str(), ns_ip.c_str(), output_dir,
-                query_type_id, getTimeout(timeout),
-                getTransportProtocolIdByName(transport_protocol_name));
+            return ngethostbyname(domain.c_str(), ns_ip.c_str(), output_dir, query_type_id,
+                getTimeout(timeout), getTransportProtocolIdByName(transport_protocol_name));
         };
         while (std::getline(inputFile, line))
         {

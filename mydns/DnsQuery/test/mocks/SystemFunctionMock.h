@@ -10,6 +10,8 @@
 #include <stdlib.h>
 
 DECLARE_FUNCTION_MOCK3(SocketFcntlMock, int_fcntl, int(int, int, long));
-DECLARE_FUNCTION_MOCK4(PrintToFilelMock, sys_print_domain_info_to_file, void(FILE*, const char*, int, int));
+DECLARE_FUNCTION_MOCK4(
+    PrintToFilelMock, sys_print_domain_info_to_file, void(FILE *, const char *, int, int));
 
-#endif //AXFRSCANNER_SYSTEMFUNCTIONMOCK_H
+#endif // AXFRSCANNER_SYSTEMFUNCTIONMOCK_H
+

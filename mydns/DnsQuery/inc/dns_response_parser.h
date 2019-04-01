@@ -18,11 +18,11 @@ typedef enum
 
 enum
 {
-    T_A = 1, //Ipv4 address
-    T_NS = 2, //Nameserver
+    T_A = 1,     // Ipv4 address
+    T_NS = 2,    // Nameserver
     T_CNAME = 5, // canonical name
-    T_SOA = 6, /* start of authority zone */
-    T_PTR = 12, /* domain name pointer */
+    T_SOA = 6,   /* start of authority zone */
+    T_PTR = 12,  /* domain name pointer */
     T_HINFO = 13,
     T_MX = 15,
     T_TXT = 16,
@@ -37,7 +37,8 @@ enum
     T_DNSKEY = 48
 };
 
-dns_result ReadName(unsigned char *reader, size_t data_len, unsigned short type, unsigned char *dns, FILE *f);
+dns_result ReadName(
+    unsigned char *reader, size_t data_len, unsigned short type, unsigned char *dns, FILE *f);
 
 #ifdef __cplusplus
 }

@@ -2,18 +2,19 @@
 #define DNS_UTILS_H
 
 #ifdef __cplusplus
-extern "C"{
+extern "C" {
 #endif
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 
-void ChangetoDnsNameFormat (unsigned char*, unsigned char*);
-unsigned int readSOA(unsigned char* data, unsigned char* dns_packet_resp, unsigned char* name, unsigned int max_len);
-unsigned int parse_to_uint(unsigned char*);
-unsigned int readString(unsigned char* data, unsigned short, unsigned char* dns_packet_resp, unsigned char* name);
-
+void ChangetoDnsNameFormat(unsigned char *, unsigned char *);
+unsigned int readSOA(
+    unsigned char *data, unsigned char *dns_packet_resp, unsigned char *name, unsigned int max_len);
+unsigned int parse_to_uint(unsigned char *);
+unsigned int readString(
+    unsigned char *data, unsigned short, unsigned char *dns_packet_resp, unsigned char *name);
 
 #ifdef __cplusplus
 }

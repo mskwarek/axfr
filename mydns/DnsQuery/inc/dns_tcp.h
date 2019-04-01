@@ -18,10 +18,10 @@ typedef struct DNS_TCP_HEADER
     dns_header header;
 } DNS_H_TCP;
 
-dns_result dns_tcp_req(DNS_H_TCP *dns, unsigned char *qname, struct QUESTION *qinfo, unsigned int to, char* host,
-                       unsigned char* buf, int query_type, const char *server);
+dns_result dns_tcp_req(DNS_H_TCP *dns, unsigned char *qname, struct QUESTION *qinfo,
+    unsigned int to, char *host, unsigned char *buf, int query_type, const char *server);
 
 #ifdef __cplusplus
 }
 #endif
-#endif //AXFRSCANNER_DNS_TCP_H
+#endif // AXFRSCANNER_DNS_TCP_H

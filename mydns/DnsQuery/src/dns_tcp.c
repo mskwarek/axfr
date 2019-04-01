@@ -11,8 +11,8 @@
 #include <errno.h>
 #include "../../SystemFunctionProxy/inc/proxy_functions.h"
 
-dns_result dns_tcp_req(DNS_H_TCP *dns, unsigned char *qname, struct QUESTION *qinfo, unsigned int to, char* host,
-                       unsigned char* buf, int query_type, const char *server)
+dns_result dns_tcp_req(DNS_H_TCP *dns, unsigned char *qname, struct QUESTION *qinfo,
+    unsigned int to, char *host, unsigned char *buf, int query_type, const char *server)
 {
     int s = -1;
     struct sockaddr_in dest = {0};
@@ -23,15 +23,17 @@ dns_result dns_tcp_req(DNS_H_TCP *dns, unsigned char *qname, struct QUESTION *qi
         DEF_DNS_PORT = 53
     };
 
-    //point to the query portion
-    ChangetoDnsNameFormat(qname, (unsigned char*) host);
-    qinfo =(struct QUESTION*)&buf[sizeof(struct DNS_TCP_HEADER) + (strlen((const char*)qname) + 1)]; //fill it
-    qinfo->qtype = htons( query_type ); //type of the query , A , MX , CNAME , NS etc
+    // point to the query portion
+    ChangetoDnsNameFormat(qname, (unsigned char *)host);
+    qinfo = (struct QUESTION
+            *)&buf[sizeof(struct DNS_TCP_HEADER) + (strlen((const char *)qname) + 1)]; // fill it
+    qinfo->qtype = htons(query_type); // type of the query , A , MX , CNAME , NS etc
     qinfo->qclass = htons(1);
-    dns->len = htons((unsigned int)sizeof(struct DNS_TCP_HEADER)+(strlen((const char*)qname)+1) + sizeof(struct QUESTION)-2);
+    dns->len = htons((unsigned int)sizeof(struct DNS_TCP_HEADER) +
+                     (strlen((const char *)qname) + 1) + sizeof(struct QUESTION) - 2);
 
-    s = socket(AF_INET , SOCK_STREAM , IPPROTO_TCP);
-    if(s<0)
+    s = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    if (s < 0)
     {
         printf("Conn refused\n");
         return DNS_RESULT_ERR;
@@ -40,8 +42,8 @@ dns_result dns_tcp_req(DNS_H_TCP *dns, unsigned char *qname, struct QUESTION *qi
     timeout.tv_sec = to;
     timeout.tv_usec = 0;
 
-    if (setsockopt (s, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout,
-                    sizeof(timeout)) < 0) {
+    if (setsockopt(s, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, sizeof(timeout)) < 0)
+    {
         printf("setsockopt failed\n");
         return DNS_RESULT_ERR;
     }
@@ -58,86 +60,99 @@ dns_result dns_tcp_req(DNS_H_TCP *dns, unsigned char *qname, struct QUESTION *qi
 
     socklen_t lon = {0};
 
-    if( (arg = int_fcntl(s, F_GETFL, NULL)) < 0) {
+    if ((arg = int_fcntl(s, F_GETFL, NULL)) < 0)
+    {
         return DNS_RESULT_ERR;
         // exit(0);
     }
     arg |= O_NONBLOCK;
-    if( int_fcntl(s, F_SETFL, arg) < 0) {
+    if (int_fcntl(s, F_SETFL, arg) < 0)
+    {
         fprintf(stderr, "Error fcntl(..., F_SETFL) (%s)\n", strerror(errno));
         return DNS_RESULT_ERR;
     }
     // Trying to connect with timeout
     res = connect(s, (struct sockaddr *)&dest, sizeof(dest));
-    if (res < 0) {
-        if (errno == EINPROGRESS) {
+    if (res < 0)
+    {
+        if (errno == EINPROGRESS)
+        {
             // fprintf(stderr, "EINPROGRESS in connect() - selecting\n");
-            do {
+            do
+            {
                 timeout.tv_sec = to;
                 timeout.tv_usec = 0;
                 FD_ZERO(&myset);
                 FD_SET(s, &myset);
-                res = select(s+1, NULL, &myset, NULL, &timeout);
-                if (res < 0 && errno != EINTR) {
+                res = select(s + 1, NULL, &myset, NULL, &timeout);
+                if (res < 0 && errno != EINTR)
+                {
                     fprintf(stderr, "Error connecting %d - %s\n", errno, strerror(errno));
                     close(s);
                     return DNS_RESULT_ERR;
                 }
-                else if (res > 0) {
+                else if (res > 0)
+                {
                     // Socket selected for write
                     lon = sizeof(int);
-                    if (getsockopt(s, SOL_SOCKET, SO_ERROR, (void*)(&valopt), &lon) < 0) {
+                    if (getsockopt(s, SOL_SOCKET, SO_ERROR, (void *)(&valopt), &lon) < 0)
+                    {
                         fprintf(stderr, "Error in getsockopt() %d - %s\n", errno, strerror(errno));
                         close(s);
                         return DNS_RESULT_ERR;
                     }
                     // Check the value returned...
-                    if (valopt) {
-                        fprintf(stderr, "Error in delayed connection() %d - %s\n", valopt, strerror(valopt)
-                        );
+                    if (valopt)
+                    {
+                        fprintf(stderr, "Error in delayed connection() %d - %s\n", valopt,
+                            strerror(valopt));
                         close(s);
                         return DNS_RESULT_ERR;
                     }
                     break;
                 }
-                else {
+                else
+                {
                     fprintf(stderr, "Timeout in select() - Cancelling!\n");
                     close(s);
                     return DNS_RESULT_ERR;
                 }
             } while (1);
         }
-        else {
+        else
+        {
             fprintf(stderr, "Error connecting %d - %s\n", errno, strerror(errno));
             close(s);
             return DNS_RESULT_ERR;
         }
     }
     // Set to blocking mode again...
-    if( (arg = fcntl(s, F_GETFL, NULL)) < 0) {
+    if ((arg = fcntl(s, F_GETFL, NULL)) < 0)
+    {
         fprintf(stderr, "Error fcntl(..., F_GETFL) (%s)\n", strerror(errno));
         close(s);
         return DNS_RESULT_ERR;
     }
     arg &= (~O_NONBLOCK);
-    if( fcntl(s, F_SETFL, arg) < 0) {
+    if (fcntl(s, F_SETFL, arg) < 0)
+    {
         fprintf(stderr, "Error fcntl(..., F_SETFL) (%s)\n", strerror(errno));
         close(s);
         return DNS_RESULT_ERR;
     }
 
-
-    if (connect(s,(struct sockaddr *) &dest, sizeof(dest)) < 0)
+    if (connect(s, (struct sockaddr *)&dest, sizeof(dest)) < 0)
     {
         printf("ERROR connecting\n");
         close(s);
         return DNS_RESULT_ERR;
     }
 
-
-    int len = (unsigned int)sizeof(struct DNS_TCP_HEADER) + (strlen((const char*)qname)+1) + sizeof(struct QUESTION);
-    int n = write(s, (char*)buf, len);
-    if (n < 0) {
+    int len = (unsigned int)sizeof(struct DNS_TCP_HEADER) + (strlen((const char *)qname) + 1) +
+              sizeof(struct QUESTION);
+    int n = write(s, (char *)buf, len);
+    if (n < 0)
+    {
         perror("ERROR writing to socket");
     }
     bzero(buf, BUFSIZE);
@@ -150,25 +165,24 @@ dns_result dns_tcp_req(DNS_H_TCP *dns, unsigned char *qname, struct QUESTION *qi
     {
         memset(&replyMessage, 0, sizeof(replyMessage));
         numBytesRecv = recv(s, replyMessage, BUFSIZE, 0);
-        if(off == 0 && numBytesRecv >= 2)
+        if (off == 0 && numBytesRecv >= 2)
         {
-            data_length = ((*(replyMessage) << 8) &0xFF00) | (*(replyMessage+1) & 0xFF);
+            data_length = ((*(replyMessage) << 8) & 0xFF00) | (*(replyMessage + 1) & 0xFF);
         }
-        if ( numBytesRecv < 0)
+        if (numBytesRecv < 0)
         {
             printf("recv() failed\n");
             close(s);
             return DNS_RESULT_ERR;
         }
-        memcpy(buf+off, replyMessage, numBytesRecv);
-        off+=numBytesRecv;
+        memcpy(buf + off, replyMessage, numBytesRecv);
+        off += numBytesRecv;
         // printf("%ld\n", numBytesRecv);
-        if(off>=data_length+2 && off != 0)
+        if (off >= data_length + 2 && off != 0)
         {
             break;
         }
-    }
-    while (numBytesRecv > 0);
+    } while (numBytesRecv > 0);
     close(s);
 
     return DNS_RESULT_OK;
