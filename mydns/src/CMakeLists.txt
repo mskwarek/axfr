@@ -4,5 +4,5 @@ include_directories(../inc)
 include_directories(../DnsQuery/inc)
 
 add_executable(axfrScanner main.cpp)
-target_link_libraries(axfrScanner axfr pthread)
+target_link_libraries(axfrScanner axfr pthread spdlog)
 

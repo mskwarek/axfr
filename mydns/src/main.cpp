@@ -14,6 +14,7 @@ extern "C" {
 #include <sstream>
 #include <string>
 #include <vector>
+#include "spdlog/spdlog.h"
 
 char *getCmdOption(char **begin, char **end, const std::string &option)
 {
@@ -175,7 +176,7 @@ int main(int argc, char *argv[])
             std::vector<std::string> x = split(line, '|');
             if (x.size() < 2)
             {
-                std::cout << "wrong line format, cannot parse" << std::endl;
+                spdlog::warn("wrong line format, cannot parse");
                 continue;
             }
 
