@@ -58,3 +58,5 @@ edym/*.dvi
 **/#*
 **/.vscode
 **/.Rapp.history
+**/temp/*
+**/tmp
