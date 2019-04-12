@@ -22,14 +22,14 @@ dns_result ngethostbyname(const char *que, const char *server, const char *dst_l
     int dns_header_size = 0;
     int q_count = 0;
 
-    printf("%s %s\n", que, server);
+    // printf("%s %s\n", que, server);
 
     unsigned char *qname = NULL;
     struct QUESTION *qinfo = NULL;
     char host[HOSTSIZE] = {0};
 
     snprintf(host, HOSTSIZE, "%s", que);
-    printf("Resolving %s\n\n", host);
+    // printf("Resolving %s\n\n", host);
 
     if (TRANSPORT_TYPE_UDP == transport_type)
     {
@@ -39,10 +39,10 @@ dns_result ngethostbyname(const char *que, const char *server, const char *dst_l
         qname = &buf[sizeof(struct DNS_UDP_HEADER)];
         dns_id = dns->header.id;
 
-        if (DNS_RESULT_OK !=
-            dns_udp_req(dns, qname, qinfo, to, host, (char *)buf, query_type, server))
+        int res = dns_udp_req(dns, qname, qinfo, to, host, (char *)buf, query_type, server);
+        if (DNS_RESULT_OK != res)
         {
-            return DNS_RESULT_ERR;
+            return res;
         }
 
         dns = (struct DNS_UDP_HEADER *)&buf;
@@ -61,10 +61,10 @@ dns_result ngethostbyname(const char *que, const char *server, const char *dst_l
         qname = &buf[sizeof(struct DNS_TCP_HEADER)];
         dns_id = dns->header.id;
 
-        if (DNS_RESULT_OK !=
-            dns_tcp_req(dns, qname, qinfo, to, host, (char *)buf, query_type, server))
+        int res = dns_tcp_req(dns, qname, qinfo, to, host, (char *)buf, query_type, server);
+        if (DNS_RESULT_OK != res)
         {
-            return DNS_RESULT_ERR;
+            return res;
         }
 
         dns = (struct DNS_TCP_HEADER *)&buf;
@@ -89,9 +89,9 @@ dns_result ngethostbyname(const char *que, const char *server, const char *dst_l
 
         if (htons(dns_id) != dnsIdFromPacket)
         {
-            printf("dnsId from resp does not match %d, %d, %d, %d, %d, %d", dns_id, dnsIdFromPacket,
-                htons(dns_id), ntohs(dns_id), htons(dnsIdFromPacket), ntohs(dnsIdFromPacket));
-            return DNS_RESULT_ERR;
+            // printf("dnsId from resp does not match %d, %d, %d, %d, %d, %d", dns_id, dnsIdFromPacket,
+            //     htons(dns_id), ntohs(dns_id), htons(dnsIdFromPacket), ntohs(dnsIdFromPacket));
+            return DNS_RESULT_TID_ERR;
         }
     }
 
@@ -101,9 +101,9 @@ dns_result ngethostbyname(const char *que, const char *server, const char *dst_l
 
         if (htons(dns_id) != dnsIdFromPacket)
         {
-            printf("dnsId from resp does not match %d, %d, %d, %d, %d, %d", dns_id, dnsIdFromPacket,
-                htons(dns_id), ntohs(dns_id), htons(dnsIdFromPacket), ntohs(dnsIdFromPacket));
-            return DNS_RESULT_ERR;
+            // printf("dnsId from resp does not match %d, %d, %d, %d, %d, %d", dns_id, dnsIdFromPacket,
+            //     htons(dns_id), ntohs(dns_id), htons(dnsIdFromPacket), ntohs(dnsIdFromPacket));
+            return DNS_RESULT_TID_ERR;
         }
     }
 

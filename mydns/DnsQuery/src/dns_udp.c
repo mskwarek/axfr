@@ -30,9 +30,9 @@ dns_result dns_udp_req(DNS_H_UDP *dns, unsigned char *qname, struct QUESTION *qi
     s = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP); // UDP packet for DNS queries
     if (s < 0)
     {
-        printf("Conn refused\n");
+        // printf("Conn refused\n");
         close(s);
-        return DNS_RESULT_ERR;
+        return DNS_RESULT_CONN_REFUSED;
     }
 
     dest.sin_family = AF_INET;
@@ -46,33 +46,29 @@ dns_result dns_udp_req(DNS_H_UDP *dns, unsigned char *qname, struct QUESTION *qi
     {
         // perror("Error");
         // printf("err: %d\n", setopterr);
-        printf("setsockopt failed");
-        return DNS_RESULT_ERR;
+        // printf("setsockopt failed");
+        return DNS_RESULT_SOCKET_ERR;
     }
 
     int len = (unsigned int)sizeof(struct DNS_UDP_HEADER) + (strlen((const char *)qname) + 1) +
               sizeof(struct QUESTION);
 
-    // printf("\nSending Packet...");
     if (0 > sendto(s, (char *)buf, len, 0, (struct sockaddr *)&dest, sizeof(dest)))
     {
-        printf("sendto failed");
+        // printf("sendto failed");
         close(s);
-        return DNS_RESULT_ERR;
+        return DNS_RESULT_SEND_ERR;
     }
-    // printf("Done");
 
     // Receive the answer
     i = sizeof dest;
-    // printf("\nReceiving answer...");
     if (recvfrom(s, (char *)buf, 65536, 0, (struct sockaddr *)&dest, (socklen_t *)&i) < 0)
     {
         // perror("recvfrom failed");
         close(s);
-        printf("recvfrom failed");
-        return DNS_RESULT_ERR;
+        // printf("recvfrom failed");
+        return DNS_RESULT_RECV_ERR;
     }
-    // printf("Done");
     close(s);
     return DNS_RESULT_OK;
 }

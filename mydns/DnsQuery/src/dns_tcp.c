@@ -35,8 +35,8 @@ dns_result dns_tcp_req(DNS_H_TCP *dns, unsigned char *qname, struct QUESTION *qi
     s = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (s < 0)
     {
-        printf("Conn refused\n");
-        return DNS_RESULT_ERR;
+        // printf("Conn refused\n");
+        return DNS_RESULT_CONN_REFUSED;
     }
     struct timeval timeout;
     timeout.tv_sec = to;
@@ -44,11 +44,10 @@ dns_result dns_tcp_req(DNS_H_TCP *dns, unsigned char *qname, struct QUESTION *qi
 
     if (setsockopt(s, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, sizeof(timeout)) < 0)
     {
-        printf("setsockopt failed\n");
-        return DNS_RESULT_ERR;
+        // printf("setsockopt failed\n");
+        return DNS_RESULT_SOCKET_ERR;
     }
 
-    // printf("Nameserver IP: %s\n", server);
     dest.sin_addr.s_addr = inet_addr(server);
     dest.sin_family = AF_INET;
     dest.sin_port = htons(DEF_DNS_PORT);
@@ -143,9 +142,9 @@ dns_result dns_tcp_req(DNS_H_TCP *dns, unsigned char *qname, struct QUESTION *qi
 
     if (connect(s, (struct sockaddr *)&dest, sizeof(dest)) < 0)
     {
-        printf("ERROR connecting\n");
+        // printf("ERROR connecting\n");
         close(s);
-        return DNS_RESULT_ERR;
+        return DNS_RESULT_CONN_ERR;
     }
 
     int len = (unsigned int)sizeof(struct DNS_TCP_HEADER) + (strlen((const char *)qname) + 1) +
@@ -171,9 +170,9 @@ dns_result dns_tcp_req(DNS_H_TCP *dns, unsigned char *qname, struct QUESTION *qi
         }
         if (numBytesRecv < 0)
         {
-            printf("recv() failed\n");
+            // printf("recv() failed\n");
             close(s);
-            return DNS_RESULT_ERR;
+            return DNS_RESULT_RECV_ERR;
         }
         memcpy(buf + off, replyMessage, numBytesRecv);
         off += numBytesRecv;

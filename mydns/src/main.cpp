@@ -66,7 +66,7 @@ int getQueryTypeIdByName(const char *query_type)
 
     for (uint32_t i = 0; i < sizeof(query_map) / sizeof(query_map[0]); ++i)
     {
-        std::cout << query_type << " " << query_map[i].dns_query_name << std::endl;
+        spdlog::debug(std::string(query_type) + " " + std::string(query_map[i].dns_query_name));
         if (0 == strcmp(query_type, query_map[i].dns_query_name))
             return query_map[i].query_number;
     }
@@ -172,7 +172,8 @@ int main(int argc, char *argv[])
         };
         while (std::getline(inputFile, line))
         {
-            std::cout << i++ << std::endl;
+            i++;
+            spdlog::debug("Iter: " + i);
             std::vector<std::string> x = split(line, '|');
             if (x.size() < 2)
             {
@@ -183,13 +184,18 @@ int main(int argc, char *argv[])
             while (VF.size() > workers)
             {
                 for_each(VF.begin(), VF.end(),
-                    [](std::shared_future<dns_result> &x) { std::cout << x.get() << " "; });
+                    [](std::shared_future<dns_result> &x) { 
+                        auto result = x.get();
+                        spdlog::debug(result); });
                 VF.clear();
             }
             VF.push_back(std::async(K, x[0], x[1]));
         }
         for_each(VF.begin(), VF.end(),
-            [](std::shared_future<dns_result> &x) { std::cout << x.get() << " "; });
+            [](std::shared_future<dns_result> &x) { 
+                auto result = x.get();
+                spdlog::debug(result);
+            });
         inputFile.close();
     }
     return 0;
