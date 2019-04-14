@@ -11,10 +11,10 @@ extern "C" {
 
 #include <stdio.h>
 
-void write_raw_data(FILE *f, const char *data);
-void write_endl(FILE *f);
-void write_rp_record(FILE *f, const char *, const char *);
-void write_string_to_file(FILE *f, const char *string);
+size_t write_raw_data(char *output_buf, size_t output_buf_size, const char *data);
+size_t write_endl(char *output_buf, size_t output_buf_size);
+size_t write_rp_record(char *output_buf, size_t output_buf_size, const char *, const char *);
+size_t write_string_to_file(char *output_buf, size_t output_buf_size, const char *string);
 
 #ifdef __cplusplus
 }

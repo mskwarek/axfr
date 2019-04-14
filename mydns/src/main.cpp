@@ -155,7 +155,6 @@ int main(int argc, char *argv[])
     {
         if (strlen(domain) > 0 && strlen(nameserver_ip) > 0)
         {
-            // std::cout<<"Main args: "<<argv[1]<<" " <<argv[2]<<std::endl;
             ngethostbyname(domain, nameserver_ip, output_dir, getQueryTypeIdByName(query_type),
                 getTimeout(timeout), getTransportProtocolIdByName(transport_protocol_name));
         }

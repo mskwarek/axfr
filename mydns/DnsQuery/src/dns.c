@@ -1,5 +1,6 @@
 #include <string.h>
 #include <sys/socket.h> //you know what this is for
+#include <arpa/inet.h> 
 #include "../inc/dns.h"
 #include "utils.h"
 #include "../inc/dns_received_packet_reader.h"
@@ -20,7 +21,6 @@ dns_result ngethostbyname(const char *que, const char *server, const char *dst_l
     unsigned char buf[BUFSIZE] = {0};
     int answers_cnt = 0;
     int dns_header_size = 0;
-    int q_count = 0;
 
     // printf("%s %s\n", que, server);
 
@@ -48,7 +48,6 @@ dns_result ngethostbyname(const char *que, const char *server, const char *dst_l
         dns = (struct DNS_UDP_HEADER *)&buf;
 
         answers_cnt = ntohs(dns->header.ans_count);
-        q_count = ntohs(dns->header.q_count);
         dns_header_size = sizeof(DNS_H_UDP);
     }
     else
@@ -107,26 +106,39 @@ dns_result ngethostbyname(const char *que, const char *server, const char *dst_l
         }
     }
 
-    FILE *f = fopen(filename, "w");
-    if (f == NULL)
-    {
-        printf("Error opening file!\n");
-        return DNS_RESULT_ERR;
-    }
+    char output_buf[BUFSIZE] = {0};
+
 
     struct RES_RECORD *answers = NULL;
     answers = (struct RES_RECORD *)calloc(answers_cnt, sizeof(struct RES_RECORD));
     if (answers == NULL)
     {
-        fclose(f);
         return DNS_RESULT_NO_MEMORY;
     }
 
     reader = &buf[dns_header_size + (strlen((const char *)qname) + 1) + sizeof(struct QUESTION)];
 
-    readAnswers(transport_type, reader, answers, buf, f, answers_cnt);
+    readAnswers(transport_type, reader, answers, buf, output_buf, sizeof(output_buf), answers_cnt);
+    
+    int tries = 0;
+    FILE *f = NULL;
+    do
+    {
+        f = fopen(filename, "w");
+        sleep(0.1);
+        tries++;
+    } while(f == NULL && tries < 5);
 
-    fclose(f);
+    if (f != NULL)
+    {
+        fprintf(f, "%s", output_buf);
+        fclose(f);
+    }
+    else 
+    {
+        printf("Error opening file!\n");
+    }
+
     for (i = 0; i < answers_cnt; ++i)
     {
         if (answers[i].rdata != NULL)
@@ -134,5 +146,6 @@ dns_result ngethostbyname(const char *que, const char *server, const char *dst_l
     }
     if (answers != NULL)
         free(answers);
+    
     return DNS_RESULT_OK;
 }

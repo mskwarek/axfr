@@ -13,7 +13,8 @@ extern "C" {
 #include "dns_packet.h"
 
 void readAnswers(dns_transport_type transport_type, unsigned char *reader,
-    struct RES_RECORD *answers, unsigned char *buf, FILE *f, int answers_cnt);
+    struct RES_RECORD *answers, unsigned char *buf, char *output_buf, size_t output_buf_size,
+    int answers_cnt);
 
 int is_lack_of_memory(unsigned char *allocedMemory, int mallocRetry);
 

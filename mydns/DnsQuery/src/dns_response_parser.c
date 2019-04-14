@@ -3,47 +3,47 @@
 #include <string.h>
 #include <dns_response_file_writer.h>
 
-void parse_ip(unsigned char *data, FILE *f);
+int parse_ip(unsigned char *data, char *output_buf, size_t output_buf_size);
 
-void parse_ptr(unsigned char *data, unsigned short data_len, unsigned char *dns, FILE *f);
+int parse_ptr(unsigned char *data, unsigned short data_len, unsigned char *dns, char *output_buf, size_t output_buf_size);
 
-void parse_soa(unsigned char *data, unsigned short data_len, unsigned char *dns, FILE *f);
+int parse_soa(unsigned char *data, unsigned short data_len, unsigned char *dns, char *output_buf, size_t output_buf_size);
 
-void parse_hinfo(unsigned char *data, unsigned short data_len, FILE *f);
+int parse_hinfo(unsigned char *data, unsigned short data_len, char *output_buf, size_t output_buf_size);
 
-void parse_rrsig(unsigned char *data, unsigned char *, unsigned short data_len, FILE *f);
+int parse_rrsig(unsigned char *data, unsigned char *, unsigned short data_len, char *output_buf, size_t output_buf_size);
 
-int getName(unsigned char *data, unsigned short data_len, unsigned char *dns_packet_resp, FILE *f);
+int getName(unsigned char *data, unsigned short data_len, unsigned char *dns_packet_resp, char *output_buf, size_t output_buf_size);
 
-void parse_ns(unsigned char *data, unsigned short, unsigned char *dns, FILE *f);
+int parse_ns(unsigned char *data, unsigned short, unsigned char *dns, char *output_buf, size_t output_buf_size);
 
-void parse_mx(
-    unsigned char *data, unsigned short data_len, unsigned char *dns_packet_resp, FILE *f);
+int parse_mx(
+    unsigned char *data, unsigned short data_len, unsigned char *dns_packet_resp, char *output_buf, size_t output_buf_size);
 
-dns_result parse_txt(unsigned char *data, unsigned short data_len, FILE *f);
+int parse_txt(unsigned char *data, unsigned short data_len, char *output_buf, size_t output_buf_size);
 
-void parse_nsec(unsigned char *data, unsigned char *, FILE *f, unsigned int data_len);
+int parse_nsec(unsigned char *data, unsigned char *, char *output_buf, size_t output_buf_size, unsigned int data_len);
 
-void parse_cname(unsigned char *data, unsigned char *dns, FILE *f, unsigned int data_len);
+int parse_cname(unsigned char *data, unsigned char *dns, char *output_buf, size_t output_buf_size, unsigned int data_len);
 
-void parse_rp(unsigned char *data, unsigned char *, FILE *f, unsigned int data_len);
+int parse_rp(unsigned char *data, unsigned char *, char *output_buf, size_t output_buf_size, unsigned int data_len);
 
-void parse_dnskey(unsigned char *, unsigned short, FILE *f);
+int parse_dnskey(unsigned char *, unsigned short, char *output_buf, size_t output_buf_size);
 
-void parse_afsdb(unsigned char *data, unsigned char *, FILE *f, unsigned int data_len);
+int parse_afsdb(unsigned char *data, unsigned char *, char *output_buf, size_t output_buf_size, unsigned int data_len);
 
-void parse_aaaa(unsigned char *data, FILE *f);
+int parse_aaaa(unsigned char *data, char *output_buf, size_t output_buf_size);
 
-void parse_loc(unsigned char *data, FILE *f);
+int parse_loc(unsigned char *data, char *output_buf, size_t output_buf_size);
 
-void parse_srv(unsigned char *data, unsigned char *, FILE *f, unsigned int data_len);
+int parse_srv(unsigned char *data, unsigned char *, char *output_buf, size_t output_buf_size, unsigned int data_len);
 
-dns_result parse_naptr(unsigned char *data, unsigned short, FILE *f);
+int parse_naptr(unsigned char *data, unsigned short, char *output_buf, size_t output_buf_size);
 
-void parse_default(unsigned char *data, unsigned short data_len, FILE *f);
+int parse_default(unsigned char *data, unsigned short data_len, char *output_buf, size_t output_buf_size);
 
-dns_result ReadName(
-    unsigned char *reader, size_t data_len, unsigned short type, unsigned char *dns, FILE *f)
+dns_result ReadName(unsigned char *reader, size_t data_len, unsigned short type, unsigned char *dns,
+    char *output_buf, size_t output_buf_size)
 {
     if (type < 1 || type > 256)
     {
@@ -52,59 +52,59 @@ dns_result ReadName(
     switch (type)
     {
     case T_A:
-        parse_ip(reader, f);
+        return parse_ip(reader, output_buf, output_buf_size);
         break;
     case T_NS:
         // printf("datalen: %d", data_len);
-        parse_ns(reader, (unsigned short)data_len, dns, f);
+        parse_ns(reader, (unsigned short)data_len, dns, output_buf, output_buf_size);
         break;
     case T_CNAME:
-        parse_cname(reader, dns, f, data_len);
+        parse_cname(reader, dns, output_buf, output_buf_size, data_len);
         break;
     case T_SOA:
-        parse_soa(reader, (unsigned short)data_len, dns, f);
+        parse_soa(reader, (unsigned short)data_len, dns, output_buf, output_buf_size);
         break;
     case T_PTR:
-        parse_ptr(reader, (unsigned short)data_len, dns, f);
+        parse_ptr(reader, (unsigned short)data_len, dns, output_buf, output_buf_size);
         break;
     case T_HINFO:
-        parse_hinfo(reader, (unsigned short)data_len, f);
+        parse_hinfo(reader, (unsigned short)data_len, output_buf, output_buf_size);
         break;
     case T_MX:
-        parse_mx(reader, (unsigned short)data_len, dns, f);
+        parse_mx(reader, (unsigned short)data_len, dns, output_buf, output_buf_size);
         break;
     case T_TXT:
-        return parse_txt(reader, data_len, f);
+        return parse_txt(reader, data_len, output_buf, output_buf_size);
         break;
     case T_RP:
-        parse_rp(reader, dns, f, data_len);
+        parse_rp(reader, dns, output_buf, output_buf_size, data_len);
         break;
     case T_AFSDB:
-        parse_afsdb(reader, dns, f, data_len);
+        parse_afsdb(reader, dns, output_buf, output_buf_size, data_len);
         break;
     case T_AAAA:
-        parse_aaaa(reader, f);
+        parse_aaaa(reader, output_buf, output_buf_size);
         break;
     case T_LOC:
-        parse_loc(reader, f);
+        parse_loc(reader, output_buf, output_buf_size);
         break;
     case T_SRV:
-        parse_srv(reader, dns, f, data_len);
+        parse_srv(reader, dns, output_buf, output_buf_size, data_len);
         break;
     case T_NAPTR:
-        return parse_naptr(reader, (unsigned short)data_len, f);
+        return parse_naptr(reader, (unsigned short)data_len, output_buf, output_buf_size);
         break;
     case T_RRSIG:
-        parse_rrsig(reader, dns, (unsigned short)data_len, f);
+        parse_rrsig(reader, dns, (unsigned short)data_len, output_buf, output_buf_size);
         break;
     case T_NSEC:
-        parse_nsec(reader, dns, f, data_len);
+        parse_nsec(reader, dns, output_buf, output_buf_size, data_len);
         break;
     case T_DNSKEY:
-        parse_dnskey(reader, (unsigned short)data_len, f);
+        parse_dnskey(reader, (unsigned short)data_len, output_buf, output_buf_size);
         break;
     default:
-        parse_default(reader, (unsigned short)data_len, f);
+        parse_default(reader, (unsigned short)data_len, output_buf, output_buf_size);
         break;
     }
     return DNS_RESULT_OK;
@@ -115,47 +115,51 @@ unsigned short parse_to_ushort(unsigned char *data)
     return (unsigned short)((*(data) << 8) & 0xFF00) | (*(data + 1) & 0xFF);
 }
 
-void parse_default(unsigned char *data, unsigned short data_len, FILE *f)
+int parse_default(unsigned char *data, unsigned short data_len, char *output_buf, size_t output_buf_size)
 {
     int i = 0;
     if (data_len == 0)
     {
         return;
     }
+    int taken = 0;
 
     while (i < data_len)
     {
-        write_raw_data(f, data + i);
+        taken += write_raw_data(output_buf, output_buf_size, data + i);
         ++i;
     }
-    write_endl(f);
+    taken += write_endl(output_buf, output_buf_size);
+    return taken;
 }
 
-void parse_dnskey(unsigned char *data, unsigned short data_len, FILE *f)
+int parse_dnskey(unsigned char *data, unsigned short data_len, char *output_buf, size_t output_buf_size)
 {
     unsigned short flags = parse_to_ushort(data);
     unsigned char protocol = *(data + 2);
     unsigned char algorithm = *(data + 3);
     int i = 0;
+    int taken = 0;
     while (i < data_len - 4)
     {
-        write_raw_data(f, data + i + 4);
+        taken += write_raw_data(output_buf, output_buf_size, data + i + 4);
         ++i;
     }
-    write_endl(f);
+    taken += write_endl(output_buf, output_buf_size);
+    return taken;
 }
 
-void parse_rp(unsigned char *data, unsigned char *dns, FILE *f, unsigned int data_len)
+int parse_rp(unsigned char *data, unsigned char *dns, char *output_buf, size_t output_buf_size, unsigned int data_len)
 {
     unsigned char mailbox[1024] = {0};
     unsigned char txt_rr[1024] = {0};
 
     int x = readSOA(data, dns, mailbox, data_len);
     readSOA(data + x + 1, dns, txt_rr, data_len - x - 1);
-    write_rp_record(f, mailbox, txt_rr);
+    return write_rp_record(output_buf, output_buf_size, mailbox, txt_rr);
 }
 
-void parse_afsdb(unsigned char *data, unsigned char *dns, FILE *f, unsigned int data_len)
+int parse_afsdb(unsigned char *data, unsigned char *dns, char *output_buf, size_t output_buf_size, unsigned int data_len)
 {
     char write_buffer[1024] = {0};
     unsigned short subtype = parse_to_ushort(data);
@@ -163,11 +167,12 @@ void parse_afsdb(unsigned char *data, unsigned char *dns, FILE *f, unsigned int 
     readSOA(data + 2, dns, hostname, data_len);
     snprintf(write_buffer, sizeof(write_buffer), "%u %s", subtype, hostname);
 
-    write_string_to_file(f, write_buffer);
-    write_endl(f);
+    int taken = write_string_to_file(output_buf, output_buf_size, write_buffer);
+    taken += write_endl(output_buf, output_buf_size);
+    return taken;
 }
 
-void parse_aaaa(unsigned char *data, FILE *f)
+int parse_aaaa(unsigned char *data, char *output_buf, size_t output_buf_size)
 {
     char ipv6_buffer[1024] = {0};
     snprintf(ipv6_buffer, sizeof(ipv6_buffer),
@@ -175,11 +180,12 @@ void parse_aaaa(unsigned char *data, FILE *f)
         *(data + 1), *(data + 2), *(data + 3), *(data + 4), *(data + 5), *(data + 6), *(data + 7),
         *(data + 8), *(data + 9), *(data + 10), *(data + 11), *(data + 12), *(data + 13),
         *(data + 14), *(data + 15));
-    write_string_to_file(f, ipv6_buffer);
-    write_endl(f);
+    int taken = write_string_to_file(output_buf, output_buf_size, ipv6_buffer);
+    taken += write_endl(output_buf, output_buf_size);
+    return taken;
 }
 
-void parse_loc(unsigned char *data, FILE *f)
+int parse_loc(unsigned char *data, char *output_buf, size_t output_buf_size)
 {
     char write_buffer[1024] = {0};
     uint8_t size = (uint8_t)*data + 1;
@@ -192,11 +198,12 @@ void parse_loc(unsigned char *data, FILE *f)
     snprintf(write_buffer, sizeof(write_buffer), "%u %u %u %u %u %u %u", version, size,
         hor_precision, ver_precision, latitude, longitude, altitude);
 
-    write_string_to_file(f, write_buffer);
-    write_endl(f);
+    int taken = write_string_to_file(output_buf, output_buf_size, write_buffer);
+    taken += write_endl(output_buf, output_buf_size);
+    return taken;
 }
 
-void parse_srv(unsigned char *data, unsigned char *dns, FILE *f, unsigned int data_len)
+int parse_srv(unsigned char *data, unsigned char *dns, char *output_buf, size_t output_buf_size, unsigned int data_len)
 {
     char write_buffer[1024] = {0};
     unsigned short priority = parse_to_ushort(data);
@@ -206,11 +213,12 @@ void parse_srv(unsigned char *data, unsigned char *dns, FILE *f, unsigned int da
     readSOA(data + 6, dns, name, data_len);
     snprintf(write_buffer, sizeof(write_buffer), "%u %u %u %s", priority, weight, port, name);
 
-    write_string_to_file(f, write_buffer);
-    write_endl(f);
+    int taken = write_string_to_file(output_buf, output_buf_size, write_buffer);
+    taken += write_endl(output_buf, output_buf_size);
+    return taken;
 }
 
-dns_result parse_naptr(unsigned char *data, unsigned short data_len, FILE *f)
+int parse_naptr(unsigned char *data, unsigned short data_len, char *output_buf, size_t output_buf_size)
 {
     unsigned short order = parse_to_ushort(data);
     data += 2;
@@ -229,7 +237,7 @@ dns_result parse_naptr(unsigned char *data, unsigned short data_len, FILE *f)
     txt = (unsigned char *)calloc(flags_length + 1, sizeof(unsigned char));
     if (txt == NULL)
     {
-        return DNS_RESULT_NO_MEMORY;
+        return 0;
     }
     while (i < flags_length)
     {
@@ -245,7 +253,7 @@ dns_result parse_naptr(unsigned char *data, unsigned short data_len, FILE *f)
     {
         if (txt != NULL)
             free(txt);
-        return DNS_RESULT_NO_MEMORY;
+        return 0;
     }
     while (i < service_len)
     {
@@ -264,7 +272,7 @@ dns_result parse_naptr(unsigned char *data, unsigned short data_len, FILE *f)
             free(txt);
         if (txt2 != NULL)
             free(txt2);
-        return DNS_RESULT_NO_MEMORY;
+        return 0;
     }
     while (i < regex_len)
     {
@@ -285,7 +293,7 @@ dns_result parse_naptr(unsigned char *data, unsigned short data_len, FILE *f)
             free(txt2);
         if (txt3 != NULL)
             free(txt3);
-        return DNS_RESULT_NO_MEMORY;
+        return 0;
     }
     while (i < rep_len)
     {
@@ -299,8 +307,8 @@ dns_result parse_naptr(unsigned char *data, unsigned short data_len, FILE *f)
     snprintf(write_buffer, sizeof(write_buffer), "%u %u %d %d %s %s %s %s\n", order, preference,
         flags_length, service_len, txt, txt2, txt3, txt4);
 
-    write_string_to_file(f, write_buffer);
-    write_endl(f);
+    int taken = write_string_to_file(output_buf, output_buf_size, write_buffer);
+    taken += write_endl(output_buf, output_buf_size);
 
     if (txt != NULL)
         free(txt);
@@ -311,40 +319,44 @@ dns_result parse_naptr(unsigned char *data, unsigned short data_len, FILE *f)
     if (txt4 != NULL)
         free(txt4);
 
-    return DNS_RESULT_OK;
+    return taken;
 }
 
-void parse_ip(unsigned char *data, FILE *f)
+int parse_ip(unsigned char *data, char *output_buf, size_t output_buf_size)
 {
     char write_buffer[1024] = {0};
     snprintf(write_buffer, sizeof(write_buffer), "%d.%d.%d.%d", (int)*data, (int)*(data + 1),
         (int)*(data + 2), (int)*(data + 3));
 
-    write_string_to_file(f, write_buffer);
-    write_endl(f);
+    int taken = write_string_to_file(output_buf, output_buf_size, write_buffer);
+    taken += write_endl(output_buf, output_buf_size);
+    return taken;
 }
 
-void parse_ns(unsigned char *data, unsigned short data_len, unsigned char *dns, FILE *f)
+int parse_ns(unsigned char *data, unsigned short data_len, unsigned char *dns, char *output_buf, size_t output_buf_size)
 {
-    getName(data, data_len, dns, f);
-    write_endl(f);
+    int taken = getName(data, data_len, dns, output_buf, output_buf_size);
+    taken += write_endl(output_buf, output_buf_size);
+    return taken;
 }
 
-void parse_ptr(unsigned char *data, unsigned short data_len, unsigned char *dns, FILE *f)
+int parse_ptr(unsigned char *data, unsigned short data_len, unsigned char *dns, char *output_buf, size_t output_buf_size)
 {
-    getName(data, data_len, dns, f); // These types all consist of a single domain name
-    write_endl(f);
+    int taken = getName(data, data_len, dns, output_buf, output_buf_size); // These types all consist of a single domain name
+    taken += write_endl(output_buf, output_buf_size);
+    return taken;
 }
 
-void parse_cname(unsigned char *data, unsigned char *dns, FILE *f, unsigned int data_len)
+int parse_cname(unsigned char *data, unsigned char *dns, char *output_buf, size_t output_buf_size, unsigned int data_len)
 {
     unsigned char name[512] = {0};
     readSOA(data, dns, name, data_len);
-    write_string_to_file(f, name);
-    write_endl(f);
+    int taken = write_string_to_file(output_buf, output_buf_size, name);
+    taken += write_endl(output_buf, output_buf_size);
+    return taken;
 }
 
-void parse_soa(unsigned char *data, unsigned short data_len, unsigned char *dns, FILE *f)
+int parse_soa(unsigned char *data, unsigned short data_len, unsigned char *dns, char *output_buf, size_t output_buf_size)
 {
     char write_buffer[1024] = {0};
     unsigned char name[1024] = {0};
@@ -355,7 +367,7 @@ void parse_soa(unsigned char *data, unsigned short data_len, unsigned char *dns,
 
     memset(name, 0, 1024);
     p = readSOA(data + p + 1, dns, name, data_len - p - 1);
-    write_string_to_file(f, name);
+    write_string_to_file(output_buf, output_buf_size, name);
 
     unsigned int serial_no = parse_to_uint(data + p + 3);
     unsigned int refresh = parse_to_uint(data + p + 7);
@@ -365,11 +377,12 @@ void parse_soa(unsigned char *data, unsigned short data_len, unsigned char *dns,
     snprintf(write_buffer + offset, sizeof(write_buffer) - offset - 1, " %u %u %u %u %u", serial_no,
         refresh, retry, expire, min_ttl);
 
-    write_string_to_file(f, name);
-    write_endl(f);
+    int taken = write_string_to_file(output_buf, output_buf_size, name);
+    taken += write_endl(output_buf, output_buf_size);
+    return taken;
 }
 
-void parse_hinfo(unsigned char *data, unsigned short data_len, FILE *f)
+int parse_hinfo(unsigned char *data, unsigned short data_len, char *output_buf, size_t output_buf_size)
 {
     char write_buffer[1024] = {0};
     int len_cpu = (int)*data;
@@ -386,18 +399,20 @@ void parse_hinfo(unsigned char *data, unsigned short data_len, FILE *f)
         ++i;
     }
 
-    write_string_to_file(f, write_buffer);
-    write_endl(f);
+    int taken = write_string_to_file(output_buf, output_buf_size, write_buffer);
+    taken += write_endl(output_buf, output_buf_size);
+    return taken;
 }
 
-void parse_mx(unsigned char *data, unsigned short data_len, unsigned char *dns_packet_resp, FILE *f)
+int parse_mx(unsigned char *data, unsigned short data_len, unsigned char *dns_packet_resp, char *output_buf, size_t output_buf_size)
 {
     unsigned short preference = ((*(data) << 8) & 0xFF00) | (*(data + 1) & 0xFF);
-    getName(data + 2, data_len, dns_packet_resp, f);
-    write_endl(f);
+    int taken = getName(data + 2, data_len, dns_packet_resp, output_buf, output_buf_size);
+    taken += write_endl(output_buf, output_buf_size);
+    return taken;
 }
 
-dns_result parse_txt(unsigned char *data, unsigned short data_len, FILE *f)
+int parse_txt(unsigned char *data, unsigned short data_len, char *output_buf, size_t output_buf_size)
 {
     unsigned int i = 0;
     unsigned char *txt = NULL;
@@ -405,7 +420,7 @@ dns_result parse_txt(unsigned char *data, unsigned short data_len, FILE *f)
     txt = (unsigned char *)calloc(data_len, sizeof(unsigned char));
     if (txt == NULL)
     {
-        return DNS_RESULT_NO_MEMORY;
+        return 0;
     }
     data++;
     while (i < data_len - 1)
@@ -413,14 +428,14 @@ dns_result parse_txt(unsigned char *data, unsigned short data_len, FILE *f)
         txt[i++] = *data++;
     }
 
-    write_string_to_file(f, txt);
-    write_endl(f);
+    int taken = write_string_to_file(output_buf, output_buf_size, txt);
+    taken += write_endl(output_buf, output_buf_size);
     if (txt != NULL)
         free(txt);
-    return DNS_RESULT_OK;
+    return taken;
 }
 
-void parse_rrsig(unsigned char *data, unsigned char *dns, unsigned short data_len, FILE *f)
+int parse_rrsig(unsigned char *data, unsigned char *dns, unsigned short data_len, char *output_buf, size_t output_buf_size)
 {
     char write_buffer[1024] = {0};
 
@@ -446,19 +461,21 @@ void parse_rrsig(unsigned char *data, unsigned char *dns, unsigned short data_le
             write_buffer + offset, sizeof(write_buffer) - offset, "%02x", *(data + p + i + 19));
         ++i;
     }
-    write_string_to_file(f, write_buffer);
-    write_endl(f);
+    int taken = write_string_to_file(output_buf, output_buf_size, write_buffer);
+    taken += write_endl(output_buf, output_buf_size);
+    return taken;
 }
 
-void parse_nsec(unsigned char *data, unsigned char *dns, FILE *f, unsigned int data_len)
+int parse_nsec(unsigned char *data, unsigned char *dns, char *output_buf, size_t output_buf_size, unsigned int data_len)
 {
     unsigned char name[512] = {0};
     readSOA(data, dns, name, data_len);
-    write_string_to_file(f, name);
-    write_endl(f);
+    int taken = write_string_to_file(output_buf, output_buf_size, name);
+    taken += write_endl(output_buf, output_buf_size);
+    return taken;
 }
 
-int getName(unsigned char *data, unsigned short data_len, unsigned char *dns_packet_resp, FILE *f)
+int getName(unsigned char *data, unsigned short data_len, unsigned char *dns_packet_resp, char *output_buf, size_t output_buf_size)
 {
     unsigned char name[1024] = {0};
     unsigned int i = 0, j = 0, p = 0;
@@ -482,6 +499,5 @@ int getName(unsigned char *data, unsigned short data_len, unsigned char *dns_pac
         name[i - 1] = '\0'; // remove the last dot
     }
 
-    write_string_to_file(f, name);
-    return strlen((char *)name);
+    return write_string_to_file(output_buf, output_buf_size, name);
 }

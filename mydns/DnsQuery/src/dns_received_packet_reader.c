@@ -10,7 +10,8 @@
 #include "utils.h"
 
 void readAnswers(dns_transport_type transport_type, unsigned char *reader,
-    struct RES_RECORD *answers, unsigned char *buf, FILE *f, int answers_cnt)
+    struct RES_RECORD *answers, unsigned char *buf, char *output_buf, size_t output_buf_size,
+    int answers_cnt)
 {
     // Start reading answers
 
@@ -36,6 +37,7 @@ void readAnswers(dns_transport_type transport_type, unsigned char *reader,
     unsigned short name_size =
         ((*(reader + 8 + name_offset) << 8) & 0xFF00) | (*(reader + 9 + name_offset) & 0xFF);
 
+    size_t current_cursor_pos = 0;
     for (i = 0; i < answers_cnt;)
     {
         answers[i].resource = (struct R_DATA *)(reader);
@@ -49,9 +51,12 @@ void readAnswers(dns_transport_type transport_type, unsigned char *reader,
         }
         else
         {
-            sys_print_domain_info_to_file(f, na, ttl, type);
+            current_cursor_pos += sys_print_domain_info_to_file(output_buf + current_cursor_pos,
+                output_buf_size - current_cursor_pos, na, ttl, type);
         }
-        if ((DNS_RESULT_NO_MEMORY != ReadName(reader, name_size, type, buf + tcp_offset, f)) ||
+        if ((DNS_RESULT_NO_MEMORY != ReadName(reader, name_size, type, buf + tcp_offset,
+                                         output_buf + current_cursor_pos,
+                                         output_buf_size - current_cursor_pos)) ||
             noMemory > 2)
         {
             reader += name_size;

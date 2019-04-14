@@ -12,7 +12,7 @@ extern "C" {
 #include <stdio.h>
 
 int int_fcntl(int s, int cmd, long arg);
-void sys_print_domain_info_to_file(FILE *f, const char *na, int ttl, int type);
+int sys_print_domain_info_to_file(char *output_buf, size_t output_buf_size, const char *na, int ttl, int type);
 
 #ifdef __cplusplus
 }

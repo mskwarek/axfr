@@ -43,8 +43,8 @@ enum
     T_DNSKEY = 48
 };
 
-dns_result ReadName(
-    unsigned char *reader, size_t data_len, unsigned short type, unsigned char *dns, FILE *f);
+dns_result ReadName(unsigned char *reader, size_t data_len, unsigned short type, unsigned char *dns,
+    char *output_buf, size_t output_buf_size);
 
 #ifdef __cplusplus
 }

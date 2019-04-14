@@ -4,23 +4,25 @@
 
 #include "dns_response_file_writer.h"
 
-void write_raw_data(FILE *f, const char *data)
+size_t write_raw_data(char *output_buf, size_t output_buf_size, const char *data)
 {
     if (data != NULL)
-        fprintf(f, "%02x", *(data));
+        return snprintf(output_buf, output_buf_size, "%02x", *(data));
+    
+    return 0;
 }
 
-void write_endl(FILE *f)
+size_t write_endl(char *output_buf, size_t output_buf_size)
 {
-    fprintf(f, "\n");
+    return snprintf(output_buf, output_buf_size, "\n");
 }
 
-void write_rp_record(FILE *f, const char *mailbox, const char *txt_rr)
+size_t write_rp_record(char *output_buf, size_t output_buf_size, const char *mailbox, const char *txt_rr)
 {
-    fprintf(f, "%s %s\n", mailbox, txt_rr);
+    return snprintf(output_buf, output_buf_size, "%s %s\n", mailbox, txt_rr);
 }
 
-void write_string_to_file(FILE *f, const char *string)
+size_t write_string_to_file(char *output_buf, size_t output_buf_size, const char *string)
 {
-    fprintf(f, "%s", string);
+    return snprintf(output_buf, output_buf_size, "%s", string);
 }
