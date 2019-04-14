@@ -1,6 +1,7 @@
 #include <string.h>
 #include <sys/socket.h> //you know what this is for
-#include <arpa/inet.h> 
+#include <arpa/inet.h>
+#include <unistd.h>
 #include "../inc/dns.h"
 #include "utils.h"
 #include "../inc/dns_received_packet_reader.h"
@@ -8,7 +9,7 @@
 #include "../inc/dns_udp.h"
 
 dns_result ngethostbyname(const char *que, const char *server, const char *dst_log_path,
-    int query_type, int to, dns_transport_type transport_type)
+    int query_type, int to, dns_transport_type transport_type, response_dump_to_file dump_to_file)
 {
     unsigned int dns_id = 0;
 
@@ -88,7 +89,8 @@ dns_result ngethostbyname(const char *que, const char *server, const char *dst_l
 
         if (htons(dns_id) != dnsIdFromPacket)
         {
-            // printf("dnsId from resp does not match %d, %d, %d, %d, %d, %d", dns_id, dnsIdFromPacket,
+            // printf("dnsId from resp does not match %d, %d, %d, %d, %d, %d", dns_id,
+            // dnsIdFromPacket,
             //     htons(dns_id), ntohs(dns_id), htons(dnsIdFromPacket), ntohs(dnsIdFromPacket));
             return DNS_RESULT_TID_ERR;
         }
@@ -100,14 +102,14 @@ dns_result ngethostbyname(const char *que, const char *server, const char *dst_l
 
         if (htons(dns_id) != dnsIdFromPacket)
         {
-            // printf("dnsId from resp does not match %d, %d, %d, %d, %d, %d", dns_id, dnsIdFromPacket,
+            // printf("dnsId from resp does not match %d, %d, %d, %d, %d, %d", dns_id,
+            // dnsIdFromPacket,
             //     htons(dns_id), ntohs(dns_id), htons(dnsIdFromPacket), ntohs(dnsIdFromPacket));
             return DNS_RESULT_TID_ERR;
         }
     }
 
     char output_buf[BUFSIZE] = {0};
-
 
     struct RES_RECORD *answers = NULL;
     answers = (struct RES_RECORD *)calloc(answers_cnt, sizeof(struct RES_RECORD));
@@ -119,24 +121,27 @@ dns_result ngethostbyname(const char *que, const char *server, const char *dst_l
     reader = &buf[dns_header_size + (strlen((const char *)qname) + 1) + sizeof(struct QUESTION)];
 
     readAnswers(transport_type, reader, answers, buf, output_buf, sizeof(output_buf), answers_cnt);
-    
-    int tries = 0;
-    FILE *f = NULL;
-    do
-    {
-        f = fopen(filename, "w");
-        sleep(0.1);
-        tries++;
-    } while(f == NULL && tries < 5);
 
-    if (f != NULL)
+    if (RESPONSE_DO_NOT_DUMP != dump_to_file)
     {
-        fprintf(f, "%s", output_buf);
-        fclose(f);
-    }
-    else 
-    {
-        printf("Error opening file!\n");
+        int tries = 0;
+        FILE *f = NULL;
+        do
+        {
+            f = fopen(filename, "w");
+            sleep(1);
+            tries++;
+        } while (f == NULL && tries < 5);
+
+        if (f != NULL)
+        {
+            fprintf(f, "%s", output_buf);
+            fclose(f);
+        }
+        else
+        {
+            printf("Error opening file!\n");
+        }
     }
 
     for (i = 0; i < answers_cnt; ++i)
@@ -146,6 +151,6 @@ dns_result ngethostbyname(const char *que, const char *server, const char *dst_l
     }
     if (answers != NULL)
         free(answers);
-    
+
     return DNS_RESULT_OK;
 }

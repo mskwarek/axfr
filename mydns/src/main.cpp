@@ -93,16 +93,17 @@ dns_transport_type getTransportProtocolIdByName(const char *protocol_name)
 {
     if (!protocol_name)
         return TRANSPORT_TYPE_TCP;
-    else if (0 == strcmp(protocol_name, "UDP"))
+
+    if (0 == strcmp(protocol_name, "UDP"))
         return TRANSPORT_TYPE_UDP;
-    else
-        return TRANSPORT_TYPE_TCP;
+
+    return TRANSPORT_TYPE_TCP;
 }
 
 void printHelpPrompt()
 {
     std::cout << "Scaner usage:" << std::endl
-              << "\t-o\toutput folder [mandatory]" << std::endl
+              << "\t-o\toutput folder [if no param responses won't be saved]" << std::endl
               << "\t-t\ttimeout in ms [default 5s]" << std::endl
               << "\t-d\tdomain to scan [optional; scan only one domain]" << std::endl
               << "\t-n\tNS IP address [optional; needed by one-domain-scan mode]" << std::endl
@@ -137,11 +138,14 @@ int main(int argc, char *argv[])
     char *transport_protocol_name = getCmdOption(argv, argv + argc, transport_protocol_arg);
     char *path_to_input_list = getCmdOption(argv, argv + argc, input_list_arg);
     char *workers_counted = getCmdOption(argv, argv + argc, workers_arg);
+    response_dump_to_file dump_to_file = RESPONSE_DUMP;
+
+    if (cmdOptionExists(argv, argv + argc, output_arg) == false)
+        dump_to_file = RESPONSE_DO_NOT_DUMP;
 
     const uint16_t workers = getWorkers(workers_counted);
 
     if (cmdOptionExists(argv, argv + argc, "-h") ||
-        !cmdOptionExists(argv, argv + argc, output_arg) ||
         (!cmdOptionExists(argv, argv + argc, input_list_arg) &&
             (!cmdOptionExists(argv, argv + argc, domain_arg) &&
                 !cmdOptionExists(argv, argv + argc, ns_ip_arg))))
@@ -156,7 +160,8 @@ int main(int argc, char *argv[])
         if (strlen(domain) > 0 && strlen(nameserver_ip) > 0)
         {
             ngethostbyname(domain, nameserver_ip, output_dir, getQueryTypeIdByName(query_type),
-                getTimeout(timeout), getTransportProtocolIdByName(transport_protocol_name));
+                getTimeout(timeout), getTransportProtocolIdByName(transport_protocol_name),
+                dump_to_file);
         }
     }
     else
@@ -167,7 +172,8 @@ int main(int argc, char *argv[])
         std::vector<std::shared_future<dns_result>> VF;
         auto K = [=](const std::string &domain, const std::string &ns_ip) {
             return ngethostbyname(domain.c_str(), ns_ip.c_str(), output_dir, query_type_id,
-                getTimeout(timeout), getTransportProtocolIdByName(transport_protocol_name));
+                getTimeout(timeout), getTransportProtocolIdByName(transport_protocol_name),
+                dump_to_file);
         };
         while (std::getline(inputFile, line))
         {
@@ -182,19 +188,18 @@ int main(int argc, char *argv[])
 
             while (VF.size() > workers)
             {
-                for_each(VF.begin(), VF.end(),
-                    [](std::shared_future<dns_result> &x) { 
-                        auto result = x.get();
-                        spdlog::debug(result); });
+                for_each(VF.begin(), VF.end(), [](std::shared_future<dns_result> &x) {
+                    auto result = x.get();
+                    spdlog::debug(result);
+                });
                 VF.clear();
             }
             VF.push_back(std::async(K, x[0], x[1]));
         }
-        for_each(VF.begin(), VF.end(),
-            [](std::shared_future<dns_result> &x) { 
-                auto result = x.get();
-                spdlog::debug(result);
-            });
+        for_each(VF.begin(), VF.end(), [](std::shared_future<dns_result> &x) {
+            auto result = x.get();
+            spdlog::debug(result);
+        });
         inputFile.close();
     }
     return 0;

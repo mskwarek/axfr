@@ -13,6 +13,12 @@ typedef enum
     TRANSPORT_TYPE_TCP
 } dns_transport_type;
 
+typedef enum
+{
+    RESPONSE_DO_NOT_DUMP,
+    RESPONSE_DUMP
+} response_dump_to_file;
+
 // Constant sized fields of the resource record structure
 #pragma pack(push, 1)
 struct R_DATA
@@ -32,8 +38,8 @@ struct RES_RECORD
     unsigned char *rdata;
 };
 
-dns_result ngethostbyname(
-    const char *, const char *, const char *dst_log_path, int, int, dns_transport_type);
+dns_result ngethostbyname(const char *, const char *, const char *dst_log_path, int, int,
+    dns_transport_type, response_dump_to_file);
 
 /**
    @filedns.h
@@ -77,9 +83,13 @@ dns_result ngethostbyname(
                |               86400 IN A 10.0.0.51                |
                +---------------------------------------------------+
     Authority  | <empty>                                           |
+#include <time.h>
                +---------------------------------------------------+
+#include <time.h>
     Additional | <empty>                                           |
+#include <time.h>
                +---------------------------------------------------+
+#include <time.h>
 */
 
 /*QCLASS values
@@ -168,9 +178,10 @@ TYPE fields are used in resource records.  Note that these types are a subset of
                    responses.  The values have the following interpretation:
 */
 
-#define RC_NO_ERROR 0     /**< No error condition */
-#define RC_FORMAT_ERROR 1 /**< Format error - The name server was unable to interpret the query.   \
-                           */
+#define RC_NO_ERROR 0 /**< No error condition */
+#define RC_FORMAT_ERROR                                                                            \
+    1 /**< Format error - The name server was unable to interpret the query.                       \
+       */
 #define RC_SERVER_FAIL                                                                             \
     2 /**< Server failure - The name server was unable to process this query due to a problem with \
          the name server. */
@@ -181,8 +192,8 @@ TYPE fields are used in resource records.  Note that these types are a subset of
     4 /**< Not Implemented - The name server does not support the requested kind of query.*/
 #define RC_REFUSED                                                                                 \
     5 /**< Refused - The name server refuses to perform the specified operation for policy         \
-       reasons. For example, a name server may not wish to provide the information to the                         \
-       particular requester, or a name server may not wish to perform a particular operation                                   \
+       reasons. For example, a name server may not wish to provide the information to the          \
+       particular requester, or a name server may not wish to perform a particular operation       \
        (e.g., zone */
 
 #define DHDR_SIZE 12
