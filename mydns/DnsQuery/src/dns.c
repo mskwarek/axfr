@@ -109,21 +109,22 @@ dns_result ngethostbyname(const char *que, const char *server, const char *dst_l
         }
     }
 
-    char output_buf[BUFSIZE] = {0};
-
-    struct RES_RECORD *answers = NULL;
-    answers = (struct RES_RECORD *)calloc(answers_cnt, sizeof(struct RES_RECORD));
-    if (answers == NULL)
-    {
-        return DNS_RESULT_NO_MEMORY;
-    }
-
-    reader = &buf[dns_header_size + (strlen((const char *)qname) + 1) + sizeof(struct QUESTION)];
-
-    readAnswers(transport_type, reader, answers, buf, output_buf, sizeof(output_buf), answers_cnt);
 
     if (RESPONSE_DO_NOT_DUMP != dump_to_file)
     {
+        char output_buf[BUFSIZE] = {0};
+
+        struct RES_RECORD *answers = NULL;
+        answers = (struct RES_RECORD *)calloc(answers_cnt, sizeof(struct RES_RECORD));
+        if (answers == NULL)
+        {
+            return DNS_RESULT_NO_MEMORY;
+        }
+
+        reader = &buf[dns_header_size + (strlen((const char *)qname) + 1) + sizeof(struct QUESTION)];
+
+        readAnswers(transport_type, reader, answers, buf, output_buf, sizeof(output_buf), answers_cnt);
+
         int tries = 0;
         FILE *f = NULL;
         do
@@ -142,15 +143,14 @@ dns_result ngethostbyname(const char *que, const char *server, const char *dst_l
         {
             printf("Error opening file!\n");
         }
-    }
 
-    for (i = 0; i < answers_cnt; ++i)
-    {
-        if (answers[i].rdata != NULL)
-            free(answers[i].rdata);
+        for (i = 0; i < answers_cnt; ++i)
+        {
+            if (answers[i].rdata != NULL)
+                free(answers[i].rdata);
+        }
+        if (answers != NULL)
+            free(answers);
     }
-    if (answers != NULL)
-        free(answers);
-
     return DNS_RESULT_OK;
 }
