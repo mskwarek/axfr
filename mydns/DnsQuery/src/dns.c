@@ -61,7 +61,7 @@ dns_result ngethostbyname(const char *que, const char *server, const char *dst_l
         qname = &buf[sizeof(struct DNS_TCP_HEADER)];
         dns_id = dns->header.id;
 
-        int res = dns_tcp_req(dns, qname, qinfo, to, host, (char *)buf, query_type, server);
+        int res = dns_tcp_req(dns, qname, qinfo, to, host, buf, query_type, server);
         if (DNS_RESULT_OK != res)
         {
             return res;
@@ -130,7 +130,7 @@ dns_result ngethostbyname(const char *que, const char *server, const char *dst_l
         do
         {
             f = fopen(filename, "w");
-            sleep(1);
+            sleep(3);
             tries++;
         } while (f == NULL && tries < 5);
 

@@ -52,7 +52,7 @@ void readAnswers(dns_transport_type transport_type, unsigned char *reader,
         else
         {
             current_cursor_pos += sys_print_domain_info_to_file(output_buf + current_cursor_pos,
-                output_buf_size - current_cursor_pos, na, ttl, type);
+                output_buf_size - current_cursor_pos, (char *)na, ttl, type);
         }
         if ((DNS_RESULT_NO_MEMORY != ReadName(reader, name_size, type, buf + tcp_offset,
                                          output_buf + current_cursor_pos,

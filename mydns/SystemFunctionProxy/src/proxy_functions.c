@@ -10,7 +10,11 @@
 
 int int_fcntl(int s, int cmd, long arg)
 {
-    int result = fcntl(s, cmd, arg);
+    int result = -1;
+    if(arg == 0)
+        result = fcntl(s, cmd, NULL);
+    else
+        result = fcntl(s, cmd, arg);
 
     if (result < 0)
     {

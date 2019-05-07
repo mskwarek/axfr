@@ -59,7 +59,7 @@ dns_result dns_tcp_req(DNS_H_TCP *dns, unsigned char *qname, struct QUESTION *qi
 
     socklen_t lon = {0};
 
-    if ((arg = int_fcntl(s, F_GETFL, NULL)) < 0)
+    if ((arg = int_fcntl(s, F_GETFL, 0)) < 0)
     {
         return DNS_RESULT_ERR;
         // exit(0);
