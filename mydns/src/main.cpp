@@ -114,7 +114,6 @@ void printHelpPrompt()
               << "\t-l\tlist with records to scan in format domain_address|ns_ip "
                  "[optional]"
               << "\t-s\tlist with records to scan in format domain_address|ns_ip [optional]|spoofed_src_ip" << std::endl;
-              << std::endl;
 }
 
 int main(int argc, char *argv[])
@@ -196,10 +195,9 @@ int main(int argc, char *argv[])
                 dump_to_file);
         };
 
-        if(cmdOptionExists(argv, argv + argc, spoof_list_arg))
-            K = [=](const std::string &domain, const std::string &ns_ip, const std::string spoofed_ip) {
-                return request_dns_and_spoof_src_ip(x[0].c_str(), x[1].c_str(), x[2].c_str(), query_type_id);
-            };
+        auto K2 = [=](const std::string &domain, const std::string &ns_ip, const std::string spoofed_ip) {
+            return request_dns_and_spoof_src_ip(domain.c_str(), ns_ip.c_str(), spoofed_ip.c_str(), query_type_id);
+        };
 
         while (std::getline(inputFile, line))
         {
@@ -222,9 +220,9 @@ int main(int argc, char *argv[])
             }
             if (x.size() == 3)
             {
-                VF.push_back(std::async(K, x[0], x[1], x[2]));
+                VF.push_back(std::async(K2, x[0], x[1], x[2]));
             }
-            VF.push_back(std::async(K, x[0], x[1]));
+            VF.push_back(std::async(K, x[0], x[1], ""));
         }
         for_each(VF.begin(), VF.end(), [](std::shared_future<dns_result> &x) {
             auto result = x.get();
