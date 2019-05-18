@@ -178,7 +178,7 @@ int main(int argc, char *argv[])
         while (std::getline(inputFile, line))
         {
             i++;
-            spdlog::debug("Iter: " + i);
+            spdlog::debug("Iter: " + std::to_string(i));
             std::vector<std::string> x = split(line, '|');
             if (x.size() < 2)
             {
