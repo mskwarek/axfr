@@ -114,7 +114,6 @@ void printHelpPrompt()
               << "\t-l\tlist with records to scan in format domain_address|ns_ip "
                  "[optional]"
               << "\t-s\tlist with records to scan in format domain_address|ns_ip [optional]|spoofed_src_ip" << std::endl;
-              << std::endl;
 }
 
 int main(int argc, char *argv[])
@@ -168,38 +167,25 @@ int main(int argc, char *argv[])
                 dump_to_file);
         }
     }
-    else if(cmdOptionExists(argv, argv + argc, spoof_list_arg))
-    {
-        std::string filename = path_to_input_list_with_spoofed_src;
-        std::ifstream inputFile(filename.c_str());
-        while(std::getline(inputFile, line)){
-            // std::cout<<i++<<std::endl;
-            std::vector<std::string> x = split(line, '|');
-            request_dns_and_spoof_src_ip(x[0].c_str(), x[1].c_str(), x[2].c_str(),
-                        getQueryTypeIdByName(query_type));
-        }
-        inputFile.close();
-    }
     else
     {
         auto query_type_id = getQueryTypeIdByName(query_type);
-        std::string filename = path_to_input_list;
+        std::string filename = "";
+        if(cmdOptionExists(argv, argv + argc, input_list_arg))
+            filename = path_to_input_list;
         if(cmdOptionExists(argv, argv + argc, spoof_list_arg))
             filename = path_to_input_list_with_spoofed_src;
 
         std::ifstream inputFile(filename.c_str());
         std::vector<std::shared_future<dns_result>> VF;
-        auto K = [=](const std::string &domain, const std::string &ns_ip, const std::string spoofed_ip) {
-            (void) spoofed_ip;
-            return ngethostbyname(domain.c_str(), ns_ip.c_str(), output_dir, query_type_id,
-                getTimeout(timeout), getTransportProtocolIdByName(transport_protocol_name),
-                dump_to_file);
+        auto K = [&](const std::string &domain, const std::string &ns_ip, const std::string spoofed_ip) {
+            if(cmdOptionExists(argv, argv + argc, spoof_list_arg))
+                return request_dns_and_spoof_src_ip(domain.c_str(), ns_ip.c_str(), spoofed_ip.c_str(), query_type_id);  
+            else
+                return ngethostbyname(domain.c_str(), ns_ip.c_str(), output_dir, query_type_id,
+                    getTimeout(timeout), getTransportProtocolIdByName(transport_protocol_name),
+                    dump_to_file);
         };
-
-        if(cmdOptionExists(argv, argv + argc, spoof_list_arg))
-            K = [=](const std::string &domain, const std::string &ns_ip, const std::string spoofed_ip) {
-                return request_dns_and_spoof_src_ip(x[0].c_str(), x[1].c_str(), x[2].c_str(), query_type_id);
-            };
 
         while (std::getline(inputFile, line))
         {
@@ -224,7 +210,11 @@ int main(int argc, char *argv[])
             {
                 VF.push_back(std::async(K, x[0], x[1], x[2]));
             }
-            VF.push_back(std::async(K, x[0], x[1]));
+            else
+            {
+                VF.push_back(std::async(K, x[0], x[1], ""));
+            }
+            // std::cout<< x.size()<<std::endl;
         }
         for_each(VF.begin(), VF.end(), [](std::shared_future<dns_result> &x) {
             auto result = x.get();

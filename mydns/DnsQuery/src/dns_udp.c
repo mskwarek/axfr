@@ -4,11 +4,11 @@
 
 #include <string.h>
 #include <sys/socket.h> //you know what this is for
+#include <sys/time.h>
 #include <arpa/inet.h>
 #include <netinet/ip.h>
 #include <netinet/udp.h>
 #include <unistd.h>
-#include <time.h>
 #include <stdlib.h>
 
 #include "../inc/dns_udp.h"
@@ -162,3 +162,4 @@ dns_result dns_req_with_spoofed_ip(DNS_H_UDP *dns, unsigned char *qname, struct 
     //     printf( "[+] Spoofed IP packet sent successfully!\n");
 
     close(s);
+}
