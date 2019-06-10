@@ -27,7 +27,7 @@ TEST_F(DnsReadAnswersTest, testReadingAnswers)
                        (strlen((const char *)&dnsByteBuffer[sizeof(struct DNS_TCP_HEADER)]) + 1) +
                        sizeof(struct QUESTION)];
 
-    readAnswers(TRANSPORT_TYPE_TCP, reader, answers, dnsByteBuffer, NULL, 0);
+    readAnswers(TRANSPORT_TYPE_TCP, reader, answers, dnsByteBuffer, NULL, 0, 0);
 }
 
 TEST_F(DnsReadAnswersTest, testReadingZonetransferMe)
@@ -52,7 +52,7 @@ TEST_F(DnsReadAnswersTest, testReadingZonetransferMe)
                        sizeof(struct QUESTION)];
     EXPECT_FUNCTION_CALL(printToFilelMock, (_, _, _, _))
         .WillRepeatedly(Invoke([](auto, auto, auto, auto) {}));
-    FILE f = {0};
+    char output_buf[2048]= {0};
     readAnswers(
-        TRANSPORT_TYPE_TCP, reader, answers, dnsByteBuffer, &f, get_answers_cnt(&dns->header));
+        TRANSPORT_TYPE_TCP, reader, answers, dnsByteBuffer, output_buf, sizeof(output_buf), get_answers_cnt(&dns->header));
 }

@@ -31,7 +31,7 @@ TEST_F(DnsReceivedPacketReaderTest, testParsingResponse)
         dns_result result = dns_tcp_req(NULL, NULL, NULL, 1, NULL, NULL, 0, NULL);
 
         ngethostbyname(
-            "example.domain.com", "10.0.0.1", "/var/log/path", QTYPE_AXFR, 30, TRANSPORT_TYPE_TCP);
+            "example.domain.com", "10.0.0.1", "/var/log/path", QTYPE_AXFR, 30, TRANSPORT_TYPE_TCP, RESPONSE_DO_NOT_DUMP);
     }
 }
 
@@ -65,7 +65,7 @@ TEST_F(DnsReceivedPacketReaderTest, testParsingValidResponse)
         EXPECT_FUNCTION_CALL(fileCloseMock, (_)).WillOnce(Return(0));
 
         EXPECT_EQ(DNS_RESULT_OK, ngethostbyname("example.domain.com", "10.0.0.1", "/var/log/path",
-                                     QTYPE_AXFR, 30, TRANSPORT_TYPE_TCP));
+                                     QTYPE_AXFR, 30, TRANSPORT_TYPE_TCP, RESPONSE_DO_NOT_DUMP));
     }
 }
 
@@ -84,7 +84,7 @@ TEST_F(DnsReceivedPacketReaderTest, testDnsIdDoesNotMatch)
                 }));
 
         EXPECT_EQ(DNS_RESULT_ERR, ngethostbyname("example.domain.com", "10.0.0.1", "/var/log/path",
-                                      QTYPE_AXFR, 30, TRANSPORT_TYPE_TCP));
+                                      QTYPE_AXFR, 30, TRANSPORT_TYPE_TCP, RESPONSE_DO_NOT_DUMP));
     }
 }
 
@@ -108,7 +108,7 @@ TEST_F(DnsReceivedPacketReaderTest, testCannotOpenFile)
         FILE *f = NULL;
         EXPECT_FUNCTION_CALL(fileMock, (_, _)).WillOnce(Return(f));
         EXPECT_EQ(DNS_RESULT_ERR, ngethostbyname("example.domain.com", "10.0.0.1", "/var/log/path",
-                                      QTYPE_AXFR, 30, TRANSPORT_TYPE_TCP));
+                                      QTYPE_AXFR, 30, TRANSPORT_TYPE_TCP, RESPONSE_DO_NOT_DUMP));
     }
 }
 
@@ -140,7 +140,7 @@ TEST_F(DnsReceivedPacketReaderTest, testReadAnswers)
             .WillRepeatedly(Invoke([](auto, auto, auto, auto, auto, auto) {}));
         EXPECT_FUNCTION_CALL(fileCloseMock, (_));
         EXPECT_EQ(DNS_RESULT_OK, ngethostbyname("example.domain.com", "10.0.0.1", "/var/log/path",
-                                     QTYPE_AXFR, 30, TRANSPORT_TYPE_TCP));
+                                     QTYPE_AXFR, 30, TRANSPORT_TYPE_TCP, RESPONSE_DO_NOT_DUMP));
     }
 }
 
@@ -174,7 +174,7 @@ TEST_F(DnsReceivedPacketReaderTest, testNoMemory)
             .WillRepeatedly(Invoke([](auto, auto, auto, auto, auto, auto) {}));
         EXPECT_FUNCTION_CALL(fileCloseMock, (_));
         EXPECT_EQ(DNS_RESULT_OK, ngethostbyname("example.domain.com", "10.0.0.1", "/var/log/path",
-                                     QTYPE_AXFR, 30, TRANSPORT_TYPE_TCP));
+                                     QTYPE_AXFR, 30, TRANSPORT_TYPE_TCP, RESPONSE_DO_NOT_DUMP));
     }
 }
 
