@@ -2,33 +2,27 @@
 // Created by Marcin Skwarek on 08.03.2018.
 //
 
-#pragma once
+#ifndef AXFRSCANNER_SOCKETMOCK_H
+#define AXFRSCANNER_FILEMOCK_H
 
-#include "cmock/cmock.h"
+#include <cmock/cmock.h>
 #include "sys/socket.h"
 #include "stdio.h"
-#include "../../inc/dns_tcp.h"
-#include "../../../SystemFunctionProxy/inc/proxy_functions.h"
+#include "dns_tcp.h"
+#include "proxy_functions.h"
 
-// DECLARE_FUNCTION_MOCK6(DnsFunctionMock, ngethostbyname, dns_result(const char* , const char*,
-//                                                                   const char, int, int,
-//                                                                   dns_transport_type));
 
-// DECLARE_FUNCTION_MOCK5(SocketFunctionMock, setsockopt, int(int, int, int, const void *,
-// socklen_t));
-
-DECLARE_FUNCTION_MOCK6(SendtoFunctionMock, sendto,
-    ssize_t(int, const void *, size_t, int, const struct sockaddr *, socklen_t));
-
-DECLARE_FUNCTION_MOCK6(RecvfromFunctionMock, recvfrom,
-    ssize_t(int, void *, size_t, int, struct sockaddr *__restrict, socklen_t *__restrict));
-
-DECLARE_FUNCTION_MOCK8(DnsTcpReceivedDataMock, dns_tcp_req,
+class SocketMock : public CMockMocker<SocketMock>
+{
+public:
+    MOCK_METHOD6(sendto, ssize_t(int, const void *, size_t, int, const struct sockaddr *, socklen_t));
+    MOCK_METHOD6(recvfrom, ssize_t(int, void *, size_t, int, struct sockaddr *__restrict, socklen_t *__restrict));
+    MOCK_METHOD8(dns_tcp_req,
     dns_result(DNS_H_TCP *, unsigned char *, struct QUESTION *, unsigned int, char *,
         unsigned char *, int, const char *));
+    MOCK_METHOD3(socket, int(int, int, int));
+    MOCK_METHOD5(setsockopt, int(int, int, int, const void *, socklen_t));
+    MOCK_METHOD3(connect, int(int, const struct sockaddr *, socklen_t));
+};
 
-DECLARE_FUNCTION_MOCK3(SocketCreateMock, socket, int(int, int, int));
-
-DECLARE_FUNCTION_MOCK5(SocketSetOptMock, setsockopt, int(int, int, int, const void *, socklen_t));
-
-DECLARE_FUNCTION_MOCK3(SocketConnectMock, connect, int(int, const struct sockaddr *, socklen_t));
+#endif

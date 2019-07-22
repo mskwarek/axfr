@@ -5,11 +5,15 @@
 #ifndef AXFRSCANNER_FILEMOCK_H
 #define AXFRSCANNER_FILEMOCK_H
 
-#include "cmock/cmock.h"
+#include <cmock/cmock.h>
 #include "stdio.h"
 
-DECLARE_FUNCTION_MOCK2(FileMock, fopen, FILE *(const char *, const char *));
-DECLARE_FUNCTION_MOCK1(FileCloseMock, fclose, int(FILE *));
+class FileMock : public CMockMocker<FileMock>
+{
+public:
+    MOCK_METHOD2(fopen, FILE *(const char *, const char *));
+    MOCK_METHOD1(fclose, int(FILE *));
+};
 
 #endif // AXFRSCANNER_FILEMOCK_H
 

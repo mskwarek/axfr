@@ -1,4 +1,3 @@
-include_directories(../inc)
 include_directories(inc)
 include_directories(../SystemFunctionProxy/inc)
 

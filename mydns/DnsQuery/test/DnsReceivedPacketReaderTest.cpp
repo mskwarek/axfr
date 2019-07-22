@@ -2,16 +2,12 @@
 // Created by Marcin Skwarek on 08.03.2018.
 //
 
-#include <dnsMock.h>
-#include <netinet/in.h>
 #include "DnsResponseTest.hpp"
+#include "dns.h"
+#include "dns_tcp.h"
+#include "dnsMock.h"
 #include "SocketMock.h"
-#include "../inc/dns.h"
-#include "../inc/dns_tcp.h"
-#include "../inc/dns_received_packet_reader.h"
-#include "FileMock.h"
 #include "SystemFunctionMock.h"
-#include "dnsPacketReaderMock.h"
 
 using namespace ::testing;
 
@@ -22,35 +18,26 @@ class DnsReceivedPacketReaderTest : public DnsResponseTest
 TEST_F(DnsReceivedPacketReaderTest, testParsingResponse)
 {
     {
-        DnsTcpReceivedDataMock tcpMock;
+        SocketMock socketMock{};
 
-        EXPECT_FUNCTION_CALL(tcpMock, (_, _, _, _, _, _, _, _))
-            .Times(2)
+        EXPECT_CALL(socketMock, dns_tcp_req(_, _, _, _, _, _, _, _))
             .WillRepeatedly(Return(DNS_RESULT_OK));
 
-        dns_result result = dns_tcp_req(NULL, NULL, NULL, 1, NULL, NULL, 0, NULL);
-
         ngethostbyname(
-            "example.domain.com", "10.0.0.1", "/var/log/path", QTYPE_AXFR, 30, TRANSPORT_TYPE_TCP, RESPONSE_DO_NOT_DUMP);
+            "example.domain.com", "10.0.0.1", "/var/log/path", QTYPE_AXFR, 30, TRANSPORT_TYPE_TCP, RESPONSE_DUMP);
     }
 }
 
 TEST_F(DnsReceivedPacketReaderTest, testParsingValidResponse)
 {
     {
-        //        SocketFunctionMock setoptionsMock;
-        SendtoFunctionMock sentoMock;
-        RecvfromFunctionMock recvfromMock;
-        DnsTcpReceivedDataMock tcpMock;
-        FileMock fileMock;
-        DnsFunctionMock readAnswerMock;
-        FileCloseMock fileCloseMock;
+        SocketMock socketMock{};
+        DnsFunctionMock readAnswerMock{};
+        SystemFunctionMock systemFunctionMock{};
 
-        //        EXPECT_FUNCTION_CALL(setoptionsMock, (_, _, _, _, _)).WillOnce(Return(0));
-        //        EXPECT_FUNCTION_CALL(sentoMock, (_, _, _, _, _, _)).WillOnce(Return(0));
-        EXPECT_FUNCTION_CALL(tcpMock, (_, _, _, _, _, _, _, _))
+        EXPECT_CALL(socketMock, dns_tcp_req(_, _, _, _, _, _, _, _))
             .WillOnce(Invoke(
-                [this](auto dns_packet, auto, auto, auto, auto, unsigned char *buffer, auto, auto) {
+                [this](auto dns_packet, auto, auto, auto, auto, unsigned char *buffer, auto size, auto) {
                     auto dns = dns_packet->header.id;
 
                     dnsByteBuffer[3] = dns >> 8 & 0xFF;
@@ -59,22 +46,20 @@ TEST_F(DnsReceivedPacketReaderTest, testParsingValidResponse)
                     return DNS_RESULT_OK;
                 }));
 
-        FILE f;
-        EXPECT_FUNCTION_CALL(fileMock, (_, _)).WillOnce(Return(&f));
-        EXPECT_FUNCTION_CALL(readAnswerMock, (_, _, _, _, _, _));
-        EXPECT_FUNCTION_CALL(fileCloseMock, (_)).WillOnce(Return(0));
+        EXPECT_CALL(systemFunctionMock, sys_print_buffer_to_file(_, _, _)).WillOnce(Return(0));
+        EXPECT_CALL(readAnswerMock, readAnswers(_, _, _, _, _, _, _)).Times(1);
 
         EXPECT_EQ(DNS_RESULT_OK, ngethostbyname("example.domain.com", "10.0.0.1", "/var/log/path",
-                                     QTYPE_AXFR, 30, TRANSPORT_TYPE_TCP, RESPONSE_DO_NOT_DUMP));
+                                     QTYPE_AXFR, 30, TRANSPORT_TYPE_TCP, RESPONSE_DUMP));
     }
 }
 
 TEST_F(DnsReceivedPacketReaderTest, testDnsIdDoesNotMatch)
 {
     {
-        DnsTcpReceivedDataMock tcpMock;
+        SocketMock socketMock{};
 
-        EXPECT_FUNCTION_CALL(tcpMock, (_, _, _, _, _, _, _, _))
+        EXPECT_CALL(socketMock, dns_tcp_req(_, _, _, _, _, _, _, _))
             .WillOnce(
                 Invoke([this](auto, auto, auto, auto, auto, unsigned char *buffer, auto, auto) {
                     dnsByteBuffer[3] = 0;
@@ -83,7 +68,7 @@ TEST_F(DnsReceivedPacketReaderTest, testDnsIdDoesNotMatch)
                     return DNS_RESULT_OK;
                 }));
 
-        EXPECT_EQ(DNS_RESULT_ERR, ngethostbyname("example.domain.com", "10.0.0.1", "/var/log/path",
+        EXPECT_EQ(DNS_RESULT_TID_ERR, ngethostbyname("example.domain.com", "10.0.0.1", "/var/log/path",
                                       QTYPE_AXFR, 30, TRANSPORT_TYPE_TCP, RESPONSE_DO_NOT_DUMP));
     }
 }
@@ -91,10 +76,11 @@ TEST_F(DnsReceivedPacketReaderTest, testDnsIdDoesNotMatch)
 TEST_F(DnsReceivedPacketReaderTest, testCannotOpenFile)
 {
     {
-        DnsTcpReceivedDataMock tcpMock;
-        FileMock fileMock;
+        SocketMock socketMock{};
+        SystemFunctionMock systemFunctionMock{};
+        DnsFunctionMock readAnswerMock{};
 
-        EXPECT_FUNCTION_CALL(tcpMock, (_, _, _, _, _, _, _, _))
+        EXPECT_CALL(socketMock, dns_tcp_req(_, _, _, _, _, _, _, _))
             .WillOnce(Invoke(
                 [this](auto dns_packet, auto, auto, auto, auto, unsigned char *buffer, auto, auto) {
                     auto dns = dns_packet->header.id;
@@ -105,23 +91,21 @@ TEST_F(DnsReceivedPacketReaderTest, testCannotOpenFile)
                     return DNS_RESULT_OK;
                 }));
 
-        FILE *f = NULL;
-        EXPECT_FUNCTION_CALL(fileMock, (_, _)).WillOnce(Return(f));
+        EXPECT_CALL(systemFunctionMock, sys_print_buffer_to_file(_, _, _)).WillOnce(Return(1));
+        EXPECT_CALL(readAnswerMock, readAnswers(_, _, _, _, _, _, _));
         EXPECT_EQ(DNS_RESULT_ERR, ngethostbyname("example.domain.com", "10.0.0.1", "/var/log/path",
-                                      QTYPE_AXFR, 30, TRANSPORT_TYPE_TCP, RESPONSE_DO_NOT_DUMP));
+                                      QTYPE_AXFR, 30, TRANSPORT_TYPE_TCP, RESPONSE_DUMP));
     }
 }
 
 TEST_F(DnsReceivedPacketReaderTest, testReadAnswers)
 {
     {
-        DnsTcpReceivedDataMock tcpMock;
-        FileMock fileMock;
-        PrintToFilelMock printToFileMock;
-        DnsFunctionMock readAnswersMock;
-        FileCloseMock fileCloseMock;
+        SocketMock socketMock{};
+        SystemFunctionMock systemFunctionMock{};
+        DnsFunctionMock readAnswersMock{};
 
-        EXPECT_FUNCTION_CALL(tcpMock, (_, _, _, _, _, _, _, _))
+        EXPECT_CALL(socketMock, dns_tcp_req(_, _, _, _, _, _, _, _))
             .WillOnce(Invoke(
                 [this](auto dns_packet, auto, auto, auto, auto, unsigned char *buffer, auto, auto) {
                     auto dns = dns_packet->header.id;
@@ -132,29 +116,21 @@ TEST_F(DnsReceivedPacketReaderTest, testReadAnswers)
                     return DNS_RESULT_OK;
                 }));
 
-        FILE f;
-        EXPECT_FUNCTION_CALL(fileMock, (_, _)).WillOnce(Return(&f));
-        EXPECT_FUNCTION_CALL(printToFileMock, (_, _, _, _))
-            .WillRepeatedly(Invoke([](auto, auto, auto, auto) {}));
-        EXPECT_FUNCTION_CALL(readAnswersMock, (_, _, _, _, _, _))
-            .WillRepeatedly(Invoke([](auto, auto, auto, auto, auto, auto) {}));
-        EXPECT_FUNCTION_CALL(fileCloseMock, (_));
+        EXPECT_CALL(systemFunctionMock, sys_print_buffer_to_file(_, _, _)).WillOnce(Return(0));
+        EXPECT_CALL(readAnswersMock, readAnswers(_, _, _, _, _, _, _));
         EXPECT_EQ(DNS_RESULT_OK, ngethostbyname("example.domain.com", "10.0.0.1", "/var/log/path",
-                                     QTYPE_AXFR, 30, TRANSPORT_TYPE_TCP, RESPONSE_DO_NOT_DUMP));
+                                     QTYPE_AXFR, 30, TRANSPORT_TYPE_TCP, RESPONSE_DUMP));
     }
 }
 
 TEST_F(DnsReceivedPacketReaderTest, testNoMemory)
 {
     {
-        DnsTcpReceivedDataMock tcpMock;
-        FileMock fileMock;
-        PrintToFilelMock printToFileMock;
-        IsLackOfMemoryMock isLackOfMemoryMock;
-        DnsFunctionMock readAnswersMock;
-        FileCloseMock fileCloseMock;
+        SocketMock socketMock{};
+        SystemFunctionMock systemFunctionMock{};
+        DnsFunctionMock readAnswersMock{};
 
-        EXPECT_FUNCTION_CALL(tcpMock, (_, _, _, _, _, _, _, _))
+        EXPECT_CALL(socketMock, dns_tcp_req(_, _, _, _, _, _, _, _))
             .WillOnce(Invoke(
                 [this](auto dns_packet, auto, auto, auto, auto, unsigned char *buffer, auto, auto) {
                     auto dns = dns_packet->header.id;
@@ -165,24 +141,9 @@ TEST_F(DnsReceivedPacketReaderTest, testNoMemory)
                     return DNS_RESULT_OK;
                 }));
 
-        FILE f;
-        EXPECT_FUNCTION_CALL(fileMock, (_, _)).WillOnce(Return(&f));
-        EXPECT_FUNCTION_CALL(printToFileMock, (_, _, _, _))
-            .WillRepeatedly(Invoke([](auto, auto, auto, auto) {}));
-        EXPECT_FUNCTION_CALL(isLackOfMemoryMock, (_, _)).WillRepeatedly(Return(0));
-        EXPECT_FUNCTION_CALL(readAnswersMock, (_, _, _, _, _, _))
-            .WillRepeatedly(Invoke([](auto, auto, auto, auto, auto, auto) {}));
-        EXPECT_FUNCTION_CALL(fileCloseMock, (_));
+        EXPECT_CALL(systemFunctionMock, sys_print_buffer_to_file(_, _, _)).WillOnce(Return(0));
+        EXPECT_CALL(readAnswersMock, readAnswers(_, _, _, _, _, _, _));
         EXPECT_EQ(DNS_RESULT_OK, ngethostbyname("example.domain.com", "10.0.0.1", "/var/log/path",
-                                     QTYPE_AXFR, 30, TRANSPORT_TYPE_TCP, RESPONSE_DO_NOT_DUMP));
+                                     QTYPE_AXFR, 30, TRANSPORT_TYPE_TCP, RESPONSE_DUMP));
     }
 }
-
-// TEST_F(DnsReceivedPacketReaderTest, testReadAnswers)
-//{
-//    struct RES_RECORD answers[256] = {0};
-//    struct DNS_TCP_HEADER *dns = (struct DNS_TCP_HEADER *)&dnsByteBuffer;
-//    int ans_cnt = ntohs(dns->header.ans_count);
-//    FILE f;
-//    readAnswers(TRANSPORT_TYPE_TCP, dnsByteBuffer, answers, dnsByteBuffer, &f, 10);
-//}

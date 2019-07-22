@@ -4,6 +4,5 @@
 
 #include "FileMock.h"
 
-IMPLEMENT_FUNCTION_MOCK2(FileMock, fopen, FILE *(const char *, const char *));
-IMPLEMENT_FUNCTION_MOCK1(FileCloseMock, fclose, int(FILE *));
-
+CMOCK_MOCK_FUNCTION2(FileMock, fopen, FILE *(const char *, const char *))
+CMOCK_MOCK_FUNCTION1(FileMock, fclose, int(FILE *))

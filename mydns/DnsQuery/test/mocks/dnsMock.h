@@ -2,15 +2,17 @@
 // Created by Marcin Skwarek on 10.02.2018.
 //
 
-#pragma once
+#ifndef AXFRSCANNER_DNSFUNCTIONMOCK_H
+#define AXFRSCANNER_DNSFUNCTIONMOCK_H
 
-#include "cmock/cmock.h"
+#include <cmock/cmock.h>
 #include <stdio.h>
-#include "../inc/dns_received_packet_reader.h"
+#include "dns.h"
 
-// DECLARE_FUNCTION_MOCK6(DnsFunctionMock, ngethostbyname, dns_result(const char* , const char*,
-//    const char, int, int, dns_transport_type));
-//
+class DnsFunctionMock : public CMockMocker<DnsFunctionMock>
+{
+public:
+    MOCK_METHOD7(readAnswers, void(dns_transport_type, unsigned char *, struct RES_RECORD *, unsigned char *, char *, size_t, int));
+};
 
-DECLARE_FUNCTION_MOCK6(DnsFunctionMock, readAnswers,
-    void(dns_transport_type, unsigned char *, struct RES_RECORD *, unsigned char *, FILE *, int));
+#endif

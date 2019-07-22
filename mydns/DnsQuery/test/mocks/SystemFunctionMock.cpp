@@ -4,7 +4,6 @@
 
 #include "SystemFunctionMock.h"
 
-IMPLEMENT_FUNCTION_MOCK3(SocketFcntlMock, int_fcntl, int(int, int, long));
-IMPLEMENT_FUNCTION_MOCK4(
-    PrintToFilelMock, sys_print_domain_info_to_file, void(FILE *, const char *, int, int));
-
+CMOCK_MOCK_FUNCTION3(SystemFunctionMock, int_fcntl, int(int, int, long))
+CMOCK_MOCK_FUNCTION5(SystemFunctionMock, sys_print_domain_info_to_file, int(char*, size_t, const char *, int, int))
+CMOCK_MOCK_FUNCTION3(SystemFunctionMock, sys_print_buffer_to_file, int(const char*, size_t, const char*))

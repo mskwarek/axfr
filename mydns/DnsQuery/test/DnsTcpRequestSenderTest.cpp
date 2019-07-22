@@ -2,12 +2,10 @@
 // Created by mskwarek on 20.06.18.
 //
 
-#include <dnsMock.h>
+#include "dns_tcp.h"
 #include "DnsResponseTest.hpp"
 #include "SocketMock.h"
-#include "../inc/dns.h"
-#include "../inc/dns_tcp.h"
-#include "FileMock.h"
+#include "dns.h"
 #include "SystemFunctionMock.h"
 
 using namespace ::testing;
@@ -40,8 +38,8 @@ TEST_F(DnsTcpRequestSenderTest, testSendingTcpRequest)
 TEST_F(DnsTcpRequestSenderTest, testReturningErrorWhenNoSocketIsCreated)
 {
     {
-        SocketCreateMock socketMock;
-        EXPECT_FUNCTION_CALL(socketMock, (_, _, _)).WillOnce(Return(-1));
+        SocketMock socketMock;
+        EXPECT_CALL(socketMock, socket(_, _, _)).WillOnce(Return(-1));
         setUp();
 
         EXPECT_EQ(DNS_RESULT_ERR,
@@ -52,11 +50,10 @@ TEST_F(DnsTcpRequestSenderTest, testReturningErrorWhenNoSocketIsCreated)
 TEST_F(DnsTcpRequestSenderTest, testReturningErrorWhenSocketOptsAreNotSet)
 {
     {
-        SocketCreateMock socketMock;
-        SocketSetOptMock setOptMock;
+        SocketMock socketMock;
 
-        EXPECT_FUNCTION_CALL(socketMock, (_, _, _)).WillOnce(Return(0));
-        EXPECT_FUNCTION_CALL(setOptMock, (_, _, _, _, _)).WillOnce(Return(-1));
+        EXPECT_CALL(socketMock, socket(_, _, _)).WillOnce(Return(0));
+        EXPECT_CALL(socketMock, setsockopt(_, _, _, _, _)).WillOnce(Return(-1));
 
         setUp();
 
@@ -68,15 +65,13 @@ TEST_F(DnsTcpRequestSenderTest, testReturningErrorWhenSocketOptsAreNotSet)
 TEST_F(DnsTcpRequestSenderTest, testReturningErrorWhenSocketCannotConnect)
 {
     {
-        SocketCreateMock socketMock;
-        SocketSetOptMock setOptMock;
-        SocketFcntlMock fcntlMock;
-        SocketConnectMock connectMock;
+        SocketMock socketMock;
+        SystemFunctionMock sysMock;
 
-        EXPECT_FUNCTION_CALL(socketMock, (_, _, _)).WillOnce(Return(0));
-        EXPECT_FUNCTION_CALL(setOptMock, (_, _, _, _, _)).WillOnce(Return(0));
-        EXPECT_FUNCTION_CALL(fcntlMock, (_, _, _)).WillOnce(Return(-1));
-        EXPECT_FUNCTION_CALL(connectMock, (_, _, _)).WillRepeatedly(Return(0));
+        EXPECT_CALL(socketMock, socket(_, _, _)).WillOnce(Return(0));
+        EXPECT_CALL(socketMock, setsockopt(_, _, _, _, _)).WillOnce(Return(0));
+        EXPECT_CALL(sysMock, int_fcntl(_, _, _)).WillOnce(Return(-1));
+        EXPECT_CALL(socketMock, connect(_, _, _)).WillRepeatedly(Return(0));
 
         setUp();
 
@@ -88,15 +83,13 @@ TEST_F(DnsTcpRequestSenderTest, testReturningErrorWhenSocketCannotConnect)
 TEST_F(DnsTcpRequestSenderTest, testSocketSelectedToWrite)
 {
     {
-        SocketCreateMock socketMock;
-        SocketSetOptMock setOptMock;
-        SocketFcntlMock fcntlMock;
-        SocketConnectMock connectMock;
+        SocketMock socketMock;
+        SystemFunctionMock sysMock;
 
-        EXPECT_FUNCTION_CALL(socketMock, (_, _, _)).WillOnce(Return(0));
-        EXPECT_FUNCTION_CALL(setOptMock, (_, _, _, _, _)).WillOnce(Return(0));
-        EXPECT_FUNCTION_CALL(fcntlMock, (_, _, _)).WillRepeatedly(Return(1));
-        EXPECT_FUNCTION_CALL(connectMock, (_, _, _)).WillRepeatedly(Return(0));
+        EXPECT_CALL(socketMock, socket(_, _, _)).WillOnce(Return(0));
+        EXPECT_CALL(socketMock, setsockopt(_, _, _, _, _)).WillOnce(Return(0));
+        EXPECT_CALL(sysMock, int_fcntl(_, _, _)).WillOnce(Return(-1));
+        EXPECT_CALL(socketMock, connect(_, _, _)).WillRepeatedly(Return(0));
 
         setUp();
 

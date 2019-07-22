@@ -6,6 +6,7 @@ extern "C" {
 #endif
 
 #include "dns_response_parser.h"
+#include "dns_packet.h"
 
 typedef enum
 {
@@ -38,8 +39,15 @@ struct RES_RECORD
     unsigned char *rdata;
 };
 
-dns_result ngethostbyname(const char *, const char *, const char *dst_log_path, int, int,
-    dns_transport_type, response_dump_to_file);
+
+void readAnswers(dns_transport_type transport_type, unsigned char *reader,
+    struct RES_RECORD *answers, unsigned char *buf, char *output_buf, size_t output_buf_size,
+    int answers_cnt);
+
+int get_answers_cnt(dns_header *buf);
+
+dns_result ngethostbyname(const char *que, const char *server, const char *dst_log_path,
+    int query_type, int to, dns_transport_type transport_type, response_dump_to_file dump_to_file);
 
 /**
    @filedns.h

@@ -4,12 +4,12 @@
 
 #include <string.h>
 #include <arpa/inet.h>
-#include "../inc/dns_tcp.h"
+#include "dns_tcp.h"
 #include "utils.h"
 #include <unistd.h>
 #include <fcntl.h> //fcntl
 #include <errno.h>
-#include "../../SystemFunctionProxy/inc/proxy_functions.h"
+#include "proxy_functions.h"
 
 dns_result dns_tcp_req(DNS_H_TCP *dns, unsigned char *qname, struct QUESTION *qinfo,
     unsigned int to, char *host, unsigned char *buf, int query_type, const char *server)

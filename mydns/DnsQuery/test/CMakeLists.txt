@@ -5,8 +5,7 @@ enable_testing()
 include_directories(${GTEST_INCLUDE_DIRS})
 include_directories(${GMOCK_INCLUDE_DIRS})
 include_directories(../inc)
-include_directories(../../inc)
-include_directories(../../inc/cmock)
+include_directories(../../SystemFunctionProxy/inc)
 include_directories(mocks)
 
 if(UNIX AND NOT APPLE)
@@ -18,7 +17,7 @@ endif()
 #add_library(foolib SHARED ${c_src})
 
 
-FILE(GLOB src *.cc *.cpp mocks/*.cpp mocks/*.cc)
+FILE(GLOB src dns_ut.cpp DnsReadAnswersTest.cpp DnsTcpRequestSenderTest.cpp mocks/FileMock.cpp mocks/SystemFunctionMock.cpp mocks/dsnResponseFileWriterMock.cpp DnsReceivedPacketReaderTest.cpp mocks/dnsMock.cpp mocks/SocketMock.cpp)#*.cc *.cpp mocks/*.cpp mocks/*.cc)
 add_executable(runUnitTests ${src})
 
 # Link test executable against gtest & gtest_main
