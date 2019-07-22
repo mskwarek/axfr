@@ -15,6 +15,8 @@ extern "C" {
 #include <string>
 #include <vector>
 #include "spdlog/spdlog.h"
+#include <chrono>
+#include <deque>
 
 char *getCmdOption(char **begin, char **end, const std::string &option)
 {
@@ -116,6 +118,12 @@ void printHelpPrompt()
               << "\t-s\tlist with records to scan in format domain_address|ns_ip [optional]|spoofed_src_ip" << std::endl;
 }
 
+struct Job
+{
+    std::chrono::time_point<std::chrono::high_resolution_clock> schedule_time;
+    std::shared_future<dns_result> job;
+};
+
 int main(int argc, char *argv[])
 {
     std::string line;
@@ -177,7 +185,7 @@ int main(int argc, char *argv[])
             filename = path_to_input_list_with_spoofed_src;
 
         std::ifstream inputFile(filename.c_str());
-        std::vector<std::shared_future<dns_result>> VF;
+        std::deque<Job> VF{};
         auto K = [&](const std::string &domain, const std::string &ns_ip, const std::string spoofed_ip) {
             if(cmdOptionExists(argv, argv + argc, spoof_list_arg))
                 return request_dns_and_spoof_src_ip(domain.c_str(), ns_ip.c_str(), spoofed_ip.c_str(), query_type_id);  
@@ -200,25 +208,40 @@ int main(int argc, char *argv[])
 
             while (VF.size() > workers)
             {
-                for_each(VF.begin(), VF.end(), [](std::shared_future<dns_result> &x) {
-                    auto result = x.get();
+                auto to = 0;
+                auto iter = 0;
+                auto now = std::chrono::high_resolution_clock::now();
+                for_each(VF.begin(), VF.end(), [&](auto &job) {
+                    std::chrono::duration<double> diff = now - job.schedule_time;
+                    ++iter;
+                    // std::cout<<diff.count()<< " " << getTimeout(timeout)<<std::endl;
+                    if (diff.count() > getTimeout(timeout))
+                    {
+                        std::cout<<"waiting"<<std::endl;
+                        to = iter;
+                    }
+                });
+                for_each(VF.begin(), VF.begin() + to, [&](auto &job) {
+                    auto result = job.job.get();
+                    std::cout<<(result)<< " ";
                     spdlog::debug(result);
                 });
-                VF.clear();
+
+                VF.erase(VF.begin(), VF.begin()+to);
             }
+            auto now = std::chrono::high_resolution_clock::now();
             if (x.size() == 3)
             {
-                VF.push_back(std::async(K, x[0], x[1], x[2]));
+                VF.push_back(Job{now, std::async(K, x[0], x[1], x[2])});
             }
             else
             {
-                VF.push_back(std::async(K, x[0], x[1], ""));
+                VF.push_back(Job{now, std::async(K, x[0], x[1], "")});
             }
-            // std::cout<< x.size()<<std::endl;
         }
-        for_each(VF.begin(), VF.end(), [](std::shared_future<dns_result> &x) {
-            auto result = x.get();
-            spdlog::debug(result);
+        for_each(VF.begin(), VF.end(), [](auto &x) {
+            auto result = x.job.get();
+            std::cout<<(result)<< " ";
         });
         inputFile.close();
     }
