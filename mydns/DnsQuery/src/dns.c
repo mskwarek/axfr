@@ -154,3 +154,36 @@ dns_result ngethostbyname(const char *que, const char *server, const char *dst_l
     }
     return DNS_RESULT_OK;
 }
+
+dns_result request_dns_and_spoof_src_ip(const char *que , const char *server, const char* ip_src, int query_type)
+{
+    unsigned int dns_id = 0;
+
+    enum
+    {
+        BUFSIZE=65536,
+        HOSTSIZE = 128,
+        FILENAME_SIZE = 512
+    };
+    unsigned char buf[BUFSIZE] = {0};
+    int answers_cnt = 0;
+    int dns_header_size = 0;
+
+    printf("%s %s\n", que, server);
+
+    unsigned char *qname = NULL;
+    struct QUESTION *qinfo = NULL;
+    char host[HOSTSIZE] = {0};
+    
+    snprintf(host, HOSTSIZE, "%s", que);
+    DNS_H_UDP *dns = NULL;
+    dns = (struct DNS_UDP_HEADER *)&buf;
+    qname = &buf[sizeof(struct DNS_UDP_HEADER)];
+
+    if(DNS_RESULT_OK != dns_req_with_spoofed_ip(dns, qname, qinfo, host, (char*) buf, query_type, server, ip_src))
+    {
+        return DNS_RESULT_ERR;
+    }
+
+    return DNS_RESULT_OK;
+}
