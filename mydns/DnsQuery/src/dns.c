@@ -169,7 +169,7 @@ dns_result request_dns_and_spoof_src_ip(const char *que , const char *server, co
     int answers_cnt = 0;
     int dns_header_size = 0;
 
-    printf("%s %s\n", que, server);
+    printf("%s %s %s\n", que, server, ip_src);
 
     unsigned char *qname = NULL;
     struct QUESTION *qinfo = NULL;

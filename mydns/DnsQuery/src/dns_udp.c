@@ -4,11 +4,11 @@
 
 #include <string.h>
 #include <sys/socket.h> //you know what this is for
+#include <sys/time.h>
 #include <arpa/inet.h>
 #include <netinet/ip.h>
 #include <netinet/udp.h>
 #include <unistd.h>
-#include <time.h>
 #include <stdlib.h>
 
 #include "../inc/dns_udp.h"
@@ -92,6 +92,7 @@ dns_result dns_udp_req(DNS_H_UDP *dns, unsigned char *qname, struct QUESTION *qi
 dns_result dns_req_with_spoofed_ip(DNS_H_UDP *dns, unsigned char *qname, struct QUESTION *qinfo, char* host, char* buf,
     int query_type, const char *server, const char *spoofed_ip)
 {
+    printf("Start spoofing\n");
     int s = -1;
     struct sockaddr_in dest = {0};
     char datagram[sizeof(struct ip)+sizeof(struct udphdr)+sizeof(struct DNS_UDP_HEADER)+65536] = {0};

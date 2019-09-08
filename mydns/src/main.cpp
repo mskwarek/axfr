@@ -15,6 +15,8 @@ extern "C" {
 #include <string>
 #include <vector>
 #include "spdlog/spdlog.h"
+#include <chrono>
+#include <deque>
 
 char *getCmdOption(char **begin, char **end, const std::string &option)
 {
@@ -116,6 +118,12 @@ void printHelpPrompt()
               << "\t-s\tlist with records to scan in format domain_address|ns_ip [optional]|spoofed_src_ip" << std::endl;
 }
 
+struct Job
+{
+    std::chrono::time_point<std::chrono::high_resolution_clock> schedule_time;
+    std::shared_future<dns_result> job;
+};
+
 int main(int argc, char *argv[])
 {
     std::string line;
@@ -167,36 +175,24 @@ int main(int argc, char *argv[])
                 dump_to_file);
         }
     }
-    else if(cmdOptionExists(argv, argv + argc, spoof_list_arg))
-    {
-        std::string filename = path_to_input_list_with_spoofed_src;
-        std::ifstream inputFile(filename.c_str());
-        while(std::getline(inputFile, line)){
-            // std::cout<<i++<<std::endl;
-            std::vector<std::string> x = split(line, '|');
-            request_dns_and_spoof_src_ip(x[0].c_str(), x[1].c_str(), x[2].c_str(),
-                        getQueryTypeIdByName(query_type));
-        }
-        inputFile.close();
-    }
     else
     {
         auto query_type_id = getQueryTypeIdByName(query_type);
-        std::string filename = path_to_input_list;
+        std::string filename = "";
+        if(cmdOptionExists(argv, argv + argc, input_list_arg))
+            filename = path_to_input_list;
         if(cmdOptionExists(argv, argv + argc, spoof_list_arg))
             filename = path_to_input_list_with_spoofed_src;
 
         std::ifstream inputFile(filename.c_str());
-        std::vector<std::shared_future<dns_result>> VF;
-        auto K = [=](const std::string &domain, const std::string &ns_ip, const std::string spoofed_ip) {
-            (void) spoofed_ip;
-            return ngethostbyname(domain.c_str(), ns_ip.c_str(), output_dir, query_type_id,
-                getTimeout(timeout), getTransportProtocolIdByName(transport_protocol_name),
-                dump_to_file);
-        };
-
-        auto K2 = [=](const std::string &domain, const std::string &ns_ip, const std::string spoofed_ip) {
-            return request_dns_and_spoof_src_ip(domain.c_str(), ns_ip.c_str(), spoofed_ip.c_str(), query_type_id);
+        std::deque<Job> VF{};
+        auto K = [&](const std::string &domain, const std::string &ns_ip, const std::string spoofed_ip) {
+            if(cmdOptionExists(argv, argv + argc, spoof_list_arg))
+                return request_dns_and_spoof_src_ip(domain.c_str(), ns_ip.c_str(), spoofed_ip.c_str(), query_type_id);  
+            else
+                return ngethostbyname(domain.c_str(), ns_ip.c_str(), output_dir, query_type_id,
+                    getTimeout(timeout), getTransportProtocolIdByName(transport_protocol_name),
+                    dump_to_file);
         };
 
         while (std::getline(inputFile, line))
@@ -212,21 +208,40 @@ int main(int argc, char *argv[])
 
             while (VF.size() > workers)
             {
-                for_each(VF.begin(), VF.end(), [](std::shared_future<dns_result> &x) {
-                    auto result = x.get();
+                auto to = 0;
+                auto iter = 0;
+                auto now = std::chrono::high_resolution_clock::now();
+                for_each(VF.begin(), VF.end(), [&](auto &job) {
+                    std::chrono::duration<double> diff = now - job.schedule_time;
+                    ++iter;
+                    // std::cout<<diff.count()<< " " << getTimeout(timeout)<<std::endl;
+                    if (diff.count() > getTimeout(timeout))
+                    {
+                        std::cout<<"waiting"<<std::endl;
+                        to = iter;
+                    }
+                });
+                for_each(VF.begin(), VF.begin() + to, [&](auto &job) {
+                    auto result = job.job.get();
+                    std::cout<<(result)<< " ";
                     spdlog::debug(result);
                 });
-                VF.clear();
+
+                VF.erase(VF.begin(), VF.begin()+to);
             }
+            auto now = std::chrono::high_resolution_clock::now();
             if (x.size() == 3)
             {
-                VF.push_back(std::async(K2, x[0], x[1], x[2]));
+                VF.push_back(Job{now, std::async(K, x[0], x[1], x[2])});
             }
-            VF.push_back(std::async(K, x[0], x[1], ""));
+            else
+            {
+                VF.push_back(Job{now, std::async(K, x[0], x[1], "")});
+            }
         }
-        for_each(VF.begin(), VF.end(), [](std::shared_future<dns_result> &x) {
-            auto result = x.get();
-            spdlog::debug(result);
+        for_each(VF.begin(), VF.end(), [](auto &x) {
+            auto result = x.job.get();
+            std::cout<<(result)<< " ";
         });
         inputFile.close();
     }
