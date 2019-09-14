@@ -292,7 +292,7 @@ dns_result dns_req_with_spoofed_ip(DNS_H_UDP *dns, unsigned char *qname, struct 
 
 dns_result dns_req_with_spoofed_ipv6(DNS_H_UDP *dns, unsigned char *qname, struct QUESTION *qinfo,
     char *host, char *buf, int query_type, const char *server, const char *spoofed_ip,
-    const char *output_mac, int with_debug)
+    const char *output_mac, const char *iface, int with_debug)
 {
     // printf("Start spoofing v6\n");
 
@@ -310,7 +310,7 @@ dns_result dns_req_with_spoofed_ipv6(DNS_H_UDP *dns, unsigned char *qname, struc
     unsigned char interface[128] = {0};
 
     // Interface to send packet through.
-    strcpy(interface, "ens3");
+    strcpy(interface, iface);
 
     // Submit request for a socket descriptor to look up interface.
     if ((sd = socket(AF_INET6, SOCK_RAW, IPPROTO_RAW)) < 0)
@@ -356,7 +356,7 @@ dns_result dns_req_with_spoofed_ipv6(DNS_H_UDP *dns, unsigned char *qname, struc
     }
     if (1 == with_debug)
     {
-    printf("Index for interface %s is %i\n", interface, device.sll_ifindex);
+        printf("Index for interface %s is %i\n", interface, device.sll_ifindex);
     }
     uint8_t dst_mac[6] = {0};
     // Set destination MAC address: you need to fill this out

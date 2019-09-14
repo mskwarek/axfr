@@ -123,8 +123,10 @@ void printHelpPrompt()
                  "in format domain_address|ns_ip|spoofed_src_ip"
               << std::endl
               << "\t-m\tDestination (next hop) MAC address in format ab:cd:ef:gh:ij:kl"
-                 " because program doesn't fully support ARP, required for IPv6"
-                 " spoofing scans"
+                 ", required for IPv6 spoofing scans because program doesn't"
+                 " fully support ARP" << std::endl
+              << "\t-i\tOutput interface name, required for IPv6 spoofing to find out"
+                 " source (our) MAC address"
               << std::endl;
 }
 
@@ -150,6 +152,7 @@ int main(int argc, char *argv[])
     static const char *spoof_list_arg = "-s";
     static const char *spoof_v6_list_arg = "-6";
     static const char *output_mac_arg = "-m";
+    static const char *iface_arg = "-i";
 
     char *output_dir = getCmdOption(argv, argv + argc, output_arg);
     char *timeout = getCmdOption(argv, argv + argc, timeout_arg);
@@ -164,6 +167,7 @@ int main(int argc, char *argv[])
     char *path_to_input_list_with_spoofed_src_v6 =
         getCmdOption(argv, argv + argc, spoof_v6_list_arg);
     char *output_mac = getCmdOption(argv, argv + argc, output_mac_arg);
+    char *output_iface = getCmdOption(argv, argv + argc, iface_arg);
 
     if (cmdOptionExists(argv, argv + argc, output_arg) == false)
         dump_to_file = RESPONSE_DO_NOT_DUMP;
@@ -176,7 +180,8 @@ int main(int argc, char *argv[])
                 !cmdOptionExists(argv, argv + argc, ns_ip_arg))) &&
             !cmdOptionExists(argv, argv + argc, spoof_list_arg) &&
             !(cmdOptionExists(argv, argv + argc, spoof_v6_list_arg) &&
-                cmdOptionExists(argv, argv + argc, output_mac_arg)))
+                cmdOptionExists(argv, argv + argc, output_mac_arg) &&
+                cmdOptionExists(argv, argv + argc, iface_arg)))
     {
         printHelpPrompt();
         return 0;
@@ -212,7 +217,7 @@ int main(int argc, char *argv[])
                     domain.c_str(), ns_ip.c_str(), spoofed_ip.c_str(), query_type_id);
             else if (cmdOptionExists(argv, argv + argc, spoof_v6_list_arg))
                 return request_dns_and_spoof_src_ipv6(domain.c_str(), ns_ip.c_str(),
-                    spoofed_ip.c_str(), query_type_id, output_mac, 0);
+                    spoofed_ip.c_str(), query_type_id, output_mac, output_iface, 0);
             else
                 return ngethostbyname(domain.c_str(), ns_ip.c_str(), output_dir, query_type_id,
                     getTimeout(timeout), getTransportProtocolIdByName(transport_protocol_name),

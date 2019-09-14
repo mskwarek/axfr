@@ -192,7 +192,7 @@ dns_result request_dns_and_spoof_src_ip(
 }
 
 dns_result request_dns_and_spoof_src_ipv6(const char *que, const char *server, const char *ip_src,
-    int query_type, const char *output_mac, int with_debug)
+    int query_type, const char *output_mac, const char *iface, int with_debug)
 {
     unsigned int dns_id = 0;
 
@@ -219,7 +219,7 @@ dns_result request_dns_and_spoof_src_ipv6(const char *que, const char *server, c
     qname = &buf[sizeof(struct DNS_UDP_HEADER)];
 
     if (DNS_RESULT_OK != dns_req_with_spoofed_ipv6(dns, qname, qinfo, host, (char *)buf, query_type,
-                             server, ip_src, output_mac, with_debug))
+                             server, ip_src, output_mac, iface, with_debug))
     {
         return DNS_RESULT_ERR;
     }
