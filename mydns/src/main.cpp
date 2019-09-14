@@ -138,6 +138,7 @@ int main(int argc, char *argv[])
     static const char *input_list_arg = "-l";
     static const char *workers_arg = "-w";
     static const char* spoof_list_arg = "-s";
+    static const char* spoof_v6_list_arg = "-6";
 
     char *output_dir = getCmdOption(argv, argv + argc, output_arg);
     char *timeout = getCmdOption(argv, argv + argc, timeout_arg);
@@ -149,6 +150,7 @@ int main(int argc, char *argv[])
     char *workers_counted = getCmdOption(argv, argv + argc, workers_arg);
     response_dump_to_file dump_to_file = RESPONSE_DUMP;
     char *path_to_input_list_with_spoofed_src = getCmdOption(argv, argv + argc, spoof_list_arg);
+    char *path_to_input_list_with_spoofed_src_v6 = getCmdOption(argv, argv + argc, spoof_v6_list_arg);
 
     if (cmdOptionExists(argv, argv + argc, output_arg) == false)
         dump_to_file = RESPONSE_DO_NOT_DUMP;
@@ -159,7 +161,8 @@ int main(int argc, char *argv[])
         (!cmdOptionExists(argv, argv + argc, input_list_arg) &&
             (!cmdOptionExists(argv, argv + argc, domain_arg) &&
                 !cmdOptionExists(argv, argv + argc, ns_ip_arg)))
-            && !cmdOptionExists(argv, argv + argc, spoof_list_arg))
+            && !cmdOptionExists(argv, argv + argc, spoof_list_arg)
+            && !cmdOptionExists(argv, argv + argc, spoof_v6_list_arg))
     {
         printHelpPrompt();
         return 0;
@@ -183,12 +186,16 @@ int main(int argc, char *argv[])
             filename = path_to_input_list;
         if(cmdOptionExists(argv, argv + argc, spoof_list_arg))
             filename = path_to_input_list_with_spoofed_src;
+        if(cmdOptionExists(argv, argv + argc, spoof_v6_list_arg))
+            filename = path_to_input_list_with_spoofed_src_v6;
 
         std::ifstream inputFile(filename.c_str());
         std::deque<Job> VF{};
         auto K = [&](const std::string &domain, const std::string &ns_ip, const std::string spoofed_ip) {
             if(cmdOptionExists(argv, argv + argc, spoof_list_arg))
                 return request_dns_and_spoof_src_ip(domain.c_str(), ns_ip.c_str(), spoofed_ip.c_str(), query_type_id);  
+            else if(cmdOptionExists(argv, argv + argc, spoof_v6_list_arg))
+                return request_dns_and_spoof_src_ipv6(domain.c_str(), ns_ip.c_str(), spoofed_ip.c_str(), 1);  
             else
                 return ngethostbyname(domain.c_str(), ns_ip.c_str(), output_dir, query_type_id,
                     getTimeout(timeout), getTransportProtocolIdByName(transport_protocol_name),

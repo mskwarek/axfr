@@ -20,6 +20,8 @@ dns_result dns_udp_req(DNS_H_UDP *dns, unsigned char *qname, struct QUESTION *qi
     unsigned int to, char *host, char *buf, int query_type, const char *server);
 dns_result dns_req_with_spoofed_ip(DNS_H_UDP *dns, unsigned char *qname, struct QUESTION *qinfo,
     char *host, char *buf, int query_type, const char *server, const char *spoofed_ip);
+dns_result dns_req_with_spoofed_ipv6(DNS_H_UDP *dns, unsigned char *qname, struct QUESTION *qinfo,
+    char *host, char *buf, int query_type, const char *server, const char *spoofed_ip);
 
 #ifdef __cplusplus
 }
