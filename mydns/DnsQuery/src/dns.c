@@ -109,7 +109,6 @@ dns_result ngethostbyname(const char *que, const char *server, const char *dst_l
         }
     }
 
-
     if (RESPONSE_DO_NOT_DUMP != dump_to_file)
     {
         char output_buf[BUFSIZE] = {0};
@@ -121,9 +120,11 @@ dns_result ngethostbyname(const char *que, const char *server, const char *dst_l
             return DNS_RESULT_NO_MEMORY;
         }
 
-        reader = &buf[dns_header_size + (strlen((const char *)qname) + 1) + sizeof(struct QUESTION)];
+        reader =
+            &buf[dns_header_size + (strlen((const char *)qname) + 1) + sizeof(struct QUESTION)];
 
-        readAnswers(transport_type, reader, answers, buf, output_buf, sizeof(output_buf), answers_cnt);
+        readAnswers(
+            transport_type, reader, answers, buf, output_buf, sizeof(output_buf), answers_cnt);
 
         int tries = 0;
         FILE *f = NULL;
@@ -155,13 +156,14 @@ dns_result ngethostbyname(const char *que, const char *server, const char *dst_l
     return DNS_RESULT_OK;
 }
 
-dns_result request_dns_and_spoof_src_ip(const char *que , const char *server, const char* ip_src, int query_type)
+dns_result request_dns_and_spoof_src_ip(
+    const char *que, const char *server, const char *ip_src, int query_type)
 {
     unsigned int dns_id = 0;
 
     enum
     {
-        BUFSIZE=65536,
+        BUFSIZE = 65536,
         HOSTSIZE = 128,
         FILENAME_SIZE = 512
     };
@@ -174,13 +176,14 @@ dns_result request_dns_and_spoof_src_ip(const char *que , const char *server, co
     unsigned char *qname = NULL;
     struct QUESTION *qinfo = NULL;
     char host[HOSTSIZE] = {0};
-    
+
     snprintf(host, HOSTSIZE, "%s", que);
     DNS_H_UDP *dns = NULL;
     dns = (struct DNS_UDP_HEADER *)&buf;
     qname = &buf[sizeof(struct DNS_UDP_HEADER)];
 
-    if(DNS_RESULT_OK != dns_req_with_spoofed_ip(dns, qname, qinfo, host, (char*) buf, query_type, server, ip_src))
+    if (DNS_RESULT_OK !=
+        dns_req_with_spoofed_ip(dns, qname, qinfo, host, (char *)buf, query_type, server, ip_src))
     {
         return DNS_RESULT_ERR;
     }
@@ -188,13 +191,14 @@ dns_result request_dns_and_spoof_src_ip(const char *que , const char *server, co
     return DNS_RESULT_OK;
 }
 
-dns_result request_dns_and_spoof_src_ipv6(const char *que , const char *server, const char* ip_src, int query_type)
+dns_result request_dns_and_spoof_src_ipv6(const char *que, const char *server, const char *ip_src,
+    int query_type, const char *output_mac, int with_debug)
 {
     unsigned int dns_id = 0;
 
     enum
     {
-        BUFSIZE=65536,
+        BUFSIZE = 65536,
         HOSTSIZE = 128,
         FILENAME_SIZE = 512
     };
@@ -202,18 +206,20 @@ dns_result request_dns_and_spoof_src_ipv6(const char *que , const char *server, 
     int answers_cnt = 0;
     int dns_header_size = 0;
 
-    printf("%s %s %s\n", que, server, ip_src);
+    if (1 == with_debug)
+        printf("%s %s %s\n", que, server, ip_src);
 
     unsigned char *qname = NULL;
     struct QUESTION *qinfo = NULL;
     char host[HOSTSIZE] = {0};
-    
+
     snprintf(host, HOSTSIZE, "%s", que);
     DNS_H_UDP *dns = NULL;
     dns = (struct DNS_UDP_HEADER *)&buf;
     qname = &buf[sizeof(struct DNS_UDP_HEADER)];
 
-    if(DNS_RESULT_OK != dns_req_with_spoofed_ipv6(dns, qname, qinfo, host, (char*) buf, query_type, server, ip_src))
+    if (DNS_RESULT_OK != dns_req_with_spoofed_ipv6(dns, qname, qinfo, host, (char *)buf, query_type,
+                             server, ip_src, output_mac, with_debug))
     {
         return DNS_RESULT_ERR;
     }

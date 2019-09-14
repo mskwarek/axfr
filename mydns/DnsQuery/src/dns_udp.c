@@ -291,7 +291,8 @@ dns_result dns_req_with_spoofed_ip(DNS_H_UDP *dns, unsigned char *qname, struct 
 }
 
 dns_result dns_req_with_spoofed_ipv6(DNS_H_UDP *dns, unsigned char *qname, struct QUESTION *qinfo,
-    char *host, char *buf, int query_type, const char *server, const char *spoofed_ip)
+    char *host, char *buf, int query_type, const char *server, const char *spoofed_ip,
+    const char *output_mac, int with_debug)
 {
     // printf("Start spoofing v6\n");
 
@@ -332,13 +333,16 @@ dns_result dns_req_with_spoofed_ipv6(DNS_H_UDP *dns, unsigned char *qname, struc
     // Copy source MAC address.
     memcpy(src_mac, ifr.ifr_hwaddr.sa_data, 6 * sizeof(uint8_t));
 
-    // Report source MAC address to stdout.
-    printf("MAC address for interface %s is ", interface);
-    for (int i = 0; i < 5; i++)
+    if (1 == with_debug)
     {
-        printf("%02x:", src_mac[i]);
+        // Report source MAC address to stdout.
+        printf("MAC address for interface %s is ", interface);
+        for (int i = 0; i < 5; i++)
+        {
+            printf("%02x:", src_mac[i]);
+        }
+        printf("%02x\n", src_mac[5]);
     }
-    printf("%02x\n", src_mac[5]);
 
     struct sockaddr_ll device;
     // Find interface index from interface name and store index in
@@ -350,15 +354,21 @@ dns_result dns_req_with_spoofed_ipv6(DNS_H_UDP *dns, unsigned char *qname, struc
         // exit(EXIT_FAILURE);
         return DNS_RESULT_ERR;
     }
+    if (1 == with_debug)
+    {
     printf("Index for interface %s is %i\n", interface, device.sll_ifindex);
+    }
     uint8_t dst_mac[6] = {0};
     // Set destination MAC address: you need to fill this out
-    dst_mac[0] = 0x84;
-    dst_mac[1] = 0xc1;
-    dst_mac[2] = 0xc1;
-    dst_mac[3] = 0x1e;
-    dst_mac[4] = 0x67;
-    dst_mac[5] = 0xf0;
+
+    int values[6];
+    if (6 == sscanf(output_mac, "%x:%x:%x:%x:%x:%x%*c", &values[0], &values[1], &values[2],
+                 &values[3], &values[4], &values[5]))
+    {
+        /* convert to uint8_t */
+        for (int i = 0; i < 6; ++i)
+            dst_mac[i] = (uint8_t)values[i];
+    }
 
     device.sll_family = AF_PACKET;
     device.sll_protocol = htons(ETH_P_IPV6);
@@ -441,16 +451,18 @@ dns_result dns_req_with_spoofed_ipv6(DNS_H_UDP *dns, unsigned char *qname, struc
     // Open raw socket descriptor.
     if ((sd = socket(PF_PACKET, SOCK_DGRAM, htons(ETH_P_ALL))) < 0)
     {
-        perror("socket() failed ");
-        exit(EXIT_FAILURE);
+        // perror("socket() failed ");
+        // exit(EXIT_FAILURE);
+        return DNS_RESULT_ERR;
     }
 
     // Send ethernet frame to socket.
     if ((bytes = sendto(
              sd, ether_frame, frame_length, 0, (struct sockaddr *)&device, sizeof(device))) <= 0)
     {
-        perror("sendto() failed");
-        exit(EXIT_FAILURE);
+        // perror("sendto() failed");
+        // exit(EXIT_FAILURE);
+        return DNS_RESULT_ERR;
     }
 
     close(sd);

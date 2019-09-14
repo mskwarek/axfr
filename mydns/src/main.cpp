@@ -115,7 +115,17 @@ void printHelpPrompt()
               << "\t-p\tTransport protocol used in scanner [default TCP]" << std::endl
               << "\t-l\tlist with records to scan in format domain_address|ns_ip "
                  "[optional]"
-              << "\t-s\tlist with records to scan in format domain_address|ns_ip [optional]|spoofed_src_ip" << std::endl;
+              << std::endl
+              << "\t-s\tlist with records to scan in format domain_address|ns_ip"
+                 "|spoofed_src_ip"
+              << std::endl
+              << "\t-6\tlist with records to scan with spoofed IPv6 src address"
+                 "in format domain_address|ns_ip|spoofed_src_ip"
+              << std::endl
+              << "\t-m\tDestination (next hop) MAC address in format ab:cd:ef:gh:ij:kl"
+                 " because program doesn't fully support ARP, required for IPv6"
+                 " spoofing scans"
+              << std::endl;
 }
 
 struct Job
@@ -137,8 +147,9 @@ int main(int argc, char *argv[])
     static const char *transport_protocol_arg = "-p";
     static const char *input_list_arg = "-l";
     static const char *workers_arg = "-w";
-    static const char* spoof_list_arg = "-s";
-    static const char* spoof_v6_list_arg = "-6";
+    static const char *spoof_list_arg = "-s";
+    static const char *spoof_v6_list_arg = "-6";
+    static const char *output_mac_arg = "-m";
 
     char *output_dir = getCmdOption(argv, argv + argc, output_arg);
     char *timeout = getCmdOption(argv, argv + argc, timeout_arg);
@@ -150,7 +161,9 @@ int main(int argc, char *argv[])
     char *workers_counted = getCmdOption(argv, argv + argc, workers_arg);
     response_dump_to_file dump_to_file = RESPONSE_DUMP;
     char *path_to_input_list_with_spoofed_src = getCmdOption(argv, argv + argc, spoof_list_arg);
-    char *path_to_input_list_with_spoofed_src_v6 = getCmdOption(argv, argv + argc, spoof_v6_list_arg);
+    char *path_to_input_list_with_spoofed_src_v6 =
+        getCmdOption(argv, argv + argc, spoof_v6_list_arg);
+    char *output_mac = getCmdOption(argv, argv + argc, output_mac_arg);
 
     if (cmdOptionExists(argv, argv + argc, output_arg) == false)
         dump_to_file = RESPONSE_DO_NOT_DUMP;
@@ -160,9 +173,10 @@ int main(int argc, char *argv[])
     if (cmdOptionExists(argv, argv + argc, "-h") ||
         (!cmdOptionExists(argv, argv + argc, input_list_arg) &&
             (!cmdOptionExists(argv, argv + argc, domain_arg) &&
-                !cmdOptionExists(argv, argv + argc, ns_ip_arg)))
-            && !cmdOptionExists(argv, argv + argc, spoof_list_arg)
-            && !cmdOptionExists(argv, argv + argc, spoof_v6_list_arg))
+                !cmdOptionExists(argv, argv + argc, ns_ip_arg))) &&
+            !cmdOptionExists(argv, argv + argc, spoof_list_arg) &&
+            !(cmdOptionExists(argv, argv + argc, spoof_v6_list_arg) &&
+                cmdOptionExists(argv, argv + argc, output_mac_arg)))
     {
         printHelpPrompt();
         return 0;
@@ -182,20 +196,23 @@ int main(int argc, char *argv[])
     {
         auto query_type_id = getQueryTypeIdByName(query_type);
         std::string filename = "";
-        if(cmdOptionExists(argv, argv + argc, input_list_arg))
+        if (cmdOptionExists(argv, argv + argc, input_list_arg))
             filename = path_to_input_list;
-        if(cmdOptionExists(argv, argv + argc, spoof_list_arg))
+        if (cmdOptionExists(argv, argv + argc, spoof_list_arg))
             filename = path_to_input_list_with_spoofed_src;
-        if(cmdOptionExists(argv, argv + argc, spoof_v6_list_arg))
+        if (cmdOptionExists(argv, argv + argc, spoof_v6_list_arg))
             filename = path_to_input_list_with_spoofed_src_v6;
 
         std::ifstream inputFile(filename.c_str());
         std::deque<Job> VF{};
-        auto K = [&](const std::string &domain, const std::string &ns_ip, const std::string spoofed_ip) {
-            if(cmdOptionExists(argv, argv + argc, spoof_list_arg))
-                return request_dns_and_spoof_src_ip(domain.c_str(), ns_ip.c_str(), spoofed_ip.c_str(), query_type_id);  
-            else if(cmdOptionExists(argv, argv + argc, spoof_v6_list_arg))
-                return request_dns_and_spoof_src_ipv6(domain.c_str(), ns_ip.c_str(), spoofed_ip.c_str(), 1);  
+        auto K = [&](const std::string &domain, const std::string &ns_ip,
+                     const std::string spoofed_ip) {
+            if (cmdOptionExists(argv, argv + argc, spoof_list_arg))
+                return request_dns_and_spoof_src_ip(
+                    domain.c_str(), ns_ip.c_str(), spoofed_ip.c_str(), query_type_id);
+            else if (cmdOptionExists(argv, argv + argc, spoof_v6_list_arg))
+                return request_dns_and_spoof_src_ipv6(domain.c_str(), ns_ip.c_str(),
+                    spoofed_ip.c_str(), query_type_id, output_mac, 0);
             else
                 return ngethostbyname(domain.c_str(), ns_ip.c_str(), output_dir, query_type_id,
                     getTimeout(timeout), getTransportProtocolIdByName(transport_protocol_name),
@@ -224,17 +241,17 @@ int main(int argc, char *argv[])
                     // std::cout<<diff.count()<< " " << getTimeout(timeout)<<std::endl;
                     if (diff.count() > getTimeout(timeout))
                     {
-                        std::cout<<"waiting"<<std::endl;
+                        std::cout << "waiting" << std::endl;
                         to = iter;
                     }
                 });
                 for_each(VF.begin(), VF.begin() + to, [&](auto &job) {
                     auto result = job.job.get();
-                    std::cout<<(result)<< " ";
+                    std::cout << (result) << " ";
                     spdlog::debug(result);
                 });
 
-                VF.erase(VF.begin(), VF.begin()+to);
+                VF.erase(VF.begin(), VF.begin() + to);
             }
             auto now = std::chrono::high_resolution_clock::now();
             if (x.size() == 3)
@@ -248,8 +265,10 @@ int main(int argc, char *argv[])
         }
         for_each(VF.begin(), VF.end(), [](auto &x) {
             auto result = x.job.get();
-            std::cout<<(result)<< " ";
+            std::cout << (result) << " ";
         });
+
+        std::cout << "\n";
         inputFile.close();
     }
     return 0;

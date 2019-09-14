@@ -40,8 +40,9 @@ struct RES_RECORD
 
 dns_result ngethostbyname(const char *, const char *, const char *dst_log_path, int, int,
     dns_transport_type, response_dump_to_file);
-dns_result request_dns_and_spoof_src_ip(const char * , const char *, const char* , int );
-dns_result request_dns_and_spoof_src_ipv6(const char *que , const char *server, const char* ip_src, int query_type);
+dns_result request_dns_and_spoof_src_ip(const char *, const char *, const char *, int);
+dns_result request_dns_and_spoof_src_ipv6(const char *que, const char *server, const char *ip_src,
+    int query_type, const char *output_mac, int with_debug);
 /**
    @filedns.h
    @brief Implement Simple Domain Name System Protocol
